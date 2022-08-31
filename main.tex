@@ -9,6 +9,7 @@
 %	parskip=half-,%Absatzkennzeichnung durch Abstand vgl. KOMA-Script
 	fontsize=11pt,%Basisschriftgröße laut Corporate Design ist mit 9pt häufig zu klein
 	logofile=example-image, %Falls die Logo Dateien nicht vorliegen
+	IMRAD=false,
 ]{tudapub}
 
 \usepackage[]{babel}
@@ -17,7 +18,6 @@
 \usepackage{pgfplotstable}
 \usepackage[]{siunitx}
 \usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
 \usepackage[siunitx, europeanresistors]{circuitikz}
 \usepackage{subcaption}
 \usepackage{tabularx}  % for 'tabularx' environment and 'X' column type
@@ -93,7 +93,6 @@
 
 	\phantomsection  % add an invisible section for the references
 	\addcontentsline{toc}{section}{References}  % add the references to the TOC
-	%\bibliographystyle{osa_mod_linked}
 	%\affidavit[3. Dezember 2014]{Patrick Baus}
 	\addtocounter{page}{-1}  % Do not count the affidavit
 
