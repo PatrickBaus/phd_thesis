@@ -1,0 +1,31 @@
+%\documentclass[convert={density=600,outext=.png}]{standalone}
+\documentclass[]{standalone}
+\usepackage[]{siunitx}
+\usepackage[siunitx, europeanresistors]{circuitikz}
+\usetikzlibrary{fit}
+
+\begin{document}
+    \ctikzloadstyle{romano}
+	\begin{circuitikz}[transform shape, romano circuit style, european resistors]
+		\draw (0,0) node[vcc](VCC){V$_{CC}=\qty{13}{V}$} to[R=R$_1$] ++(0,-1.5)  coordinate(VZ) to[empty Zener diode, l=D, a^=D, l2_=LM399 or and ADR1399, invert] ++(0,-1) node[ground](VZN){}
+		(VZ) to[short, *-] ++(2,0) coordinate(VFILT) to[R, l2=R$_2$ and \qty{5.1}{\ohm}, *-, name=RSnubber] ++(0,-2) to[C, l2=C$_1$ and \qty{1}{\uF}, name=CSnubber] ++(0,-1) node[ground]{}
+		(VFILT) -- ++(0.5,0) to[R=R$_3$] ++(2,0) node[op amp, noinv input up, anchor=+](OA){}
+		(OA.out) to [C=C$_2$, *-*] ++ (0,-1.5) coordinate(VFB) -| (OA.-)
+		(OA.out) -- ++(0.5,0) to [R=R$_4$, -*, name=Rout] ++(1.5,0) coordinate(VPROT)
+		(VPROT) ++(1,0) coordinate(VPROT2) -- ++(1,0) node[transformer, rotate=-90, anchor=A2](Choke){} (Choke.west) node(Chokelabel){L$_1$}
+		(VFB) -- ++(0.5,0) to [R=R$_5$, name=Rfb] ++(1.5,0) -- (VPROT) -- ++(1,0) to [C=C$_3$, *-*, name=Cfilt1] (VPROT2 |- Choke.B2) coordinate(VPROTN)
+		(VPROTN) -- (Choke.B2)
+		(Choke.B1) -- ++(0.5,0) coordinate(VOUTN) to[short, -o] ++(1.5,0) node[above](vo){V$_{Z-}$}
+		(Choke.A1) -- ++(0.5,0) coordinate (VOUTP) to [C=C$_4$, *-*, name=Cfilt2] (VOUTN)
+		(VOUTP) to[short, -o] ++(1.5,0) node[above](vo){V$_{Z+}$}
+		(VPROTN) -- ++(0,-1.5) -- ++(-9.5,0) -- ++(0,2.25) to[short, -*] (VZN);
+		% boxes
+		\node [rectangle, draw, dashed, fit=(RSnubber) (RSnubberlabel) (CSnubber) (CSnubberlabel)] (BoxSnubber){};
+		\node [anchor=south west, align=left] at (BoxSnubber.south east) {Compensation network};
+		\node [rectangle, draw, dashed, fit=(OA) (Rout) (Rfb)] (BoxBuffer){};
+		\node [anchor=south, align=center] at (BoxBuffer.north) {Output protection buffer};
+		\node [rectangle, draw, dashed, fit=(Cfilt1) (Cfilt2) (Cfilt2label) (Choke) (Chokelabel)] (BoxFilter){};
+		\node [anchor=south, align=center] at (BoxFilter.north) {Common mode filter};
+		;
+	\end{circuitikz}
+\end{document}

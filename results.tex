@@ -1,0 +1,161 @@
+\chapter{Results}
+\section{Laser Current Driver}
+\subsection{Zener Diode Selection}
+Chinese/Ebay Zeners. Welded legs. Photots. Decap one of those.
+
+\subsection{Building a Test Setup for Zener Diodes}
+In order to test a large amount of Zener diodes, and considering the duration of the burn-in process, which can take anything between \qtyrange{100}{1000}{\hour}, it is neccesary to have an automated setup. This consists of a digital multimeter (DMM) a scanner and test board, that holds the zener diodes and provides the neccesary infrastructure for the diodes.
+
+The type of DMM used, plays an important role. The expected amplitude of the popcorn noise is around \qty{4}{\micro\volt}. To measure the \qty{7}{\volt} of the zener diode, the corresponding voltage range of a typical DMM would be either \qty{10}{\volt} or \qty{20}{\volt}. This means, that either a very low noise \num{7.5} or an \num{8.5} digit multimeter is required to record the popcorn noise. Fortunately, this class of multimeters features a superior voltage reference, because the LM399 is not suitable for \num{8.5} digits as it is too noisy. The only Zener diodes good enough are the Analog Devices LTZ1000 \cite{}, the Motorolla SZA263 (out of production) and the Linear Technology (LT) LTFLU-1 (proprietary design by Fluke and LT).  While Keysight uses the LTZ0100, Fluke either uses the SZA263 (in older devices) or the LTFLU-1 and Keithley uses both devices, the LTZ1000 in their Model 2002 and the LTFLU-1 in the newer DMM7510.
+
+In comparison to the LM399, those Zener diodes do not suffer from the popcorn noise issue. This means, that there are no additional measures required to make sure the popcorn noise is caused by the device under test (DUT) and not the DMM.
+
+To conclude, we need a high performance DMM, a scanner, and a test fixture. The choices will detailed in the following sections.
+
+\subsection{Choosing a DMM for Testing Zener Diodes}
+The market for high-end \num{8.5} digit DMMs is limited and therefore every device on the market caters for a certain niche.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{ |l|l|l| }
+        \hline
+        Manufacturer & Model & Remarks \\
+        \hline
+        Advantest & 6581T & Discontinued. Scanner cards available. \\
+        Datron/Wavetek & 1812 & Discontinued. Bought by Fluke. \\
+        Fluke & 8508A & Discontinued. \\
+        Fluke & 8588A & In production. \\
+        Keithley/Tektronix & 2002 & In production. Scanner card available. \\
+        Keysight & 3458A & In Production. \\
+        Solartron & 7081 & Discontinued. \\
+        Transmille & 8104 & In Production. External scanner available. \\
+        \hline
+    \end{tabular}
+    \caption{A non-exhaustive list of \num{8.5} digit multimeters.}
+    \label{tab:list_of_dmms}
+\end{table}
+
+
+While the Keysight 3458A is very low noise and features supreme linearity it does not have any special scanning capability. The latest Fluke 8588A or its predecessor, the 8508A, have some limited scaning capability as it can remotely switch from its front panel binding posts to the rear binding posts. The same goes for the
+
+
+
+The test setup consists of a mounting pcb, that holds up to 20 Zener diode. It provides power regulation and a minimal circuit required to support each diode. This circuit is given here:
+
+\begin{figure}[h]
+    \centering
+    \scalebox{0.7}{%
+    \import{figures/}{zener_burnin.tex}
+    } % scalebox
+    \caption{Circuit used for burning in the Zener diodes}
+\end{figure}
+
+The compensation network is required when using the ADR1399, because of its very low dynamic impedance as recommended in the datasheet \cite{datasheet_ADR1399}. It is not strictly required for the LM399, but fitted nonetheless, because there are no downsides to it. This makes the board compatible with both types of references. Each Zener output is protected using an output buffer, which provides isolation and short circuit protection. Finally there is a common mode filter at the output to supress high frequency noise via gound loops.
+
+The two key metrics of concern, that need to measured are popcorn noise and drift.
+
+digital multimeter and a scanner card
+
+
+\begin{figure}[]
+    \centering
+    \import{images/}{DIN_41612.tex}
+    \caption{Pinout of the extension connector used in several Keithley multimeters}
+\end{figure}
+
+\begin{tabular}{llllll}
+    \toprule
+    Pin    & Function    & Cable Colour    & Pin    & Function    &  Cable Colour\\
+    \midrule
+    a1, b1    & \SIrange[explicit-sign=+]{6}{20}{\volt}    & brown    & \num{6}    & GND    & green/white\\
+    a2, b2    & PD cathode (optional)    & red    & \num{7}    & LD Cathode    & blue/white\\
+    a3, b3    & LD case (GND)    & red/white    & \num{8}    & LD Anode    & blue\\
+    a4    & PD anode (GND)    & red/white    & \num{9}    & LD current monitor    & green\\
+    a5    & \SIrange{-6}{-20}{\volt}    & brown/white\\
+    \bottomrule
+\end{tabular}
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}[scale=0.4, text height=1.25ex, text depth=.25ex,
+        bit/.style = {
+            rectangle,
+            thick,
+            draw=black,
+            inner sep=0pt,
+            outer sep=0pt,
+            above right,
+        },
+        framing/.style={
+            fill=blue!50!black!20,
+            minimum height = 4mm,
+            minimum width = 4mm,
+            bit,
+        },
+        command/.style = {
+            fill=red!50!black!20,
+            minimum height=4mm,
+            minimum width=4mm,
+            bit
+        },
+        payload/.style = {
+            fill=green!50!black!20,
+            minimum height=4mm,
+            minimum width=4mm,
+            bit
+        },]
+        \foreach \x in {0,...,2} {
+            \node[above right] at (\x*8,1) {\scriptsize \x};
+            \draw[thick, blue] (\x*8,1) -- (\x*8,2);
+        }
+
+        \node [thick, left] () at (0,1.5) {\scriptsize byte};
+        \draw [thick] (-1.5, 1) -- (-0.1,1);
+        \draw [thick] (-1.5, 0) -- (-0.1,0);
+        % Framing start
+        \begin{scope}[]
+            \node[framing] at (0,0) {\scriptsize 0};
+            \node[framing] at (1,0) {\scriptsize 0};
+            \node[framing] at (2,0) {\scriptsize 0};
+            \node[framing] at (3,0) {\scriptsize 0};
+            \node[framing] at (4,0) {\scriptsize 0};
+            \node[framing] at (5,0) {\scriptsize 1};
+            \node[framing] at (6,0) {\scriptsize 1};
+            \node[framing] at (7,0) {\scriptsize 0};
+        \end{scope}
+
+        % Command Byte
+        \begin{scope}[xshift=8cm]
+            \node[command] at (0,0) {\scriptsize 0};
+            \node[command] at (1,0) {\scriptsize 0};
+            \node[command] at (2,0) {\scriptsize 0};
+            \node[command] at (3,0) {\scriptsize 0};
+            \node[command] at (4,0) {\scriptsize 0};
+            \node[command] at (5,0) {\scriptsize 1};
+            \node[command] at (6,0) {\scriptsize 1};
+            \node[command] at (7,0) {\scriptsize 0};
+        \end{scope}
+        % Framing end
+        \begin{scope}[xshift=16cm]
+            \node[framing] at (0,0) {\scriptsize 0};
+            \node[framing] at (1,0) {\scriptsize 0};
+            \node[framing] at (2,0) {\scriptsize 0};
+            \node[framing] at (3,0) {\scriptsize 0};
+            \node[framing] at (4,0) {\scriptsize 0};
+            \node[framing] at (5,0) {\scriptsize 0};
+            \node[framing] at (6,0) {\scriptsize 0};
+            \node[framing] at (7,0) {\scriptsize 0};
+        \end{scope}
+    \end{tikzpicture}
+\end{figure}
+
+\subsection{Current Sources}
+Discuss Op amp choice (AD797)
+
+\subsection{Temperature Coeeficient}
+Discuss each section (Reference, DAC, Buffer/Divider, Filter, CC)
+\subsubsection{Voltage Reference}
+\subsubsection{DAC}
+\subsubsection{Divider}
+\subsubsection{Filter}
+Choice of components. Leakage current, size of resistor (input bias current of AD797), size of capacitor

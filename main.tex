@@ -1,0 +1,101 @@
+\documentclass[
+	ruledheaders=chapter,% Ebene bis zu der die Überschriften mit Linien abgetrennt werden, vgl. DEMO-TUDaPub
+	class=book,% Basisdokumentenklasse. Wählt die Korrespondierende KOMA-Script Klasse
+	thesis={type=dr, dr=rernat},
+	accentcolor=9c,% Auswahl der Akzentfarbe
+	custommargins=true,% Ränder werden mithilfe von typearea automatisch berechnet
+	marginpar=false,% Kopfzeile und Fußzeile erstrecken sich nicht über die Randnotizspalte
+	%BCOR=5mm,%Bindekorrektur, falls notwendig
+%	parskip=half-,%Absatzkennzeichnung durch Abstand vgl. KOMA-Script
+	fontsize=11pt,%Basisschriftgröße laut Corporate Design ist mit 9pt häufig zu klein
+	logofile=example-image, %Falls die Logo Dateien nicht vorliegen
+]{tudapub}
+
+\usepackage[]{babel}
+\usepackage[version=3]{mhchem}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usepackage[]{siunitx}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[siunitx, europeanresistors]{circuitikz}
+\usepackage{subcaption}
+\usepackage{tabularx}  % for 'tabularx' environment and 'X' column type
+\usepackage{booktabs}  % for \toprule, \midrule, and \bottomrule macros
+\usepackage[subpreambles=true]{standalone}
+\usepackage{import}
+\usepackage{pythonhighlight}
+
+\usepackage{biblatex}
+\bibliography{bibliography}
+
+\usepackage{rotating}
+\usepackage{multicol}
+
+\DeclareSIUnit{\belm}{Bm}
+
+\pgfplotsset{compat=newest}
+
+% https://tex.stackexchange.com/questions/65471/set-label-name-on-two-lines-in-circuitikz
+\makeatletter
+\ctikzset{lx/.code args={#1 and #2}{ 
+  \pgfkeys{/tikz/circuitikz/bipole/label/name=\parbox{1cm}{\centering #1  \\ #2}}
+    \ctikzsetvalof{bipole/label/unit}{}
+    \ifpgf@circ@siunitx 
+        \pgf@circ@handleSI{#2}
+        \ifpgf@circ@siunitx@res 
+            \edef\pgf@temp{\pgf@circ@handleSI@val}
+            \pgfkeyslet{/tikz/circuitikz/bipole/label/name}{\pgf@temp}
+            \edef\pgf@temp{\pgf@circ@handleSI@unit}
+            \pgfkeyslet{/tikz/circuitikz/bipole/label/unit}{\pgf@temp}
+        \else
+        \fi
+    \else
+    \fi
+}}
+
+\ctikzset{lx^/.style args={#1 and #2}{ 
+    lx=#2 and #1,
+    \circuitikzbasekey/bipole/label/position=90 } 
+}
+
+\ctikzset{lx_/.style args={#1 and #2}{ 
+    lx=#1 and #2,
+    \circuitikzbasekey/bipole/label/position=-90 } 
+}
+\makeatother
+
+%\setinstitutionlogo[width]{images/Titel_apq-logo.pdf}
+%\printpicturesize
+% \settitlepicture{images/front.pdf}
+\sisetup{separate-uncertainty = true}	% display the uncertenty as 10 \pm 2
+\usetikzlibrary{calc,intersections}
+
+\begin{document}
+	\title{Development of Laser Systems and Spectroscopy of Highly Charged Ions}
+	\author{Patrick Baus}
+	\birthplace{Mannheim}
+	\reviewer{Prof. Dr. Gerhard Birkl}
+	\publishers{Foobar}
+	\department{phys}
+	\institute{Institut für Angewandte Physik}
+	\group{APQ}
+
+	\submissiondate{\today}
+	\examdate{\today}
+	\maketitle
+  
+    \include{introduction}
+
+    \include{preparation}
+	\include{results}
+	\include{outlook}
+
+	\phantomsection  % add an invisible section for the references
+	\addcontentsline{toc}{section}{References}  % add the references to the TOC
+	%\bibliographystyle{osa_mod_linked}
+	%\affidavit[3. Dezember 2014]{Patrick Baus}
+	\addtocounter{page}{-1}  % Do not count the affidavit
+
+	\printbibliography
+\end{document}

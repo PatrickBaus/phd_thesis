@@ -1,0 +1,80 @@
+\chapter{Preparation}
+\section{Grounding and Shielding}
+Add parts from "references\\Grounding and Shielding.pdf"
+\section{Laser Current Driver}
+\subsection{Design}
+\subsubsection{Simulation}
+\paragraph{Op Amp Stability}
+\subsection{Noise Considerations}
+\subsection{Voltage Reference}
+\subsection{MOSFET Selection}
+
+\section{LabKraken}
+\subsection{Design Goals}
+LabKraken is a designed to be a asynchronous, resilient data aquisition suite, that scales to thousands of sensors and accross different networks.
+\subsection{Hardware}
+\subsection{Software Architecture}
+LabKraken needs to scale to thousands of sensors, which need to be served concurrently. This problem is commonly referered to as the C10K problem as dubbed by Dan Kegel back in 1999 \cite{10kProblem} and refers to serving \num{10000} concurrent connections via network sockets. While today millions of concurrent connections can be handled by servers, handling \num{10000} can still be challenging, especially, if the data sources are heterogeneous as is typical for sensor networks of different sensors from different manufacturers.
+
+In order to meet the design goals, an asynchronous architecture was chosen and several different architectures were implemented over time. All in all four complete rewrites of the software were made to arrive at the architecture presented here. The reason for the rewrites is mostly historic and can be explained by the history of the programming language Python, which was used to write the code. The first first version was written for Python 2.6 and exclusively supported sensors made Tinkerforge. In 2015, Python 3.5 was released, which supported a new syntax for asynchronous coroutines. The software was rewritten from scratch to support this new syntax, because it made the code a lot more verbose and easier to follow. With the release of Python 3.7 in 2018 asynchronous generator expressions where mature enough to be used in productions and the programm was again rewritten to use the new syntax. In 2021 a new approach was taken and the programm was once more rewritten with a functional programming style. I will discuss each approach in the next sections to highlight the improvements, that were made over time. Each of these sections discusses the same programm, but written in different styles to show the differences.
+
+\subsubsection{Threaded Design}
+The first version of LabKraken used a threaded design approach, because the original libraries of the Tinkerforge sensors are built around threads. The following simplified example shows some code to connect to a temperature sensor over the network and read its data.
+
+\inputpython{source/lab_kraken_threads.py}{1}{26}
+
+\subsubsection{Device Identifiers}
+Every sensor network needs device identifiers. Preferably those identifiers should be unique. Typically a device has some kind of internal indetifier. Here are a few examples of the sensors used in our network:
+
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{|l|p{6.5cm}|X|}
+    \hline
+    Device Type& Identifiers& Example\\
+    \hline
+    GPIB (SCPI)& \textit{*IDN?} returns \newline \$manufacturer,\$name,\$serial,\$revision& \\
+    \hline
+    Tinkerforge& Each sensor has a base58 encoded integer device id& QE9 (163684)\\
+    \hline
+    Labnode& Universal Unique Identifier (UUID) & cc2f2159-e2fb-4ed9-\newline8021-7771890b37ad\\
+    \hline
+\end{tabularx}
+\end{table}
+
+As it can be seen above, these identifiers do not guarantee to uniquely identify a device within a network. The Tinkerforge id is the weakest, as it is a \qty{32}{\bit} integer (4.294.967.295 options), which might easily collide with another id from a different manufacturer. The tinkerforge id is presented as a base58 encoded string. An encoder/decoder example can be found in the TinkerforgeAsync library \cite{TinkerforgeAsync}.
+
+The id string returned by a SCPI device is slightly better, but again does not guarantee uniqueness. As it is shown in the example the same device might return a different id defpending on its settings. This typically done by manufacturers for compatibility reasons.
+
+The only reasonably unique id is the universal unique identifier (UUID) or globally unique identifier (GUID), as dubbed by Microsoft, used in the Labnodes. Their id can be used for networks with participant numbers going into the millions.
+
+Calculating the probability of a collision between two random UUIDs is called the birthday problem \cite{BirthdayProblem} in probability theory. A randomly generated version 4 UUID of variant 1 as defined in RFC 4122 \cite{RFC-UUID} has \qty{122}{\bit} of entropy, that is out of \qty{128}{\bit}, \qty{4}{\bit} are reserved for the UUID version and \qty{2}{\bit} for the variant. This gives the probability of at least one collision in $n$ devices out of $M = 2^{122}$ possibilities:
+\begin{align}
+    p(n) &= 1 - 1 \cdot \left(1 - \frac{1}{M}\right) \cdot \left(1 - \frac{2}{M}\right) \dots \left(1 - \frac{n-1}{M}\right)\\
+    &= 1 - \prod_{k=1}^{n-1} \left(1 - \frac{k}{M} \right)
+\end{align}
+Using the Taylor series $e^x = 1+x \dots$, assuming $n \ll M$ and approximating we can simplify this to:
+\begin{align}
+    p(n) &\approx 1 - \left(e^\frac{-1}{M} \cdot e^\frac{-2}{M} \dots e^\frac{-(n-1)}{M} \right)\\
+    &\approx 1 - \left(e^\frac{-n(n-1)/2}{M} \right) \\
+    &\approx 1 - \left(1 - \frac{n^2}{2 M} \right) = \frac{n^2}{2 M}
+\end{align}
+For one million devices, this gives a probability of about \num{2e-25}, which is negligible.
+
+In the Kraken implementation, all devices, except for the Labnodes, will be mapped to UUIDs using the underlying configuration database. It is up to the user to ensure the uniqueness of the non-UUID ids reported by the devices to ensure proper mapping.
+
+
+\subsubsection{Limitations} % FIXME: Different title
+There is one inherent limitation to the ethernet bus for instrumentation. The ethernet bus is inherently asynchronous and multiple controllers can talk to the device at the same time. Not only that, but different processes within the same controller can talk to the same device. This makes deterministic statements about the device state challenging.
+
+While it is impossible to rule out the possibility of multiple controllers on a network, care was taken to synchronize the workers within Kraken.
+\subsection{Databases}
+\subsubsection{Cardinality}
+\begin{itemize}
+ \item TimescaleDB vs Influx
+ \item Example Sensors vs. Experiment
+\end{itemize}
+
+\section{Temperature Controller}
+\subsection{Design}
+
+
