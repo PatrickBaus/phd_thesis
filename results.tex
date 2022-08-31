@@ -6,14 +6,14 @@ Chinese/Ebay Zeners. Welded legs. Photots. Decap one of those.
 \subsection{Building a Test Setup for Zener Diodes}
 In order to test a large amount of Zener diodes, and considering the duration of the burn-in process, which can take anything between \qtyrange{100}{1000}{\hour}, it is neccesary to have an automated setup. This consists of a digital multimeter (DMM) a scanner and test board, that holds the zener diodes and provides the neccesary infrastructure for the diodes.
 
-The type of DMM used, plays an important role. The expected amplitude of the popcorn noise is around \qty{4}{\micro\volt}. To measure the \qty{7}{\volt} of the zener diode, the corresponding voltage range of a typical DMM would be either \qty{10}{\volt} or \qty{20}{\volt}. This means, that either a very low noise \num{7.5} or an \num{8.5} digit multimeter is required to record the popcorn noise. Fortunately, this class of multimeters features a superior voltage reference, because the LM399 is not suitable for \num{8.5} digits as it is too noisy. The only Zener diodes good enough are the Analog Devices LTZ1000 \cite{}, the Motorolla SZA263 (out of production) and the Linear Technology (LT) LTFLU-1 (proprietary design by Fluke and LT).  While Keysight uses the LTZ0100, Fluke either uses the SZA263 (in older devices) or the LTFLU-1 and Keithley uses both devices, the LTZ1000 in their Model 2002 and the LTFLU-1 in the newer DMM7510.
+The type of DMM used, plays an important role. The expected amplitude of the popcorn noise is around \qty{4}{\micro\volt}. To measure the \qty{7}{\volt} of the zener diode, the corresponding voltage range of a typical DMM would be either \qty{10}{\volt} or \qty{20}{\volt}. This means, that either a very low noise \num{7.5} or an \num{8.5} digit multimeter is required to record the popcorn noise. Fortunately, this class of multimeters features a superior voltage reference, because the LM399 is not suitable for \num{8.5} digits as it is too noisy. The only Zener diodes good enough are the Analog Devices LTZ1000 \cite{}, the Motorolla SZA263 (out of production) and the Linear Technology (LT) LTFLU-1 (proprietary design by Fluke and LT).  While Keysight uses the LTZ0100, Fluke either uses the SZA263 (in older devices) or the LTFLU-1 and Keithley uses both devices, the LTZ1000 in their \device{Model 2002} and the LTFLU-1 in the newer \device{DMM7510}.
 
 In comparison to the LM399, those Zener diodes do not suffer from the popcorn noise issue. This means, that there are no additional measures required to make sure the popcorn noise is caused by the device under test (DUT) and not the DMM.
 
 To conclude, we need a high performance DMM, a scanner, and a test fixture. The choices will detailed in the following sections.
 
 \subsection{Choosing a DMM for Testing Zener Diodes}
-The market for high-end \num{8.5} digit DMMs is limited and therefore every device on the market caters for a certain niche.
+The market for high-end \num{8.5} digit DMMs is limited and therefore every device on the market caters for a certain niche. In table \ref{tab:list_of_dmms} a list of popular \num{8.5} DMMs can be found. Several models are included in the table, althought they are discontinued. The reason is, that these DMMs can still be acquired on the second-hand market.
 
 \begin{table}[h]
     \centering
@@ -21,22 +21,34 @@ The market for high-end \num{8.5} digit DMMs is limited and therefore every devi
         \hline
         Manufacturer & Model & Remarks \\
         \hline
-        Advantest & 6581T & Discontinued. Scanner cards available. \\
-        Datron/Wavetek & 1812 & Discontinued. Bought by Fluke. \\
-        Fluke & 8508A & Discontinued. \\
-        Fluke & 8588A & In production. \\
-        Keithley/Tektronix & 2002 & In production. Scanner card available. \\
-        Keysight & 3458A & In Production. \\
-        Solartron & 7081 & Discontinued. \\
-        Transmille & 8104 & In Production. External scanner available. \\
+        Advantest & \device{R6581} & Discontinued. Scanner cards available. \\
+        Datron/Wavetek & \device{1812} & Discontinued. Bought by Fluke. \\
+        Fluke & \device{8508A} & Discontinued. \qty{20}{\volt} range. \\
+        Fluke & \device{8588A} & In production. \\
+        Keithley/Tektronix & \device{2002} & In production. Scanner card available. \qty{20}{\volt} range. \\
+        Keysight & \device{3458A} & In Production. \\
+        Solartron & \device{7081} & Discontinued. Slow. \\
+        Transmille & \device{8104} & In Production. External scanner available. Slow. \\
         \hline
     \end{tabular}
     \caption{A non-exhaustive list of \num{8.5} digit multimeters.}
     \label{tab:list_of_dmms}
 \end{table}
 
+While the author has not tested every multimeter in table \ref{tab:list_of_dmms}, given a scanner solution, each of those would suffice to test the Zener diodes. The \device{Solartron 7081} (also sold as \device{Guildline 9578}) is a less optimal choice, because a conversion takes \qty{52}{\s} for \num{8.5} digits, but it would still be workable. The discontinued \device{Fluke 8508A} and the \device{Wavetek 1812} multimeter are very similar as Fluke bought Wavetek in 2000 and as a result, the \device{Fluke 8508A} is more an update to the \device{Wavetek 1812} than a new device. Unfortunately, it is very rare to see one the Fluke device on the second hand market, while the \device{1812} can be found with a bit of patience.
 
-While the Keysight 3458A is very low noise and features supreme linearity it does not have any special scanning capability. The latest Fluke 8588A or its predecessor, the 8508A, have some limited scaning capability as it can remotely switch from its front panel binding posts to the rear binding posts. The same goes for the
+The other multimeters still in production while all similar in price, their nice is different. The \device{Fluke 8588A} excels at stability and features a moder user interface, whereas the \device{Keysight 3458A} is unbeaten in linearity and noise. A detailed comparison of those two meters can be found in the work of \citeauthor*{article_fluke_8588A_noise} \cite{article_fluke_8588A_noise}. The \device{Keithley Model 2002} focuses on its scanning capability and the \device{Transmille 8104} does have electrometer functions. Unfortunately, the \device{8104} is also fairly slow at \num{8.5} digit with conversions taking \qty{4}{\s} \cite{datasheet_transmille8104}.
+
+\subsection{A Scanner System for Testing Zener Diodes}
+As discussed before the diodes need to be tested for \qty{1000}{\hour} and it would not be feasible to test them individually. So a minimum of 10 diodes should be tested at the same time. To keep the system compact the test setup must use some kind of scanner to multiplex a single multimeter input. Several options where considered, but a recent trend to event more compact device has led major manufacturers to include a multimeter itself in the scanner mainframe creating so called data aquistion units. For example Keithley replaced the small desktop switch mainframe \device{Model 7001} with the \device{DAQ6510} and Keysight is offering the \device{DAQ973A}, a scanning \num{6.5} digit DMM, that accepts extension cards. For this project the integrated \num{6.5} digit multimeter does not add value as discussed above and only increases the cost.
+
+The simplest option is to go with a multimeter that already included a scanner option or if an external scanner is required, it is recommended to buy a used \device{Keithley 7001}. The author has tested both options and the simplicity of only having a single device to connect and program makes the integrated scanner card of the \device{Model 2002} very attractive.
+
+Finally the type type of scanner card needs to be discussed.
+
+
+
+In this work the Keithley (now Tektronix) \device{Model 2002} was chosen for three reasons. It is a very compact system requiring only a half-sized 2U rack in comparison to the other DMMs, that are typically full-sized 2U rack devices. The other two advantages are the integrated scanner card slot, that allows to to fit a 10 channel scanner card and finally the \qty{20}{\volt} range. The latter is interesting for testing the final voltage reference boards, as these have a \qty{15}{\volt} output, which is too much for the \qty{10}{\volt} range of most DMMs, so that testing the voltage reference PCBs one would have to switch to the \qty{100}{\volt} range and forgo an extra digit of resolution and add more noise.
 
 
 
