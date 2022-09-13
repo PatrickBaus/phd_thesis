@@ -10,6 +10,7 @@
 	fontsize=11pt,%Basisschriftgröße laut Corporate Design ist mit 9pt häufig zu klein
 	logofile=example-image, %Falls die Logo Dateien nicht vorliegen
 	IMRAD=false,
+%	draft  % Use draft to find overfull boxes
 ]{tudapub}
 
 \usepackage[english]{babel}
@@ -17,27 +18,33 @@
 \usepackage{pgfplots}
 \usepackage{pgfplotstable}
 \usepackage[]{siunitx}
-\usepackage[T1]{fontenc}
+%\usepackage[T1]{fontenc}
 \usepackage[siunitx, europeanresistors]{circuitikz}
 \usepackage{subcaption}
 \usepackage{tabularx}  % for 'tabularx' environment and 'X' column type
 \usepackage{booktabs}  % for \toprule, \midrule, and \bottomrule macros
+\usepackage{multirow}
+\usepackage{amsfonts}  % Checkmark symbol
+\usepackage{pifont}    % Cross symbol
 \usepackage[subpreambles=true]{standalone}
 \usepackage{import}
 \usepackage{pythonhighlight}
 
 \usepackage{biblatex}
+\usepackage{csquotes}  % Needed by biblatex when babel is active
 \bibliography{bibliography}
 
 \usepackage{rotating}
 \usepackage{multicol}
 
-\DeclareSIUnit{\belm}{Bm}
+\DeclareSIUnit{\plc}{PLC}
 \sisetup{
     mode=text
 }
 
-\pgfplotsset{compat=newest}
+\pgfplotsset{compat=1.18}
+
+\directlua{dofile("detect_underfull.lua")}
 
 % https://tex.stackexchange.com/questions/65471/set-label-name-on-two-lines-in-circuitikz
 \makeatletter
@@ -89,7 +96,7 @@
 	\submissiondate{\today}
 	\examdate{\today}
 	\maketitle
-  
+
     \include{introduction}
 
     \include{preparation}

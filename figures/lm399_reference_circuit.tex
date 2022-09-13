@@ -1,0 +1,29 @@
+%\documentclass[convert={density=600,outext=.png}]{standalone}
+\documentclass[]{standalone}
+\usepackage[]{siunitx}
+\usepackage[siunitx, europeanresistors]{circuitikz}
+\usetikzlibrary{fit}
+
+\begin{document}
+    \ctikzloadstyle{romano}
+    \begin{circuitikz}[transform shape, romano circuit style, european resistors]
+        \draw (0,0) node[vcc](vheater){V$_{heater}=\qty{12}{V}$}  -- ++(1,0)
+            -- ++(0,-1) coordinate(heater+) -- ++(0.25,0) -- ++(0,-0.5) -- ++(-0.5,0) -- ++(0,-0.5) coordinate(heater) -- ++(0.5, 0) -- ++(0,-0.5) -- ++(-0.5,0) -- ++(0,-0.5) -- ++(0.5,0) -- ++(0,-0.5) -- ++(-0.25,0) -- ++(0,-0.5) coordinate(end of heater) -- ++(0,-1) -- ++(-1,0) node[vee](-vheater){-V$_{heater}=\qty{-12}{V}$}
+
+            (vheater) ++(3,0) node[vcc](vsupply){V$_{s}=\qty{12}{V}$} -- ++(0,-0.5) coordinate(vref+ pin) -- ++(0,-0.5) coordinate(vref+) to[empty Zener diode, invert, name=reference core] ++(0,-2.5) -- ++(0,-1) coordinate (vzener)
+            (end of heater) to[D, *-*, name=substrate diode]  ++ (2,0)
+        ;
+        % LM399 box
+        \node [rectangle, draw, fit=(heater+) (vref+) (substrate diode) (reference core) (heater), line width=1.5] (LM399){};
+        \node [anchor=east, align=left] at (LM399.west) {LM399};
+        % Op amp amplifier
+        \draw (vzener) -- ++(0,-0.5) -- ++(3,0) node[op amp, noinv input up, anchor=+, yscale=-1] (OA) {}
+            (OA.out) to [short, *-] ++(0,-2) to [R, l_=R$_1$, a^=\qty{3}{\kilo\ohm}, i_<=\qty{1}{\mA},] ++(-3,0) coordinate(Rc) to [short, -*] (Rc |- OA.+)
+            (OA.out) -- ++(0, 0.5) coordinate(Rf) to [R, *-, l2_=R$_{f1}$ and \qty{20}{\kilo\ohm}] ++(0,1.5) coordinate (Vz) to [R, *-, l2_=R$_{f2}$ and \qty{9}{\kilo\ohm}] ++(0,1.5) -- ++(0,0.75) -- ++(-4.5,0) to [short, -*] (vref+ pin)
+            (Vz) -- (Vz -| OA.-) -- (OA.-)
+            (Rf) -- ++(1.75,0) to [C, l2_=C$_{filt}$ and \qty{10}{\nano\farad}] ++ (0,1.5) -- (Vz)
+            (OA.out) to [short, -o] ++(4,0) coordinate(vout -) node[below]{V$_{ref}$} ++ (0,1) coordinate(vout +) to [short, o-] ++(-0.5,0) -- ++(0,3.5) -- +(-8,0) to [short, -*] (vref+ pin)
+            (vout +) to[open, voltage=straight, v^=\qty{-10}{\volt}] (vout -)
+        ;
+	\end{circuitikz}
+\end{document}

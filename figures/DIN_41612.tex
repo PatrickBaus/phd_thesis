@@ -24,7 +24,9 @@
 		},
 		]
 		% Outline
-		\draw[rounded corners=0.75, thick, draw=black, fill=white] (-3.1mm,-1.7mm) -- ++(0mm,2.85mm) -- ++(1.05mm,0mm) -- ++(0mm,3.1mm) -- ++(42.2mm,0mm) -- ++(0mm,-3.1mm) -- ++(1.05mm,0mm) -- ++(0mm,-2.85mm) -- cycle;
+		\draw[rounded corners=0.75, thick, draw=black, fill=white]
+            (-3.1mm,-1.7mm) -- ++(0mm,2.85mm) -- ++(1.05mm,0mm) -- ++(0mm,3.1mm) -- ++(42.2mm,0mm) -- ++(0mm,-3.1mm) -- ++(1.05mm,0mm) -- ++(0mm,-2.85mm) -- cycle
+		;
 		% Marker
 		\node[rectangle, rounded corners=1, thick,draw=black!50, fill=white!50!black!40, minimum height=2*2.54mm, minimum width=1*2.54mm] at (0,0.5) {};
 		\node[rectangle, rounded corners=1, thick,draw=black!50, fill=white!50!black!40, minimum height=2*2.54mm, minimum width=1*2.54mm] at (2,0.5) {};
@@ -37,10 +39,10 @@
 		\foreach \i in {0,...,15} {
 			\node[pin] at (\i,0) {};
 			\node[pin] at (\i,1) {};
-		};
+		}
 		\foreach \i in {1,3,...,16} {
 			\node[above=1.5mm] at (16-\i,1) {\tiny \i};
-		};
+		}
 		\node[right=1mm] at (16,1) {\tiny b};
 		\node[right=1mm] at (16,0) {\tiny a};
 		% Labels

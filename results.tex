@@ -1,19 +1,89 @@
 \chapter{Results}
 \section{Laser Current Driver}
 \subsection{Zener Diode Selection}
-Chinese/Ebay Zeners. Welded legs. Photots. Decap one of those.
+Early tests of the LM399 Zener diode as a reference have confirmed, what the data sheet \cite{datasheet_LM399} already suggest in the 'Low Frequency Noise Voltage' plot. There are random bi-stable voltage step changes. This phenomenon is called burst noise or popcorn noise.
+
+\begin{figure}[ht]
+    \centering
+    \input{figures/lm399_popcorn_noise.pgf}
+    \caption{Popcorn noise in different samples of the LM399 over a \qty{24}{\hour} period.}
+    \label{fig:popcorn_noise_lm399}
+\end{figure}
+
+Figure \ref{fig:popcorn_noise_lm399} shows two samples of the LM399, that show popcorn noise, while the last one does not.
+
+The sources of popcorn noise in semiconductor devices are not yet fully understood, but some sources have been identified. Defects in the semiconductor crystal lattice and contamination of the semiconductor material have been linked to popcorn noise \cite{technote_ti_popcorn_noise}. This problem has improved over the years as manufacturing processes and wafer quality has evolved. Unfortunately the LM399 is built around a process from 1991, as can be seen etched into the die \cite{lm399_richi}.
+
+The popcorn noise caused by defects and contamination can be reduced by lowering the strain on the lattice and removing surface contaminants on the die. This can be can be achieved using a high-temperature burn-in process. Manufacturers like Fluke and Keysight use similar techniques in their products. Fluke, for example, uses a period of \qty{60}{\day} burn-in for their references \cite{zener_popcorn_noise}.
+
+Fortunately, the LM399 is a heated reference, which regulates its die to \qty{90}{\celsius} when turned on, so it is only required put the diodes in a simple test circuit and wait. The use of a separate test setup instead of the final circuit has both advantages and disadvantages. The disadvantage is, that the Zener diode will subjected to mechanical stress when soldered, this stress will not be removed by the burn-in process as it happens after the testing, when diode is soldered into the final circuit, but this mainly affects the voltage drift properties of the Zener diode and not the popcorn noise. The drift of the diode is also only of secondary concern in our setup, as the drift is mainly caused by the reference resistors used and are typically at least an order of magnitude worse than the the drift of the diode judging by the data sheet \cite{datasheet_LM399,datasheet_VPR}.
+
+The advantages of testing the Zener diodes separately, on the other hand, are, that more diodes can be tested at the same time, as a special compact test fixture can be used. It is also simpler to remove the diodes from the test fixture, because they be socketed. Therefore for our application a separate test board was used. Building this test setup is detailed in the next sections.
 
 \subsection{Building a Test Setup for Zener Diodes}
-In order to test a large amount of Zener diodes, and considering the duration of the burn-in process, which can take anything between \qtyrange{100}{1000}{\hour}, it is neccesary to have an automated setup. This consists of a digital multimeter (DMM) a scanner and test board, that holds the zener diodes and provides the neccesary infrastructure for the diodes.
+There are several ways to measure the popcorn noise of semiconductor devices. The most trivial one is to directly monitor the device in the time-domain. In this case, the Zener voltage can be monitored with a long-scale multimeter. It requires a low noise DMM, that can reliably distinguish between both voltage levels, which are about \qty{4}{\micro \volt} apart.
+A related option is to use a second reference, whose voltage is similar to the device under test (DUT). Measuring the the voltage difference between the two references, less resolution is required. Directly comparing the difference of two references using a millivolt meter is commonly done when intercomparing primary voltage references. This method, however, increases the measurement noise by a factor of $\sqrt{2}$, if both references produce the same level of uncorrelated noise. The noise of the LM399 with a \qty{100}{\plc} integration time (\qty{2}{\second}) is about \qty{1.5}{\micro \volt_{pp}} as can be seen in figure \ref{fig:noise_lm399}.
 
-The type of DMM used, plays an important role. The expected amplitude of the popcorn noise is around \qty{4}{\micro\volt}. To measure the \qty{7}{\volt} of the zener diode, the corresponding voltage range of a typical DMM would be either \qty{10}{\volt} or \qty{20}{\volt}. This means, that either a very low noise \num{7.5} or an \num{8.5} digit multimeter is required to record the popcorn noise. Fortunately, this class of multimeters features a superior voltage reference, because the LM399 is not suitable for \num{8.5} digits as it is too noisy. The only Zener diodes good enough are the Analog Devices LTZ1000 \cite{}, the Motorolla SZA263 (out of production) and the Linear Technology (LT) LTFLU-1 (proprietary design by Fluke and LT).  While Keysight uses the LTZ0100, Fluke either uses the SZA263 (in older devices) or the LTFLU-1 and Keithley uses both devices, the LTZ1000 in their \device{Model 2002} and the LTFLU-1 in the newer \device{DMM7510}.
+\begin{figure}[ht]
+    \centering
+    %\input{figures/lm399_popcorn_noise.pgf}
+    \includegraphics[width=0.75\textwidth]{example-image-golden}
+    \caption{Voltage noise of an LM399 with different DMMs at \qty{100}{\plc}.}
+    \label{fig:noise_lm399}
+\end{figure}
 
-In comparison to the LM399, those Zener diodes do not suffer from the popcorn noise issue. This means, that there are no additional measures required to make sure the popcorn noise is caused by the device under test (DUT) and not the DMM.
+Measuring two references against each other would then result in around \qty{2.1}{\micro \volt} of noise. This make distinguishing the jumps possible, but challenging.
 
-To conclude, we need a high performance DMM, a scanner, and a test fixture. The choices will detailed in the following sections.
+A third option is to use a high-pass filter and an amplifier. Additionally, the signal can be low-pass filtered to remove any excess high frequency noise. This approach also requires less resolution than directly measuring the voltage, because the signal-to-noise-ratio is improved du the amplifier. It is therefore possible to use an off-the-shelf analog-to-digital converter (ADC). One such circuit, along with some examples, is demonstrated in \cite{technote_ti_popcorn_noise,kay2012operational}. It must be noted, that due to the high-pass filtering, it not possible to measure slow voltage drifts using this method.
 
-\subsection{Choosing a DMM for Testing Zener Diodes}
-The market for high-end \num{8.5} digit DMMs is limited and therefore every device on the market caters for a certain niche. In table \ref{tab:list_of_dmms} a list of popular \num{8.5} DMMs can be found. Several models are included in the table, althought they are discontinued. The reason is, that these DMMs can still be acquired on the second-hand market.
+The forth and final option presented here, is approaching the problem in the frequency domain and requires a low-noise amplifier with a low frequency cutoff. As it was already discussed in section \ref{}, popcorn noise is found to have a frequency dependence of $1/f^2$. This can be used to distinguish it from other random noise processes that show a frequency dependence of $1/f$. An good example is given in Horowitz and Hill in \textit{The Art of Electronics} on page 478 \cite{horowitz1989}. Going to frequencies below \qty{10}{\Hz}, one can sort the references by their noise spectrum.
+
+In this work only options one and two were were tested, as it was said above, with options three and four there is a chicken and egg problem. One needs a number on known good devices to compare other DUTs to. At the start of the evaluation, most of the data available about the LM399 was from the data sheet. Compiling a dataset of the performance of dozens of LM399 is expensive and time consuming and companies typically treat such data as a closely guarded secret.
+
+The next section deals with the choice of multimeter to satisfy the requirements test the Zener diodes according to options one and two, so either directly measuring the output voltage or difference of a known good sample against the DUT.
+
+\subsection{Choosing a Multimeter for Testing Zener Diodes}
+The DMM used, plays an important role for the test setup. In this section, some of the challenges, that can be encountered will be discussed. The expected amplitude of the popcorn noise is around \qty[per-mode=symbol]{0.5}{\micro\volt \per \volt} or \qty{3.5}{\micro\volt} of the output voltage. To measure the \qty{7}{\volt} of the Zener diode, the corresponding voltage range of a typical DMM would be at least \qty{10}{\volt}.
+
+At this point it is already clear, that it is not a trivial task, because taking into account the DMM voltage range, a signal-to-noise-ratio of \qty[per-mode=symbol]{0.35}{\micro\volt \per \volt} or more than \qty{130}{\decibel} is required. This calls for a device, that not has the required resolution, but also the stability over time and temperature to ensure the measurement will not be distorted by the DMM. These parameters need to be discussed now.
+
+To satisfy this requirement, either a stable and very low noise \num{7.5} or \num{8.5} digit multimeter is required to record the popcorn noise. Fortunately, this class of multimeters features a different type of voltage reference, because the LM399 is not suitable for this type digital multimeter due to its noise. The only Zener diodes good enough are the Analog Devices LTZ1000 \cite{datasheet_LTZ1000}, the Motorola SZA263 (out of production) and the Linear Technology (LT) LTFLU-1 (proprietary design by Fluke and LT). Each equipment manufacturer typically has a preference for one of those diodes. Keysight utilizes the LTZ1000, Fluke uses the SZA263 (in older devices) or the LTFLU-1 in newer model, while Keithley employs the LTZ1000 in their \device{Model 2002} and the LTFLU-1 in the newer \device{DMM7510}.
+
+In comparison to the LM399, those Zener diodes do not suffer from the popcorn noise issue or at least not to this extend. The LTZ1000, for example, is specified for a typical \qty{1.2}{\micro\volt_{pp}} in a frequency range of \qtyrange{0.1}{10}{\Hz} \cite{datasheet_LTZ1000}. This means, that there are no additional measures required to distinguish burst noise from the internal reference and the DUT.
+
+This narrows down the choice of multimeters considerably. To narrow it down even further, several \num{7.5} digit and \num{8.5} digit multimeters were tested. The results of those tests will discussed here to give an overview of the performance that can be expected of such a setup.
+
+To test the viability of a \num{7.5} digit voltmeter, which marks the lower end of possible candidates for this job, a \device{Keysight 34470A} was tested. These measurements were done by directly measuring a pre-production version of the reference PCB for the digital current driver. The reference board was kept at \qty{23}{\celsius} in a custom thermal chamber as discussed in section \ref{}. The multimeter was directly connected to the reference, without an other components in between the reference and DMM like buffers, multiplexers or filters. The DMM itself was exposed to the ambient temperature of the lab.
+
+The reference boards also amplify the Zener voltage to \qty{10}{\volt}, which improves the signal to noise ratio, because it makes use of the full DMM range. The \qty{10}{\volt} range is the also lowest noise range of a typical long-scale DMM because no pre-amplifiers of attenuators are required.
+
+The circuit of the reference is shown in fig. \ref{fig:lm399_negative_10V}. It is a negative \qty{10}{\volt} reference that uses a self-biasing technique to derive its \qty{1}{\mA} Zener current from its own \qty{-10}{\volt} output. The details of this circuit are discussed in section \ref{}.
+
+\begin{figure}[h]
+    \centering
+    \scalebox{0.7}{%
+        \import{figures/}{lm399_reference_circuit.tex}
+    } % scalebox
+    \caption{Self-biased LM399 negative voltage reference.}
+    \label{fig:lm399_negative_10V}
+\end{figure}
+
+With the amplified output the expected step size of about \qty[per-mode=symbol]{0.5}{\micro\volt \per \volt}, becomes \qty{5}{\micro\volt}. The resolution of the \qty{10}{\volt} range of the \device{34470A} is \qty{100}{\nano \volt}, while the measurement noise is of course higher. See section \ref{} of this work for a detailed characterization.
+
+Figure \ref{fig:lm399_vs_34470a} shows an example of such measurement. This measurement highlights one the problems encountered during those measurements. From the graph it is unclear if the features seen in the graph are actual popcorn noise or a result of ambient temperature changes due to the cycling of the air conditioning. Also the noise floor of the measurement is \qty{1.5}{\micro\volt_{RMS}}.
+
+\begin{figure}[h]
+    \centering
+    \input{images/LM399_vs_34470A.pgf}
+    \caption{Voltage deviation from the mean of a LM399 negative \qty{10}{\volt} reference measured with a Keysight 34470A at \qty{100}{\plc}.}
+    \label{fig:lm399_vs_34470a}
+\end{figure}
+
+In order to improve the signal-to-noise ratio, the amplification of the reference voltage was increased to \qty{15}{\volt}. As a result, the \qty{10}{\volt} input range of the \device{34470A} can no longer be used and a differential measurement was realized. This measurement was done against another \qty{15}{\volt} reference board. To ensure, that any popcorn noise found originates in the DUT and not the second reference used, several reference boards where tested against a \device{Fluke 5440B}. The \device{5440B} does not exhibit popcorn noise as it uses a different voltage reference ic, namely two Motorola SZA263 in series \cite{service_manual_fluke_5440b}. Finally, a board that did not show popcorn noise in a period of three days was selected. The serial number of this so-called golden reference is \textit{\#1}.
+
+Using this intercomparison technique
+
+The market for high-end \num{8.5} digit DMMs is limited and therefore every device on the market caters for a certain niche. In table \ref{tab:list_of_dmms} a list of popular \num{8.5} DMMs can be found. Several models are included in the table, although they are discontinued. The reason is, that these DMMs can still be acquired on the second-hand market.
 
 \begin{table}[h]
     \centering
@@ -22,7 +92,7 @@ The market for high-end \num{8.5} digit DMMs is limited and therefore every devi
         Manufacturer & Model & Remarks \\
         \hline
         Advantest & \device{R6581} & Discontinued. Scanner cards available. \\
-        Datron/Wavetek & \device{1812} & Discontinued. Bought by Fluke. \\
+        Datron/Wavetek & \device{1812} & Discontinued. Wavetek was bought by Fluke. \\
         Fluke & \device{8508A} & Discontinued. \qty{20}{\volt} range. \\
         Fluke & \device{8588A} & In production. \\
         Keithley/Tektronix & \device{2002} & In production. Scanner card available. \qty{20}{\volt} range. \\
@@ -31,38 +101,90 @@ The market for high-end \num{8.5} digit DMMs is limited and therefore every devi
         Transmille & \device{8104} & In Production. External scanner available. Slow. \\
         \hline
     \end{tabular}
-    \caption{A non-exhaustive list of \num{8.5} digit multimeters.}
+    \caption{Overview of \num{8.5} digit multimeters.}
     \label{tab:list_of_dmms}
 \end{table}
 
-While the author has not tested every multimeter in table \ref{tab:list_of_dmms}, given a scanner solution, each of those would suffice to test the Zener diodes. The \device{Solartron 7081} (also sold as \device{Guildline 9578}) is a less optimal choice, because a conversion takes \qty{52}{\s} for \num{8.5} digits, but it would still be workable. The discontinued \device{Fluke 8508A} and the \device{Wavetek 1812} multimeter are very similar as Fluke bought Wavetek in 2000 and as a result, the \device{Fluke 8508A} is more an update to the \device{Wavetek 1812} than a new device. Unfortunately, it is very rare to see one the Fluke device on the second hand market, while the \device{1812} can be found with a bit of patience.
+While the author has not tested every multimeter in table \ref{tab:list_of_dmms}, given a scanner solution, each of those would suffice to test the Zener diodes. The \device{Solartron 7081} (also sold as \device{Guildline 9578}) is a less optimal choice, because a conversion takes \qty{52}{\s} for \num{8.5} digits, but it would still be workable. The discontinued \device{Fluke 8508A} and the \device{Wavetek 1812} multimeter are very similar. Since Fluke bought Wavetek in 2000 as a result, the \device{Fluke 8508A} is more an update to the \device{Wavetek 1812} than a new device. Unfortunately, it is very rare to see one the Fluke device on the second hand market, while the \device{1812} can be found with a bit of patience.
 
-The other multimeters still in production while all similar in price, their nice is different. The \device{Fluke 8588A} excels at stability and features a moder user interface, whereas the \device{Keysight 3458A} is unbeaten in linearity and noise. A detailed comparison of those two meters can be found in the work of \citeauthor*{article_fluke_8588A_noise} \cite{article_fluke_8588A_noise}. The \device{Keithley Model 2002} focuses on its scanning capability and the \device{Transmille 8104} does have electrometer functions. Unfortunately, the \device{8104} is also fairly slow at \num{8.5} digit with conversions taking \qty{4}{\s} \cite{datasheet_transmille8104}.
+The other multimeters still in production while all similar in price, their niche is different. The \device{Fluke 8588A} excels at stability and features a modern user interface, whereas the \device{Keysight 3458A} is unbeaten in linearity and noise. A detailed comparison of those two meters can be found in the work of \citeauthor*{article_fluke_8588A_noise} \cite{article_fluke_8588A_noise}. The \device{Keithley Model 2002} focuses on its scanning capability and the \device{Transmille 8104} does have electrometer functions. Unfortunately, the \device{8104} is also fairly slow at \num{8.5} digit with conversions taking \qty{4}{\s} \cite{datasheet_transmille8104}.
+
+In order to test a large amount of Zener diodes, and considering the duration of the burn-in process, which can take anything between \qtyrange{100}{1000}{\hour}, it is necessary to have an automated setup. This consists of a digital multimeter (DMM) a scanner and test board, that holds the Zener diodes and provides the necessary infrastructure for the diodes.
+
+
+
+To conclude, we need a high performance DMM, a scanner, and a test fixture. The choices will detailed in the following sections.
+
+
 
 \subsection{A Scanner System for Testing Zener Diodes}
-As discussed before the diodes need to be tested for \qty{1000}{\hour} and it would not be feasible to test them individually. So a minimum of 10 diodes should be tested at the same time. To keep the system compact the test setup must use some kind of scanner to multiplex a single multimeter input. Several options where considered, but a recent trend to event more compact device has led major manufacturers to include a multimeter itself in the scanner mainframe creating so called data aquistion units. For example Keithley replaced the small desktop switch mainframe \device{Model 7001} with the \device{DAQ6510} and Keysight is offering the \device{DAQ973A}, a scanning \num{6.5} digit DMM, that accepts extension cards. For this project the integrated \num{6.5} digit multimeter does not add value as discussed above and only increases the cost.
+As discussed before the diodes need to be tested for \qty{1000}{\hour} and it is not be feasible to test them individually. So a minimum of 10 diodes must be tested at the same time. To keep the system compact, the test setup a scanner to multiplex a single multimeter input. Several commercial options currently available were considered for this project and are shown in table \ref{tab:list_of_daqs}.
 
-The simplest option is to go with a multimeter that already included a scanner option or if an external scanner is required, it is recommended to buy a used \device{Keithley 7001}. The author has tested both options and the simplicity of only having a single device to connect and program makes the integrated scanner card of the \device{Model 2002} very attractive.
+\begin{table}[h]
+    \centering
+    \small
+    \begin{tabular}{ |l|l|l|l|l|l|l|l| }
+        \hline
+        \multirow{2}{*}{} & \multicolumn{2}{l|}{Keysight} & \multicolumn{3}{l|}{Keithley} & Fluke & Rigol \\
+        \cline{2-8}
+        & DAQ973A & 34980A & DAQ6510 & 2750 & 3706 & 2680 & M300 \\
+        \hline
+        DMM & \num{6.5} & \num{6.5} & \num{6.5} & \num{6.5} & \num{7.5} & \qty{18}{\bit} & \num{6.5} \\
+        \hline
+        Channels & 3x20 & 8x40 & 2x10 & 5x20 & 6x60 & 6x20 & 5x32 \\
+        \hline
+        FET & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \ding{55} & \ding{55} \\
+        \hline
+        Voltage & \qty{120}{\volt} & \qty{80}{\volt} & \qty{60}{\volt} & \qty{60}{\volt} & \qty{200}{\volt} & \qty{75}{\volt} & \qty{300}{\volt} \\
+        \hline
+        Card & DAQM900A & 34925A & 7710 & 7710 & 3724 & 2680A-PAI & MC3132 \\
+        \hline
+        USB & \checkmark & \checkmark & \checkmark & \ding{55} & \checkmark & \ding{55} & \checkmark \\
+        \hline
+        Ethernet & \checkmark & \checkmark & \checkmark & \ding{55} & \checkmark & \checkmark & \checkmark \\
+        \hline
+        GPIB & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \ding{55} & \checkmark \\
+        %DMM & & & & & & & \\
+        \hline
+    \end{tabular}
+    \caption{Overview of scanner mainframes}
+    \label{tab:list_of_daqs}
+\end{table}
 
-Finally the type type of scanner card needs to be discussed.
+A recent trend to more compact devices has led major manufacturers to include multimeters in the scanner mainframe creating so called data acquisition units. Legacy devices, that only have switching capabilities are no available. For example Keithley replaced the small desktop switch mainframe \device{Model 7001} with the \device{DAQ6510} and Keysight is offering the \device{DAQ973A}, a scanning \num{6.5} digit DMM, that accepts extension cards. Unfortunately, for this project, as discussed above, the integrated \num{6.5} digit multimeter does not add any value.
 
-
-
-In this work the Keithley (now Tektronix) \device{Model 2002} was chosen for three reasons. It is a very compact system requiring only a half-sized 2U rack in comparison to the other DMMs, that are typically full-sized 2U rack devices. The other two advantages are the integrated scanner card slot, that allows to to fit a 10 channel scanner card and finally the \qty{20}{\volt} range. The latter is interesting for testing the final voltage reference boards, as these have a \qty{15}{\volt} output, which is too much for the \qty{10}{\volt} range of most DMMs, so that testing the voltage reference PCBs one would have to switch to the \qty{100}{\volt} range and forgo an extra digit of resolution and add more noise.
-
-
-
-The test setup consists of a mounting pcb, that holds up to 20 Zener diode. It provides power regulation and a minimal circuit required to support each diode. This circuit is given here:
+The simplest option is to go with an \num{8.5} digit multimeter that already included a scanner option or buy a used \device{Keithley 7001} from a second-hand dealer. The author has tested both options and the simplicity of only having a single device to connect and program makes the integrated scanner card of the \device{Model 2002} very attractive.
 
 \begin{figure}[ht]
     \centering
     \scalebox{0.7}{%
-    \import{figures/}{zener_burnin.tex}
+        \import{figures/}{simplified_scanner.tex}
+    } % scalebox
+    \caption{Simplified schematic of the scanner front-end with parasitic elements}
+\end{figure}
+
+The scanner card used to multiplex the DMM does have to meet several specifications. The most important aspects are the number channels and the lifetime of the relays. Other factors, such as channel to channel isolation, the contact potential, resistance and maximum voltage is not the limiting factor.
+
+The reason is, that in this case, the voltage is low, there is no ac component involved and the the typical input impedance of high-end multimeters is far more than \qty{100}{\giga\ohm} \cite{datasheet_fluke8588A,article_3458A_input_mpedance_2,datasheet_keithley2002,article_3458A_input_mpedance}.
+
+
+
+In this work the Keithley (now Tektronix) \device{Model 2002} was chosen for three reasons. It is a very compact system requiring only a half-sized 2U rack in comparison to the other DMMs, that are typically full-sized 2U rack devices. The other two advantages are the integrated scanner card slot, that allows to to fit a 10 channel scanner card and finally the \qty{20}{\volt} range. The latter is interesting for testing the final voltage reference boards, as these have a \qty{15}{\volt} output, which is too much for the \qty{10}{\volt} range of most DMMs, so that testing the voltage reference Printed circuit boards
+(PCBs) one would have to switch to the \qty{100}{\volt} range and forgo an extra digit of resolution and add more noise.
+
+
+
+The test setup consists of a mounting PCB, that holds up to 20 Zener diode. It provides power regulation and a minimal circuit required to support each diode. This circuit is given here:
+
+\begin{figure}[ht]
+    \centering
+    \scalebox{0.7}{%
+        \import{figures/}{zener_burnin.tex}
     } % scalebox
     \caption{Circuit used for burning in the Zener diodes}
 \end{figure}
 
-The compensation network is required when using the ADR1399, because of its very low dynamic impedance as recommended in the datasheet \cite{datasheet_ADR1399}. It is not strictly required for the LM399, but fitted nonetheless, because there are no downsides to it. This makes the board compatible with both types of references. Each Zener output is protected using an output buffer, which provides isolation and short circuit protection. Finally there is a common mode filter at the output to supress high frequency noise via gound loops.
+The compensation network is required when using the ADR1399, because of its very low dynamic impedance as recommended in the data sheet \cite{datasheet_ADR1399}. It is not strictly required for the LM399, but fitted nonetheless, because there are no downsides to it. This makes the board compatible with both types of references. Each Zener output is protected using an output buffer, which provides isolation and short circuit protection. Finally there is a common mode filter at the output to suppress high frequency noise via ground loops.
 
 The two key metrics of concern, that need to measured are popcorn noise and drift.
 
@@ -75,99 +197,62 @@ digital multimeter and a scanner card
     \caption{The extension connector used in several Keithley multimeters}
 \end{figure}
 
-\begin{tabular}{llllll}
-    \toprule
-    Pin    & Function    & Cable Colour    & Pin    & Function    &  Cable Colour\\
-    \midrule
-    a1, b1    & \SIrange[explicit-sign=+]{6}{20}{\volt}    & brown    & \num{6}    & GND    & green/white\\
-    a2, b2    & PD cathode (optional)    & red    & \num{7}    & LD Cathode    & blue/white\\
-    a3, b3    & LD case (GND)    & red/white    & \num{8}    & LD Anode    & blue\\
-    a4    & PD anode (GND)    & red/white    & \num{9}    & LD current monitor    & green\\
-    a5    & \SIrange{-6}{-20}{\volt}    & brown/white\\
-    \bottomrule
-\end{tabular}
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{llllll}
+        \toprule
+        Pin    & Function    & Cable Colour    & Pin    & Function    &  Cable Colour\\
+        \midrule
+        a1, b1    & \SIrange[explicit-sign=+]{6}{20}{\volt}    & brown    & \num{6}    & GND    & green/white\\
+        a2, b2    & PD cathode    & red    & \num{7}    & LD Cathode    & blue/white\\
+        a3, b3    & LD case (GND)    & red/white    & \num{8}    & LD Anode    & blue\\
+        a4    & PD anode (GND)    & red/white    & \num{9}    & LD current    & green\\
+        a5    & \SIrange{-6}{-20}{\volt}    & brown/white\\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+As a sidenote, for the pure entertainment of the author, several batches of LM399 Zener diodes were purchased from non-authorized dealers. Some were marked as refurbished, the others were not marked as such, but clearly were. These so-called refurbished diodes are not to be used in production devices. To entertain and warn the reader a small selection of examples are shown here in figure \ref{fig:fake_lm399}. All but one diode, which is shown for comparison, are refurbished.
 
 \begin{figure}[h]
     \centering
-    \begin{tikzpicture}[scale=0.4, text height=1.25ex, text depth=.25ex,
-        bit/.style = {
-            rectangle,
-            thick,
-            draw=black,
-            inner sep=0pt,
-            outer sep=0pt,
-            above right,
-        },
-        framing/.style={
-            fill=blue!50!black!20,
-            minimum height = 4mm,
-            minimum width = 4mm,
-            bit,
-        },
-        command/.style = {
-            fill=red!50!black!20,
-            minimum height=4mm,
-            minimum width=4mm,
-            bit
-        },
-        payload/.style = {
-            fill=green!50!black!20,
-            minimum height=4mm,
-            minimum width=4mm,
-            bit
-        },]
-        \foreach \x in {0,...,2} {
-            \node[above right] at (\x*8,1) {\scriptsize \x};
-            \draw[thick, blue] (\x*8,1) -- (\x*8,2);
-        }
-
-        \node [thick, left] () at (0,1.5) {\scriptsize byte};
-        \draw [thick] (-1.5, 1) -- (-0.1,1);
-        \draw [thick] (-1.5, 0) -- (-0.1,0);
-        % Framing start
-        \begin{scope}[]
-            \node[framing] at (0,0) {\scriptsize 0};
-            \node[framing] at (1,0) {\scriptsize 0};
-            \node[framing] at (2,0) {\scriptsize 0};
-            \node[framing] at (3,0) {\scriptsize 0};
-            \node[framing] at (4,0) {\scriptsize 0};
-            \node[framing] at (5,0) {\scriptsize 1};
-            \node[framing] at (6,0) {\scriptsize 1};
-            \node[framing] at (7,0) {\scriptsize 0};
-        \end{scope}
-
-        % Command Byte
-        \begin{scope}[xshift=8cm]
-            \node[command] at (0,0) {\scriptsize 0};
-            \node[command] at (1,0) {\scriptsize 0};
-            \node[command] at (2,0) {\scriptsize 0};
-            \node[command] at (3,0) {\scriptsize 0};
-            \node[command] at (4,0) {\scriptsize 0};
-            \node[command] at (5,0) {\scriptsize 1};
-            \node[command] at (6,0) {\scriptsize 1};
-            \node[command] at (7,0) {\scriptsize 0};
-        \end{scope}
-        % Framing end
-        \begin{scope}[xshift=16cm]
-            \node[framing] at (0,0) {\scriptsize 0};
-            \node[framing] at (1,0) {\scriptsize 0};
-            \node[framing] at (2,0) {\scriptsize 0};
-            \node[framing] at (3,0) {\scriptsize 0};
-            \node[framing] at (4,0) {\scriptsize 0};
-            \node[framing] at (5,0) {\scriptsize 0};
-            \node[framing] at (6,0) {\scriptsize 0};
-            \node[framing] at (7,0) {\scriptsize 0};
-        \end{scope}
-    \end{tikzpicture}
+    %\includegraphics[width=0.75\textwidth]{images/foo.png}
+    \caption{Refurbished LM399 Zener diodes. From left to right: }
+    \label{fig:fake_lm399}
 \end{figure}
 
-\subsection{Current Sources}
-Discuss Op amp choice (AD797)
+As it can be clearly seen, the sellers have gone to some effort to hide the fact, that these diodes have been used before. When a through-hole is soldered to the PCB, its legs will be trimmed to match the PCB thickness. In order to conceal this, the legs need to be extended to their original length. The legs of the LM399 are Kovar, because the LM399 is hermetically sealed with a glass seal and Kovar has the same coefficient of expansion as borosilicate glass. The forgers typically weld steel legs to the Kovar legs and then either gold-plate or tin them, as can be seen in fig. \ref{fig:fake_lm399_legs}.
 
-\subsection{Temperature Coeeficient}
-Discuss each section (Reference, DAC, Buffer/Divider, Filter, CC)
-\subsubsection{Voltage Reference}
-\subsubsection{DAC}
-\subsubsection{Divider}
-\subsubsection{Filter}
-Choice of components. Leakage current, size of resistor (input bias current of AD797), size of capacitor
+\begin{figure}[h]
+    \centering
+    %\includegraphics[width=0.75\textwidth]{images/foo.png}
+    \caption{Fake steel legs of a refurbished LM399.}
+    \label{fig:fake_lm399_legs}
+\end{figure}
+
+Much to the delight of the author the refurbished diodes prove valuable for educational purposes. As the origin and method of extraction from the original circuit is unknown, but can be imagined to be rather savage, the diodes are typically faulty. They can therefore be used to validate the test setup and demonstrate the popcorn noise found in the LM399. A very good example in shown in fig. \ref{fig:fake_lm399_popcorn_noise}.
+
+\begin{figure}[h]
+    \centering
+    \input{figures/refurb_lm399_popcorn_noise.pgf}
+    \caption{Popcorn noise of refurbished LM399 (\#15) over a period of \qty{15}{\minute}.}
+    \label{fig:fake_lm399_popcorn_noise}
+\end{figure}
+
+TODO: Chinese/Ebay Zeners. Welded legs. Photots. Decap one of those.
+
+%\begin{figure}[h]
+%    \centering
+    %\import{figures/}{dgDrive_protocol.tex}
+%\end{figure}
+
+%\subsection{Current Sources}
+%Discuss Op amp choice (AD797)
+
+%\subsection{Temperature Coeeficient}
+%Discuss each section (Reference, DAC, Buffer/Divider, Filter, CC)
+%\subsubsection{Voltage Reference}
+%\subsubsection{DAC}
+%\subsubsection{Divider}
+%\subsubsection{Filter}
+%Choice of components. Leakage current, size of resistor (input bias current of AD797), size of capacitor

@@ -1,0 +1,58 @@
+\documentclass[]{standalone}
+%\usetikzlibrary{circuits.logic.US,circuits.ee.IEC,positioning,fit}
+
+\usepackage[siunitx, europeanresistors]{circuitikz}
+\usetikzlibrary{fit}
+
+\begin{document}
+\begin{circuitikz}
+    \ctikzset{bipoles/cuteswitch/thickness=0.5}
+    % DMM
+    \begin{scope}
+        \draw (0,1) coordinate(origin) to [voltmeter, name=dmm] ++(0,-2)
+            to ++(-2,0)
+            ++(0,2) to [ioosource, l=I$_{bias}$, -*] ++(0,-2)
+            to ++(-2,0)
+            ++(0,2) to [C, l=C$_{in}$, -*] ++(0,-2)
+            to ++(-2,0)
+            ++(0,2) to [R, l=R$_{in}$, -*, name=rin] ++(0,-2)
+            to [iec connector, l=LO, name=LOcon] ++(-2,0) coordinate(LO)
+        ;
+        \draw
+            (origin)
+            to [short, -*] ++(-2,0)
+            to [short, -*] ++(-2,0)
+            to [short, -*] ++(-2,0)
+            to [iec connector, color=red, l_=HI, name=HIcon] ++(-2,0) coordinate(HI)
+        ;
+        % Box
+        % See the Circuitikz manual https://texdoc.org/serve/circuitikz/0#subsection.5.7
+        % for details on the node anchors
+        \node [rectangle, draw, dashed, fit=(dmm) (rin) (LOconlabel) (HIconlabel)] (BoxDMM){};
+        \node [above, align=center] at (BoxDMM.north) {DMM};
+    \end{scope}
+    % Scanner
+    \begin{scope}
+        \draw (HI) to [cute open switch, mirror, invert, *-] ++(-2,0)
+            to [R, l_=R$_{on}$, *-o] ++ (-2,0) node[left] {CH1 HI}
+            (HI) -- ++(0,1) to [C, capacitors/scale=0.7, l_=C$_S$, *-*] ++(-2,0) -- ++(0,-1)
+            (HI) ++(0,1) -- ++(0,1) to [R, resistors/scale=0.7, l_=R$_S$, *-*] ++(-2,0) -- ++(0,-1)
+            (HI) ++(0,2) -- ++(0,1) to [cute open switch, mirror, invert, name=CH2hi, *-] ++(-2,0)
+            to [R, l_=R$_{on}$, *-o] ++ (-2,0) node[left] (CH2 HI) {CH2 HI}
+        ;
+        \draw (LO) to [cute open switch, mirror, invert, *-] ++(-2,0)
+            to [R, l_=R$_{on}$, *-o] ++ (-2,0) node[left] {CH1 LO}
+            (LO) -- ++(0,-1) to [C, capacitors/scale=0.7, l_=C$_S$, *-*] ++(-2,0) -- ++(0,1)
+            (LO) ++(0,-1) -- ++(0,-1) to [R, resistors/scale=0.7, l_=R$_S$, *-*] ++(-2,0) -- ++(0,1)
+            (LO) ++(0,-2) -- ++(0,-1) to [cute open switch, mirror, invert, name=CH2lo, *-] ++(-2,0)
+            to [R, l_=R$_{on}$, *-o] ++ (-2,0) node[left] {CH2 LO}
+        ;
+        \draw[densely dashed] ([yshift=0.7cm]CH2hi.center) -- ++(0,1) node[above] (CH3-CH10) {CH3 - CH9};
+        \draw[densely dashed] ([yshift=-0.7cm]CH2lo.center) -- ++(0,-1) node[below] (CH3 LO-CH10 LO) {CH3 - CH9};
+        % Box
+        \node [rectangle, draw, dashed, fit=(HI) (LO) (CH3-CH10) (CH3 LO-CH10 LO) (CH2 HI)] (BoxScanner){};
+        \node [above, align=center] at (BoxScanner.north) {Scanner};
+    \end{scope}
+\end{circuitikz}
+
+\end{document}
