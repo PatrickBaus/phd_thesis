@@ -25,10 +25,15 @@
 \usepackage{booktabs}  % for \toprule, \midrule, and \bottomrule macros
 \usepackage{multirow}
 \usepackage{amsfonts}  % Checkmark symbol
+\usepackage{aligned-overset}  % align overset in align environment
+\usepackage{mathrsfs}  % Laplace symbol
+\usepackage{mathtools}  % underbracket
 \usepackage{pifont}    % Cross symbol
 \usepackage[subpreambles=true]{standalone}
 \usepackage{import}
 \usepackage{pythonhighlight}
+
+\usepackage{microtype}
 
 \usepackage{biblatex}
 \usepackage{csquotes}  % Needed by biblatex when babel is active
@@ -97,10 +102,10 @@
 	\examdate{\today}
 	\maketitle
 
-    \include{introduction}
+    %\include{introduction}
 
     \include{preparation}
-	\include{results}
+    %\include{results}
 	\include{outlook}
 
 	\phantomsection  % add an invisible section for the references

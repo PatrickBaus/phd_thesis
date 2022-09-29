@@ -1,0 +1,25 @@
+\documentclass[tikz,crop]{standalone}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+
+\begin{document}
+    \begin{tikzpicture}[
+        auto,
+        >=stealth,
+        on grid,
+        block/.style={draw, rectangle, minimum height=10mm, minimum width=6mm, inner sep=1mm},
+        sum/.style={draw, circle, inner sep=1mm},
+        dot/.style={anchor=base, fill=black, circle, inner sep=0.4mm}
+    ]
+        \node (input) at (0,0) {};
+        \node [sum, right=12mm of input] (sum) {$\Sigma$};
+        \node [block, right=12mm of sum] (plant) {$G(s)$};
+        \node [right=24mm of plant] (output) {};
+
+        \draw [->] (input) -- node[above]{$U(s)$} (sum);
+        \draw [->] (sum) -- (plant);
+        \draw [->] (plant) -- node[above, name=out]{$Y(s)$} (output);
+        \draw [->] (out) -- ++(0, -12mm) node[dot, at start]{} -| (sum);
+    \end{tikzpicture}
+\end{document}

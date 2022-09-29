@@ -5,7 +5,7 @@ Early tests of the LM399 Zener diode as a reference have confirmed, what the dat
 
 \begin{figure}[ht]
     \centering
-    \input{figures/lm399_popcorn_noise.pgf}
+    \input{images/lm399_popcorn_noise.pgf}
     \caption{Popcorn noise in different samples of the LM399 over a \qty{24}{\hour} period.}
     \label{fig:popcorn_noise_lm399}
 \end{figure}
@@ -51,37 +51,52 @@ To satisfy this requirement, either a stable and very low noise \num{7.5} or \nu
 
 In comparison to the LM399, those Zener diodes do not suffer from the popcorn noise issue or at least not to this extend. The LTZ1000, for example, is specified for a typical \qty{1.2}{\micro\volt_{pp}} in a frequency range of \qtyrange{0.1}{10}{\Hz} \cite{datasheet_LTZ1000}. This means, that there are no additional measures required to distinguish burst noise from the internal reference and the DUT.
 
-This narrows down the choice of multimeters considerably. To narrow it down even further, several \num{7.5} digit and \num{8.5} digit multimeters were tested. The results of those tests will discussed here to give an overview of the performance that can be expected of such a setup.
+This narrows down the choice of multimeters considerably. To narrow it down even further, several \num{7.5} digit and \num{8.5} digit multimeters were tested. The results of those tests will discussed here to give an impression of the performance that of these devices.
 
-To test the viability of a \num{7.5} digit voltmeter, which marks the lower end of possible candidates for this job, a \device{Keysight 34470A} was tested. These measurements were done by directly measuring a pre-production version of the reference PCB for the digital current driver. The reference board was kept at \qty{23}{\celsius} in a custom thermal chamber as discussed in section \ref{}. The multimeter was directly connected to the reference, without an other components in between the reference and DMM like buffers, multiplexers or filters. The DMM itself was exposed to the ambient temperature of the lab.
+To test the viability of a \num{7.5} digit voltmeter, which marks the lower end of possible candidates for this job, a \device{Keysight 34470A} was tested. These measurements were done by measuring the output voltage of a pre-production version of the reference PCB for the digital current driver. The reference board was kept at \qty{23}{\celsius} in a custom thermal chamber. The chamber is detailed in section \ref{}. Additionally, a \qty{500}{\g}  bag of Bentonite desiccant was added to keep the references at a low humidity of around \qty{20}{\percent} relative humidity. The reference board inserted into a motherboard holding up to 4 reference modules. The motherboard, also called LM399 breakout board, provides the voltage regulators and the operational amplifier for the kelvin sensed pins of the reference. The multimeter was directly connected to the reference via a DB9 connector, without an other components in between the reference and the DMM like buffers, multiplexers or filters. The DMM itself was exposed to the ambient temperature of the lab. The setup is shown in figure \ref{fig:lm399_vs_34470a_setup}.
 
-The reference boards also amplify the Zener voltage to \qty{10}{\volt}, which improves the signal to noise ratio, because it makes use of the full DMM range. The \qty{10}{\volt} range is the also lowest noise range of a typical long-scale DMM because no pre-amplifiers of attenuators are required.
-
-The circuit of the reference is shown in fig. \ref{fig:lm399_negative_10V}. It is a negative \qty{10}{\volt} reference that uses a self-biasing technique to derive its \qty{1}{\mA} Zener current from its own \qty{-10}{\volt} output. The details of this circuit are discussed in section \ref{}.
-
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
-    \scalebox{0.7}{%
-        \import{figures/}{lm399_reference_circuit.tex}
-    } % scalebox
-    \caption{Self-biased LM399 negative voltage reference.}
-    \label{fig:lm399_negative_10V}
+    \resizebox {0.8\textwidth} {!} {
+        \import{figures/}{34470A_vs_LM399.tex}
+    } % resizebox
+    \caption{Measurement setup for tesing an LM399 reference board with the \device{Keysight 34470A}}
+    \label{fig:lm399_vs_34470a_setup}
 \end{figure}
 
-With the amplified output the expected step size of about \qty[per-mode=symbol]{0.5}{\micro\volt \per \volt}, becomes \qty{5}{\micro\volt}. The resolution of the \qty{10}{\volt} range of the \device{34470A} is \qty{100}{\nano \volt}, while the measurement noise is of course higher. See section \ref{} of this work for a detailed characterization.
+The reference boards amplify the Zener voltage to \qty{10}{\volt}, which improves the signal to noise ratio, because it makes use of the full DMM range. The \qty{10}{\volt} range is typically the lowest (relative) noise and lowest drift range those multimeter because no internal pre-amplifiers of attenuators are required. It is important to keep the temperature drift of the DMM low or at least predictable, because the device is exposed to the ambient laboratory and not in a temperature controlled environment like the references.
 
-Figure \ref{fig:lm399_vs_34470a} shows an example of such measurement. This measurement highlights one the problems encountered during those measurements. From the graph it is unclear if the features seen in the graph are actual popcorn noise or a result of ambient temperature changes due to the cycling of the air conditioning. Also the noise floor of the measurement is \qty{1.5}{\micro\volt_{RMS}}.
+\newpage
+The reference is a negative \qty{10}{\volt} reference that uses a self-biasing technique to derive its \qty{1}{\mA} Zener current from its own \qty{-10}{\volt} output. The details of this circuit are discussed in section \ref{}.
 
-\begin{figure}[h]
+% \begin{figure}[h]
+%     \centering
+%     \scalebox{0.7}{%
+%         \import{figures/}{lm399_reference_circuit.tex}
+%     } % scalebox
+%     \caption{Self-biased LM399 negative voltage reference.}
+%     \label{fig:lm399_negative_10V}
+% \end{figure}
+
+With the amplified output the expected burst noise step size of about \qty[per-mode=symbol]{0.5}{\micro\volt \per \volt}, becomes \qty{5}{\micro\volt}. The resolution of the \qty{10}{\volt} range of the \device{34470A} is \qty{100}{\nano \volt}, but the measurement is not limited by quantization. See section \ref{} of this work for a detailed characterization.
+
+\begin{figure}[ht]
     \centering
     \input{images/LM399_vs_34470A.pgf}
-    \caption{Voltage deviation from the mean of a LM399 negative \qty{10}{\volt} reference measured with a Keysight 34470A at \qty{100}{\plc}.}
+    \caption{Voltage deviation from the mean voltage of a LM399 negative \qty{10}{\volt} reference measured with a Keysight 34470A at \qty{100}{\plc}.}
     \label{fig:lm399_vs_34470a}
 \end{figure}
 
-In order to improve the signal-to-noise ratio, the amplification of the reference voltage was increased to \qty{15}{\volt}. As a result, the \qty{10}{\volt} input range of the \device{34470A} can no longer be used and a differential measurement was realized. This measurement was done against another \qty{15}{\volt} reference board. To ensure, that any popcorn noise found originates in the DUT and not the second reference used, several reference boards where tested against a \device{Fluke 5440B}. The \device{5440B} does not exhibit popcorn noise as it uses a different voltage reference ic, namely two Motorola SZA263 in series \cite{service_manual_fluke_5440b}. Finally, a board that did not show popcorn noise in a period of three days was selected. The serial number of this so-called golden reference is \textit{\#1}.
+Figure \ref{fig:lm399_vs_34470a} shows an example of such measurement. This measurement highlights one the problems encountered during those measurements. From this measurement it is unclear whether the features seen in the graph are only a result of ambient temperature changes due to the cycling of the air conditioning or popcorn noise on top of that. These results hightlight the fact, that sub-\unit{ppm} measurements not only requires high-end gear, but also a very stable environment. From the data it follows, that the temperature coefficient of the DMM in linear approximation is:
+\begin{equation}
+    \alpha_\device{34470A} \approx \frac{\qty{6.08}{\micro\volt}-(-\qty{9.30}{\micro\volt})}{(\qty{21.85}{\celsius}-\qty{19.96}{\celsius})\qty{10}{\volt}} = \qty[per-mode=symbol]{0.86}{\micro\volt \per \volt \per \kelvin}
+\end{equation}
 
-Using this intercomparison technique
+While the temperature coeeficient is vastly better than the specified \qty[per-mode=symbol]{2}{\micro\volt \per \volt \per \kelvin} \cite{datasheet_keysight34470A}, it is not low enough for this type of measurement. The multimeter must therefore be kept in a temperature controlled environment. This issue was resolved by replacing the stock air conditioning controller with a custom PID controller as discussed in section \ref{}. Lastly, the noise floor of the measurement is \qty{1.5}{\micro\volt_{RMS}}, resulting in an estimated signal-to-noise ratio (SNR) of about \qty{10}{\decibel}, which is suffient to detect the popcorn noise.
+
+While the temperature issue was being worked on, testing of the Zener diodes continued. To work around the temperature drift of the DMM, the amplification of the reference voltage was increased to \qty{15}{\volt}, the same voltage required by the digital current driver, and a differential measurement was realized. This measurement was done against a primary \qty{15}{\volt} reference board. To ensure, that any popcorn noise found originates only in the DUT and not the primary reference used, several reference boards where tested against a \device{Fluke 5440B}. The \device{5440B} does not exhibit popcorn noise as it uses a different voltage reference ic, namely two Motorola SZA263 in series \cite{service_manual_fluke_5440b}. Finally, a board that did not show popcorn noise in a period of three days was selected. The serial number of this primary or golden reference is \textit{\#1}.
+
+Using this differential technique, the results greatly improved
 
 The market for high-end \num{8.5} digit DMMs is limited and therefore every device on the market caters for a certain niche. In table \ref{tab:list_of_dmms} a list of popular \num{8.5} DMMs can be found. Several models are included in the table, although they are discontinued. The reason is, that these DMMs can still be acquired on the second-hand market.
 

@@ -49,13 +49,13 @@ The only reasonably unique id is the universal unique identifier (UUID) or globa
 
 Calculating the probability of a collision between two random UUIDs is called the birthday problem \cite{BirthdayProblem} in probability theory. A randomly generated version 4 UUID of variant 1 as defined in RFC 4122 \cite{RFC-UUID} has \qty{122}{\bit} of entropy, that is out of \qty{128}{\bit}, \qty{4}{\bit} are reserved for the UUID version and \qty{2}{\bit} for the variant. This gives the probability of at least one collision in $n$ devices out of $M = 2^{122}$ possibilities:
 \begin{align}
-    p(n) &= 1 - 1 \cdot \left(1 - \frac{1}{M}\right) \cdot \left(1 - \frac{2}{M}\right) \dots \left(1 - \frac{n-1}{M}\right)\\
+    p(n) &= 1 - 1 \cdot \left(1 - \frac{1}{M}\right) \cdot \left(1 - \frac{2}{M}\right) \dots \left(1 - \frac{n-1}{M}\right) \nonumber\\
     &= 1 - \prod_{k=1}^{n-1} \left(1 - \frac{k}{M} \right)
 \end{align}
 Using the Taylor series $e^x = 1+x \dots$, assuming $n \ll M$ and approximating we can simplify this to:
 \begin{align}
-    p(n) &\approx 1 - \left(e^\frac{-1}{M} \cdot e^\frac{-2}{M} \dots e^\frac{-(n-1)}{M} \right)\\
-    &\approx 1 - \left(e^\frac{-n(n-1)/2}{M} \right) \\
+    p(n) &\approx 1 - \left(e^\frac{-1}{M} \cdot e^\frac{-2}{M} \dots e^\frac{-(n-1)}{M} \right) \nonumber\\
+    &\approx 1 - \left(e^\frac{-n(n-1)/2}{M} \right) \nonumber\\
     &\approx 1 - \left(1 - \frac{n^2}{2 M} \right) = \frac{n^2}{2 M}
 \end{align}
 For one million devices, this gives a probability of about \num{2e-25}, which is negligible.
@@ -74,7 +74,239 @@ While it is impossible to rule out the possibility of multiple controllers on a 
  \item Example Sensors vs. Experiment
 \end{itemize}
 
+
+\section{Short Introduction to Control Theory}
+This section will give a very brief introduction into some basic concepts of control theory. Many systems require control over one or more process variables. For example, temperature control of a room or a device, or creating a current from a voltage. All of this requires control over a process and is established trough feedback, which allows a controller to sense the state of the system.
+
+The focus of this section lies on the principels feedback and control and will be detailed in the following sections.
+
+\subsection{Open and Closed Loop Systems}
+To understand feedback, one needs to take a look at dynamical systems. There are two types of systems: open and closed loop systems. A system is called open loop, if the output of a system does not influece its input as in figure \ref{fig:open_loop}. On the other hand, if the output is connected to the input of the system it is called closed loop system, an example is shown in figure \ref{fig:closed_loop}. $G(s)$ is called the transfer function of the system, while $R(s)$ is the input, $Y(s)$ is the output and $s$ the Laplace variable.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}{0.4\linewidth}
+        \import{figures/}{open_loop.tex}
+        \caption{Open loop system.}
+        \label{fig:open_loop}
+    \end{subfigure}
+    \begin{subfigure}{0.4\linewidth}
+        \import{figures/}{closed_loop.tex}
+        \caption{Closed loop system.}
+        \label{fig:closed_loop}
+    \end{subfigure}
+\end{figure}
+
+It is convenient to express the transfer function as its Laplace transform. The unilateral Laplace transform is definded as:
+\begin{equation}
+    \mathscr{L}\left( f(t) \right) = F(s) = \int_0^\infty f(t) e^{-st}\,dt.
+\end{equation}
+
+with $f: \mathbb{R}^+ \to \mathbb{R}$, that is integrable and grows no faster than $e^{s_0t}$ for $s_0 \in \mathbb{R}$. The latter property is important for deriving the rules of differentiation and integration.
+
+To understand the benefits of using the Laplace representation for transfer function a few useful properties must be discussed. First of all the Laplace transform is linear:
+\begin{align}
+    \mathscr{L}\left(a \cdot f(t) + b \cdot g(t) \right) &= \int_0^\infty (a \cdot f(t) + b \cdot g(t)) e^{-st}\,dt \nonumber\\
+    &= a \int_0^\infty f(t) e^{-st}\,dt + b \int_0^\infty g(t) e^{-st}\,dt \nonumber\\
+    &= a \mathscr{L}\left(f(t)\right) + b \mathscr{L}\left(g(t)\right)
+\end{align}
+
+Another interesting property is the derivative and integral of a function $f$:
+
+\begin{align}
+    \mathscr{L}\left(\frac{df}{dt}\right) &= \int_0^\infty \underbracket{f'(t)}_{v'(t)} \underbracket{\vphantom{f'(t)}e^{-st}}_{u(t)}\,dt \nonumber\\
+    &= \left[e^{-st} f(t) \right]_0^\infty - \int_0^\infty (-s)f'(t)\,dt \nonumber\\
+    &= -f(0) + s \int_0^\infty f'(t)\,dt \nonumber\\
+    &= s F(s) - f(0)
+\end{align}
+
+\begin{align}
+    \mathscr{L} \left( \int_0^t f(\tau)\,d\tau \right) &= \int_0^\infty \left(\int_0^t f(\tau)\,d\tau e^{-st} \right)\,dt \nonumber\\
+    &= \int_0^\infty \underbracket{e^{-st}\vphantom{\int_0^t}}_{v'(t)} \underbracket{\int_0^t f(t)\,d\tau}_{u(t)}\,dt \nonumber\\
+    &= \left[\frac{-1}{s} e^{-st} \int_0^t f(t)\,d\tau \right]_0^\infty - \int_0^\infty \frac{-1}{s} e^{-s\tau} f(\tau)\,d\tau \nonumber\\
+    &= 0 + \frac{1}{s} \int_0^\infty e^{-s\tau} f(\tau)\,d\tau \nonumber\\
+    &= \frac{1}{s} F(s) \label{eqn:lapace_integration}
+\end{align}
+
+If the initial state $f(0)$ can be chosen to be $0$, the differentiation becomes a simple multiplication by $s$, while the integration becomes a division by $s$. Finally, the most important aspect is, that a simple relation between the input $r(t)$ and the ouput $y(t)$ of a system can be given. The relation between input and the ouput of a system as shown in figure \ref{fig:open_loop} is given by the convolution, see e.g. \cite{pid_basics}. Assuming the system has an initial state of $0$ for $t<0$, hence $r(t<0) = 0$ and $g(t<0) = 0$, one can calculate:
+
+\begin{equation}
+    y(t) = (r \ast g)(t) = \int_0^\infty r(\tau) g(t-\tau)\,d\tau
+    \label{eqn:convolution}
+\end{equation}
+
+Applying the Laplace transformation, greatly simplifies this:
+\begin{align}
+    Y(s) &= \int_0^\infty e^{-st} y(t)\,dt \nonumber\\
+    \overset{\ref{eqn:convolution}}&{=} \int_0^\infty \underbrace{e^{-st}}_{e^{-s(t-\tau)}e^{-s\tau}} \int_0^\infty r(\tau) g(t-\tau)\,d\tau\,dt \nonumber\\
+    &= \int_0^\infty \int_0^t e^{-s(t-\tau)} e^{-s\tau} g(t-\tau) r(\tau)\,d\tau\,dt \nonumber\\
+    &= \int_0^\infty e^{-s\tau} r(\tau)\,d\tau \int_0^\infty e^{-st} g(t)\,dt \nonumber\\
+    &= R(s) \cdot G(s)
+\end{align}
+
+This formula is a lot simpler than the convolution of $r(t)$ and $g(t)$, therefore the use of the Laplace transform has become very popular in control theory.
+
+Another property that is heavily used in control theory is the time delay of functions. To show this property, let $f(t-\theta)$ be
+\begin{equation}
+    g(t) \coloneqq \begin{cases} f(t-\theta), & t \geq \theta \\ 0, & t < \theta \end{cases} \label{eqn:delayed_f}
+\end{equation}
+
+The reason for this definition is, that the system must be causal. This means, it is impossible to get data from the future ($t<\theta$). An example is shown in figure \ref{fig:heaviside}.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}{0.4\linewidth}
+        \scalebox{0.75}{%
+            \import{figures/}{laplace_no_delay.tex}
+        } % scalebox
+        \caption{Original signal $f(t)$.}
+        \label{fig:heaviside}
+    \end{subfigure}
+    \begin{subfigure}{0.4\linewidth}
+        \scalebox{0.75}{%
+            \import{figures/}{laplace_time_delay.tex}
+        } % scalebox
+        \caption{Delayed signal $f(t-2)$.}
+        \label{fig:heaviside_delayed}
+    \end{subfigure}
+\end{figure}
+
+The Laplace transform of a delayed signal can be calculated as follows:
+
+\begin{align}
+    \mathscr{L}\left( g(t) \right) &= \int_0^\infty f(t-\theta) e^{-st}\,dt \nonumber\\
+    \overset{\ref{eqn:delayed_f}}&{=} \int_\theta^\infty f(t-\theta) e^{-st}\,dt \nonumber\\
+    \overset{u \coloneqq t-\theta}&{=} \int_0^\infty f(u) e^{-s(u+\theta)}\,du \nonumber\\
+    &= e^{-s\theta} \int_0^\infty f(u) e^{-su} \nonumber\\
+    &= e^{-s\theta} F(s) \label{eqn:laplace_delayed}
+\end{align}
+
+To satisfy the causaulity requirement, the Heaviside function $H(t)$ can be used:
+\begin{align}
+    \mathscr{L}\left( f(t-\theta) H(t-\theta) \right) = e^{-s\theta} F(s) \label{eqn:laplace_causality}
+\end{align}
+
+Lastly, the Laplace transform of $e^{at}$, which is commonly used in differential equations:
+\begin{align}
+    \mathscr{L}\left(e^{at} \right) &= \int_0^\infty e^{(a-s)t}\,dt = \frac{1}{a-s} \left[e^{(a-s)t} \right]_0^\infty = \frac{1}{s-a} \label{eqn:laplace_exponential}
+\end{align}
+
+
+Using these tools, it is possible calculate the transfer function of a temperature controller. This is done in the next section.
+
+\subsection{A Model for Temperature Control}
+\begin{figure}[h]
+    \centering
+    \scalebox{1}{%
+        \import{figures/}{first_order_model.tex}
+    } % scalebox
+    \caption{Simple temperature model of a generic system.}
+    \label{fig:first_order_model_room}
+\end{figure}
+
+In order to describe a closed-loop system, one has to first create a model for the process and the controller involved. A simple model can be derived from the idea, that the system at temperature $T_{system}$ has a thermal capacitance $C_{system}$, an influx of heat $\dot Q_{load}$ from a thermal load and a controller removing heat from the system through a heat exchanger with a resistance of $R_{force}$. Additionally, there is some leakage through the walls of the system to the ambient environment via $R_{leakage}$. The analogy of thermodynamics with electrondynamics allows to create the model in figure \ref{fig:first_order_model_room}. Since this this model is to be used for a temperature controller, an assumption to simplify it can be made.
+
+The controller will keep $T_{system}$ constant and if the ambient temperature and $\dot Q_{load}$ is \textit{reasonably stable}, it is easy to see, that a constant thermal flux must flow through $R$ since it cannot pass through the thermal capacitance $C$. \textit{Reasonably stable} means that it can be treated as constant with respect to the temperature controller time constants. This will be further discussed in section \ref{} with regards to system stability. If this assumption holds, the thermal flux from the system load will only cause a constant offset of $T_{in}$, since the heat must be removed by the controller, and the model can be simplified further:
+
+\begin{figure}[h]
+    \centering
+    \scalebox{1}{%
+        \import{figures/}{first_order_model_kirchhoff.tex}
+    } % scalebox
+\end{figure}
+
+Neglecting the constant thermal flux from the system load and exploiting the analogy of thermodynamics and electrondynamics again, using Kirchhoff's second law, we find:
+
+\begin{align}
+    \sum T_i &= 0 \nonumber\\
+    T_{in}(t) - \dot{Q}(t) R - \frac 1 C \int \dot{Q}(t)\,dt &= 0 \label{eqn:first_order_model_kirchhoff}
+\end{align}
+
+Taking the Laplace transform, applying equation \ref{eqn:lapace_integration} and using $T_{out} = \frac{1}{sC} \dot Q(s)$ to replace $\dot Q$, equation \ref{eqn:first_order_model_kirchhoff} can be written as:
+\begin{align*}
+    T_{in}(s) - \dot{Q}(s) R - \frac{1}{sC} \dot{Q}(s) &= 0\\
+    \dot{Q}(s) = \frac{T_{in}(s)}{R-\frac{1}{sC}} &= \frac{T_{out}}{\frac{1}{sC}}
+\end{align*}
+
+This allows to calculate the transfer function of the process $P$:
+\begin{align}
+    P(s) &= \frac{T_{out}}{T_{in}} = \frac{\frac{1}{sC}}{R-\frac{1}{sC}} \nonumber\\
+    &= \frac{1}{sRC + 1} \nonumber\\
+    &= \frac{K}{1 + s\tau} \label{eqn:first_order_model}
+\end{align}
+with the system gain $K$ and the time constant $\tau$. In case of the $RC$ circuit, the gain is $1$, but other systems may a gain or attenuation of $K \neq 1$ in the sensor.
+
+Equation \ref{eqn:first_order_model} is called the transfer function of a first-order model, because its origin is a differential equation of first order. This model describes homogeneous systems, like a room, very well, as can be seen in section \ref{}, but in order to derive the transfer function including the controller and the sensor some more work is required.
+
+Expanding on figure \ref{fig:closed_loop} and equation \ref{eqn:convolution} the closed-loop transfer function becomes:
+\begin{equation}
+    G(s) = P(s) \cdot S(s)
+\end{equation}
+
+and the block diagram becomes
+
+\begin{figure}[ht]
+    \centering
+    \import{figures/}{open_loop_full.tex}
+    \caption{Open loop system with sensor.}
+\end{figure}
+
+The transfer funciton of the sensor can, in the most simple case, be modeled as a delay line with delay $\theta$ and $f(t-\theta) = H(t-\theta)$. Using equation \ref{eqn:laplace_delayed} $S(s)$ can be written as
+\begin{equation}
+    S(s) = e^{-\theta s} .
+\end{equation}
+
+The full process model including the time delay is:
+\begin{equation}
+    G(s) = \frac{K}{1 + s\tau} e^{-\theta s} \label{eqn:first_order_plus_dead_time_model}
+\end{equation}
+
+This is called a first-order plus dead-time model (FOPDT) or first-order plus time-delay model (FOPTD). To fit experimental data to this model it is more convenient to transform the transfer function \ref{eqn:first_order_plus_dead_time_model} into the time domain. To calculate the output response an input $U(s)$ is required. In principal any function can do, but a step function is typically used, for example by \citeauthor{ziegler_nichols} \cite{ziegler_nichols} and many others \cite{tuning_rules,pessen_integral,simc,smic2,pid_controllers_for_time_delay_systems,pi_stabilization_of_fopdt_systems, pid_basics}. It is both simple to calculate and apply to a real system. Using equations \ref{eqn:laplace_delayed} and \ref{eqn:laplace_exponential}, the Heaviside $H(t)$ step function transforms as
+\begin{equation}
+    \mathscr{L} \left(u(t) \right) = U(s) = \mathscr{L} \left( \Delta u H(t) \right) = \frac{\Delta u}{s}
+\end{equation}
+
+with the step size $\Delta u$. The output $Y(s)$ can then be calculated analytically.
+
+\begin{align}
+    Y(s) &= \frac{\Delta u}{s} \frac{K}{1 + s\tau} e^{-\theta s} \nonumber\\
+    &=  K \Delta u \frac{1}{s (1 + s\tau)} e^{-\theta s} \nonumber\\
+    &= K \Delta u \left(\frac{1}{s} - \frac{\tau}{s\tau+1} \right) e^{-\theta s} \nonumber\\
+    &= K \Delta u \left(\frac{1}{s} - \frac{1}{s+\frac{1}{\tau}} \right) e^{-\theta s}
+\end{align}
+
+To derive $y(t)$, the inverse Laplace transform of $Y(s)$ is required. Unfortunately, this is not as simple as the Laplace transform. Fortunately, using \ref{eqn:laplace_exponential} while making sure causaulity is guaranteed as shown in \ref{eqn:laplace_causality}, the simple first order model can easily be transformed back into the time domain.
+
+\begin{align}
+    \mathscr{L}^{-1} \left(Y(s)\right) = y(t) &= K \Delta u \mathscr{L}^{-1} \left(\frac{1}{s} e^{-\theta s} \right)  - K \mathscr{L}^{-1} \left( \frac{1}{s+\frac{1}{\tau}} e^{-\theta s} \right) \nonumber\\
+    \overset{\ref{eqn:laplace_exponential}}&{=} K \Delta u \cdot 1 \cdot H(t-\theta) - \left(e^{-\frac{t-\theta}{\tau}} \right) H(t-\theta) \nonumber\\
+    &= K \Delta u \left(1- e^{-\frac{t-\theta}{\tau}} \right) H(t-\theta)
+\end{align}
+
+The time domain solution of the FOPDT model can now be used extract the parameters $\tau$, $\theta$ and $K$ from a real physical system using a fit to the measurement data. The parameter $\Delta u$ is already known, since it is an input parameter. A simulation of the step response of a first-order model with time delay is shown in figure \ref{fig:fopdt}. Here it can be clearly seen, that the output does not change until the time delay $\theta$ has passed and the Heaviside function changes from $0$ to $1$.
+
+\begin{figure}[ht]
+    \centering
+    \input{images/FOPDT_theory.pgf}
+    \caption{Time domain plot of a first-order plus dead time model, showing induvidual components of the model and the composite function $y(t)$. Model parameters: $K= \Delta u = 1$, $\tau=2$, $\theta=4$.}
+    \label{fig:fopdt}
+\end{figure}
+
+%\cite{pi_first_order_system}
+
+
+
+% https://apmonitor.com/pdc/index.php/Main/FirstOrderPlusDeadTime
+
+\subsection{PID tuning rules}
+
+%\subsubsection{SIMC}
+We use $\tau_c = \tau$ as suggested by \cite{simc,smic2} for “\textit{tightest possible subject to maintaining smooth control}“.
+
 \section{Temperature Controller}
+
+\subsection{Tuning of a PID controller}
+The number of emperical algorithms to determine a set of PID parameters ($\mathrm{K_p, K_i, K_d}$) are numerous. In this work only the most common algorithms and a few notable exceptions will be presented.
 \subsection{Design}
 
 

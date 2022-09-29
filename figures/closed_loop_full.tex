@@ -1,0 +1,31 @@
+\documentclass[tikz,crop]{standalone}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+
+\begin{document}
+    \begin{tikzpicture}[
+        auto,
+        >=stealth,
+        on grid,
+        block/.style={draw, rectangle, minimum height=10mm, minimum width=6mm, inner sep=1mm},
+        sum/.style={draw, circle, inner sep=1mm},
+        dot/.style={anchor=base, fill=black, circle, inner sep=0.4mm}
+    ]
+        \node (input) at (0,0) {};
+        \node [sum, right=12mm of input] (sum) {$\Sigma$};
+        \node [block, right=12mm of sum] (controller) {$C(s)$};
+        \node [block, right=18mm of controller] (plant) {$P(s)$};
+        \node [block, right=18mm of plant] (sensor) {$S(s)$};
+        \node [block, below=12mm of plant] (invert) {$-1$};
+        \node [right=24mm of sensor] (output) {};
+
+        \draw [->] (input) -- node[above]{$U(s)$} (sum);
+        \draw [->] (sum) -- (controller);
+        \draw [->] (controller) -- (plant);
+        \draw [->] (plant) -- (sensor);
+        \draw [->] (sensor) -- node[above, name=out]{$Y(s)$} (output);
+        \draw [->] (out) |- (invert) node[dot, at start]{};
+        \draw [->] (invert) -| (sum);
+    \end{tikzpicture}
+\end{document}

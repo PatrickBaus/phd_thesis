@@ -1,0 +1,15 @@
+\documentclass[crop, tikz]{standalone}
+
+\usepackage{tkz-base}
+
+\begin{document}
+    \begin{tikzpicture}
+        \tkzInit[xmax=5,ymax=2,xmin=0]
+        \tkzGrid
+        \tkzDrawY \tkzDrawX[label=t] \tkzLabelX \tkzLabelY
+        \tkzClip
+        \draw[very thick,red, rounded corners=4mm]
+            (0,0.3) -- ++(0.5,1) -- ++(0.5,-0.5) -- ++(1,1) -- ++(1,0)  -- ++(0.3,-1) -- ++(0.7,0.5)
+        ;
+    \end{tikzpicture}
+\end{document}

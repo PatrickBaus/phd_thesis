@@ -1,0 +1,16 @@
+\documentclass[]{standalone}
+\usepackage[europeanresistors]{circuitikz}
+\usetikzlibrary{calc,fit,positioning}
+
+\begin{document}
+    \ctikzloadstyle{romano}
+    \begin{circuitikz}[transform shape, romano circuit style, european resistors, voltage dir=noold]
+        \draw
+            (0,0) node[anchor=east] {$T_{in}$} to[R, l=$R$, o-, v<=$ $, name=Rforce] ++ (2,0) -- ++(0.5,0) coordinate(room) node[anchor=south west] {$T_{out}$}
+            to[C, l=$C$, name=Csystem] ++(0,-1.5) node[ground] (GND) {}
+        ;
+        \draw[thick, ->, >=stealth]
+            (Rforce |- Csystem) ++(0,-3mm) node {\footnotesize$\dot{Q}$} ++(60:4mm) arc (60:-240:4mm)
+        ;
+    \end{circuitikz}
+\end{document}
