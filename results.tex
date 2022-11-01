@@ -10,7 +10,7 @@ Early tests of the LM399 Zener diode as a reference have confirmed, what the dat
     \label{fig:popcorn_noise_lm399}
 \end{figure}
 
-Figure \ref{fig:popcorn_noise_lm399} shows two samples of the LM399, that show popcorn noise, while the last one does not.
+Figure \ref{fig:popcorn_noise_lm399} shows two samples of the LM399, that exhibit popcorn noise, while the last one does not.
 
 The sources of popcorn noise in semiconductor devices are not yet fully understood, but some sources have been identified. Defects in the semiconductor crystal lattice and contamination of the semiconductor material have been linked to popcorn noise \cite{technote_ti_popcorn_noise}. This problem has improved over the years as manufacturing processes and wafer quality has evolved. Unfortunately the LM399 is built around a process from 1991, as can be seen etched into the die \cite{lm399_richi}.
 
@@ -22,13 +22,13 @@ The advantages of testing the Zener diodes separately, on the other hand, are, t
 
 \subsection{Building a Test Setup for Zener Diodes}
 There are several ways to measure the popcorn noise of semiconductor devices. The most trivial one is to directly monitor the device in the time-domain. In this case, the Zener voltage can be monitored with a long-scale multimeter. It requires a low noise DMM, that can reliably distinguish between both voltage levels, which are about \qty{4}{\micro \volt} apart.
-A related option is to use a second reference, whose voltage is similar to the device under test (DUT). Measuring the the voltage difference between the two references, less resolution is required. Directly comparing the difference of two references using a millivolt meter is commonly done when intercomparing primary voltage references. This method, however, increases the measurement noise by a factor of $\sqrt{2}$, if both references produce the same level of uncorrelated noise. The noise of the LM399 with a \qty{100}{\plc} integration time (\qty{2}{\second}) is about \qty{1.5}{\micro \volt_{pp}} as can be seen in figure \ref{fig:noise_lm399}.
+A related option is to use a second reference, whose voltage is similar to the device under test (DUT). Measuring the the voltage difference between the two references, less resolution is required. Directly comparing the difference of two references using a millivolt meter is commonly done when intercomparing primary voltage references. This method, however, increases the measurement noise by a factor of $\sqrt{2}$, if both references produce the same level of uncorrelated noise. The noise of the LM399 with a \qty{100}{\plc} integration time (\qty{2}{\second}) is about \qty{1.5}{\micro \volt_{pp}} as can be determined from the data in figure \ref{fig:popcorn_noise_lm399}.
 
 \begin{figure}[ht]
     \centering
     %\input{figures/lm399_popcorn_noise.pgf}
     \includegraphics[width=0.75\textwidth]{example-image-golden}
-    \caption{Voltage noise of an LM399 with different DMMs at \qty{100}{\plc}.}
+    \caption{Voltage noise of an LM399, measured with a bandwidth of \qtyrange{0.1}{10}{\Hz}.}
     \label{fig:noise_lm399}
 \end{figure}
 
@@ -43,17 +43,84 @@ In this work only options one and two were were tested, as it was said above, wi
 The next section deals with the choice of multimeter to satisfy the requirements test the Zener diodes according to options one and two, so either directly measuring the output voltage or difference of a known good sample against the DUT.
 
 \subsection{Choosing a Multimeter for Testing Zener Diodes}
-The DMM used, plays an important role for the test setup. In this section, some of the challenges, that can be encountered will be discussed. The expected amplitude of the popcorn noise is around \qty[per-mode=symbol]{0.5}{\micro\volt \per \volt} or \qty{3.5}{\micro\volt} of the output voltage. To measure the \qty{7}{\volt} of the Zener diode, the corresponding voltage range of a typical DMM would be at least \qty{10}{\volt}.
+The DMM used plays an important role for the test setup. In this section, some of the challenges, that can be encountered will be discussed. The expected amplitude of the popcorn noise is around \qty[per-mode=symbol]{0.5}{\micro\volt \per \volt} or \qty{3.5}{\micro\volt} of the output voltage, when considering the \qty{7}{\volt} Zener voltage of the LM399 diode.
 
-At this point it is already clear, that it is not a trivial task, because taking into account the DMM voltage range, a signal-to-noise-ratio of \qty[per-mode=symbol]{0.35}{\micro\volt \per \volt} or more than \qty{130}{\decibel} is required. This calls for a device, that not has the required resolution, but also the stability over time and temperature to ensure the measurement will not be distorted by the DMM. These parameters need to be discussed now.
+The \qty{7}{\volt} will typically be measured on the \qty{10}{\volt} range. It is not a trivial task, because a signal-to-noise-ratio of \qty[per-mode=symbol]{0.35}{\micro\volt \per \volt} or more than \qty{130}{\decibel} is required. This calls for a device, that not only has the required resolution, but also the stability over time and temperature to ensure the measurement will not be distorted by the DMM.
 
-To satisfy this requirement, either a stable and very low noise \num{7.5} or \num{8.5} digit multimeter is required to record the popcorn noise. Fortunately, this class of multimeters features a different type of voltage reference, because the LM399 is not suitable for this type digital multimeter due to its noise. The only Zener diodes good enough are the Analog Devices LTZ1000 \cite{datasheet_LTZ1000}, the Motorola SZA263 (out of production) and the Linear Technology (LT) LTFLU-1 (proprietary design by Fluke and LT). Each equipment manufacturer typically has a preference for one of those diodes. Keysight utilizes the LTZ1000, Fluke uses the SZA263 (in older devices) or the LTFLU-1 in newer model, while Keithley employs the LTZ1000 in their \device{Model 2002} and the LTFLU-1 in the newer \device{DMM7510}.
+Therefore, a voltmeter with lower noise and a more stable reference, than the DUT is mandatory. This only leaves the class of very low noise \num{7.5} or \num{8.5} digit multimeters. These multimeters feature a different type of voltage reference, because the LM399 is not suitable due to its noise. The only Zener diodes that meet those requirements are the Analog Devices LTZ1000 \cite{datasheet_LTZ1000}, the Motorola SZA263 (out of production) and the Linear Technology (LT) LTFLU-1, a proprietary design by Fluke and LT. The LTZ1000, for example, is specified for a typical noise of \qty{1.2}{\micro\volt_{pp}} in a frequency range of \qtyrange{0.1}{10}{\Hz} \cite{datasheet_LTZ1000}. Additionally, in comparison to the LM399, those Zener diodes do not suffer from the popcorn noise issue.
 
-In comparison to the LM399, those Zener diodes do not suffer from the popcorn noise issue or at least not to this extend. The LTZ1000, for example, is specified for a typical \qty{1.2}{\micro\volt_{pp}} in a frequency range of \qtyrange{0.1}{10}{\Hz} \cite{datasheet_LTZ1000}. This means, that there are no additional measures required to distinguish burst noise from the internal reference and the DUT.
+The equipment manufacturers typically have a preference for one of those diodes. Keysight utilizes the LTZ1000, Fluke uses the SZA263 (in older devices) or the LTFLU-1 in newer model, while Keithley employs the LTZ1000 in their \device{Model 2002} and the LTFLU-1 in the newer \device{DMM7510}, because they were bought by Fortive, the same company that owns Fluke. To sum it it up, Keysight uses the LTZ1000 and Fluke/Keithley the LTFLU-1 in their top end meters.
 
-This narrows down the choice of multimeters considerably. To narrow it down even further, several \num{7.5} digit and \num{8.5} digit multimeters were tested. The results of those tests will discussed here to give an impression of the performance that of these devices.
+Comparing only \num{7.5} and \num{8.5} digit voltmeters, narrows down the choice of multimeters considerably. The market for high-end \num{8.5} digit DMMs is limited and therefore every device on the market caters for a certain niche. It is therefore prudent to look at their specifications to choose the correct device for this purpose. In table \ref{tab:list_of_dmms} a list of popular \num{8.5} DMMs can be found. Several models included in the table, are already discontinued, but these DMMs can still be acquired on the second-hand market.
 
-To test the viability of a \num{7.5} digit voltmeter, which marks the lower end of possible candidates for this job, a \device{Keysight 34470A} was tested. These measurements were done by measuring the output voltage of a pre-production version of the reference PCB for the digital current driver. The reference board was kept at \qty{23}{\celsius} in a custom thermal chamber. The chamber is detailed in section \ref{}. Additionally, a \qty{500}{\g}  bag of Bentonite desiccant was added to keep the references at a low humidity of around \qty{20}{\percent} relative humidity. The reference board inserted into a motherboard holding up to 4 reference modules. The motherboard, also called LM399 breakout board, provides the voltage regulators and the operational amplifier for the kelvin sensed pins of the reference. The multimeter was directly connected to the reference via a DB9 connector, without an other components in between the reference and the DMM like buffers, multiplexers or filters. The DMM itself was exposed to the ambient temperature of the lab. The setup is shown in figure \ref{fig:lm399_vs_34470a_setup}.
+\begin{table}[h]
+    \centering
+    \begin{tabular}{ |l|l|l| }
+        \hline
+        Manufacturer & Model & Remarks \\
+        \hline
+        Advantest & \device{R6581} & Discontinued. Scanner cards available. \\
+        Datron/Wavetek & \device{1812} & Discontinued. Wavetek was bought by Fluke. \\
+        Fluke & \device{8508A} & Discontinued. \qty{20}{\volt} range. \\
+        Fluke & \device{8588A} & In production. \\
+        Keithley/Tektronix & \device{2002} & In production. Scanner card available. \qty{20}{\volt} range. \\
+        Keysight & \device{3458A} & In Production. \\
+        Solartron & \device{7081} & Discontinued. Slow. \\
+        Transmille & \device{8104} & In Production. External scanner available. Slow. \\
+        \hline
+    \end{tabular}
+    \caption{Overview of \num{8.5} digit multimeters.}
+    \label{tab:list_of_dmms}
+\end{table}
+
+While the author has not tested every multimeter in table \ref{tab:list_of_dmms}, it is possible to judge some of them apriori by their specifications. The \device{Solartron 7081} (also sold as \device{Guildline 9578}) is a less optimal choice, because a conversion takes \qty{52}{\s} for \num{8.5} digits. The discontinued \device{Fluke 8508A} and the \device{Wavetek 1812} multimeter are very similar devices, because Fluke bought Wavetek in 2000 and as a result, the \device{Fluke 8508A} is more of an update to the \device{Wavetek 1812} than a new device. They are both in included in the list, because it is very rare to see one of the Fluke devices on the second hand market, while the \device{Wavetek 1812} can be found with a bit of patience. Again they are fairly slow, taking \qty{25}{\second} for a conversion at \num{8.5} digits.
+
+The other multimeters are still in production and similar in price, but their field of use is slightly is different. The \device{Fluke 8588A} excels at stability and features a modern user interface, whereas the \device{Keysight 3458A} is unbeaten in linearity and noise. A detailed comparison of those two meters can be found in the work of \citeauthor*{article_fluke_8588A_noise} \cite{article_fluke_8588A_noise}. The \device{Keithley Model 2002} focuses on its scanning capability and the \device{Transmille 8104} does have electrometer functions. Unfortunately, the \device{8104} is also fairly slow at \num{8.5} digit with conversions taking \qty{4}{\s} at its fastest setting \cite{datasheet_transmille8104}, so it will not be considered.
+
+To narrow it down even further, several \num{7.5} and \num{8.5} digit multimeters were tested. The results of those tests will be discussed here to give an impression of the performance of these devices. The tested multimeters are the \device{Keysight 3458A}, the \device{Keithley Model 2002}, the \device{Keysight 34470A} and a \device{Keithley DMM6500}. The \device{3458A} was chosen, because it is very fast and already used in section \ref{} of this work. The \device{Model 2002} was chosen for its internal scanning unit. The \device{34470A} was chosen as a lower-end and cheaper alternative and because it is a fairly low noise device. Finally the \device{DMM6500} is on the list to compare a DMM with an LM399 reference. A \device{Fluke 8588A} was not tested, because it was not released at the time of testing and the older model \device{8508A} is considered too slow as mentioned above.
+
+\minisec{The tests}
+
+Two test were run on this selection of devices. The first one was done using a \device{Fluke 5440B} calibrator supplying \qty{10}{\volt} to all mulimeters and taking readings over the course of a week. This data was used to estimate the noise and the stability of the multimeters, including burst noise. The noise of the DMM at \qty{10}{\volt} is typically not found in the datasheet, because the noise performance is usually quoted for shorted inputs, which does not include the internal reference noise. This test allows to check for popcorn noise of the internal reference. The calibrator has a specified output noise of \qty{< 1.5}{\micro \volt} within a bandwidth of \qtyrange{0.1}{10}{\Hz} at \qty{1}{\volt} and is stable to within \qty{5}{\micro \volt_{RMS}} over \qty{30}{\day}, a specification far superior to the LM399.
+
+The second test was done using a known bad LM399 voltage reference instead of the calibrator. This test was done to see how well a DMM can make out the popcorn noise.
+
+Based on these two tests, a multimeter was chosen for an automated test setup to bin the LM399s.
+
+\minisec{Test Setup}
+
+The tests were done in a stable and monitored lab environment, with a temperature deviation of at most $\Delta T = \qty{\pm 0.2}{\kelvin}$. All multimeters were connected to the same DUT. Although this might potentially cause interference between the multimeters due to the pump out current spikes caused by the switching interals, no ill effects, like voltage offsets or increased noise, were observed during the setup of the tests. A more detailed discussion of the pump out current of the \device{3458A} can be found in \cite{article_3458A_input_mpedance}.
+
+The three \num{8.5} and \num{7.5} digit multimeters were connected using shielded cables, either Pomona 1167-60 or self-made cables. See section \ref{} for details on the self-made cables. The GUARD terminal of the calibrator was connected to chassis GROUND at the calibrator and then connected to the cable shield. On the \device{3458A}, the shield was connected to the GUARD terminal and the GUARD switch was set to open according to the manual \cite{manual_keysight3458a}. For the other multimeters, that do not have a GUARD terminal, the shield was left floating at the DMM side. Additionally the \device{Fluke 5440B}, the \device{HP 3458A} and the \device{Keysight 34470A} have an autocalibration routine, which was run once prior to the measurement. The detailed settings used for the DMMs can be found in the appendix \ref{appendix:dmm_test} on page \pageref{appendix:dmm_test}, a summary ist given in table \ref{tab:dmm_settings_concise} to show the important differences.
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{lcc}
+        \toprule
+        DMM& Integration time in \unit{NPLC}& Conversion time in \unit{\s}\\
+        \midrule
+        \device{HP 3458A}& 100 & \qty{0}{\s}\\
+        \device{Keithley Model 2002} & 40& \qty{0}{\s}\\
+        \device{Keysight 34470A}& 100    & \qty{0}{\s}\\
+        \device{Keithley DMM6500}& 90& \qty{0}{\s}\\
+        \bottomrule
+    \end{tabular}
+    \caption{Concise list of differences in the settings used for comparing the DMMs.}
+    \label{tab:dmm_settings_concise}
+\end{table}
+
+All DMMs were configured to have a similar conversion time. This lead to different integration times, which are given in power line cycles at \qty{50}{\Hz}. The \device{Model 2002} takes considerable longer for a measurement than the Keysight multimeters. The reason is the auto-zero function, which is shown in figure \ref{dmm_autozero_comparison}. The \device{Model 2002} does three steps when doing auto-zeroing, it measures the signal, the zero point for an offset compensation and also the reference voltage for a gain correction. In comparison, the \device{3458A} only corrects for the offset drift. The gain is adjusted when using the ACAL function. The former auto-zero routine, therefore takes longer by one half, but results in more stable measurements.
+
+\begin{figure}[ht]
+    \centering
+    %\resizebox {0.8\textwidth} {!} {
+        \import{figures/}{dmm_autozero.tex}
+    %} % resizebox
+    \label{fig:dmm_autozero_comparison}
+    \caption{Auto-zero phases of the \device{HP 3458A} and \device{Keithley Model 2002}.}
+\end{figure}
+
+These measurements were done by measuring the output voltage of a pre-production version of the reference PCB for the digital current driver. The reference board was kept at \qty{23}{\celsius} in a custom thermal chamber. The chamber is detailed in section \ref{}. Additionally, a \qty{500}{\g}  bag of Bentonite desiccant was added to keep the references at a low humidity of around \qty{20}{\percent} relative humidity. The reference board inserted into a motherboard holding up to 4 reference modules. The motherboard, also called LM399 breakout board, provides the voltage regulators and the operational amplifier for the kelvin sensed pins of the reference. The multimeter was directly connected to the reference via a DB9 connector, without an other components in between the reference and the DMM like buffers, multiplexers or filters. The DMM itself was exposed to the ambient temperature of the lab. The setup is shown in figure \ref{fig:lm399_vs_34470a_setup}.
 
 \begin{figure}[ht]
     \centering
@@ -98,32 +165,6 @@ While the temperature issue was being worked on, testing of the Zener diodes con
 
 Using this differential technique, the results greatly improved
 
-The market for high-end \num{8.5} digit DMMs is limited and therefore every device on the market caters for a certain niche. In table \ref{tab:list_of_dmms} a list of popular \num{8.5} DMMs can be found. Several models are included in the table, although they are discontinued. The reason is, that these DMMs can still be acquired on the second-hand market.
-
-\begin{table}[h]
-    \centering
-    \begin{tabular}{ |l|l|l| }
-        \hline
-        Manufacturer & Model & Remarks \\
-        \hline
-        Advantest & \device{R6581} & Discontinued. Scanner cards available. \\
-        Datron/Wavetek & \device{1812} & Discontinued. Wavetek was bought by Fluke. \\
-        Fluke & \device{8508A} & Discontinued. \qty{20}{\volt} range. \\
-        Fluke & \device{8588A} & In production. \\
-        Keithley/Tektronix & \device{2002} & In production. Scanner card available. \qty{20}{\volt} range. \\
-        Keysight & \device{3458A} & In Production. \\
-        Solartron & \device{7081} & Discontinued. Slow. \\
-        Transmille & \device{8104} & In Production. External scanner available. Slow. \\
-        \hline
-    \end{tabular}
-    \caption{Overview of \num{8.5} digit multimeters.}
-    \label{tab:list_of_dmms}
-\end{table}
-
-While the author has not tested every multimeter in table \ref{tab:list_of_dmms}, given a scanner solution, each of those would suffice to test the Zener diodes. The \device{Solartron 7081} (also sold as \device{Guildline 9578}) is a less optimal choice, because a conversion takes \qty{52}{\s} for \num{8.5} digits, but it would still be workable. The discontinued \device{Fluke 8508A} and the \device{Wavetek 1812} multimeter are very similar. Since Fluke bought Wavetek in 2000 as a result, the \device{Fluke 8508A} is more an update to the \device{Wavetek 1812} than a new device. Unfortunately, it is very rare to see one the Fluke device on the second hand market, while the \device{1812} can be found with a bit of patience.
-
-The other multimeters still in production while all similar in price, their niche is different. The \device{Fluke 8588A} excels at stability and features a modern user interface, whereas the \device{Keysight 3458A} is unbeaten in linearity and noise. A detailed comparison of those two meters can be found in the work of \citeauthor*{article_fluke_8588A_noise} \cite{article_fluke_8588A_noise}. The \device{Keithley Model 2002} focuses on its scanning capability and the \device{Transmille 8104} does have electrometer functions. Unfortunately, the \device{8104} is also fairly slow at \num{8.5} digit with conversions taking \qty{4}{\s} \cite{datasheet_transmille8104}.
-
 In order to test a large amount of Zener diodes, and considering the duration of the burn-in process, which can take anything between \qtyrange{100}{1000}{\hour}, it is necessary to have an automated setup. This consists of a digital multimeter (DMM) a scanner and test board, that holds the Zener diodes and provides the necessary infrastructure for the diodes.
 
 
@@ -148,17 +189,17 @@ As discussed before the diodes need to be tested for \qty{1000}{\hour} and it is
         \hline
         Channels & 3x20 & 8x40 & 2x10 & 5x20 & 6x60 & 6x20 & 5x32 \\
         \hline
-        FET & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \ding{55} & \ding{55} \\
+        FET & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{red!80!black}{\ding{55}} & \textcolor{red!80!black}{\ding{55}} \\
         \hline
         Voltage & \qty{120}{\volt} & \qty{80}{\volt} & \qty{60}{\volt} & \qty{60}{\volt} & \qty{200}{\volt} & \qty{75}{\volt} & \qty{300}{\volt} \\
         \hline
         Card & DAQM900A & 34925A & 7710 & 7710 & 3724 & 2680A-PAI & MC3132 \\
         \hline
-        USB & \checkmark & \checkmark & \checkmark & \ding{55} & \checkmark & \ding{55} & \checkmark \\
+        USB & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{red!80!black}{\ding{55}} & \textcolor{green!60!black}{\checkmark} & \textcolor{red!80!black}{\ding{55}} & \textcolor{green!60!black}{\checkmark} \\
         \hline
-        Ethernet & \checkmark & \checkmark & \checkmark & \ding{55} & \checkmark & \checkmark & \checkmark \\
+        Ethernet & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{red!80!black}{\ding{55}} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} \\
         \hline
-        GPIB & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \ding{55} & \checkmark \\
+        GPIB & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{red!80!black}{\ding{55}} & \textcolor{green!60!black}{\checkmark} \\
         %DMM & & & & & & & \\
         \hline
     \end{tabular}
@@ -250,7 +291,7 @@ Much to the delight of the author the refurbished diodes prove valuable for educ
 \begin{figure}[h]
     \centering
     \input{figures/refurb_lm399_popcorn_noise.pgf}
-    \caption{Popcorn noise of refurbished LM399 (\#15) over a period of \qty{15}{\minute}.}
+    \caption{Popcorn noise of a refurbished LM399 (\#15) over a period of \qty{15}{\minute}.}
     \label{fig:fake_lm399_popcorn_noise}
 \end{figure}
 
