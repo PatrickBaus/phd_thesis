@@ -2,14 +2,16 @@
 	ruledheaders=chapter,% Ebene bis zu der die Überschriften mit Linien abgetrennt werden, vgl. DEMO-TUDaPub
 	class=book,% Basisdokumentenklasse. Wählt die Korrespondierende KOMA-Script Klasse
 	thesis={type=dr, dr=rernat},
-	accentcolor=9c,% Auswahl der Akzentfarbe
-	custommargins=true,% Ränder werden mithilfe von typearea automatisch berechnet
+	accentcolor=1b,  % APQ blue is not available :(
+	custommargins=geometry,  % required for APQ design
 	marginpar=false,% Kopfzeile und Fußzeile erstrecken sich nicht über die Randnotizspalte
+	title=small,
 	%BCOR=5mm,%Bindekorrektur, falls notwendig
 %	parskip=half-,%Absatzkennzeichnung durch Abstand vgl. KOMA-Script
 	fontsize=11pt,%Basisschriftgröße laut Corporate Design ist mit 9pt häufig zu klein
 	logofile=example-image, %Falls die Logo Dateien nicht vorliegen
 	IMRAD=false,
+	twoside,
 %	draft  % Use draft to find overfull boxes
 ]{tudapub}
 
@@ -41,6 +43,20 @@
 
 \usepackage{rotating}
 \usepackage{multicol}
+
+\usepackage{geometry}
+\geometry{
+	reset,
+	a4paper,
+	top=20mm,
+	bottom=25mm,
+	inner=31mm,%7mm Bindekorrektur sind jetzt
+	outer=24mm,%der neue Standard im APQ-Design!
+	includefoot,
+	includehead,
+	footskip=10mm,
+	nomarginpar
+}
 
 \DeclareSIUnit{\plc}{PLC}
 \sisetup{
@@ -105,6 +121,7 @@
     %\include{introduction}
 
     \include{preparation}
+    %\showthe\textwidth
     %\include{results}
 	\include{outlook}
 
