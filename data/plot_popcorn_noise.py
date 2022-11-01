@@ -172,8 +172,6 @@ def plot_series(plot):
   plt.show()
 
 if __name__ == "__main__":
-  diretory = "./"
-  
   plots = [
     {
       'title': 'LM399 Burnin',
