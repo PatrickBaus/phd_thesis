@@ -16,6 +16,7 @@
 ]{tudapub}
 
 \usepackage[english]{babel}
+\usepackage{caption}  % used in the appendix
 \usepackage[version=3]{mhchem}
 \usepackage{pgfplots}
 \usepackage{pgfplotstable}
@@ -57,6 +58,10 @@
 	footskip=10mm,
 	nomarginpar
 }
+
+\DeclareCaptionFont{white}{\color{white}}
+\DeclareCaptionFormat{listing}{\colorbox{gray}{\parbox{0.95\textwidth}{#1#2#3}}}
+\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
 
 \DeclareSIUnit{\plc}{PLC}
 \sisetup{
@@ -123,12 +128,15 @@
     \include{preparation}
     %\showthe\textwidth
     %\include{results}
-	\include{outlook}
+    \include{outlook}
 
-	\phantomsection  % add an invisible section for the references
-	\addcontentsline{toc}{section}{References}  % add the references to the TOC
-	%\affidavit[3. Dezember 2014]{Patrick Baus}
-	%\addtocounter{page}{-1}  % Do not count the affidavit
+    \phantomsection  % add an invisible section for the references
+    \addcontentsline{toc}{section}{References}  % add the references to the TOC
+    %\affidavit[3. Dezember 2014]{Patrick Baus}
+    %\addtocounter{page}{-1}  % Do not count the affidavit
 
-	\printbibliography
+    \printbibliography
+    \appendix  % Begin the appendix
+    \include{appendix/appendix_dmm_test.tex}
+
 \end{document}

@@ -1,0 +1,73 @@
+\chapter{Appendix}
+\section{Multimeter Settings for the Comparison Test}
+\label{appendix:dmm_test}
+All were configured for maximum stability and similar conversion times using the following settings via SCPI. For better readability, all commands are shown unabridged.
+
+\begin{lstlisting}[title=HP 3458A]
+    PRESET NORM;  # reset the device
+    TARM HOLD;  # stop readings
+    BEEP;
+    OFORMAT ASCII;  # return text
+    TRIG AUTO;  # trigger when ready
+    NRDGS 1,AUTO; # take 1 reading
+    DCV 10;
+    AZERO ON;  # enable autozero
+    NDIG 9;
+    NPLC 100;
+    FIXEDZ OFF;  # High input impedance
+    TARM AUTO;  # enable readings
+\end{lstlisting}
+
+\begin{lstlisting}[title=Keithley Model 2002]
+    *CLS;  # clear events and errors
+    *RST;  # reset all settings
+    *OPC?;  # wait until device is reset
+    :INITiate:CONTinuous OFF;  # disable continuous initiation
+    :ABORt;  # place K2002 in idle
+    :SYSTem:AZERo:STATe ON;  # enable autozero
+    :SYSTem:AZERo:TYPE SYNChronous;  # azero for every reading
+    :SYSTem:LSYNc:STATe ON;  # line sync
+    :SENSe:VOLTage:DC:RANGe:UPPer 20;
+    :SENSe:VOLTage:DC:DIGits 9;
+    :SENSe:VOLTage:DC:NPLCycles 10;
+    :SENSe:VOLTage:DC:AVERage:COUNt 4;  # the averaging length
+    :SENSe:VOLTage:DC:AVERage:TCONtrol REPeat;  # filter type
+    :SENSe:VOLTage:DC:AVERage:ADVanced:STATe OFF;
+    :SENSe:VOLTage:DC:AVERage:STATe ON;  # Enable averaging
+    :FORMat:DATA REAL,64;  # read data as doubles
+    :FORMat:ELEMents READing;  # only return the reading
+    :FORMat:EXPonent HPRecision;  # Scientific notation
+    :INITiate:CONTinuous ON;  # Enable continuous triggering
+\end{lstlisting}
+
+\begin{lstlisting}[title=Keysight 34470A]
+    :SYSTem:BEEP;
+    :ABORt;
+    *RST;
+    *CLS;
+    :CONFigure:VOLTage:DC;
+    :SENSe:VOLTage:RANGe 10;
+    :SENSe:VOLTage:ZERO:AUTO ON;  # enable autozero
+    :SENSe:VOLTage:NPLCycles 100;
+    :SENSe:VOLTage:IMPEdance:AUTO ON;  # High input impendance
+    :FORMat:DATA ASCii,9;  # return 9 digits ASCII
+\end{lstlisting}
+
+\begin{lstlisting}[title=Keithley DMM6500]
+    SYSTem:BEEPer 500, 0.2;
+    ABORt;
+    *RST;
+    *CLS;
+    :SENSe:FUNCtion:ON "VOLTage:DC";
+    :SENSe:VOLTage:DC:RANGe:UPPer 10;
+    :SENSe:VOLTage:DC:LINE:SYNC ON;
+    :SENSe:VOLTage:DC:AVERage:COUNt 9;  # the averaging length
+    :SENSe:VOLTage:DC:AVERage:TCONtrol REPeat;  # filter type
+    :SENSe:VOLTage:AZERo:STATe ON;  # enable autozero
+    :SENSe:VOLTage:DC:NPLCycles 10;
+    :SENSe:VOLTage:INPutimpedance AUTO;  # High input impedance
+    :SENSe:VOLTage:DC:AVERage:STATe ON;  # Enable averaging
+    :FORMat:DATA ASCii;  # read data as double instead of text
+    :FORMat:ASCii:PRECision 16;  # return 16 digits ASCII
+    :DISPlay:VOLTage:DC:DIGits 6;  # set the screen to 6 digits
+\end{lstlisting}
