@@ -80,6 +80,8 @@ This section will give a very brief introduction into some basic concepts of con
 
 The focus of this section lies on the principels feedback and control and will be detailed in the following sections.
 
+\subsection{Transfer Functions}
+
 \subsection{Open and Closed Loop Systems}
 To understand feedback, one needs to take a look at dynamical systems. There are two types of systems: open and closed loop systems. A system is called open loop, if the output of a system does not influece its input as in figure \ref{fig:open_loop}. On the other hand, if the output is connected to the input of the system it is called closed loop system, an example is shown in figure \ref{fig:closed_loop}. $G(s)$ is called the transfer function of the system, while $R(s)$ is the input, $Y(s)$ is the output and $s$ the Laplace variable.
 
@@ -302,6 +304,169 @@ The time domain solution of the FOPDT model can now be used extract the paramete
 
 %\subsubsection{SIMC}
 We use $\tau_c = \tau$ as suggested by \cite{simc,smic2} for “\textit{tightest possible subject to maintaining smooth control}“.
+
+\section{Allan Deviation}
+The Allan variance \cite{adev} $\sigma_y^2(\tau)$ is a two-sample variance and used as a measure of stability. The Allan deviation $\sigma_y(\tau)$ is the square root of the variance. Originally, the Allan variance was used to quantify the performance of oscillators, namely the frequency stability, but it can be used evaluate any quantity. In order to define the Allan variance, a few terms need to be defined first. A single measurement value of the time series $y(t)$ can be written as
+\begin{equation}
+    \bar y_k(t) = \frac 1 \tau \int_{t_{k}}^{t_{k}+\tau} y(t)\,dt .
+\end{equation}
+This is the $k$-th measurement with a measurement time or integration time $\tau$. The latter term is frequently used for DMMs. $t_k$ is the sampling inverval including the dead time $\theta$
+\begin{equation}
+    t_{k+1} = t_k + T
+\end{equation}
+with
+\begin{equation}
+    T = \tau + \theta .
+\end{equation}
+
+Using this, the standard deviation over $N$ sampled is defined as \cite{adev,psd_to_adev}
+\begin{equation}
+    \sigma_y^2(N,T,\tau) = \left\langle \frac{1}{N-1} \left(\sum _{n=0}^{N-1}\bar y_n^2(t)-\frac{1}{N}\left(\sum _{n=0}^{N-1} \bar y_n(t)\right)^2\right)\right\rangle
+\end{equation}
+The $\langle \; \rangle$ denotes the (infinite time) average over all measurands $y_k$. Hence for all $k$.
+
+The Allan variance is a special case of this definition with zero dead-time ($\theta=0$) and only 2 samples:
+\begin{align}
+    \sigma_y^2(\tau) &= \sigma_y^2(N=2,T=\tau,\tau) \label{eqn:allan_coefficients}\\
+    &= \left\langle \frac{\left(\bar y_{k+1} - \bar y_k \right)^2}{2} \right\rangle
+\end{align}
+In practice, no experiment can take an infinite number of samples, so typically the Allan variance is estimated using a number of samples $m$:
+\begin{equation}
+    \sigma_y^2(\tau) \approx \frac1 m \sum_{k=1}^m \frac{\left(\bar y_{k+1} - \bar y_{k} \right)^2}{2} \label{eqn:adev_estimator}
+\end{equation}
+
+It can be shown \cite{psd_to_adev}, that \ref{eqn:adev_estimator} is indeed more usefull than $\sigma_y^2(N\to\infty,T=\tau,\tau)$, becuase $\sigma_y^2(\tau)$ even for $m \to \infty$ converges for processes, that do not have a convergent $\sigma_y^2(N\to\infty,T=\tau,\tau)$.
+
+Additionally, the Allan variance is mathematically related to the two-sided power spectral density $S_y(f)$ \cite{psd_to_adev}:
+\begin{equation}
+    \sigma_y^2(\tau) = 2 \int_0^\infty S_y(f) \frac{\sin^4\left( \pi f t \right)}{(\pi f \tau)^2}\,df
+\end{equation}
+
+and therefore all processes, that can be seen in the power spectral density can also be seen in the allan deviation. The inverse transform, however, is not always possible as shown by \citeauthor{inverse_adev} \cite{inverse_adev}.
+
+Distinguishing different noise processes using the Allan deviation will be elaborated in the next section.
+
+\subsection{Identifying Noise in Allan Deviation Plots}
+It was already mentioned by \citeauthor{adev} in \cite{adev}, that types of noise, whose spectral density follows a power law
+\begin{equation}
+    S(f) = C \cdot f^\alpha
+\end{equation}
+can be easily identified in the Allan deviation plot. The most common power coefficients encountered in experimental data can be found in table \ref{tab:adev_alpha_mu} and warants a further discussion.
+% TODO: put in (4) from Generation-Recombination Noise, Allan Variance, and Low-Frequency Gain Instabilities in Microwave Amplifiers
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{lccc}
+        \toprule
+        Amplitude noise type& Power-law coefficient $\alpha$& Allan deviation& $\sigma_y(N=2,T=\tau+\theta,\tau)$\\
+        \midrule
+            White noise & 0& $\propto \tau^{-1/2}$ \cite{adev_noise_types}& \\
+            Flicker/Burst noise& -1& $\propto \tau^0$ \cite{adev_noise_types}& \\
+            Random walk noise& -2& $\propto \tau^{1/2}$ \cite{adev_noise_types}& \\
+            Drift & --& $\propto \tau^1$ \cite{adev_drift}& \\
+        \bottomrule
+    \end{tabular}
+    \caption{Power law representations using the Allan variance.}
+    \label{tab:adev_alpha_mu}
+\end{table}
+
+In the previous section in equation \ref{eqn:allan_coefficients}, the Allan deviation was defined as the two-sample variance without dead-time. The effect of dead-time will be discussed later. The more important aspect is the general shape of the Allan deviation of the different power laws and will be discussed first. Linear drift, which can not be considered noise, but deterministic process has a very characteristic shape in the Allan deviation plot and will therefore be discussed here as well.
+
+\minisec{White Noise}
+White noise is probably the most common type of noise found in measurement data. Johnson noise found in resistors, caused by the random fluctuation of the charge carriers, is one example of mostly white noise up to bandwidth of \qty{100}{\MHz}, from where on quantum corrections are required \cite{nist_johnson_noise}. Amplifiers also tend to have a white noise spectrum at higher frequencies. For these reasons, white noise typically makes up for a considerabe amount of noise in a measurement, unless one measures at very low frequencies. White noise is a series of uncorrelated random events and therefore characterised by a uniform power spectral density, which means there is the same power in a given bandwidth at all frequencies. Another one of its important and often used properties is, that the variance of two uncorrelated variables adds:
+\begin{equation}
+    \sigma_{x+y}^2  = \sigma_x^2 + \sigma_y^2 + \underbrace{2\,\mathrm{Cov}(x,y)}_{\text{uncorrelated} = 0}\ = \sigma_x^2 + \sigma_y^2
+\end{equation}
+
+This allows the simple addition of variances from different sources, but it must be stressed here, that this property is only valid for uncorrelated sources like white noise, although it is usually incorrectly applied to all measurements in disreagard of the dominant noise present. This Unfortunately obscures rather than clarifies the uncertainties involved.
+
+In order to demonstrate the effect of white noise in Allan deviation plots, it was simulated using Python and the excellent AllanTools library \cite{allantools}. The noise generator chosen in the AllanTools library is based on the work of \citeauthor{noise_generation} \cite{noise_generation}. The full Python program code is published online \cite{}. For better comparison, all noise densities are normalized to give an Allan deviation of $\sigma_y(\tau_0)=1$.
+
+Figure \ref{fig:white_noise_simulated} shows a sample of white noise in three different forms. Figure \ref{fig:white_noise_time} is the time series representation. From this sample, the power spectral density was calculated and is shown in figure \ref{fig:white_noise_psd}. The dashed line shows the expectation value of the power spectral density and the Allan deviation.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}{0.3\linewidth}
+        \scalebox{0.75}{%
+            \input{images/white_noise_time.pgf}
+        } % scalebox
+        \caption{Time domain}
+        \label{fig:white_noise_time}
+    \end{subfigure}
+    \begin{subfigure}{0.3\linewidth}
+        \scalebox{0.75}{%
+            \input{images/white_noise_psd.pgf}
+        } % scalebox
+        \caption{Power spectral density}
+        \label{fig:white_noise_psd}
+    \end{subfigure}
+    \begin{subfigure}{0.3\linewidth}
+        \scalebox{0.75}{%
+            \input{images/white_noise_adev.pgf}
+        } % scalebox
+        \caption{Allan deviation}
+        \label{fig:white_noise_adev}
+    \end{subfigure}
+    \caption{Different representations of white noise.}
+    \label{fig:white_noise_simulated}
+\end{figure}
+
+From this simulation, several features can be observed. First of all, the power spectral density is flat and constant with $h_0 = 2$, which is in accordance with table \ref{tab:adev_alpha_mu} and the normalization mentioned earlier. Figure \ref{fig:white_noise_adev} shows the typical $\tau^{-\frac1 2}$ dependence of white noise in the Allan deviation plot. This immediatly explains, why filtering white noise scales with $\frac{1}{\sqrt{n}}$ with $n$ being the number of samples averaged.
+
+\minisec{Burst Noise}
+Burst noise, popcorn noise, or sometimes referred to as random telegraph signal is a random bi-stable change in a signal and is caused by a generation recombination processes. This, for example, happens in semiconductors if there is a site, that can trap an electrons for a prologned period of time and then randomly release it. Imporities causing lattice defects are discussed in this context \cite{kay2012operational,burst_noise_psd,popcorn_noise_orgin,technote_ti_popcorn_noise}. Such latttice defects can also be introduced by ion implantation during doping.
+
+The discussion is split into two parts. First the power spectral density is derived and then the Allan variance. The spectral density of burst noise caused by a single trap site was derived in \cite{burst_noise_wiener_khinchin} by \citeauthor{burst_noise_wiener_khinchin}. The author used the autocorrelation function of the burst noise signal and applied the Wiener-Khinchin (Wiener-Хи́нчин) theorem, which connects the autocorrelation function with the power spectral density. A nicely detailed derivation can be found in \cite{fundamentals_of_noise_processes}, which also discusses the preconditions, that must be met, like stationarity of the process. The burst noise signal consists of two energie levels, called $0$ and $1$, split by $\Delta y$. Multiple burst noise signals can be superimposed in a real device. This would then result in mutiple levels, but they can be treated separately. The measurement interval over an even number of transitions, so that one ends in the same state as the measurement has started, is the time $T$. The mean lifetime of the levels is called $\bar \tau_0$ and $\bar \tau_1$:
+\begin{equation}
+    \bar \tau_{0} \approx \frac 1 N \sum_{i}^N \tau_{0,i} \qquad \bar \tau_{1} \approx \frac 1 N \sum_{i}^N \tau_{1,i}
+\end{equation}
+
+Figure \ref{fig:burst_noise} shows a burst noise signal along with the definitions above.
+
+\begin{figure}[h]
+    \centering
+    \scalebox{1}{%
+        \import{figures/}{burst_noise.tex}
+    } % scalebox
+    \caption{A random burst noise signal.}
+    \label{fig:burst_noise}
+\end{figure}
+
+Using these definitions, one can then derive \cite{burst_noise_wiener_khinchin}:
+\begin{align}
+    R_{xx} (T) &= (\Delta y)^2 \cdot \frac{\bar \tau_1 \bar \tau_0 e^{-\left(\frac{1}{\bar \tau_1}+\frac{1}{\bar \tau_0}\right)T}}{\left(\bar \tau_1 + \bar \tau_0\right)^2} \, \text{and}\\
+    S(\omega) &= 4 R_{xx}(0) \frac{\frac{1}{\tau_1} + \frac{1}{\tau_0}}{1 + \omega^2 \left(\frac{1}{\bar \tau_1} + \frac{1}{\bar \tau_0}\right)^2} \qquad \omega > 0 . \label{eqn:burst_noise}
+\end{align}
+Note, that the power spectral density is the one-sided version, hence an additional factor of $2$ is included. The d.c. term was ommitted here and can usually be neglected, because it is not relevant for calculating the power spectral density of real measurement data as it only contributes a single peak at $\omega=0$. Using $\frac{1}{\bar \tau} = \frac{1}{\bar \tau_1} + \frac{1}{\bar \tau_0}$ equation \ref{eqn:burst_noise} can be rewritten to give a more intuitive form:
+\begin{equation}
+    S(\omega) = 4 R_{xx}(0) \frac{\bar \tau}{\omega^2 + \bar \tau^2}
+\end{equation}
+This is a Lorentzian function and it can be seen, that a single trap site has a power spectral density that is proportional to $\frac{1}{f^2}$ at higher frequencies and it is also immediately evident, that for low frequencies, the power spectral density must be flat.
+
+With the spectral density in hand, it is now possible to calculate the Allan variance as it was done by
+
+%\begin{figure}[ht]
+%    \centering
+%    \input{images/burst_noise_psd.pgf}
+%    \caption{Burst noise for $\tau_0=\qty{1}{\second}$ and different $\tau_1$}
+%    \label{fig:burst_noise_psd}
+%\end{figure}
+
+
+
+
+This type of noise has become less prevalent in modern manufacturing processes, because the quality of the semiconductors has improved. But if, for example a trap site is located very close to an important structure, for example a high precision Zener diode, its effect might be so strong, that it can be clearly seen.
+
+
+The small wiggles at longer $\tau$ are typical end-of-data errors caused by spectral leakage, because there are insufficient samples to average over \cite{adev_long_tau}. As it was discussed above, the Allan deviation can only be estimated given a limited number of samples using equation \ref{eqn:adev_estimator}. This leads to the fact, that at $\frac{\tau}{2}$ there are only $2$ samples left, so there no averaging possible to improve the estimate of the Allan deviation. This leads to oscillations at low frequencies or large $\tau$.
+
+
+% TODO: Add adev simulations
+
+The coefficients given here are using the assumption, that the Allan deviation is the appropriate measure for the sample data. This might not always be the case, because the Allan deviation assumes a dead time of $\theta = 0$. This problem was extensively discussed by \citeauthor{psd_to_adev} \cite{psd_to_adev} and even special models were developed to account for the algorithms of modern frequency counters \cite{adev_frequency_counter}. It is therefore important to discuss typical measurement settings for voltmeter to estimate errors that arise from those settings. Typical settings, that affect the dead time of a voltmeter are auto-zeroing and line synchronization. Auto-zeroing is typically done by adding additional measurements to the normal input integratiion cycle. These measurements are a zero measurement to correct for offset drift and a measurement of the reference voltage to correct for gain errors. The implementation details and type of measurements are manufacturer dependant and must be determinded for every multimeter used.
+
+% check \cite{psd_to_adev} Appendix II for details on dead time
+% Compare PSD in Generation-Recombination Noise, Allan Variance, and Low-Frequency Gain Instabilities in Microwave Amplifiers to our controller. The hump look similar. Due to popcorn noise
 
 \section{Temperature Controller}
 

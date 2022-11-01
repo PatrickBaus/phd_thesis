@@ -690,7 +690,7 @@ def parse_labtemp_drift_file(filename, options, delimiter=","):
     if key in data:
       data[key] = scaling_function(data[key])
 
-  return data[1:], 0
+  return data, 0
 
 def parse_rth_digital_file(filename, options, delimiter=","):
   data = pd.read_csv(filename, skiprows=22, comment='#', header=None, usecols=[0,1,2,3,4,5,6,7,8], names=['date', 'D7', 'D6', 'D5', 'D4', 'D3', 'D2', 'D1', 'D0'])
@@ -700,7 +700,7 @@ def parse_rth_digital_file(filename, options, delimiter=","):
     if key in data:
       data[key] = scaling_function(data[key])
 
-  return data[1:], 0
+  return data, 0
 
 def parse_SCAN2000_file(filename, options, delimiter=",", **_kwargs):
   data = pd.read_csv(filename, comment='#', header=None, usecols=range(19), names=['date',]+[f"K2002 CH{channel+1}" for channel in range(10)]+['temp_10k', 'temp_100', 'humidity', 'temp_chamber', 'temp_tec', 'current_tec', 'voltage_tec', 'setpoint_tec'])
@@ -710,7 +710,7 @@ def parse_SCAN2000_file(filename, options, delimiter=",", **_kwargs):
     if key in data:
       data[key] = scaling_function(data[key])
 
-  return data[1:], 0
+  return data, 0
 
 def parse_WS8_file(filename, options, delimiter=","):
   data = pd.read_csv(filename, skiprows=1, comment='#', header=None, usecols=[0,3,4,5,6,], names=['date', 'ch1', 'ch2', 'pressure', 'temp'])
@@ -725,7 +725,7 @@ def parse_WS8_file(filename, options, delimiter=","):
     if key in data:
       data[key] = scaling_function(data[key])
 
-  return data[1:], 0
+  return data, 0
 
 def parse_timescale_db_file(filename, options, delimiter=","):
   data = pd.read_csv(filename, skiprows=1, comment='#', header=None, usecols=range(7), names=['date', 'humidity_dut', 'temp_table', 'laser_power', 'air_pressure', 'frequency', 'piezo_voltage'])
@@ -735,7 +735,7 @@ def parse_timescale_db_file(filename, options, delimiter=","):
     if key in data:
       data[key] = scaling_function(data)
 
-  return data[1:], 0
+  return data, 0
 
 def parse_timescale_db_015_file(filename, options, delimiter=","):
   data = pd.read_csv(filename, skiprows=1, comment='#', header=None, usecols=range(6), names=['date', 'humidity_dut', 'temp_table', 'air_pressure', 'diode_voltage', 'piezo_voltage'])
@@ -745,7 +745,7 @@ def parse_timescale_db_015_file(filename, options, delimiter=","):
     if key in data:
       data[key] = scaling_function(data)
 
-  return data[1:], 0
+  return data, 0
 
 def parse_timescale_db_file_v2(filename, options, delimiter=",", **kwargs):
   data = pd.read_csv(filename, skiprows=1, comment='#', header=None, usecols=range(3), names=['date', 'output', 'temperature',])
@@ -755,7 +755,7 @@ def parse_timescale_db_file_v2(filename, options, delimiter=",", **kwargs):
     if key in data:
       data[key] = scaling_function(data)
 
-  return data[1:], 0
+  return data, 0
 
 def parse_timescale_db_file_v3(filename, options, delimiter=",", **kwargs):
   data = pd.read_csv(filename, skiprows=1, comment='#', header=None, usecols=range(4), names=['date', 'output', 'temperature_room', 'temperature_labnode'])
@@ -765,7 +765,55 @@ def parse_timescale_db_file_v3(filename, options, delimiter=",", **kwargs):
     if key in data:
       data[key] = scaling_function(data)
 
-  return data[1:], 0
+  return data, 0
+
+def parse_timescale_db_fluke5440b(filename, options, delimiter=",", **kwargs):
+  data = pd.read_csv(filename, skiprows=1, comment='#', header=None, usecols=range(6), names=['date', '34470a', '3458a', 'k2002', 'dmm6500', 'temperature'])
+  data.date = pd.to_datetime(data.date, utc=True)   # It is faster to parse the dates *after* parsing the csv file
+
+  for key, scaling_function in options.get('scaling', {}).items():
+    if key in data:
+      data[key] = scaling_function(data)
+
+  return data, 0
+
+def parse_data_logger_fluke5440b(filename, options, delimiter=",", **kwargs):
+  data = pd.read_csv(filename, comment='#', header=None, usecols=[0,1,2,3,4,6], names=['date', 'k2002', '3458a', '34470a', 'dmm6500', 'temperature'])
+  data.date = pd.to_datetime(data.date, utc=True)   # It is faster to parse the dates *after* parsing the csv file
+
+  for key, scaling_function in options.get('scaling', {}).items():
+    if key in data:
+      data[key] = scaling_function(data)
+
+  return data, 0
+
+def noise_gen(filename, options, **kwargs):
+    from random import seed
+    seed(42)
+
+    amplitude = options.get('amplitude', 1)
+    noise_beta = {
+        "blue": 1,
+        "white": 0,
+        "pink": -1,
+        "brown": -2,
+        "running": -3,
+    }
+    beta = noise_beta[options.get('noise_type', "white")]
+    N = options.get('samples', 1e5)
+    x = np.arange(0,N/2+1)
+    mag = amplitude * x**(beta/2) * np.random.randn(int(N/2 +1))
+    pha = 2*np.pi * np.random.rand(int(N/2 +1))
+    real = mag * np.cos(pha);
+    imag = mag * np.sin(pha);
+    real[0] = 0;
+    imag[0] = 0;
+
+    c = real + 1j*imag
+    tod = np.fft.irfft(c)
+
+    df = pd.DataFrame({"date": np.arange(N), "value": tod})
+    return df, 0
 
 FILE_PARSER = {
   '34470A': parse_Keysight34470A_file,
@@ -818,6 +866,9 @@ FILE_PARSER = {
   'timescale_db_015': parse_timescale_db_015_file,
   'timescale_db_2': parse_timescale_db_file_v2,
   'timescale_db_3': parse_timescale_db_file_v3,
+  'timescale_db_fluke5440b': parse_timescale_db_fluke5440b,
+  'data_logger_fluke5440b': parse_data_logger_fluke5440b,
+  'noise_gen': noise_gen
 }
 
 def parse_file(parser, filename, **kwargs):
