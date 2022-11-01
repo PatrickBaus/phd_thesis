@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.mlab as mlab
 import matplotlib.legend
 import numpy as np
+import os
 import pandas as pd
 from matplotlib.ticker import ScalarFormatter
 
@@ -25,7 +26,15 @@ tex_fonts = {
     "legend.fontsize": 8,
     "xtick.labelsize": 8,
     "ytick.labelsize": 8,
-    "pgf.rcfonts": False     # don't setup fonts from rc parameters
+    "pgf.rcfonts": False,     # don't setup fonts from rc parameters
+    "text.latex.preamble": "\n".join([ # plots will use this preamble
+        r"\usepackage{siunitx}",
+    ]),
+    #"pgf.texsystem": "lualatex",
+    "pgf.preamble": "\n".join([ # plots will use this preamble
+        r"\usepackage{siunitx}",
+    ]),
+    "savefig.directory": os.chdir(os.path.dirname(__file__)),
 }
 plt.rcParams.update(tex_fonts)
 plt.style.use('tableau-colorblind10')
@@ -252,7 +261,7 @@ if __name__ == "__main__":
     },
     {
       'title': None,
-      'show': False,
+      'show': True,
       'zoom': ['2020-05-26 06:45:00', '2020-05-26 07:00:00'], # Serial no. 15, popcorn noise, used in thesis
       'crop_secondary_to_primary': True,
       'primary_axis': {
