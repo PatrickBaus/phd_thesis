@@ -12,7 +12,7 @@
 	logofile=example-image, %Falls die Logo Dateien nicht vorliegen
 	IMRAD=false,
 	twoside,
-%	draft  % Use draft to find overfull boxes
+%	draft  % Use draft to find overfull boxes, this seems to break the hyperref package
 ]{tudapub}
 
 \usepackage[english]{babel}
@@ -38,7 +38,7 @@
 
 \usepackage{microtype}
 
-\usepackage{biblatex}
+\usepackage[backend=biber]{biblatex}
 \usepackage{csquotes}  % Needed by biblatex when babel is active
 \bibliography{bibliography}
 
