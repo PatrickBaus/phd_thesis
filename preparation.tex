@@ -479,7 +479,7 @@ The small deviation from the analytical solution in figure \ref{fig:burst_noise_
 
 \begin{figure}[ht]
     \centering
-    \begin{subfigure}{0.9\linewidth}
+    \begin{subfigure}{0.8\linewidth}
         \centering
         \scalebox{1}{%
             \input{images/burst_noise_time.pgf}
@@ -520,6 +520,62 @@ The other interesting case is, if many trap sites with different time constants 
 
 \clearpage
 \minisec{Flicker Noise}
+Flicker noise is also called $\frac 1 f$-noise and it can be observed in many naturally occuring phenomenen and its origin is not clear, although there have been many explanations. An overview can be found in \cite{flicker_noise_overview, flicker_noise_overview2}. This work concentrates on flicker noise in electronic devices. For example in thick-film resistors it was shown to extend over at least 6 decades without any visible flattening \cite{1_f_noise_thick_film}. One explanation for flicker noise in transistors is the existance of generation-recombination noise or burst noise discussed in the previous section. If there are many uncorrelated trap sites, that contribute to the total noise, the envelope of the noise spectral density changes from $\frac{1}{f^2}$ to $\frac{1}{f^1}$. This is shown in figure \ref{fig:flicker_noise_evelope}
+
+\begin{figure}[hb]
+    \centering
+    \input{images/flicker_noise_envelope.pgf}
+    \caption{Multiple overlapping Lorentzian noise sources forming a $\frac 1 f$-like shape.}
+    \label{fig:flicker_noise_evelope}
+\end{figure}
+
+Mathematically this can be motivated using the assumption that the number of trap sites $N$ with a certain time constant $\tau$ is inversely proportional to the time constant:
+\begin{equation}
+    N(\tau) \propto \frac 1 \tau \label{eqn:flicker_noise_weight_function}
+\end{equation}
+
+This assumption is physical, because it is unreasonable, that a trap site can store an electron indefinitely and also it is reasonable that there is little correlation as trap sites spread over a large area in a semiconductor do not influence each other. Using equation \ref{eqn:burst_noise_lorentzian} from the previous section, multiplying the weight function \ref{eqn:flicker_noise_weight_function} and integrating over all possible storage times gives:
+\begin{align}
+    S(\omega) &= \lim_{t \to \infty} \int_0^t N(\tau) \, 4 R_{xx}(0) \frac{\tau}{1 + \omega^2 \tau^2} \, d\tau \nonumber\\
+    &= 4 R_{xx}(0)\, C \lim_{t \to \infty} \int_0^t \frac{1}{1 + \omega^2 \tau^2} \, d\tau \nonumber\\
+    &= \frac{4 R_{xx}(0)\, C}{\omega} \lim_{t \to \infty}  \arctan{\tau \omega} \Big|_0^t \nonumber\\
+    &= \frac{4 R_{xx}(0)\, C}{\omega} \cdot \frac{\pi}{2} \nonumber\\
+    &= \frac{2 \pi R_{xx}(0)\, C}{\omega}
+\end{align}
+
+$C$ is the proportionality constant and it can be seen, that for many distributed trap sites, a noise spectrum of $\frac{1}{f}$ is found.
+
+Again, using the \textit{AllanTools} library \cite{allantools}, flicker noise was simulated to give an impresion of its properties.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}{0.32\linewidth}
+        \centering
+        \scalebox{0.75}{%
+            \input{images/flicker_noise_time.pgf}
+        } % scalebox
+        \caption{Time domain}
+        \label{fig:flicker_noise_time}
+    \end{subfigure}
+    \begin{subfigure}{0.32\linewidth}
+        \centering
+        \scalebox{0.75}{%
+            \input{images/flicker_noise_psd.pgf}
+        } % scalebox
+        \caption{Power spectral density}
+        \label{fig:flicker_noise_psd}
+    \end{subfigure}
+    \begin{subfigure}{0.32\linewidth}
+        \centering
+        \scalebox{0.75}{%
+            \input{images/flicker_noise_adev.pgf}
+        } % scalebox
+        \caption{Allan deviation}
+        \label{fig:flicker_noise_adev}
+    \end{subfigure}
+    \caption{Different representations of flicker noise for different $\bar \tau_1$ and fixed $\bar \tau_0 = \qty{1}{\s}$.}
+    \label{fig:flicker_noise_simulated}
+\end{figure}
 
 The small wiggles at longer $\tau$ are typical end-of-data errors caused by spectral leakage, because there are insufficient samples to average over \cite{adev_long_tau}. As it was discussed above, the Allan deviation can only be estimated given a limited number of samples using equation \ref{eqn:adev_estimator}. This leads to the fact, that at $\frac{\tau}{2}$ there are only $2$ samples left, so there no averaging possible to improve the estimate of the Allan deviation. This leads to oscillations at low frequencies or large $\tau$.
 
