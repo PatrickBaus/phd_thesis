@@ -658,7 +658,35 @@ The \textit{AllanTools} library \cite{allantools} can then be used to simulate t
 \end{figure}
 
 
-% TODO: Add adev simulations
+\clearpage
+\minisec{Drift}
+Finally, the last feature of the Allan deviation plot, that needs to be discussed is drift. Drift happens at very long time scales and descriped a linear dependence of measurand on the time. This is also part of the ageing effect. \citeauthor{adev_drift} discussed the effect of drift \cite{adev_drift} on the Allan variance and found the following relationship:
+\begin{align}
+    \sigma_A^2(\tau) = \frac{D^2}{2} \tau^2
+\end{align}
+with slope of the drift $D$.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}{0.32\linewidth}
+        \centering
+        \scalebox{0.75}{%
+            \input{images/drift_time.pgf}
+        } % scalebox
+        \caption{Time domain}
+        \label{fig:drift_time}
+    \end{subfigure}
+    \begin{subfigure}{0.32\linewidth}
+        \centering
+        \scalebox{0.75}{%
+            \input{images/drift_adev.pgf}
+        } % scalebox
+        \caption{Allan deviation}
+        \label{fig:drift_adev}
+    \end{subfigure}
+    \caption{Different representations of linear drift.}
+    \label{fig:drift_noise_simulated}
+\end{figure}
 
 The coefficients given here are using the assumption, that the Allan deviation is the appropriate measure for the sample data. This might not always be the case, because the Allan deviation assumes a dead time of $\theta = 0$. This problem was extensively discussed by \citeauthor{psd_to_adev} \cite{psd_to_adev} and even special models were developed to account for the algorithms of modern frequency counters \cite{adev_frequency_counter}. It is therefore important to discuss typical measurement settings for voltmeter to estimate errors that arise from those settings. Typical settings, that affect the dead time of a voltmeter are auto-zeroing and line synchronization. Auto-zeroing is typically done by adding additional measurements to the normal input integratiion cycle. These measurements are a zero measurement to correct for offset drift and a measurement of the reference voltage to correct for gain errors. The implementation details and type of measurements are manufacturer dependant and must be determinded for every multimeter used.
 
