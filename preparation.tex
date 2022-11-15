@@ -26,7 +26,7 @@ The first version of LabKraken used a threaded design approach, because the orig
 \subsubsection{Device Identifiers}
 Every sensor network needs device identifiers. Preferably those identifiers should be unique. Typically a device has some kind of internal indetifier. Here are a few examples of the sensors used in our network:
 
-\begin{table}[h]
+\begin{table}[ht]
 \centering
 \begin{tabularx}{0.95\textwidth}{|l|p{6.5cm}|X|}
     \hline
@@ -211,7 +211,7 @@ In order to describe a closed-loop system, one has to first create a model for t
 
 Typically, the room temperature is kept constant. Therefore, the controller will keep $T_{system}$ constant and if the outside temperature and the heat load $\dot Q_{load}$ is \textit{reasonably stable}, it is easy to see, that a constant thermal flux must flow through $R$ since it cannot pass through the thermal capacitance $C$. \textit{Reasonably stable} means that those fluxes can be treated as constant with respect to the temperature controller time constants. This will be further discussed in section \ref{} with regards to system stability. If this assumption holds, the thermal flux from the system load will only cause a constant offset of $T_{force}$, since the heat must be removed by the controller through the resistance $R_{force}$, and the model can be simplified further. Here $T_{force}$ and $T_{system}$ was replaced by $T_{in}$ and $T_{out}$ for better readability.:
 
-\begin{figure}[h]
+\begin{figure}[hb]
     \centering
     \scalebox{1}{%
         \import{figures/}{first_order_model_kirchhoff.tex}
