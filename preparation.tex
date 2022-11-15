@@ -707,6 +707,66 @@ Therefore, if the deadtime is added at a frequency high enough, so that the inpu
 
 Finally, \citeauthor{psd_to_adev} \cite{psd_to_adev} notes that for measurement durations or averaging time $T \gg T_0$ $\sigma_A^2(T) \to \sigma_A^2(\tau)$. The means that for higher frequencies, the Allan variance is not affected, because the noise is white, and for lower frequencies, where $T \gg T_0$ holds, the Allan variance is unaffected as well. If the multimeter is correctly configured, the dead time of the device has little effect on the Allan variance. This is further discussed in the next section.
 
+\clearpage
+\subsection{Example}
+Using the results from the previous sections, it is possible to simulate a typical measurement sample containing white noise, flicker noise and random walk behaviour. This was done using the \textit{AllanTools} library \cite{allantools} to generate time domain data, which was then converted to a power spectrum using the algorithm of \citeauthor{welch} \cite{welch}. The full Python source is available at \cite{}. The time domain data was downsampled using the Largest-Triangle-Three-Buckets algorithm created by \citeauthor{lttb} \cite{lttb} from $2^{25}$ data points to $2000$ for faster plotting. This downsampling algorithm kept the overall shape, yet the edges are a little rougher. The full be regenerated using the source code given above. The power spectrum and the Allan deviation were always calculated from the original dataset.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}{0.32\linewidth}
+        \centering
+        \scalebox{0.75}{%
+            \input{images/example_white_time.pgf}
+        } % scalebox
+        \caption{White noise}
+    \end{subfigure}
+    \begin{subfigure}{0.32\linewidth}
+        \centering
+        \scalebox{0.75}{%
+            \input{images/example_flicker_time.pgf}
+        } % scalebox
+        \caption{Flicker noise}
+    \end{subfigure}
+    \begin{subfigure}{0.32\linewidth}
+        \centering
+        \scalebox{0.75}{%
+            \input{images/example_rw_time.pgf}
+        } % scalebox
+        \caption{Random walk}
+    \end{subfigure}
+    \caption{The three noise components summed together to simulate a typical noise source.}
+    \label{fig:adev_example_noise_types}
+\end{figure}
+
+The the three time series shown in figure \ref{fig:adev_example_noise_types} were added together to give an impression how such a signal would look like. This is shown in figure \ref{fig:adev_example_time}. The summed series clearly shows the white noise content and it is possible to deduce some flicker or random walk noise, but it is highly obscured due to the amount of white noise. Using the time domain plot makes it very hard to distinguish the type of noise except for white noise.
+
+\begin{figure}[hb]
+    \centering
+    \input{images/example_time.pgf}
+    \caption{A simulated time series containing white noise, flicker noise and random walk behaviour}
+    \label{fig:adev_example_time}
+\end{figure}
+
+A common approach to identify noise sources is the power spectrum. It is easily accessible using spectrum analyzers. The power spectrum of figure \ref{fig:adev_example_time} is shown in figure \ref{fig:adev_example_psd}. It allows identify a $f^{\alpha}$ component, but the $f^{-2}$ components is hardly recognizable. It can easily be mistaken for measurement noise, especially since there are fewer data points a low frequencies causing any fit to automatically favour the $f^{-1}$ part. For better a visualization the individual noise components are also plotted using dashed lines.
+
+\begin{figure}[ht]
+    \centering
+    \input{images/example_psd.pgf}
+    \caption{A simulated power spectrum containing white noise, flicker noise and random walk behaviour.}
+    \label{fig:adev_example_psd}
+\end{figure}
+
+The Allan deviation plot gives very results and all noise components can be clearly identified. Again the individual components are plotted using dashed lines.
+
+\begin{figure}[hb]
+    \centering
+    \input{images/example_adev.pgf}
+    \caption{A simulated Allan deviation containing white noise, flicker noise and random walk behaviour.}
+    \label{fig:adev_example_adev}
+\end{figure}
+
+The Allan deviation was calculated using the overlapping Allan deviation algorithm \cite{oadev_definition}. The overlapping Allan deviation gives a better condifdence at longer intervals or lower frequencies, allowing to identify very low frequency noise like the random walk shown here. \cite{oadev_definition} also gives a very good comparison of other algorithms to identify noise types in data sets.
+
 % check \cite{psd_to_adev} Appendix II for details on dead time
 % Compare PSD in Generation-Recombination Noise, Allan Variance, and Low-Frequency Gain Instabilities in Microwave Amplifiers to our controller. The hump look similar. Due to popcorn noise
 
