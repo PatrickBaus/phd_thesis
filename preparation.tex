@@ -250,7 +250,9 @@ and the block diagram becomes
 
 \begin{figure}[ht]
     \centering
-    \import{figures/}{open_loop_full.tex}
+    \scalebox{1}{%
+        \import{figures/}{open_loop_full.tex}
+    }% scalebox
     \caption{Open loop system with sensor.}
 \end{figure}
 
@@ -295,7 +297,7 @@ The time domain solution of the FOPDT model can now be used extract the paramete
     \label{fig:fopdt}
 \end{figure}
 
-%\cite{pi_first_order_system}
+%\cite{pi_stabilization_of_fopdt_systems}
 
 
 
