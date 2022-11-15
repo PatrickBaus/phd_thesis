@@ -389,7 +389,7 @@ can be easily identified in the Allan deviation plot. The constant $h_\alpha$ is
 In order to arrive at a good understanding of the features seen in an Allan deviation plot, this section will provide the reader with examples of each type of noise and the corresponding time domain, power spectral density and Allan deviation plot. Since a complete overview is not available in current literature, all required mathematical descriptions and simulation tools will be discussed here. The simulations were done using Python and the source code is linked to in the discussions.
 
 \clearpage
-\minisec{White Noise}
+\subsubsection{White Noise}
 White noise is probably the most common type of noise found in measurement data. Johnson noise found in resistors, caused by the random fluctuation of the charge carriers, is one example of mostly white noise up to bandwidth of \qty{100}{\MHz}, from where on quantum corrections are required \cite{nist_johnson_noise}. Amplifiers also tend to have a white noise spectrum at higher frequencies. For these reasons, it typically makes up for a considerabe amount of noise in a measurement, unless one measures at very low frequencies. White noise is a series of uncorrelated random events and therefore characterised by a uniform power spectral density, which means there is the same power in a given bandwidth at all frequencies. Another one of its important and often used properties is, that the variance $\sigma_{x+y}^2$ of two uncorrelated variables $x$ and $y$ adds:
 \begin{equation}
     \sigma_{x+y}^2  = \sigma_x^2 + \sigma_y^2 + \underbrace{2\,\mathrm{Cov}(x,y)}_{\text{uncorrelated}\, =\, 0}\ = \sigma_x^2 + \sigma_y^2 \label{eqn:adding_white_noise}
@@ -433,7 +433,7 @@ Figure \ref{fig:white_noise_simulated} shows a sample of white noise in three di
 From this simulation, several features can be observed. First of all, the power spectral density is flat and constant with $h_0 = 2$, which is in accordance with table \ref{tab:adev_alpha} and the normalization mentioned earlier. Figure \ref{fig:white_noise_adev} shows the typical $\tau^{-\frac1 2}$ dependence of white noise in the Allan deviation plot. This immediately explains, why filtering white noise scales with $\frac{1}{\sqrt{n}}$ with $n$ being the number of samples averaged.
 
 \clearpage
-\minisec{Burst Noise}
+\subsubsection{Burst Noise}
 Burst noise, popcorn noise, or sometimes referred to as random telegraph signal is a random bi-stable change in a signal and is caused by a generation recombination processes. This, for example, happens in semiconductors if there is a site, that can trap an electrons for a prologned period of time and then randomly release it. Imporities causing lattice defects are discussed in this context \cite{kay2012operational,burst_noise_psd,popcorn_noise_orgin,technote_ti_popcorn_noise}. Such latttice defects can also be introduced by ion implantation during doping. Fortunately, this type of noise has become less prevalent in modern manufacturing processes, because the quality of the semiconductors has improved. But if a trap site is located very close to an important structure, for example a high precision Zener diode, its effect might be so strong, that it can be clearly seen.
 
 The discussion is split into two parts. First the power spectral density is calculated and then the Allan variance is caclulated using that result.
@@ -533,7 +533,7 @@ For the typical case, a very large number of such events happen. When not counti
 The other interesting case is a case, where many trap sites with different time constants are contributing to the noise. This can change the shape of the spectrum from $f^{-2}$ to $f^{-1}$ and is discussed in the next section.
 
 \clearpage
-\minisec{Flicker Noise}
+\subsubsection{Flicker Noise}
 Flicker noise is also called $\frac 1 f$-noise and it can be observed in many naturally occuring phenomenen. Its origin is not clear, although there have been many explanations. An overview can be found in \cite{flicker_noise_overview, flicker_noise_overview2, origins_1_f_noise}. This work concentrates on flicker noise in electronic devices. In thick-film resistors, for example, it was shown to extend over at least 6 decades without any visible flattening \cite{1_f_noise_thick_film}. In transistors, flicker noise is caused by the existance of generation-recombination noise or burst noise discussed in the previous section \cite{origins_1_f_noise}. If there are many uncorrelated trap sites, that contribute to the total noise, the envelope of the noise spectral density changes from $\frac{1}{f^2}$ to $\frac{1}{f^1}$ as shown in figure \ref{fig:flicker_noise_evelope}
 
 \begin{figure}[hb]
@@ -603,7 +603,7 @@ The small wiggles at longer $\tau$ are typical end-of-data errors caused by spec
 
 
 \clearpage
-\minisec{Random Walk}
+\subsubsection{Random Walk}
 Random walk noise can be attributed to environmental factors such as temperature \cite{random_walk_fm} and diffusion processes, the latter contributing to the ageing effect seen in semiconductors.
 It is a process, where in each time step the change is randomly determined to be either a positve or negative step with equal probability and a fixed step size. Its mean is
 \begin{equation}
@@ -659,7 +659,7 @@ The \textit{AllanTools} library \cite{allantools} can then be used to simulate t
 
 
 \clearpage
-\minisec{Drift}
+\subsubsection{Drift}
 Finally, the last feature of the Allan deviation plot, that needs to be discussed is drift. Drift happens at very long time scales and descriped a linear dependence of measurand on the time. This is also part of the ageing effect. \citeauthor{adev_drift} discussed the effect of drift \cite{adev_drift} on the Allan variance and found the following relationship:
 \begin{align}
     \sigma_A^2(\tau) = \frac{D^2}{2} \tau^2
@@ -689,7 +689,7 @@ with slope of the drift $D$.
 \end{figure}
 
 \clearpage
-\minisec{Dead Time}
+\subsubsection{Dead Time}
 The coefficients given here were derived using the assumption, that all sampling in a measurement are continous and the dead time $\theta = 0$. Unfortunately, measurement sometime have a dead time, that is non negligible. This problem was extensively discussed by \citeauthor{psd_to_adev} \cite{psd_to_adev}. \citeauthor{adev_frequency_counter} even developed special models to account for the algorithms of modern frequency counters \cite{adev_frequency_counter}. While some frequency counters support gapless measurements, the situation is entirely different for digitizers and digital multimeters. Several settings commonly used affect the dead time, which can be considerable. It is therefore important to discuss typical measurement settings for voltmeters to estimate the errors that arise from those settings. The focus of this discussion lies on the dead time introduced by digital multimeters, but the application is not limited to this field.
 
 The most commonly used settings, that affect the dead time of a voltmeter are auto-zeroing and line synchronization. Auto-zeroing is done by adding additional measurements to the normal input integration cycle. To correct for the zero offset drift a zero measurement is added where the adc is switched to the low terminal. Additionally, some devices add a reading of the reference voltage to correct for gain errors. The implementation details and type of measurements are manufacturer dependant and must be determinded for every multimeter used.
