@@ -602,6 +602,60 @@ Again, using the \textit{AllanTools} library \cite{allantools}, flicker noise wa
 The small wiggles at longer $\tau$ are typical end-of-data errors caused by spectral leakage, because there are insufficient samples to average over \cite{adev_long_tau}. As it was discussed above, the Allan deviation can only be estimated using equation \ref{eqn:adev_estimator} given a limited number of samples.Therefore, at $\frac{\tau}{2}$ there are only $2$ samples left, so there is no averaging possible to improve the estimate of the Allan deviation, which causes the oscillations at low frequencies or large $\tau$.
 
 
+\clearpage
+\minisec{Random Walk}
+Random walk noise can be attributed to environmental factors such as temperature \cite{random_walk_fm} and diffusion processes, the latter contributing to the ageing effect seen in semiconductors.
+It is a process, where in each time step the change is randomly determined to be either a positve or negative step with equal probability and a fixed step size. Its mean is
+\begin{equation}
+    \langle y_n \rangle = \langle e_1 + e_2 + \dots e_n \rangle = \underbrace{\langle e_1 \rangle}_{=\,0} + \langle e_2 \rangle + \dots + \langle e_n \rangle = 0 \, ,
+\end{equation}
+but its variance
+\begin{equation}
+    \sigma_y^2 = \langle y_n^2 \rangle - \underbrace{\langle y_n \rangle}_{=\,0} = \sigma_{e_1}^2 + \sigma_{e_2}^2 + \dots \sigma_{e_n}^2 = n \sigma_e^2
+\end{equation}
+goes with $n$ (or $t$). It therefore not a stationary process as can also be seen in figure \ref{fig:random_walk_adev}.
+
+The power spectral density can be calculated \cite{psd_to_adev,noise_generation} to
+\begin{equation}
+    S(f) = h_{-2} \frac{1}{f^2}
+\end{equation}
+and the Allan deviation can again be calculated from the spectral density
+\begin{align}
+    \sigma_A^2(\tau) &= 2 h_{-2} \int_0^\infty \frac{1}{f^2} \frac{\sin^4\left( \pi f \tau \right)}{(\pi f \tau)^2}\,df \nonumber\\
+    &=\frac{2}{3} \pi^2 h_{-2}\, \tau
+\end{align}
+
+The \textit{AllanTools} library \cite{allantools} can then be used to simulate the random walk.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}{0.32\linewidth}
+        \centering
+        \scalebox{0.75}{%
+            \input{images/random_walk_noise_time.pgf}
+        } % scalebox
+        \caption{Time domain}
+        \label{fig:random_walk_time}
+    \end{subfigure}
+    \begin{subfigure}{0.32\linewidth}
+        \centering
+        \scalebox{0.75}{%
+            \input{images/random_walk_noise_psd.pgf}
+        } % scalebox
+        \caption{Power spectral density}
+        \label{fig:random_walk_psd}
+    \end{subfigure}
+    \begin{subfigure}{0.32\linewidth}
+        \centering
+        \scalebox{0.75}{%
+            \input{images/random_walk_noise_adev.pgf}
+        } % scalebox
+        \caption{Allan deviation}
+        \label{fig:random_walk_adev}
+    \end{subfigure}
+    \caption{Different representations of random walk noise.}
+    \label{fig:random_walk_noise_simulated}
+\end{figure}
 
 
 % TODO: Add adev simulations
