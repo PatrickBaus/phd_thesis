@@ -365,21 +365,19 @@ It was already mentioned by \citeauthor{adev} in \cite{adev}, that types of nois
 \begin{equation}
     S(f) = h_{\alpha} \cdot f^\alpha \label{eqn:power_law}
 \end{equation}
-can be easily identified in the Allan deviation plot. The constant $h_\alpha$ is called the power (intensity) coefficient. The most common types of noise encountered in experimental data and their representations can be found in table \ref{tab:adev_alpha}. Since those types of noise is present in any measurement or electronic device, it warants a further discussion to understand their root causes and ideas to minimize them. While not a type of noise, linear drift can also be easily identified in the Allan deviation plot. It is therefore included in table \ref{tab:adev_alpha} as well.
-% TODO: put in (4) from Generation-Recombination Noise, Allan Variance, and Low-Frequency Gain Instabilities in Microwave Amplifiers
+can be easily identified in the Allan deviation plot. The constant $h_\alpha$ is called the power (intensity) coefficient. The most common types of noise encountered in experimental data and their representations can be found in table \ref{tab:adev_alpha}, which serves as a summary of this section. Since those types of noise is present in any measurement or electronic device, it warants a further discussion to understand their root causes and ideas to minimize them. While not a type of noise, linear drift can also be easily identified in the Allan deviation plot. It is therefore included in table \ref{tab:adev_alpha} as well.
 
-%TODO: $\sigma_A(N=2,T=\tau+\theta,\tau)$
 \begin{table}[ht]
     \centering
     \begin{tabular}{lcc}
         \toprule
-        Amplitude noise type& Power-law coefficient $\alpha$& Allan deviation $\sigma_A$\\
+        Amplitude noise type& Power-law coefficient $\alpha$& Allan variance $\sigma_A^2$\\
         \midrule
-            White noise & $0$& $\propto \tau^{-1/2}$ \cite{adev_noise_types}\\
-            Flicker noise& $-1$& $\propto \tau^0$ \cite{adev_noise_types}\\
-            Random walk noise& $-2$& $\propto \tau^{1/2}$ \cite{adev_noise_types}\\
-            Burst noise& $0 \textrm{ and } -\!2$& $\propto \tau^{1/2} \textrm{ and } \tau^{-1/2}$\\
-            Drift & --& $\propto \tau^1$ \cite{adev_drift}\\
+            White noise & $0$& $\frac 1 2 h_0 \tau^{-1}$ \cite{adev_noise_types}\\
+            Flicker noise& $-1$& $2 \ln 2 \, h_{-1} \tau^0$ \cite{adev_noise_types}\\
+            Random walk noise& $-2$& $\frac 3 2 \pi^2 h_{-2} \tau^{1}$ \cite{adev_noise_types}\\
+            Burst noise& $0 \textrm{ and } -\!2$& $y_{RMS}^2\frac{\bar \tau^2}{\tau^2} \left(4 e^{-\frac{\tau}{\bar \tau}} - e^{-\frac{2 \tau}{\bar \tau}} + 2 \frac{\tau}{\bar \tau} - 3 \right)$\\
+            Drift & --& $\frac 1 2 D^2 \tau^2$ \cite{adev_drift}\\
         \bottomrule
     \end{tabular}
     \caption{Power law representations using the Allan variance.}
@@ -390,12 +388,15 @@ In order to arrive at a good understanding of the features seen in an Allan devi
 
 \clearpage
 \subsubsection{White Noise}
-White noise is probably the most common type of noise found in measurement data. Johnson noise found in resistors, caused by the random fluctuation of the charge carriers, is one example of mostly white noise up to bandwidth of \qty{100}{\MHz}, from where on quantum corrections are required \cite{nist_johnson_noise}. Amplifiers also tend to have a white noise spectrum at higher frequencies. For these reasons, it typically makes up for a considerabe amount of noise in a measurement, unless one measures at very low frequencies. White noise is a series of uncorrelated random events and therefore characterised by a uniform power spectral density, which means there is the same power in a given bandwidth at all frequencies. Another one of its important and often used properties is, that the variance $\sigma_{x+y}^2$ of two uncorrelated variables $x$ and $y$ adds:
+White noise is probably the most common type of noise found in measurement data. Johnson noise found in resistors, caused by the random fluctuation of the charge carriers, is one example of mostly white noise up to bandwidth of \qty{100}{\MHz}, from where on quantum corrections are required \cite{nist_johnson_noise}. Amplifiers also tend to have a white noise spectrum at higher frequencies.
+
+For this reason, white noise typically makes up for a considerabe amount of noise in a measurement, unless one works at very low frequencies. White noise is a series of uncorrelated random events and therefore characterised by a uniform power spectral density, which means there is the same power in a given bandwidth at all frequencies up to infinity. White noise therefore has infinite power (variance). In reality a measurement is always limited in bandwidth and hence the above property of a constant power spectral density only holds within that bandwidth. Those bandlimited samples of white noise thus have a finite variance.
+Since white noise is so common, a few properties should be mentioned. One such property is, that the variance $\sigma_{x+y}^2$ of two uncorrelated variables $x$ and $y$ adds:
 \begin{equation}
     \sigma_{x+y}^2  = \sigma_x^2 + \sigma_y^2 + \underbrace{2\,\mathrm{Cov}(x,y)}_{\text{uncorrelated}\, =\, 0}\ = \sigma_x^2 + \sigma_y^2 \label{eqn:adding_white_noise}
 \end{equation}
 
-This allows simple addition rules of variances from different sources, but it must be stressed here, that this property is only valid for uncorrelated sources like white noise, although it is usually incorrectly applied to all measurements in disreagard of the dominant noise present, which ufortunately obscures rather than clarifies the uncertainties involved.
+This allows simple addition rules of variances from different sources, but it must be stressed here, that this property is only valid for uncorrelated sources like white noise, although it is usually incorrectly applied to all measurements in disreagard of the dominant noise present, which unfortunately obscures rather than clarifies the uncertainties involved.
 
 In order to demonstrate the effect of white noise in Allan deviation plots, it was simulated using the excellent \textit{AllanTools} library \cite{allantools}. The noise generator chosen in the AllanTools library is based on the work of \citeauthor{noise_generation} \cite{noise_generation}. The full Python program code is published online \cite{}. For better comparison, all noise densities are normalized to give an Allan deviation of $\sigma_A(\tau_0)=1$, with $\tau_0$ being the smallest time interval between measurements.
 
@@ -601,6 +602,11 @@ Again, using the \textit{AllanTools} library \cite{allantools}, flicker noise wa
 
 The small wiggles at longer $\tau$ are typical end-of-data errors caused by spectral leakage, because there are insufficient samples to average over \cite{adev_long_tau}. As it was discussed above, the Allan deviation can only be estimated using equation \ref{eqn:adev_estimator} given a limited number of samples.Therefore, at $\frac{\tau}{2}$ there are only $2$ samples left, so there is no averaging possible to improve the estimate of the Allan deviation, which causes the oscillations at low frequencies or large $\tau$.
 
+As a last remark, a commonly used definition in combination with flicker noise is the corner frequency $f_c$. The corner frequency appears in situations, where there is both flicker and white noise present. It is the crossover point in frequency, where the flicker noise is equal compared to the white noise.
+\begin{equation}
+    f_c = \frac{h_{-1}}{h_0} \label{eqn:corner_frequency}
+\end{equation}
+It can be graphically extracted from the power spectral density plot by drawing a line trough the the flicker noise and the white noise and finding the intersection. This can be seen in figure \ref{fig:adev_example_psd} on page \pageref{fig:adev_example_psd}. The corner frequency can be found where the dashed blue and green line meet.
 
 \clearpage
 \subsubsection{Random Walk}
@@ -704,13 +710,13 @@ An interesting observation can be made for white noise. Since it is uncorrelated
     \sigma^2(N,T, \tau) = \sigma^2(N=2,T=\tau, \tau) = \sigma_A^2(\tau) \frac 1 2 h_0 \tau^{-1}
 \end{equation}
 
-Therefore, if the deadtime is added at a frequency high enough, so that the input amplifier shows a white noise behaviour, the dead time will have no influence on the Allan variance. This is the reason, why the Keysight \device{3458A} uses averaging beyond integration times of \qty{10}{\plc}. The noise corner frequency of the instrument is \qty{0.5}{\Hz} \cite{3458A_noise_floor, sampling_with_3458A}, while \qty{10}{\plc} translates into \qty{5}{\Hz} or \qty{6}{\Hz}, depending on the line frequency, which is an order of magnitude higher than the corner frequency to make sure the noise floor is white.
+Consequently, if the deadtime is added at a frequency high enough, so that the input amplifier output is dominated by white noise, the dead time will have no influence on the Allan variance. This is the reason, why the Keysight \device{3458A} uses averaging beyond integration times of \qty{10}{\plc}. The noise corner frequency of the instrument is \qty{0.5}{\Hz} \cite{3458A_noise_floor, sampling_with_3458A}, while \qty{10}{\plc} translates into \qty{5}{\Hz} or \qty{6}{\Hz}, depending on the line frequency, which is an order of magnitude higher than the corner frequency to make sure the noise floor is (mostly) white.
 
-Finally, \citeauthor{psd_to_adev} \cite{psd_to_adev} notes that for measurement durations or averaging time $T \gg T_0$ $\sigma_A^2(T) \to \sigma_A^2(\tau)$. The means that for higher frequencies, the Allan variance is not affected, because the noise is white, and for lower frequencies, where $T \gg T_0$ holds, the Allan variance is unaffected as well. If the multimeter is correctly configured, the dead time of the device has little effect on the Allan variance. This is further discussed in the next section.
+Finally, \citeauthor{psd_to_adev} \cite{psd_to_adev} notes that for measurement durations or averaging times $T \gg T_0$, the Allan variance with respect to $T$ shows an asymptotic behaviour of $\sigma_A^2(T) \to \sigma_A^2(\tau)$. The means that for higher frequencies, the Allan variance is not affected, because the noise is white, and for lower frequencies, where $T \gg T_0$ holds, the Allan variance is unaffected as well. If the multimeter is correctly configured, the dead time of the device has little effect on the Allan variance. This is further discussed in the next section.
 
 \clearpage
 \subsection{Example}
-Using the results from the previous sections, it is possible to simulate a typical measurement sample containing white noise, flicker noise and random walk behaviour. This was done using the \textit{AllanTools} library \cite{allantools} to generate time domain data, which was then converted to a power spectrum using the algorithm of \citeauthor{welch} \cite{welch}. The full Python source is available at \cite{}. The time domain data was downsampled using the Largest-Triangle-Three-Buckets algorithm created by \citeauthor{lttb} \cite{lttb} from $2^{25}$ data points to $2000$ for faster plotting. This downsampling algorithm kept the overall shape, yet the edges are a little rougher. The full be regenerated using the source code given above. The power spectrum and the Allan deviation were always calculated from the original dataset.
+Using the results from the previous sections, it is possible to simulate a typical measurement sample containing white noise, flicker noise and random walk behaviour. The simulation was written in Python using the \textit{AllanTools} library \cite{allantools} to generate the time domain data, which was then converted to a power spectrum using the algorithm of \citeauthor{welch} \cite{welch}. The Allan deviation was calculated using the \textit{AllanTools}. The full Python source is available at \cite{}. The time domain data shown here was downsampled from $2^{25}$ data points to $2000$ points for faster plotting, using the Largest-Triangle-Three-Buckets (LTTB) algorithm created by \citeauthor{lttb} \cite{lttb}. The downsampling algorithm chosen is optimal for this application, because it aims to visually keep the result the same by favouring parts of the data, where there is more change. The only difference noticable to the author is, that the edges of the white noise plot are a little rougher. The full data set can be obtained using the source code given above if one desires. The power spectrum and the Allan deviation were always calculated from the full dataset. The data of the power spectrum was additionally binned to be evenly spaced on a logarithmic scale. This considerably reduced the high frequency noise and made the plot easier while not negatively impacting the shape.
 
 \begin{figure}[ht]
     \centering
@@ -735,29 +741,33 @@ Using the results from the previous sections, it is possible to simulate a typic
         } % scalebox
         \caption{Random walk}
     \end{subfigure}
-    \caption{The three noise components summed together to simulate a typical noise source.}
+    \caption{Three sperate noise components, that were summed together to simulate a typical noise source.}
     \label{fig:adev_example_noise_types}
 \end{figure}
 
-The the three time series shown in figure \ref{fig:adev_example_noise_types} were added together to give an impression how such a signal would look like. This is shown in figure \ref{fig:adev_example_time}. The summed series clearly shows the white noise content and it is possible to deduce some flicker or random walk noise, but it is highly obscured due to the amount of white noise. Using the time domain plot makes it very hard to distinguish the type of noise except for white noise.
+The the three time series shown in figure \ref{fig:adev_example_noise_types} were sequentially generated using a fixed seed for the random number generator to ensure repeatability as long as the order of creation is kept the same. For generting the noise, the algorithm presented by \citeauthor{noise_generation} \cite{noise_generation} and implemented in the \textit{AllanTools} library was used. The noise strength parameters were deliberately chosen in such a way, that both the white noise and the random walk part have more noise power than the flicker noise. This allows to distinguish them in the plots at both extremes of the frequency scale. Finally, the three types of noise data were summed together to give the combined signal. The time series is shown in figure \ref{fig:adev_example_time}, again downsampled using LTTB. The summed series clearly shows the white noise content and it is possible to deduce some flicker or random walk noise, but it is highly obscured due to the amount of white noise. Using only the time domain plot makes it very hard to distinguish the type of noise present, let alone estimate the individual noise power of the three sources. Therefore, a different analysis tool is called for.
 
-\begin{figure}[hb]
+\begin{figure}[ht]
     \centering
     \input{images/example_time.pgf}
     \caption{A simulated time series containing white noise, flicker noise and random walk behaviour.}
     \label{fig:adev_example_time}
 \end{figure}
 
-A common approach to identify noise sources is the power spectrum. It is easily accessible using spectrum analyzers. The power spectrum of figure \ref{fig:adev_example_time} is shown in figure \ref{fig:adev_example_psd}. It allows identify a $f^{\alpha}$ component, but the $f^{-2}$ components is hardly recognizable. It can easily be mistaken for measurement noise, especially since there are fewer data points a low frequencies causing any fit to automatically favour the $f^{-1}$ part. For better a visualization the individual noise components are also plotted using dashed lines.
+A common approach to identify noise sources is the power spectrum. It is easily accessible, even in real-time, using spectrum analyzers and, utilizing the computational power of modern computers, large time-domain data sets can be converted making this the method of choice in the lab. The power spectrum of figure \ref{fig:adev_example_time} is shown in figure \ref{fig:adev_example_psd}. It allows to clearly separate the white noise part from the other $f^{\alpha}$ components. The dashed lines representing the individual components were plotted using the $h_\alpha$ values calculated from the input parameters of the simulation. The noise spectral density $h_0$ of the white noise signal can be easily extracted even by hand without resorting to a fit. This yields $h_{0} = \qty{2e-3}{\per \Hz} $. $h_{-1}$ and $h_{-2}$ can be exctracted as well using a fit to
+\begin{equation}
+    S(f) = \sum_{\alpha = -2}^0 h_\alpha f^\alpha \, .
+\end{equation}
+The noise corner frequency $f_c$ can either be calculated from $h_0$ and $h_{-1}$ using equation \ref{eqn:corner_frequency} or determined graphically by contructing a tangent with a slope of $-1$ to the spectral density. From the intersection of the blue $h_0$ line and the green $h_{-1}$ line the corner frequncy is found to be $f_c \approx \qty{1.8}{\kHz}$.
 
-\begin{figure}[ht]
+\begin{figure}[hb]
     \centering
     \input{images/example_psd.pgf}
     \caption{A simulated power spectrum containing white noise, flicker noise and random walk behaviour.}
     \label{fig:adev_example_psd}
 \end{figure}
 
-The Allan deviation plot gives very clean results and all noise components can be clearly identified. Again the individual components are plotted using dashed lines.
+To get an even better representation of the individual noise contributions, the Allan variance or Allan deviation can be used. The Allan deviation plot shown in figure \ref{fig:adev_example_adev} gives very clean results and all noise components can be clearly identified. The individual components were plotted using dashed lines as well.
 
 \begin{figure}[hb]
     \centering
@@ -766,8 +776,20 @@ The Allan deviation plot gives very clean results and all noise components can b
     \label{fig:adev_example_adev}
 \end{figure}
 
-The Allan deviation was calculated using the overlapping Allan deviation algorithm \cite{oadev_definition}. The overlapping Allan deviation gives a better condifdence at longer intervals or lower frequencies, allowing to identify very low frequency noise like the random walk shown here. \cite{oadev_definition} also gives a very good comparison of other algorithms to identify noise types in data sets.
+The Allan variance was calculated using the overlapping Allan variance algorithm \cite{oadev_definition} and only Allan deviation values for frequency vales of $(1, 2, 4)$ per decade were plotted. The overlapping Allan variance gives a better confidence at longer intervals or lower frequencies, allowing to identify very low frequency noise like the random walk shown here. Reference \cite{oadev_definition} also gives a very good comparison of other algorithms to identify even more noise types in data sets, like phase noise. Plotting only three values per decade improves the clarity of the plot, because at longer taus, even though the overlapping Allan variance is used, some oscillations inevitably show up. Using fewer values of $\tau$ causes less distractions in this case.
+From the figure \ref{fig:adev_example_adev}, the Allan deviation of the flicker noise can be estimated from the flat minimum to be around $2.3$ or $\sqrt{5}$. Using table \ref{tab:adev_alpha} the Allan variance can be converted to
+\begin{equation}
+    h_{-1} = \frac{5}{2 \ln 2} \approx 3.6 \nonumber
+\end{equation}
 
+Using the previously found $h_0$, this corner frequency is calculated using equation \ref{eqn:corner_frequency} to be:
+\begin{equation}
+    f_c = \frac{5}{\qty{2e-3}{\per \Hz} \cdot 2 \ln 2} \approx \qty{1.8}{\kHz} \nonumber
+\end{equation}
+
+This is obviously the same result as the one from the geometric approach above.
+
+\clearpage
 \section{Autozeroing}
 Autozeroing, sometimes called zero-drift or dynamic offset compensation, is such an important concept, that it must be discussed in its own right. The need for autozeroing comes from the typical behaviour of an amplifier. Every amplifier shows some kind of offset and especially at high gains, this offset becomes a problem for high precision measurements. To make matters worse, this offset is not stable over time and drifts with both time and temperature. It can therefore not be calibrated out once, it must be permanently adjusted during operation. This procedure is called autozeroing.
 
