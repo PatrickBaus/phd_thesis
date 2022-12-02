@@ -1,0 +1,43 @@
+\documentclass[crop, tikz]{standalone}
+
+\usepackage{tkz-base}
+
+\def\signalpath{(0,0.3) -- ++(1,1) -- ++(1,-0.5) -- ++(2,1) -- ++(2,0)  -- ++(0.6,-1) -- ++(1.4,0.5) -- ++(2,-0.5) -- ++(1, 0.5) -- ++(2,0.5) -- ++(1.5, -0.5)}
+
+\begin{document}
+    \begin{tikzpicture}
+        \tkzInit[xmax=25,ymax=4,xmin=0,xstep=2]
+        \tkzDrawX[label=t] \tkzLabelX
+        \tkzClip
+        \fill[opacity=0.5, red!10] (0,0) -- ++(5,0) -- ++(0,3)  -- ++(-5,0) -- cycle;
+        \fill[opacity=0.5, blue!10] (5,0) -- ++(0.5,0) -- ++(0,3)  -- ++(-0.5,0) -- cycle;
+        \fill[opacity=0.5, green!10] (5.5,0) -- ++(5,0) -- ++(0,3)  -- ++(-5,0) -- cycle;
+        \fill[opacity=0.5, blue!10] (10.5,0) -- ++(0.5,0) -- ++(0,3)  -- ++(-0.5,0) -- cycle;
+        \fill[opacity=0.5, red!10] (11,0) -- ++(5,0) -- ++(0,3)  -- ++(-5,0) -- cycle;
+        \draw[very thick, red, rounded corners=4mm, dotted]
+            \signalpath
+        ;
+        \begin{scope}
+            \clip (0,0) rectangle ++(5,3) (11,0) rectangle ++(2,3);
+            \draw[very thick, red, rounded corners=4mm]
+                \signalpath
+            ;
+        \end{scope}
+        \draw[very thick, green!70!black, rounded corners=4mm, dotted]
+            (0,0.2) -- ++(14,0);
+        ;
+        \draw[very thick, green!70!black, rounded corners=4mm]
+            (5.5,0.2) -- ++(5,0);
+        ;
+        \draw[|-|, black, very thick] (0,3.5) --  ++(11,0) node [midway, above, xshift=0.5cm] {$T$};
+        \draw[|-|, black, very thick] (0,2.5) --  ++(5,0) node [midway, above] {$\tau_s$};
+        \draw[|-|, black, very thick] (5,2.5) --  ++(0.5,0) node [midway, above] {$\theta$};
+        \draw[|-|, black, very thick] (5.5,2.5) --  ++(5,0) node [midway, above] {$\tau_r$};
+        \draw[|-|, black, very thick] (10.5,2.5) --  ++(0.5,0) node [midway, above] {$\theta$};
+        \draw[dashed, black, thick] (0,4) --  ++(0,-4);
+        \draw[dashed, black, thick] (5,4) --  ++(0,-4);
+        \draw[dashed, black, thick] (5.5,4) --  ++(0,-4);
+        \draw[dashed, black, thick] (10.5,4) --  ++(0,-4);
+        \draw[dashed, black, thick] (11,4) --  ++(0,-4);
+    \end{tikzpicture}
+\end{document}

@@ -111,15 +111,6 @@ The three \num{8.5} and \num{7.5} digit multimeters were connected using shielde
 
 All DMMs were configured to have a similar conversion time. This lead to different integration times, which are given in power line cycles at \qty{50}{\Hz}. The \device{Model 2002} takes considerable longer for a measurement than the Keysight multimeters. The reason is the auto-zero function, which is shown in figure \ref{dmm_autozero_comparison}. The \device{Model 2002} does three steps when doing auto-zeroing, it measures the signal, the zero point for an offset compensation and also the reference voltage for a gain correction. In comparison, the \device{3458A} only corrects for the offset drift. The gain is adjusted when using the ACAL function. The former auto-zero routine, therefore takes longer by one half, but results in more stable measurements.
 
-\begin{figure}[ht]
-    \centering
-    %\resizebox {0.8\textwidth} {!} {
-        \import{figures/}{dmm_autozero.tex}
-    %} % resizebox
-    \label{fig:dmm_autozero_comparison}
-    \caption{Auto-zero phases of the \device{HP 3458A} and \device{Keithley Model 2002}.}
-\end{figure}
-
 These measurements were done by measuring the output voltage of a pre-production version of the reference PCB for the digital current driver. The reference board was kept at \qty{23}{\celsius} in a custom thermal chamber. The chamber is detailed in section \ref{}. Additionally, a \qty{500}{\g}  bag of Bentonite desiccant was added to keep the references at a low humidity of around \qty{20}{\percent} relative humidity. The reference board inserted into a motherboard holding up to 4 reference modules. The motherboard, also called LM399 breakout board, provides the voltage regulators and the operational amplifier for the kelvin sensed pins of the reference. The multimeter was directly connected to the reference via a DB9 connector, without an other components in between the reference and the DMM like buffers, multiplexers or filters. The DMM itself was exposed to the ambient temperature of the lab. The setup is shown in figure \ref{fig:lm399_vs_34470a_setup}.
 
 \begin{figure}[ht]

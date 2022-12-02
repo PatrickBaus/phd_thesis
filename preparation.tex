@@ -293,7 +293,7 @@ The time domain solution of the FOPDT model can now be used extract the paramete
 \begin{figure}[ht]
     \centering
     \input{images/FOPDT_theory.pgf}
-    \caption{Time domain plot of a first-order plus dead time model, showing induvidual components of the model and the composite function $y(t)$. Model parameters: $K= \Delta u = 1$, $\tau=2$, $\theta=4$.}
+    \caption{Time domain plot of a first-order plus dead time model showing individual components of the model and the composite function $y(t)$. Model parameters used: $K= \Delta u = 1$, $\tau=2$, $\theta=4$.}
     \label{fig:fopdt}
 \end{figure}
 
@@ -303,6 +303,7 @@ The time domain solution of the FOPDT model can now be used extract the paramete
 
 % https://apmonitor.com/pdc/index.php/Main/FirstOrderPlusDeadTime
 
+\clearpage
 \subsection{PID tuning rules}
 
 %\subsubsection{SIMC}
@@ -431,7 +432,7 @@ Figure \ref{fig:white_noise_simulated} shows a sample of white noise in three di
     \label{fig:white_noise_simulated}
 \end{figure}
 
-From this simulation, several features can be observed. First of all, the power spectral density is flat and constant with $h_0 = 2$, which is in accordance with table \ref{tab:adev_alpha} and the normalization mentioned earlier. Figure \ref{fig:white_noise_adev} shows the typical $\tau^{-\frac1 2}$ dependence of white noise in the Allan deviation plot. This immediately explains, why filtering white noise scales with $\frac{1}{\sqrt{n}}$ with $n$ being the number of samples averaged.
+From this simulation, several features can be observed. First of all, the power spectral density is flat and constant with $h_0 = 2$, which is in accordance with table \ref{tab:adev_alpha} and the normalization mentioned earlier. Figure \ref{fig:white_noise_adev} shows the typical $\tau^{-\frac 1 2}$ dependence of white noise in the Allan deviation plot. This immediately explains, why filtering white noise scales with $\frac{1}{\sqrt{n}}$ with $n$ being the number of samples averaged.
 
 \clearpage
 \subsubsection{Burst Noise}
@@ -488,7 +489,7 @@ With the spectral density in hand, it is now possible to calculate the Allan var
     \sigma^2_A(\tau) = R_{xx}(0) \frac{\bar \tau^2}{\tau^2} \left(4 e^{-\frac{\tau}{\bar \tau}} - e^{-\frac{2 \tau}{\bar \tau}} + 2 \frac{\tau}{\bar \tau} - 3 \right) \label{eqn:burst_noise_avar}
 \end{equation}
 
-Having arrived at equations \ref{eqn:burst_noise_lorentzian} and \ref{eqn:burst_noise_avar} of the power spectral density and Allan variance, it it now possible to model it. For this purpose, parts of the Python library \textit{qtt} \cite{qtt} was used. The algorithm written by \citeauthor{qtt} implements continous-time Markov chains to simulate the burst noise signal. The result can be see in figure \ref{fig:burst_noise_simulated}. For these simulations one time constants, namely the lifetime of the lower state $\bar \tau_0$ was held constant, while the lifetime of the upper state was varied to show the effect of different $\bar \tau$. By looking at the time domain in figure \ref{fig:burst_noise_time} it can be seen, that the maximum average number of state changes can be observed, when $\bar \tau_1 = \bar \tau_0$. If $\bar \tau_1 > \bar \tau_0$ the system will favour the upper, while if $\bar \tau_1 < \bar \tau_0$ it will favour the lower state instead. This explaines why the noise is strongest for random telegraph noise when $\bar \tau_1 = \bar \tau_0$, which can also be seen in power spectral density in figure \ref{fig:burst_noise_psd}. Looking at the Allan deviation in figure \ref{fig:burst_noise_adev} confirms this, but also shows another interesting implication as it shows an obvious maximum. If the application allows a choice over the sampling interval $\tau$, the effect of the burst noise can mitigated by staying well clear of the maximum.
+Having arrived at equations \ref{eqn:burst_noise_lorentzian} and \ref{eqn:burst_noise_avar} of the power spectral density and Allan variance, it it now possible to model it. For this purpose, parts of the Python library \textit{qtt} \cite{qtt} was used. The algorithm written by \citeauthor{qtt} implements continous-time Markov chains to simulate the burst noise signal. The result can be see in figure \ref{fig:burst_noise_simulated}. For these simulations one time constant, namely the lifetime of the lower state $\bar \tau_0$ was held constant, while the lifetime of the upper state was varied to show the effect of different $\bar \tau$. By looking at the time domain in figure \ref{fig:burst_noise_time} it can be seen, that the maximum average number of state changes can be observed, when $\bar \tau_1 = \bar \tau_0$. If $\bar \tau_1 > \bar \tau_0$ the system will favour the upper, while if $\bar \tau_1 < \bar \tau_0$ it will favour the lower state instead. This explaines why the noise is strongest for random telegraph noise when $\bar \tau_1 = \bar \tau_0$, which can also be seen in power spectral density in figure \ref{fig:burst_noise_psd}. Looking at the Allan deviation in figure \ref{fig:burst_noise_adev} confirms this, but also shows another interesting implication as it shows an obvious maximum. If the application allows a choice over the sampling interval $\tau$, the effect of the burst noise can mitigated by staying well clear of the maximum.
 
 The small deviation from the analytical solution in figure \ref{fig:burst_noise_adev}  at large $\tau$ is a typical so called end-of-data error. As it was discussed above, the Allan deviation can only be estimated given a limited number of samples using equation \ref{eqn:adev_estimator} and going to longer $\tau$ means there are fewer samples to average over.
 
@@ -549,7 +550,7 @@ Given that no trap site can store an electron indefinetely, the number of trap s
     N(\tau) \propto \frac{1}{\bar \tau}\,, \label{eqn:flicker_noise_weight_function}
 \end{equation}
 
- which can be motivated if the trapping process is thermally activated \cite{1_f_noise_motivation} and using equation \ref{eqn:burst_noise_lorentzian} from the previous section, multiplying the weight function \ref{eqn:flicker_noise_weight_function} and integrating over all possible storage times gives:
+which can be motivated if the trapping process is thermally activated \cite{1_f_noise_motivation} and using equation \ref{eqn:burst_noise_lorentzian} from the previous section, multiplying the weight function \ref{eqn:flicker_noise_weight_function} and integrating over all possible storage times gives:
 \begin{align}
     S(\omega) &= \lim_{t \to \infty} \int_0^t N(\bar \tau) \, 4 R_{xx}(0) \frac{\bar \tau}{1 + \omega^2 \bar \tau^2} \, d\bar\tau \nonumber\\
     \overset{\bar \tau_0 = \bar \tau_1}&{=} 4 R_{xx}(0)\, C_N \lim_{t \to \infty} \int_0^t \frac{1}{1 + \omega^2 \bar\tau^2} \, d\bar\tau \nonumber\\
@@ -600,13 +601,15 @@ Again, using the \textit{AllanTools} library \cite{allantools}, flicker noise wa
     \label{fig:flicker_noise_simulated}
 \end{figure}
 
-The small wiggles at longer $\tau$ are typical end-of-data errors caused by spectral leakage, because there are insufficient samples to average over \cite{adev_long_tau}. As it was discussed above, the Allan deviation can only be estimated using equation \ref{eqn:adev_estimator} given a limited number of samples.Therefore, at $\frac{\tau}{2}$ there are only $2$ samples left, so there is no averaging possible to improve the estimate of the Allan deviation, which causes the oscillations at low frequencies or large $\tau$.
+While it is not immediately evident from the power spectral density, the Allan deviation plot explains very well, why additional filtering does not affect flicker noise. No matter how long the integration time, the variance will the same.
+
+The small wiggles at longer $\tau$ are typical end-of-data errors caused by spectral leakage, because there are insufficient samples to average over \cite{adev_long_tau}. As it was discussed above, the Allan deviation can only be estimated using equation \ref{eqn:adev_estimator} given a limited number of samples. Therefore, at $\frac{\tau}{2}$ there are only $2$ samples left, so there is no averaging possible to improve the estimate of the Allan deviation, which causes the oscillations at low frequencies or large $\tau$.
 
 As a last remark, a commonly used definition in combination with flicker noise is the corner frequency $f_c$. The corner frequency appears in situations, where there is both flicker and white noise present. It is the crossover point in frequency, where the flicker noise is equal compared to the white noise.
 \begin{equation}
     f_c = \frac{h_{-1}}{h_0} \label{eqn:corner_frequency}
 \end{equation}
-It can be graphically extracted from the power spectral density plot by drawing a line trough the the flicker noise and the white noise and finding the intersection. This can be seen in figure \ref{fig:adev_example_psd} on page \pageref{fig:adev_example_psd}. The corner frequency can be found where the dashed blue and green line meet.
+It can be graphically extracted from the power spectral density plot by drawing a line trough the the flicker noise and the white noise and finding the intersection. This can be seen in figure \ref{fig:adev_example_psd} on page \pageref{fig:adev_example_psd}. The corner frequency can be found where the horizontal dashed blue and green line meet.
 
 \clearpage
 \subsubsection{Random Walk}
@@ -703,19 +706,20 @@ The most commonly used settings, that affect the dead time of a voltmeter are au
 
 The other setting, that can be enabled in voltmeters, is the line synchronization to increase the noise rejection of the instrument. This setting synchronizes the start of a measurement to the zero crossing of the power line. Depending on the instrument, this might cause a delay of one power line cycle (PLC) after each measurment if the instrument is not capable of processing the previous measurement while at the same time recording another one.
 
-A simple measurement with dead time is shown in figure \ref{fig:allan_variance_definitions} on page \pageref{fig:allan_variance_definitions}. The model assumes, that the dead time is constant and is always added after the actual integration time $\tau$. This is rarely true for real measurement data as many devices and even ADCs use internal averaging and auto-zeroing to produce a measurement. The actual dead time is therefore spread over the whole measurement and not limited to the end of the measurement. An example is the Keysight \device{3458A} DMM, which automatically switches to averaging when selecting integration times greater than \qty{10}{\plc}. The reason is simple, for longer integration times, additional flicker noise starts contributing to the measurement. The measurement is therefore split into single measurements of \qty{10}{\plc} and using auto-zeroing the flicker noise is suppressed. The mathematical problem of a distributed dead time was already noted by \citeauthor{adev_noise_types} \cite{adev_noise_types} and it is distinctively different from the calculations made by \citeauthor{psd_to_adev} for a single dead time at the end of the measurement. The exact mathematical treatment is complex and is beyond the scope of this work, especially considering, that auto-zeroing does a lot more than just adding dead time at the end of the measurement. Fortunately using a few assumptions the problem can be greatly simplified.
+A simple measurement with dead time is shown in figure \ref{fig:allan_variance_definitions} on page \pageref{fig:allan_variance_definitions}. The model assumes, that the dead time is constant and is always added after the actual integration time $\tau$. This is rarely true for real measurement data as many devices and even ADCs use internal averaging and auto-zeroing to produce a measurement. The actual dead time is therefore spread over the whole measurement and not limited to the end of the measurement. An example is the Keysight \device{3458A} DMM, which automatically switches to averaging when selecting integration times greater than \qty{10}{\plc}. The reason is simple, for longer integration times, more and more flicker noise starts contributing to the measurement. The measurement is therefore split into single measurements of \qty{10}{\plc} and using auto-zeroing the flicker noise is suppressed. This is discussed in more detail as an example in section \ref{sec:autozero}. The mathematical problem of a distributed dead time was already noted by \citeauthor{adev_noise_types} \cite{adev_noise_types} and it is distinctively different from the calculations made by \citeauthor{psd_to_adev} for a single dead time at the end of the measurement. The exact mathematical treatment is complex and is beyond the scope of this work, especially considering, that auto-zeroing does a lot more than just adding dead time at the end of the measurement. Fortunately using a few assumptions the problem can be greatly simplified.
 
 An interesting observation can be made for white noise. Since it is uncorrelated, it makes no difference whether it is sampled in full, or only partially, therefore the Allan deviation for a white noise process with or without dead time is the same:
 \begin{equation}
     \sigma^2(N,T, \tau) = \sigma^2(N=2,T=\tau, \tau) = \sigma_A^2(\tau) \frac 1 2 h_0 \tau^{-1}
 \end{equation}
 
-Consequently, if the deadtime is added at a frequency high enough, so that the input amplifier output is dominated by white noise, the dead time will have no influence on the Allan variance. This is the reason, why the Keysight \device{3458A} uses averaging beyond integration times of \qty{10}{\plc}. The noise corner frequency of the instrument is \qty{0.5}{\Hz} \cite{3458A_noise_floor, sampling_with_3458A}, while \qty{10}{\plc} translates into \qty{5}{\Hz} or \qty{6}{\Hz}, depending on the line frequency, which is an order of magnitude higher than the corner frequency to make sure the noise floor is (mostly) white.
+Consequently, if the dead time is added at a frequency high enough, so that the input amplifier output is dominated by white noise, the dead time will have no influence on the Allan variance.
 
-Finally, \citeauthor{psd_to_adev} \cite{psd_to_adev} notes that for measurement durations or averaging times $T \gg T_0$, the Allan variance with respect to $T$ shows an asymptotic behaviour of $\sigma_A^2(T) \to \sigma_A^2(\tau)$. The means that for higher frequencies, the Allan variance is not affected, because the noise is white, and for lower frequencies, where $T \gg T_0$ holds, the Allan variance is unaffected as well. If the multimeter is correctly configured, the dead time of the device has little effect on the Allan variance. This is further discussed in the next section.
+Finally, \citeauthor{psd_to_adev} \cite{psd_to_adev} notes that for measurement durations or averaging times $T \gg T_0$, the Allan variance with respect to $T$ shows an asymptotic behaviour of $\sigma_A^2(T) \to \sigma_A^2(\tau)$.
 
 \clearpage
 \subsection{Example}
+\label{sec:noise_example}
 Using the results from the previous sections, it is possible to simulate a typical measurement sample containing white noise, flicker noise and random walk behaviour. The simulation was written in Python using the \textit{AllanTools} library \cite{allantools} to generate the time domain data, which was then converted to a power spectrum using the algorithm of \citeauthor{welch} \cite{welch}. The Allan deviation was calculated using the \textit{AllanTools}. The full Python source is available at \cite{}. The time domain data shown here was downsampled from $2^{25}$ data points to $2000$ points for faster plotting, using the Largest-Triangle-Three-Buckets (LTTB) algorithm created by \citeauthor{lttb} \cite{lttb}. The downsampling algorithm chosen is optimal for this application, because it aims to visually keep the result the same by favouring parts of the data, where there is more change. The only difference noticable to the author is, that the edges of the white noise plot are a little rougher. The full data set can be obtained using the source code given above if one desires. The power spectrum and the Allan deviation were always calculated from the full dataset. The data of the power spectrum was additionally binned to be evenly spaced on a logarithmic scale. This considerably reduced the high frequency noise and made the plot easier while not negatively impacting the shape.
 
 \begin{figure}[ht]
@@ -791,52 +795,81 @@ This is obviously the same result as the one from the geometric approach above.
 
 \clearpage
 \section{Autozeroing}
-Autozeroing, sometimes called zero-drift or dynamic offset compensation, is such an important concept, that it must be discussed in its own right. The need for autozeroing comes from the typical behaviour of an amplifier. Every amplifier shows some kind of offset and especially at high gains, this offset becomes a problem for high precision measurements. To make matters worse, this offset is not stable over time and drifts with both time and temperature. It can therefore not be calibrated out once, it must be permanently adjusted during operation. This procedure is called autozeroing.
+\label{sec:autozero}
+Autozeroing (AZ), sometimes called zero-drift or dynamic offset compensation, is such an important concept, that it must be discussed in its own right. The need for autozeroing comes from the typical behaviour of amplifiers. Every amplifier has some offset, be it small or large, and especially at high gains, this offset becomes a problem for high precision measurements. To make matters worse, this offset is not stable over time and drifts with both time and temperature. It can therefore not be calibrated out once, it must be permanently adjusted during operation, depending on environmental conditions. This procedure is called autozeroing.
 
-There are many different ways to implement autozeroing and regarding operational amplifiers a good overview can be found in \cite{horowitz1989}. The most simple (digital) approach is to regularly switch the input from the signal to zero, take a reading, then subtract this reading from all subsequent readings until a new zero reading is taken. This approach is implemented in most modern DMMs and discussed first.
-
-\subsection{Offset-Nulling}
-In order to understand how offset-nulling works, espially how it shapes the spectrum, it is best to give an example. The example data set is a simulated measurement using a Keysight \device{3458A}. The corner frequency and the white noise floor is modeled after the \qty{10}{\V} range of the Keysight \device{3458A} \cite{3458A_noise_floor, sampling_with_3458A} mentioned above and the sample is generated using the Python \textit{AllanTools} library \cite{allantools}. The noise date is summed together, then added to a fixed \qty{10}{\V} offset, simulating measurement of a noise-free \qty{10}{\V} source. The sampling rate is chosen to be \qty{10}{\plc}, the same rate discussed previously on page \pageref{sec:dead_time}. In order to get a good low frequency estimate, $2^{24}=16.8 \cdot 10^{6}$ values were generated, the power spectrum was then averaged and binned to give \num{2000} datapoints.
-
-The time domain plot of the simulated measurement is shown in figure \ref{fig:autozero_raw_time}. Both white noise and flicker noise are clearly visible.
+There are many different ways to implement autozeroing and regarding operational amplifiers a good overview can be found in \cite{horowitz1989}. As an example, the autozero cycle for the Keithley \device{Model 2002} and the Keysight \device{3458A} Mulimeter is shown in figure \ref{fig:dmm_autozero_comparison}. Keithley uses a more complex and slower algorithm, while HP implemented a simpler, but faster algorithm. The most simple (digital) approach is to regularly switch the input from the signal to zero, take a reading, then subtract this reading from all subsequent readings until a new zero reading is taken. The other second approach adds another measurement of the reference voltage to apply a gain correction. This is done by the Keithley \device{Model 2002} and works very well to suppress gain drift in the input amplifier due to temperature changes, but increases the time between samples by another \qty{50}{\percent}. This is the reason, why on the \device{Model 2002}, there is another mode to strech the time between autozero cycles, but the price to pay is a non-uniform sampling rate. This makes post-processing a lot more complicated as most alorithms assume a (near) constant sampling rate. The Keysight \device{3458A} calculates gain corrections only during the manual autocalibration routine to maintain a higher throughput.
 
 \begin{figure}[hb]
+    \centering
+    %\resizebox {0.8\textwidth} {!} {
+        \import{figures/}{dmm_autozero.tex}
+    %} % resizebox
+    \caption{Auto-zero phases of the Keysight \device{3458A} and Keithley \device{Model 2002}.}
+    \label{fig:dmm_autozero_comparison}
+\end{figure}
+
+\subsection{Offset-Nulling}
+Offset-nulling is the most basic approach to autozeroing. It aims to remove the offset drift of an amplifier. Especially at high gains, the offset, which is multiplied by the gain, can be substantial. In order to explain how offset-nulling works and how it shapes the spectrum, it is best to discuss it based on an example. While this technique can also be found in many integrated circuits, it is more noticable in DMMs, because is a switchable option. Therefore, the example data set simulated is based on the parameters of the aforementioned Keysight \device{3458A} multimeter. The corner frequency and the white noise floor is modeled after the \qty{10}{\V} range of the \device{3458A} \cite{3458A_noise_floor, sampling_with_3458A} with the values given below. Do note that both references \cite{3458A_noise_floor, sampling_with_3458A} contain a typographical error. The corner frequency of the noise floor is erroneously given as \qty{0.5}{\Hz}, but should be \qty{1.5}{\Hz}. This can be seen in figure 2.35 in \cite{sampling_with_3458A}, where the noise spectral density is plotted and it was also confirmed with the author \cite{lapuh_email_corner_frequency}. The sample is generated using the Python \textit{AllanTools} library \cite{allantools}.
+
+\begin{figure}[ht]
+    \centering
+    \scalebox{1}{%
+        \import{figures/}{offset_nulling_definitions.tex}
+    } % scalebox
+    \caption{Integration sequences of the offset-nulling algorithm. Solid lines denote sampled data. Red is the input signal, green is the zero reading and blue is the dead time required for switching inputs.}
+    \label{fig:dmm_autozer_offset_nulling}
+\end{figure}
+
+For this simulation, a noise-free and arbitrarily chosen \qty{10}{\V} input is assumed to be sampled by the device at a sampling rate of \qty{10}{\plc} at \qty{50}{\Hz}, the same rate discussed previously on page \pageref{sec:dead_time}. As it will be shown, the actual mean value of the input signal has no bearing on the outcome of the calculation when considering offset-nulling, but its value must be considered for other types of autozeroing as discussed in section \ref{sec:autozero_gain} and is included here only for the sake of completeness.
+
+Figure \ref{fig:dmm_autozer_offset_nulling} shows the individual sequences of the offset-nulling algorithm. First, the source is sampled for $\tau_s = \qty{10}{\plc}$, then the input is switched to the LO terminal. While this operation is very fast and takes less than \qty{1}{\ms} \cite{article_3458A_input_mpedance}, if the instrument is synchronized to the line frequency the zero measurement will nontheless be delayed until the next zero crossing, hence the dead-time $\theta = \qty{1}{\plc}$. Finally, the zero reference is measured for another $\tau_r = \qty{10}{\plc}$ and then the instrument switches back to the HI terminal.
+
+The data is simulated in the following way. First, two sets of noise data are generated, a white noise spectrum with a noise spectral density of $\qty[power-half-as-sqrt, per-mode=symbol]{165}{\nV \Hz\tothe{-0.5}}$ and a flicker noise spectrum with an intesity scaled to result in a final spectrum with a corner frequency of \qty{1.5}{\Hz}. The required flicker noise intensity is calculated using equation \ref{eqn:corner_frequency}. To get a good low frequency estimate, $2^{20} \approx 10^{6}$ values were generated. Finally, the two noise data sets are summed with the noise-free input source to give the final result. Other effects, such as power-line hum are neglected in this simple simulation, because it would needlessly overcomplicate the example and limit the educational value. The same goes for higher order random-walk $f^{-2}$ noise components, which can be introduced by temperature fluctions and other environmental effects and would be present in a real measurement.
+
+\begin{figure}[ht]
     \centering
     \input{images/autozero_raw_time.pgf}
     \caption{Time series data with white noise and flicker noise.}
     \label{fig:autozero_raw_time}
 \end{figure}
 
-To give a clearer picture of the noise spectrum, the power spectral density shown in figure \ref{fig:autozero_raw_psd} is calculated from the time series to confirm the flicker noise and white noise content. The \qty{0.5}{\Hz} corner frequency, which is defined as the intersection between the $f^{-1}$ noise and the white noise floor and the $\qty[power-half-as-sqrt, per-mode=symbol]{165}{\nV \Hz\tothe{-0.5}}$ noise floor can be easily identified.
+The time domain plot of the simulation is shown in figure \ref{fig:autozero_raw_time}. The white noise component is clearly visible, while the $f^{-1}$ flicker noise can be recognized, but its strength can hardly be estimated. It was already shown in section \ref{sec:noise_example}, different types of noise have different frequency components and can be be distinguished in the frequency domain, which leads to the next approach.
 
-\begin{figure}[ht]
+The noise power spectral density shown in figure \ref{fig:autozero_raw_psd} is calculated from the time series and confirms the flicker and white noise content. The theoretical white noise floor is shown as a horizontal dashed blue line and the flicker noise as a dashed green line. The \qty{1.5}{\Hz} corner frequency, which is defined as the intersection between the $f^{-1}$ noise and the white noise floor easily identified using the those lines. It is evident, that the \qty{5}{\Hz} sampling frequency with a \qty{2.5}{\Hz} bandwidth does not allow the spectral density to fully settle to the noise floor.
+
+\begin{figure}[hb]
     \centering
     \input{images/autozero_raw_psd.pgf}
     \caption{Simulated power spectrum of a Keysight \device{3458A} containing white noise and flicker noise.}
     \label{fig:autozero_raw_psd}
 \end{figure}
 
-Finally, it is possible to calculate the Allan deviation of the data set to discuss the application of the auto-zero algorithm. The Allan deviation plot is shown in figure \ref{fig:autozero_raw_adev}.
+From the power spectral density is can be seeen, that higher frequencies have a significantly lower noise spectral density than the low frequencies. It is therefore most beneficial, to so measurements a higher frequencies. To discuss the optimal measurement interval, the Allan deviation is an excellent tool.
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \input{images/autozero_raw_adev.pgf}
-    \caption{Allan deviation of a simulated measurement realized with a Keysight \device{3458A} containing white noise and flicker noise.}
+    \caption{Simulated Allan deviation of the input amplifier of a Keysight \device{3458A} containing white noise and flicker noise.}
     \label{fig:autozero_raw_adev}
 \end{figure}
 
-The Allan deviation shows two distinct regions, for the longer $\tau$ the flat flicker noise region can be identified, while for short $\tau$ an asymptotic behavour towards white noise with a $\tau^{−0.5}$ dependence can be seen. This plot allows to select the optimal offset-nulling frequency. As it was shown during the discussion of measurements with dead time it is preferable to add the dead time resulting from autozeroing at frequencies, that show pure, white noise, because this would not negatively impact the the measurement uncertainty. The interval, that shows mostly white noise is the $\tau = \qty{100}{\ms}$ interval, which is also the smallest interval possible at \qty{10}{\plc}.
+The Allan deviation it plotted in figure \ref{fig:autozero_raw_adev} and shows two distinct regions. Short $\tau$ display an asymptotic behaviour towards white noise with a $\tau^{−0.5}$ dependence and at longer $\tau$ the constant flicker noise region can be identified. At very long $\tau$ typical end-of-data oscillations can be seen, which are the result of the limited confidence of the Allan deviation estimator as previously discussed and can be safely ignored. The Allan deviation clearly demonstrates the performance of the device at longer integration times and it is obvious, that an beyond integration time of about \qty{1}{\second} or \qty{50}{\plc} no additional information can be extracted from the measurement and the variance is constant. This leads to the need to autozeroing to remove the flicker noise. It can be shown \cite{autozero_with_dead_time}, that subtracting a reference measurement from the actual measurement data removes all correlated effects. Since flicker noise is autocorrelated, it can be removed by subtracting a zero measurement.
 
-While adding dead time has negligible influence on the Allan variance, the rest of the autozeroing algorithm needs to be discussed. The alternating measurement of the input, the zero and their subsequent subtraction has a noticable influence. In order to mabwechselndabwechselndathematically describe the effect, one assumption needs to be made. It is assumed, that the gain of input amplifier and ADC does not change over time. This assumption holds if the internal reference is stable and the ADC gain resistors are stable as well. If either of those two elements were to change, its drift cannot be corrected, as only the offset is measured. This would then introduce new $f^{-1}$ noise.
+To demonstrate autozeroing, two cases will be discussed. Going back to figure \ref{fig:dmm_autozer_offset_nulling} it can be seen, that between switching inputs, a dead time $\theta$ is added. For a first discussion, this dead time neglected and then the effect of adding a dead time is discussed.
 
-From figure \ref{fig:autozero_raw_adev} it can be seen, that both the signal measurement $x$ and the zero measurement $y$ are dominated by white noise. The regular variance of the combined measurement can then be calculated using equation \ref{eqn:adding_white_noise}:
+Using figure \ref{fig:autozero_raw_adev} it was shown, that integrating over flicker noise, does not reduce the variance. In order to have as little flicker noise content in the final measurement value it is clear that the autozeroing should be done as fast possible to keep the flicker noise content out. This allows to calculate the expected variance of the autozeroed measurement. The noise of the input measurement $x$ and the reference measurement $y$ are the same, because in this model the only noise source comes from the input amplifier, as the input signal is assumed to be noise-free. The zero level is, by definition, noise-free. As dicussed above, the autozero interval is chosen, so that its variance is dominated by white noise The variance $\sigma^2$ of the combined measurement of $x-y$ can then be calculated using equation \ref{eqn:adding_white_noise}:
 \begin{equation}
     \sigma_{x-y}^2 = \sigma_x^2 + \sigma_y^2 \label{eqn:autozeroing}
 \end{equation}
 
-By subtracting the zero reading, the amplifier noise is effectively added twice to the final result, once for the input measurement and once for the zero measurement. Do note, that the number of samples is now half the number before applying autozeroing. This has another effect, that since the variance, or power, is doubled, but the number of samples halfed, the power spectral density also inscreased by another factor of $2$. This can be also be seen from equation \ref{}. To conclude, it is expected, that the variance doubles and the power spectral density quadruples!
+By subtracting the zero reading, the amplifier noise is effectively added twice to the final result, once for the input measurement and once for the zero measurement. Additional noise from the input signal noise would simply be added to this as it is uncorrelated as well.
 
-Applying the autozeroing algorithm to the simulated data set, the constant \qty{10}{\V} input signal was nulled for every odd value and then the leftover noise was subtracted from its next lower neighbor. This results in the time domain are shown in figure \ref{fig:autozero_time}.
+Do note, that the number of samples is now half the number before applying autozeroing. This leads to an interesting effect. Imagine a data set containing only white noise with a variance $\sigma^2$. Removing half the samples, obviously does not change the variance as white noise is not correlated, but subtracting the samples is effectively decimating the data set and since the sampling rate is halfed, the Nyquist band is halfed as well. Unfortunately the input noise bandwdith stays the same. The second Nyquist band is then folded back into the first, thus doubling the noise power density.
+
+To conclude, it is expected, that the variance doubles and the power spectral density quadruples!
+
+These consideration can be compared to the simulated data. Applying the autozeroing algorithm to the simulated data set, the constant \qty{10}{\V} input signal was nulled for every odd value and then the residual noise was subtracted from the signal value. The result in the time domain is shown in figure \ref{fig:autozero_time}.
 
 \begin{figure}[hb]
     \centering
@@ -845,16 +878,57 @@ Applying the autozeroing algorithm to the simulated data set, the constant \qty{
     \label{fig:autozero_time}
 \end{figure}
 
-When comparing to figure \ref{fig:autozero_raw_time} it is immediately evident, that no $f^{-1}$ component is visible, but the white noise component has increased just as predicted by equation \ref{eqn:autozeroing}. To quantify this increase in white noise, the power spectral density can be used. Figure \ref{fig:autozero_psd}.
+When comparing to figure \ref{fig:autozero_raw_time} it is immediately evident, that the $f^{-1}$ component is no longer present. The difference in white noise strength is difficult to compare and it must be turned gain to the power spectral density. When calculating the the spectral density it is important to remember, that the sampling rate is now halved. The result is shown in figure \ref{fig:autozero_psd} along with dashed lines showing the noise content prior to applying the autozero algorithm as before in figure \ref{fig:autozero_raw_psd}.
 
 \begin{figure}[ht]
     \centering
     \input{images/autozero_psd.pgf}
-    \caption{Simulated power spectrum of a Keysight \device{3458A} with autozeroing applied. The dashed lines denote the noise present before applying the autozero algorithm.}
+    \caption{Simulated power spectrum of a Keysight \device{3458A} with autozeroing applied. The dashed lines denote the noise present prior to applying the autozero algorithm.}
     \label{fig:autozero_psd}
 \end{figure}
 
+The power spectral density in figure \ref{fig:autozero_psd} confirms an increase in the white noise power as discussed above and it can be determined that the white noise power $\sqrt{h_{-1}}$ has increased from $\qty[power-half-as-sqrt, per-mode=symbol]{165}{\nV \Hz\tothe{-0.5}}$ to $\qty[power-half-as-sqrt, per-mode=symbol]{489}{\nV \Hz\tothe{-0.5}}$, an increase by a factor of $\sqrt{8.8}$, which is more than estimated by \ref{eqn:autozeroing}, including the factor of $2$ for the decimation, which gauged the increase of $\sqrt{h_{-1}}$ to be $\sqrt{4}$ . The reason for the additional noise was already mentioned above. There is still some substantial $f^{-1}$ noise present at the autozero frequency of \qty{5}{\Hz}. This type of noise is not uncorrelated and therefore the covariance is not zero, hence equation \ref{eqn:adding_white_noise} does not strictly hold. The hypothesis can be confirmed, by moving the corner frequency in the simulation from \qty{1.5}{\Hz} a decade lower to \qty{0.15}{\Hz}. The white noise floor would then only increase by a factor of $\sqrt{4.5}$.
+
+Nonetheless, down to very low frequencies the $f^{-1}$ noise is effectively suppressed and the spectral density is almost perfectly flat.
+
+The Allan deviation plot in figure \ref{fig:autozero_adev} also confirms that white noise is the only component and shows a $\tau^{-\frac 1 2}$ dependence for the full range of integration times.
+
+\begin{figure}[hb]
+    \centering
+    \input{images/autozero_adev.pgf}
+    \caption{Simulated Allan deviation of a Keysight \device{3458A} with autozeroing applied. The dashed lines denote the deviation prior to applying the autozero algorithm.}
+    \label{fig:autozero_adev}
+\end{figure}
+
+From this plot it can be seen, that for measurement times longer than about \qty{2}{\s} or \qty{100}{\plc} autozeroing has a clear benefit over a measurement without autozeroing. It must be noted though, that judging from this simulation, the device would reach a noise floor of \qty{0.01}{\V \per \V} only at integration times of slighly more than \qty{10}{\s}, while the datasheet claims \qty{2}{\s}. It is therefore likely, that the noise parameters of a real device are be better than the numbers used in the simulation. Additionally, the datasheet likely refers to an instrument, that is synced to a \qty{60}{\Hz} power line frequency which shifts the sampling frequency up by \qty{20}{\percent} and, as discussed, reduces the noise floor, because more noise content is white noise at the autozero interval. In this simulation the \qty{0.01}{\V \per \V} noise level would be reached at exactly \qty{10}{\s} when using a line frequency of \qty{60}{\Hz}. For the purpose of demonstrating the autozeroing algorithms these subtleties are irrelavant.
+
+For the comparison of different intregation times before applying autozeroing figure \ref{fig:autozero_nplcs_adev} can be consulted. Using the Allan deviation makes it is very simple to compare noise figures for identical measurement times $\tau$, but different integration times before autozeroing is applied.
+
+\begin{figure}[ht]
+    \centering
+    \input{images/autozero_nplcs_adev.pgf}
+    \caption{Allan deviation for different integration times before applying the AZ algorithm. Deadtime $\theta = 0$. The dashed line denotes the Allan variance without AZ.}
+    \label{fig:autozero_nplcs_adev}
+\end{figure}
+
+It can be seen, that with increasing integration times before applying the AZ algorithm more uncertainty is accumulated due to the $f^{-1}$ content, which cannot be filtered. As a result, after removing the $f^{-1}$ content using autozeroing more time is required for filtering until the the same Allan deviation can be reached. From these simulations it can be said, that when there is negligible dead time $\theta$ involved when switching the inputs it is advantageous to switch to switch early, while white noise is still dominating the noise.
+
+Finally, the case of a non-negligible dead time shall be treated. When the dead time has to be considered, it is clear, that the autozero frequency cannot be arbitrarily increased, because the proportion of sampling time lost, in comparison to the time spent sampling, increases. This effective loss in sampling time then increases the noise spectral density due to aliasing as discussed above. To show this effect the simulation above is modified to include a dead time of \qty{1}{\plc} as detailed in figure \ref{fig:dmm_autozer_offset_nulling}. The measurement sequence now includes a dead time after switching each input. \citeauthor{autozero_with_dead_time} proposes \cite{autozero_with_dead_time} splitting the measurement interval in two and instead of measuring HI-LO-HI-LO, to measure HI-LO-LO-HI. This scheme is a mixed bag, because the $f^{-1}$ noise is correlated and its autocorrelation function decays with $e^{-t}$, therefore constantly changing the order of subtracted samples is not as efficient in removing the noise as the normal autozero procedure. Only when the dead time is large in comparison to the measurement time, this method yields an advantage. Therefore only the simplest case of a HI-LO-HI-LO measurement is treated here. The Allan deviation for different integration times is evaluated in same way as in figure \ref{fig:autozero_nplcs_adev}. The results are shown in figure \ref{fig:autozero_deadtime_nplcs_adev}.
+
+Figure \ref{fig:autozero_deadtime_nplcs_adev} demonstrates, that the effectiveness of the AZ scheme no longer increases with an increasing switching frequency and there is an optimal autozero interval. For the parameters chosen for this simulation ($f_c = \qty{1.5}{\Hz}$ and \qty[power-half-as-sqrt, per-mode=symbol]{165}{\nV \Hz\tothe{-0.5}}), \qty{5}{\plc} is the optimal interval. If the corner frequency is shifted to a lower frequency, the optimum shifts more towards \qty{10}{\plc}. The same goes for a higher line frequency of \qty{60}{\Hz}. This explains, why HP chose \qty{10}{\plc} as the maximum integration time. For integration times higher than that, software averaging is used, therefore delivering the perfomance shown in figure \ref{fig:autozero_deadtime_nplcs_adev} along the \qty{10}{\plc} line.
+
+\begin{figure}[ht]
+    \centering
+    \input{images/autozero_deadtime_nplcs_adev.pgf}
+    \caption{Allan deviation for different integration times before applying the AZ algorithm. Deadtime $\theta = \qty{1}{\s}$. The dashed line denotes the Allan variance without AZ.}
+    \label{fig:autozero_deadtime_nplcs_adev}
+\end{figure}
+
+It should be stressed here, that the dead time is not be the only factor to consider when chossing the autozero interval. For example, in case of an amplifier, switching the input also adds an error current due to the charge injection of the switching transistors. This may negatively impact the measurement of a high impedance source. These additional drawbacks are implementation specific and must considered during the design phase.
+
+\clearpage
 \subsection{Gain Correction}
+\label{sec:autozero_gain}
 The effect of the gain correction, where the input value $x$ is scaled by a scaling factor $y$ to adjust the changing, can be calculated, assuming white noise, as follows:
 \begin{align}
     \sigma_{x \cdot y}^2 &= \langle x^2 y^2 \rangle - \langle x y \rangle^2 \nonumber\\
@@ -863,15 +937,13 @@ The effect of the gain correction, where the input value $x$ is scaled by a scal
     &= \sigma_x^2 \sigma_y^2 + \sigma_x^2 \langle y \rangle^2 + \sigma_y^2 \langle x \rangle^2 \label{eqn:variance_multiplied}\\
 \end{align}
 
-With respect to the gain correction, equation \ref{eqn:variance_multiplied} can be further reduced. The scaling factor is derived from the reference voltage $V_{ref}$ and normalized using $\frac{V_{ref, meas}}{V_{ref}}$. The expected value, therefore is $\langle y \rangle \approx 1$, as the ADC should not drift much from its calibrated value. Furthermore, $\sigma_y^2$ is scaled by the constant $1/V_{ref}$ and $\sigma_x^2 \sigma_y^2 \ll \sigma_x^2$.
+With respect to the gain correction, equation \ref{eqn:variance_multiplied} can be further reduced. The scaling factor is derived from the reference voltage $V_{ref}$ and normalized using $\frac{V_{ref, meas}}{V_{ref}}$. The expected value, therefore is $\langle y \rangle \approx 1$, as the ADC should not drift much from its calibrated value. Furthermore, $\sigma_y^2$ is scaled by the constant $1/V_{ref}$ and $\sigma_x^2 \sigma_y^2 \ll \sigma_x^2$. The latter should be true for any measurement of significance.
 
 \begin{equation}
     \sigma_{x \cdot y}^2 \approx \sigma_x^2 + \sigma_y^2 \langle x \rangle^2
 \end{equation}
 
-The gain correction noise therefore behaves similar to the offset correction case, except, that it scales with input voltage and has no effect, with a shorted input, while having its full effect for a full scale input.
-
-
+The gain correction noise therefore behaves similar to the offset correction case, except, that it scales with input voltage and has no effect, with a shorted input, while introducing its noise only for a full scale input.
 
 
 % check \cite{psd_to_adev} Appendix II for details on dead time
