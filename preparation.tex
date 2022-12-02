@@ -2,13 +2,43 @@
 \section{Grounding and Shielding}
 Add parts from "references\\Grounding and Shielding.pdf"
 \section{Laser Current Driver}
-\subsection{Design}
+Laser diodes are current driven devices. The reason is that
+\begin{equation}
+    P_{out} \propto I
+\end{equation}
+
+and the diode current $I$ approximately follows the Shockley equation \cite{shockley_diode}
+\begin{equation}
+    I = I_0 \left( e^{\frac{qV_d}{k_B T}} - 1\right) \, .
+\end{equation}
+
+$k_B$ is Boltzmann constant, $T$ the temperature, $q$ the electron charge and $V_d$ the diode voltage.
+
+From the Shockley equation is clear, that a laser diode should be directly driven by a current and not a voltage to ensure precise operation.
+
+The most basic function of a laser driver therefore is to provide a stable, but user adjustable current. Additional features like current and voltage limits, that shut down the diode aid in protecting the expensive laser diodes. The user adjustable current can typically be modulated at frequencies up to serveral \unit{\MHz} to shape the frequency and ampltitude of the laser beam. This section deals with the design challenges of such a device used for high precission laser spectroscopy.
+
+A basic laser current driver design can be found in the work of \citeauthor{libbrecht_hall} \cite{libbrecht_hall}. While this design contains all the basic features, like a low noise current source, a modulation input and a voltage limit, there are several shortcomings that have emerged over the years with new generations of laser didoes. The laser driver used by legacy applications in this group is based on the aforementioned paper and has been successfully employed in several projects over the years, but several limitations have come up in recent years. In order to derive the design requirements of a new generation of laser drivers the important design elements need to be identified first. The essential design elements are the bulk current source, the modulation current source, the reference element and output programming. The next 4 sections will deal with each element and outline the design goals that were identified while employing the legacy generation of diode drivers in several experiments.
+
+\subsection{Design Goals: Current Source}
+An idealized current source as shown in figure \ref{fig:ideal_current_source} has two properties. The output current $I$ and the output impedance $R_\mathrm{out}$. Ideally, $R_\mathrm{out}$ is infinite and all current is forced to flow through the load.
+
+\begin{figure}[ht]
+    \centering
+    \scalebox{1}{%
+        \import{figures/}{current_source_norton.tex}
+    } % scalebox
+    \caption{An ideal current source with output impedance of $R_\mathrm{out}$.}
+    \label{fig:ideal_current_source}
+\end{figure}
+
 \subsubsection{Simulation}
 \paragraph{Op Amp Stability}
 \subsection{Noise Considerations}
 \subsection{Voltage Reference}
 \subsection{MOSFET Selection}
 
+\clearpage
 \section{LabKraken}
 \subsection{Design Goals}
 LabKraken is a designed to be a asynchronous, resilient data aquisition suite, that scales to thousands of sensors and accross different networks.
@@ -551,6 +581,7 @@ Given that no trap site can store an electron indefinetely, the number of trap s
 \end{equation}
 
 which can be motivated if the trapping process is thermally activated \cite{1_f_noise_motivation} and using equation \ref{eqn:burst_noise_lorentzian} from the previous section, multiplying the weight function \ref{eqn:flicker_noise_weight_function} and integrating over all possible storage times gives:
+
 \begin{align}
     S(\omega) &= \lim_{t \to \infty} \int_0^t N(\bar \tau) \, 4 R_{xx}(0) \frac{\bar \tau}{1 + \omega^2 \bar \tau^2} \, d\bar\tau \nonumber\\
     \overset{\bar \tau_0 = \bar \tau_1}&{=} 4 R_{xx}(0)\, C_N \lim_{t \to \infty} \int_0^t \frac{1}{1 + \omega^2 \bar\tau^2} \, d\bar\tau \nonumber\\
