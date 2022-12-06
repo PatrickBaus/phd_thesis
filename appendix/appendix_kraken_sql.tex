@@ -1,0 +1,33 @@
+\chapter{Appendix}
+\section{Multimeter Settings for the Comparison Test}
+\begin{lstlisting}[language=sql,title=SQL query]
+SELECT
+  time
+  ,data_values [1] humidity  --1st value in the array
+  ,data_values [2] temperature --2nd value
+FROM (
+  SELECT
+    bucket as "time"
+    ,array_agg("data") as data_values
+  FROM (
+    SELECT
+      time_bucket('6h',"time") AS "bucket"
+      ,sensor_id
+      ,avg(value) AS "data"
+        FROM sensor_data
+        WHERE
+        time BETWEEN
+          '2022-01-01T00:00:00.00Z' AND '2023-01-01T00:00:00Z'
+        AND sensor_id IN (
+          SELECT id
+          FROM sensors
+          WHERE label = '011_humidity' OR label = '011_temperature'
+            AND enabled
+        )
+    GROUP BY bucket, sensor_id
+    ORDER BY 1
+  ) t1
+  GROUP BY "bucket"
+) t2
+\end{lstlisting}
+

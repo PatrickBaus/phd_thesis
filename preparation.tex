@@ -2,9 +2,13 @@
 \section{Grounding and Shielding}
 Add parts from "references\\Grounding and Shielding.pdf"
 \section{Laser Current Driver}
-Laser diodes are current driven devices. The reason is that
+% Include Emission wavelength dependence of characteristic temperature of InGaN laser diodes
+% Check Diode Laser Characteristics
+% I-lamda in Wavelength Dependence of InGaN Laser Diode Characteristics
+% also Determination of piezoelectric fields in strained GaInN quantum wells using the quantum-confined Stark effect
+Laser diodes are current driven devices, because
 \begin{equation}
-    P_{out} \propto I
+    P_{out} \propto I\,, \nonumber
 \end{equation}
 
 and the diode current $I$ approximately follows the Shockley equation \cite{shockley_diode}
@@ -12,13 +16,55 @@ and the diode current $I$ approximately follows the Shockley equation \cite{shoc
     I = I_0 \left( e^{\frac{qV_d}{k_B T}} - 1\right) \, .
 \end{equation}
 
-$k_B$ is Boltzmann constant, $T$ the temperature, $q$ the electron charge and $V_d$ the diode voltage.
+$k_B$ is Boltzmann constant, $T$ the temperature, $q$ the electron charge and $V_d$ the diode voltage. The exponential dependence of the current on the the supply voltage calls for a current source to drive a laser diode safely, without risking thermal damage.
 
-From the Shockley equation is clear, that a laser diode should be directly driven by a current and not a voltage to ensure precise operation.
+The primary function of a laser driver is to provide a stable, but user adjustable, current. The user adjustable current can typically be modulated at frequencies up to serveral \unit{\MHz} to shape the frequency and ampltitude of the laser beam. Additional features like current and voltage limits aid in protecting the expensive laser diodes. This section deals with the design challenges of such a device used for high precission laser spectroscopy. First the design requirements are derived and then technical specifications are developed.
 
-The most basic function of a laser driver therefore is to provide a stable, but user adjustable current. Additional features like current and voltage limits, that shut down the diode aid in protecting the expensive laser diodes. The user adjustable current can typically be modulated at frequencies up to serveral \unit{\MHz} to shape the frequency and ampltitude of the laser beam. This section deals with the design challenges of such a device used for high precission laser spectroscopy.
+The focus of this work many lies on two types of laser diodes, indium gallium nitride (InGaN) and aluminium gallium arsenide (AlGaAs), but is not limited to those two types. The former material is used for blue laser didoes at around \qty{450}{\nm}, but also cover up to green wavelengths, and the latter for near-infrared laser diodes at \qty{780}{\nm}, both wavelengths used for experiments in this group.
 
-A basic laser current driver design can be found in the work of \citeauthor{libbrecht_hall} \cite{libbrecht_hall}. While this design contains all the basic features, like a low noise current source, a modulation input and a voltage limit, there are several shortcomings that have emerged over the years with new generations of laser didoes. The laser driver used by legacy applications in this group is based on the aforementioned paper and has been successfully employed in several projects over the years, but several limitations have come up in recent years. In order to derive the design requirements of a new generation of laser drivers the important design elements need to be identified first. The essential design elements are the bulk current source, the modulation current source, the reference element and output programming. The next 4 sections will deal with each element and outline the design goals that were identified while employing the legacy generation of diode drivers in several experiments.
+The design requirements are split into four parts, that need to be discussed. The ambient environment, the diode voltage and current requirements, the modulation bandwith and finally the noise specifications.
+
+\clearpage
+\subsection{Design Goals: Ambient Environment}
+The laser driver is to be used in a clean laboratory environment. Typical lab temperatures are in the range of \qtyrange{20}{25}{\celsius} and ware mostly met in our labs, before improvements were implemented as part of this work. Humidity is only controlled with dehumidifiers and therefore in the range of \qtyrange{15}{60}{\percent rH}. The air is typically filtered using H14 HEPA filters. Figure \ref{fig:lab_temperature_start_of_project} shows a typical \qty{1}{d} span of the lab temperature as it was found at the start of this project.
+
+\begin{figure}[ht]
+    \centering
+    \input{images/temperature_011_2016.pgf}
+    \caption{Temperature in Lab 011 on 2016-11-26.}
+    \label{fig:lab_temperature_start_of_project}
+\end{figure}
+
+As it can be seen there are strong oszillations of the temperature as a result of the on–off air conditioning temperature controller. The commercial controller used back then was realized using an IMI Heimeier EMO T Valve \cite{datasheet_heimeier_emo_t}, which is a 2 step valve. Altough this solution was later replaced by a custom design described in section \ref{}, these type controllers are found in many other labs and temperature swings of \qty{2}{\kelvin} must therefore be expected.
+
+These expected environmental parameters can now be used to estimate the design requirements for the laser driver. The more demanding laser system is the \qty{450}{\nm} system \cite{thesis_baus} required for the spectroscopy of highly charged ions \cite{thesis_alex} at GSI. This system was found to be more susceptible to changes of the drive current since the wavelength selective filter element was far broader in comparison to a \qty{780}{\nm} system \cite{two_filter_paper}. This laser is stable over regions of tens of \unit{\uA} and requires a maximum drive current of \qty{145}{\mA} \cite{datasheet_osram_pl450b}. From these values, the driver should be able to supply at least \qty{150}{\mA} and stay well within \qty{10}{\uA} over the whole environmental range. Assuming the worst-case specifications a tolerance of $3\sigma$ (\qty{99.7}{\percent}) must be met \cite{worst_case_design}.
+
+The environmental parameters that mostly affect current sources are temperature and humidity. Air pressure is typically a matter of concern for high voltage systems \cite{IPC-2221B} and secondary to consider for this design as it is a low voltage system (\qty{<= 48}{\V}). Air pressure effects are also the most expensive to test for as a pressure chamber is required, therefore this will not be specified. While humidity does affect electronics due to corrosion and also indirectly because the epoxy used in the PCB and component moulding is hygroscopic and the absorbed humidty leads to swelling and mechanical stress \cite{epoxy_humidity}. This effect is very slow at ambient temperature and can easily take days \cite{epoxy_humidity}. This parameter is therefore included in the long-term stability and not specified separately.
+
+it changes  of close to \qty[per-mode = symbol]{1}{\uA \per \A} is required, preferably better than that. The long-term stability should be less than \qty[per-mode = symbol]{10}{\uA \per \A} to allow open-loop adjustment of the laser.
+
+This leads to the following design specifications regarding the environmental conditions:
+
+\begin{center}
+    \begin{tcolorbox}[
+        colback=red!5!white,
+        colframe=red!75!black,
+        title=Current controller environmental design specifications,
+        width=0.8\linewidth,
+        ]
+    \begin{itemize}
+        \item Temperature range \qtyrange{20}{25}{\celsius}
+        \item Temperature coefficient \qty[per-mode = symbol]{<= 1}{\uA \per A}
+        \item Humidty (non-condensing) \qty{<= 75}{\percent rH}
+        \item Humidty coefficient not specified, but included in the long-term drift
+        \item Maximium altitude not specified
+        \item Long-term drift \qty[per-mode = symbol]{<= 10}{\uA \per \A}
+    \end{itemize}
+    \end{tcolorbox}
+\end{center}
+
+
+A basic laser current driver design, that has some of the  can be found in the work of \citeauthor{libbrecht_hall} \cite{libbrecht_hall}. While this design contains all the basic features, like a current source, a modulation input and a voltage limit, there are several shortcomings that have emerged over the years with new generations of laser didoes. The laser driver used by legacy applications in this group is based on the aforementioned paper and has been successfully employed in several projects over the years, but several limitations have come up in recent years. In order to derive the design requirements of a new generation of laser drivers the important design elements need to be identified first. The essential design elements are the bulk current source, the modulation current source, the reference element and output programming. The next 4 sections will deal with each element and outline the design goals that were identified while employing the legacy generation of diode drivers in several experiments.
 
 \subsection{Design Goals: Current Source}
 An idealized current source as shown in figure \ref{fig:ideal_current_source} has two properties. The output current $I$ and the output impedance $R_\mathrm{out}$. Ideally, $R_\mathrm{out}$ is infinite and all current is forced to flow through the load.
@@ -28,7 +74,7 @@ An idealized current source as shown in figure \ref{fig:ideal_current_source} ha
     \scalebox{1}{%
         \import{figures/}{current_source_norton.tex}
     } % scalebox
-    \caption{An ideal current source with output impedance of $R_\mathrm{out}$.}
+    \caption{An ideal current source with output impedance $R_\mathrm{out}$.}
     \label{fig:ideal_current_source}
 \end{figure}
 
@@ -931,7 +977,7 @@ The Allan deviation plot in figure \ref{fig:autozero_adev} also confirms that wh
     \label{fig:autozero_adev}
 \end{figure}
 
-From this plot it can be seen, that for measurement times longer than about \qty{2}{\s} or \qty{100}{\plc} autozeroing has a clear benefit over a measurement without autozeroing. It must be noted though, that judging from this simulation, the device would reach a noise floor of \qty{0.01}{\V \per \V} only at integration times of slighly more than \qty{10}{\s}, while the datasheet claims \qty{2}{\s}. It is therefore likely, that the noise parameters of a real device are be better than the numbers used in the simulation. Additionally, the datasheet likely refers to an instrument, that is synced to a \qty{60}{\Hz} power line frequency which shifts the sampling frequency up by \qty{20}{\percent} and, as discussed, reduces the noise floor, because more noise content is white noise at the autozero interval. In this simulation the \qty{0.01}{\V \per \V} noise level would be reached at exactly \qty{10}{\s} when using a line frequency of \qty{60}{\Hz}. For the purpose of demonstrating the autozeroing algorithms these subtleties are irrelavant.
+From this plot it can be seen, that for measurement times longer than about \qty{2}{\s} or \qty{100}{\plc} autozeroing has a clear benefit over a measurement without autozeroing. It must be noted though, that judging from this simulation, the device would reach a noise floor of \qty[per-mode = symbol]{0.01}{\V \per \V} only at integration times of slighly more than \qty{10}{\s}, while the datasheet claims \qty{2}{\s}. It is therefore likely, that the noise parameters of a real device are be better than the numbers used in the simulation. Additionally, the datasheet likely refers to an instrument, that is synced to a \qty{60}{\Hz} power line frequency which shifts the sampling frequency up by \qty{20}{\percent} and, as discussed, reduces the noise floor, because more noise content is white noise at the autozero interval. In this simulation the \qty{0.01}{\V \per \V} noise level would be reached at exactly \qty{10}{\s} when using a line frequency of \qty{60}{\Hz}. For the purpose of demonstrating the autozeroing algorithms these subtleties are irrelavant.
 
 For the comparison of different intregation times before applying autozeroing figure \ref{fig:autozero_nplcs_adev} can be consulted. Using the Allan deviation makes it is very simple to compare noise figures for identical measurement times $\tau$, but different integration times before autozeroing is applied.
 
@@ -982,6 +1028,8 @@ The gain correction noise therefore behaves similar to the offset correction cas
 
 \clearpage
 \section{Temperature Controller}
+
+% include Investigation of Long-Term Drift of NTC Temperature Sensors with less than 1 mK Uncertainty
 
 \subsection{Tuning of a PID controller}
 The number of emperical algorithms to determine a set of PID parameters ($\mathrm{K_p, K_i, K_d}$) are numerous. In this work only the most common algorithms and a few notable exceptions will be presented.

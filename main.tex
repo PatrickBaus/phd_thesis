@@ -22,7 +22,7 @@
 \usepackage{pgfplotstable}
 \usepackage[]{siunitx}
 %\usepackage[T1]{fontenc}
-\usepackage[siunitx, europeanresistors]{circuitikz}
+\usepackage[siunitx, europeanresistors, nooldvoltagedirection]{circuitikz}
 \usepackage{subcaption}
 \usepackage{tabularx}  % for 'tabularx' environment and 'X' column type
 \usepackage{booktabs}  % for \toprule, \midrule, and \bottomrule macros
@@ -35,6 +35,7 @@
 \usepackage[subpreambles=true]{standalone}
 \usepackage{import}
 \usepackage{pythonhighlight}
+\usepackage{tcolorbox}
 
 \usepackage{microtype}
 
@@ -59,6 +60,10 @@
 	nomarginpar
 }
 
+\hbadness=100 % Use the same settings as in the lua script below
+\vbadness=100
+\directlua{dofile("detect_underfull.lua")}
+
 \DeclareCaptionFont{white}{\color{white}}
 \DeclareCaptionFormat{listing}{\colorbox{gray}{\parbox{0.95\textwidth}{#1#2#3}}}
 \captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
@@ -69,8 +74,6 @@
 }
 
 \pgfplotsset{compat=1.18}
-
-\directlua{dofile("detect_underfull.lua")}
 
 % https://tex.stackexchange.com/questions/65471/set-label-name-on-two-lines-in-circuitikz
 \makeatletter
@@ -138,5 +141,6 @@
     \printbibliography
     \appendix  % Begin the appendix
     \include{appendix/appendix_dmm_test.tex}
+    \include{appendix/appendix_kraken_sql.tex}
 
 \end{document}
