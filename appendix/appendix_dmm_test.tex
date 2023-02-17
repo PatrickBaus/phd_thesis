@@ -1,4 +1,14 @@
-\chapter{Appendix}
+\documentclass[12pt]{book}
+\usepackage{docmute}
+\usepackage{caption}  % used in the appendix
+\usepackage{listings}
+\usepackage{xcolor}
+
+\DeclareCaptionFont{white}{\color{white}}
+\DeclareCaptionFormat{listing}{\colorbox{gray}{\parbox{0.95\textwidth}{#1#2#3}}}
+\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
+
+\begin{document}
 \section{Multimeter Settings for the Comparison Test}
 \label{appendix:dmm_test}
 All were configured for maximum stability and similar conversion times using the following settings via SCPI. For better readability, all commands are shown unabridged.
@@ -71,3 +81,5 @@ All were configured for maximum stability and similar conversion times using the
     :FORMat:ASCii:PRECision 16;  # return 16 digits ASCII
     :DISPlay:VOLTage:DC:DIGits 6;  # set the screen to 6 digits
 \end{lstlisting}
+
+\end{document}
