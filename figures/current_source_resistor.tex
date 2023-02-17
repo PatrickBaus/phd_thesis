@@ -1,0 +1,40 @@
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{calc,positioning,backgrounds}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+}
+\ctikzloadstyle{romano}
+
+\begin{document}
+    \begin{circuitikz}[
+        american currents,
+        american voltages,
+        scale=0.81,
+        transform shape,
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+        romano circuit style,
+        european resistors,
+    ]
+        \tikzstyle{every node}=[font=\small]
+        \begin{scope}[circuitikz/bipoles/noise sources/fillcolor=dashed]
+            \draw
+                (0,0) to[V,name=V,l=V, invert] ++(0,5.5) coordinate(Vdd) -- ++(3,0) to[R, i^>=$I_{S}$, l=$R_{S}$] ++(0,-2)
+                node[pigfete, anchor=S](Q){Q}
+                (Q.D) to[R, l=$R_{load}$] ++(0,-2)
+                -- ++(-2,0) -| (0,0)
+                (Q.G) to[short, -o] ++(-0.5,0) node[anchor=east](vgs){$V_{GS}$}
+                (Q.D) node[anchor=south east] {\scriptsize{D}}
+                (Q.S) node[anchor=north east] {\scriptsize{S}}
+                (Q.G) node[anchor=north] {\scriptsize{G}}
+            ;
+        \end{scope}
+    \end{circuitikz}
+\end{document}

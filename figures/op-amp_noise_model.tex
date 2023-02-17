@@ -1,0 +1,42 @@
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{calc,positioning,backgrounds}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+}
+
+\begin{document}
+    \begin{circuitikz}[
+        american currents,
+        american voltages,
+        scale=0.81,
+        transform shape,
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+    ]
+        \tikzstyle{every node}=[font=\small]
+        \begin{scope}[
+            circuitikz/bipoles/noise sources/fillcolor=dashed,
+        ]
+            \draw
+                (0,0) ++(1.5,0) node[op amp, anchor=out, fill=white, scale=4](noisyOA){}
+            ;
+            \draw
+                (0,0) node[op amp, anchor=out] (OA) {noiseless}
+                (OA.+) -- ++(-0.5,0) -- ++(0,-0.8) to [nV, l=$e_n$, fill=yellow!50!red, sources/scale=0.8] ++(-2,0) coordinate(in+)
+                to [nI, l_=$i_n$, *-, fill=blue!50!white, sources/scale=0.8] (in+ |- OA.out) coordinate(gnd)
+                (OA.-) -- ++(-0.5,0) -- ++(0,0.8) -- ++(-2,0) coordinate(in-)
+                to [nI, l=$i_n$, *-*, fill=blue!50!white, sources/scale=0.8] (gnd)
+                -- ++(-1,0) node[ground]{}
+                (in+) -- ++(-1.5,0) |- (noisyOA.+)
+                (in-) -- ++(-1.5,0) |- (noisyOA.-)
+            ;
+        \end{scope}
+    \end{circuitikz}
+\end{document}

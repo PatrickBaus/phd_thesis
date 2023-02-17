@@ -1,0 +1,37 @@
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{calc,positioning,backgrounds}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+}
+
+\begin{document}
+	\begin{circuitikz}[
+        american currents,
+        american voltages,
+        scale=0.81,
+        transform shape,
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray}
+    ]
+		\tikzstyle{every node}=[font=\small]
+		\begin{scope}[circuitikz/bipoles/noise sources/fillcolor=dashed]
+			\draw
+			(0,0) to[V,name=V,l=V, invert] (0,3)
+			-- ++(0.5,0) to[R, l_=$R_{out}$] ++(2,0)
+			to[nV, v_=$e_n$, fill=yellow!50!red] ++(2,0)
+			to[R, l^=$R_{load}$, i>^=$I_{out}$] ++(0,-3)
+			-- (0,0)
+			%(Rout bottom) to [short, *-] ++(3,0)
+			%  to[R, l_=$R_{load}$, i^<=$i_2$] ++(0,3)
+			%  to[nV=$e_n$, fill=yellow!50!red] ++(-3,0) to [short,-*] (Rout top)
+			;
+		\end{scope}
+	\end{circuitikz}
+\end{document}

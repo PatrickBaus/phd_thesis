@@ -1,0 +1,39 @@
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{calc,positioning,backgrounds}
+\usepackage{amsfonts}  % Checkmark symbol
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+}
+
+\begin{document}
+    \begin{circuitikz}[
+        american currents,
+        american voltages,
+        scale=0.81,
+        transform shape,
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray}
+    ]
+        \tikzstyle{every node}=[font=\small]
+        \begin{scope}[circuitikz/bipoles/noise sources/fillcolor=dashed]
+            \draw
+                (0,0) node[ground]{} -- ++(1,0)
+                to[empty laser diode] ++ (0,-2)
+                to[I,name=V,l=$I$] ++(0,-2)
+                node[vee]{}
+                (2,0) node[scale=3]{\textcolor{green!60!black}{\checkmark}}
+            ;
+            \draw[densely dashed]
+                (1,-2) to[short, *-] ++(-1,0) node[ground, solid]{}
+            ;
+        \end{scope}
+    \end{circuitikz}
+\end{document}
+

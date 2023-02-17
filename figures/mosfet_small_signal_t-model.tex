@@ -1,0 +1,39 @@
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{calc,positioning,backgrounds,fit}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  csources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+}
+\ctikzloadstyle{romano}
+
+\begin{document}
+    \begin{circuitikz}[
+        american currents,
+        american voltages,
+        scale=0.81,
+        transform shape,
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+        romano circuit style,
+        european resistors,
+    ]
+        \tikzstyle{every node}=[font=\small]
+        \begin{scope}[circuitikz/bipoles/noise sources/fillcolor=dashed]
+            \fill[purple!20, rounded corners=1] (-1.7,-0.5) rectangle (2.8, -5.5);
+            \draw
+                (0,0) node[above]{Drain} to[short, o-] ++(0,-1) coordinate(s) to[controlled current source, a=$g_m v_{GS}$, l=$i$, *-] ++(0,-2) coordinate(gate)
+                to[short, -o, i<={$i_G=0$}] ++(-2,0) node[left]{Gate}
+                (gate) to[R, *-*, l=$\frac{1}{g_m}$, v=$v_{GS}$, i>^=$i$] ++(0,-2) coordinate(drain)
+                to[short, -o] ++(0,-1) node[below]{Source}
+                (s) -- ++(2,0) coordinate(ro) to[R, l=$R_o$] (ro |- drain) -- (drain)
+            ;
+        \end{scope}
+    \end{circuitikz}
+\end{document}
