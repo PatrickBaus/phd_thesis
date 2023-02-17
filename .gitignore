@@ -305,3 +305,4 @@ TSWLatexianTemp*
 figures/*
 !figures/*.tex
 source/spice/*.raw
+appendix/*.pdf
