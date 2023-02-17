@@ -151,17 +151,14 @@ def prepare_axis(ax, axis_settings, color_map=None):
     ax.set_prop_cycle('color', color_map)
 
 def plot_data(ax, data, x_axis, column_settings):
+  shared_bins = np.histogram_bin_edges(data[column_settings.keys()], bins="sturges")
   for column, settings in column_settings.items():
       if column in data:
-          ax.plot(
-            data[x_axis],
+          ax.hist(
             data[column],
-            color=settings["color"],
-            marker="",
-            label=settings["label"],
             alpha=0.7,
-            linewidth=settings.get("linewidth", 1),
-            linestyle=settings.get("linestyle", "-"),
+            bins=shared_bins,
+            **settings
           )
 
 def plot_series(plot):
@@ -171,6 +168,8 @@ def plot_series(plot):
     (load_data(plot_file)[0] for plot_file in plot_files),
     sort=True
   )
+  # Removes NAs from each column by shifting the values up, then remove all rows, that have no data
+  data = data.apply(lambda x: pd.Series(x.dropna().values)).dropna()
 
   # If we have something to plot, proceed
   if not data.empty:
@@ -214,214 +213,84 @@ def plot_series(plot):
   plt.tight_layout()
   if plot.get('title') is not None:
     plt.subplots_adjust(top=0.88)
+
   if plot.get("output_file"):
     print(f"  Saving image to '{plot['output_file']['fname']}'")
     plt.savefig(**plot["output_file"])
+
   plt.show()
 
 if __name__ == "__main__":
   plots = [
     {
-      'title': 'Output impedance simulation',
+      'title': 'Parallel IRF9610 MOSFET Monto-Carlo Simulation',
       'title': None,
       'show': True,
       "output_file": {
-          "fname": "../images/ltspice_output_impedance_simulation.pgf"
+          "fname": "../images/ltspice_mosfet_mc_output_impedance.pgf"
       },
+      'crop_secondary_to_primary': True,
       'primary_axis': {
         "axis_settings": {
-          'x_label': r"Drain-source voltage $V_{DS}$ in \unit{\V}",
-          'y_label': r"Ouput Impedance $R_{out}$ in \unit{\ohm}",
+          'x_label': r"Output impedance in \unit{\ohm}",
+          'y_label': r"Counts",
           "invert_x": False,
           "invert_y": False,
-          "fixed_order": 9,
-          "y_scale": "log",
-          #"x_scale": "log",  # Turn this on to show, that R_out is a power law
+          "fixed_order": None,
+          "x_scale": "linear",
         },
-        'x-axis': "vds",
+        'x-axis': "num",
         'plot_type': 'absolute',  # absolute, relative, proportional
         'columns_to_plot': {
-            "rout": {
-                "label": r"DC",
-                "color": colors[0],
-            },
-            "rout10MegHz": {
-                "label": r"\qty{1}{\MHz}",
+            "Rout": {
+                "label": "Parallel MOSFETs",
                 "color": colors[1],
+                #"bins": 50,
             },
-        },
-        'filter': None,#filter_savgol(window_length=101, polyorder=3),
-      },
-      'files': [
-        {
-          'filename': 'mosfet_current_source_output_impedance.csv',
-          'show': True,
-          'parser': 'ltspice_fets',
-          'options': {
-            "columns": ["vload", "rout", "rout10MegHz"],
-            "scaling": {
-              "vds": lambda x : 3.5-x["vload"],
-              "rout": lambda x : 10**(x["rout"]/20),
-              "rout10MegHz": lambda x : 10**(x["rout10MegHz"]/20),
-            },
-          },
-        },
-      ],
-    },
-    {
-      'title': 'MOSFET gm LTSpice example',
-      'title': None,
-      'show': True,
-      "output_file": {
-          "fname": "../images/ltspice_mosfet_transconductance_example.pgf"
-      },
-      'crop_secondary_to_primary': True,
-      'primary_axis': {
-        "axis_settings": {
-          'x_label': r"Drain Current $I_{D}$ in \unit{\A}",
-          'y_label': r"Transconductance $g_m$ in \unit{\siemens}",
-          "invert_x": True,
-          "invert_y": False,
-          "fixed_order": -3,
-          "y_scale": "linear",
-        },
-        'plot_type': 'absolute',  # absolute, relative, proportional
-        'x-axis': "Id",
-        'columns_to_plot': {
-            "gm": {
-                "label": r"$g_m$",
-                "color": colors[0],
-            },
-        },
-        'filter': None,#filter_savgol(window_length=101, polyorder=3),
-      },
-      'files': [
-        {
-          'filename': 'mosfet_gm.csv',
-          'show': True,
-          'parser': 'ltspice_fets',
-          'options': {
-            "columns": ["Vsg", "Id", "gm"],
-            "scaling": {
-              "gm": lambda x : -x["gm"],
-            },
-          },
-        },
-      ],
-    },
-    {
-      'title': 'MOSFET Id LTSpice example',
-      'title': None,
-      'show': True,
-      "output_file": {
-          "fname": "../images/ltspice_mosfet_drain-current_example.pgf"
-      },
-      'crop_secondary_to_primary': True,
-      'primary_axis': {
-        "axis_settings": {
-          'x_label': r"Drain-source voltage $V_{DS}$ in \unit{\V}",
-          'y_label': r"Drain Current $I_{D}$ in \unit{\A}",
-          "invert_x": True,
-          "invert_y": True,
-          "fixed_order": -3,
-          "y_scale": "linear",
-        },
-        'x-axis': "vds",
-        'plot_type': 'absolute',  # absolute, relative, proportional
-        'columns_to_plot': {
-            "Vgs0.2": {
-                "label": "$V_{GS} + V_{th} = \qty{-0.2}{\V}$",
-                "color": colors[0],
-            },
-            "Vgs0.4": {
-                "label": "$V_{GS} + V_{th} = \qty{-0.4}{\V}$",
-                "color": colors[1],
-            },
-            "Vgs0.6": {
-                "label": "$V_{GS} + V_{th} = \qty{-0.6}{\V}$",
+            "Rout_s": {
+                "label": "Single MOSFET",
                 "color": colors[2],
+                #"bins": auto,
             },
-            "Vgs0.8": {
-                "label": "$V_{GS} + V_{th} = \qty{-0.8}{\V}$",
-                "color": colors[3],
-            },
-            "isat": {
-                "label": "$I_{sat}$",
-                "color": colors[4],
-                "linestyle": "--",
+            "Rout_p_sigma": {
+                "label": r"Parallel MOSFET $V_{th}-1\sigma$",
+                "color": colors[0],
+                #"bins": auto,
             },
         },
         'filter': None,#filter_savgol(window_length=101, polyorder=3),
       },
       'files': [
         {
-          'filename': 'mosfet_id.csv',
+          'filename': 'mosfet_current_source_parallel_mc.csv',
           'show': True,
           'parser': 'ltspice_fets',
           'options': {
-            "columns": ["Vsd",] + [f"Vgs{val:.1f}" for val in np.arange(0.2, 0.9, 0.2)],
+            "columns": ["num", "Rout"],
             "scaling": {
-              'vds': lambda x : -x["Vsd"],
-              'isat': lambda x : calculate_saturation_current(x["vds"][x["vds"]>=-0.81], -0.813, -4/1000),
+              "Rout": lambda x : 10**(x["Rout"]/20),
             },
           },
         },
-      ],
-    },
-    {
-      'title': 'IRF9610 MOSFET simulation',
-      'title': None,
-      'show': True,
-      "output_file": {
-        "fname": "../images/mosfet_current_gate_bias.pgf"
-      },
-      'crop_secondary_to_primary': True,
-      'primary_axis': {
-        "axis_settings": {
-          'x_label': r"Drain-Source Voltage $V_{DS}$ in \unit{\V}",
-          'y_label': r"Drain Current $I_D$ in \unit{\A}",
-          "invert_x": True,
-          "invert_y": True,
-          "fixed_order": -3,
-          "y_scale": "linear",
-        },
-        'x-axis': "vds",
-        'plot_type': 'absolute',  # absolute, relative, proportional
-        'columns_to_plot': {
-            "Vgs3.5": {
-                "label": "$V_{GS} = \qty{-3.5}{\V}$",
-                "color": colors[0],
-            },
-            "Vgs4.0": {
-                "label": "$V_{GS} = \qty{-4}{\V}$",
-                "color": colors[1],
-            },
-            "Vgs4.5": {
-                "label": "$V_{GS} = \qty{-4.5}{\V}$",
-                "color": colors[2],
-            },
-            "Vgs5": {
-                "label": "$V_{GS} = \qty{-5}{\V}$",
-                "color": colors[3],
-            },
-            "isat": {
-                "label": "$I_{sat}$",
-                "color": colors[4],
-                "linestyle": "--",
-            },
-        },
-        'filter': None,#filter_savgol(window_length=101, polyorder=3),
-      },
-      'files': [
         {
-          'filename': 'mosfet_current_source.csv',
+          'filename': 'mosfet_current_source_single_mc.csv',
           'show': True,
           'parser': 'ltspice_fets',
           'options': {
-            "columns": ["vsd", "Vgs3.5", "Vgs4.0", "Vgs4.5", "Vgs5"],
+            "columns": ["num", "Rout_s"],
             "scaling": {
-              'vds': lambda x : -x["vsd"],
-              #'isat': lambda x : calculate_saturation_current(x["vds"][x["vds"]>=-0.81], -0.813, -4/1000),
+              "Rout_s": lambda x : 10**(x["Rout_s"]/20),
+            },
+          },
+        },
+        {
+          'filename': 'mosfet_current_source_parallel_mc-sigma.csv',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": ["num", "Rout_p_sigma"],
+            "scaling": {
+              "Rout_p_sigma": lambda x : 10**(x["Rout_p_sigma"]/20),
             },
           },
         },
