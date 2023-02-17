@@ -1,7 +1,7 @@
 \documentclass[tikz,crop]{standalone}
 
 \usepackage{tikz}
-\usetikzlibrary{positioning}
+\usetikzlibrary{positioning,backgrounds}
 
 \begin{document}
     \begin{tikzpicture}[
@@ -10,11 +10,13 @@
         on grid,
         block/.style={draw, rectangle, minimum height=10mm, minimum width=6mm, inner sep=1mm},
         sum/.style={draw, circle, inner sep=1mm},
-        dot/.style={anchor=base, fill=black, circle, inner sep=0.4mm}
+        dot/.style={anchor=base, fill=black, circle, inner sep=0.4mm},
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
     ]
         \node (input) at (0,0) {};
-        \node [block, right=24mm of input] (plant) {$P(s)$};
-        \node [block, right=18mm of plant] (sensor) {$S(s)$};
+        \node [block, right=24mm of input, fill=cyan!25] (plant) {$P(s)$};
+        \node [block, right=18mm of plant, fill=cyan!25] (sensor) {$S(s)$};
         \node [right=24mm of sensor] (output) {};
 
         \draw [->] (input) -- node[above]{$U(s)$} (plant);

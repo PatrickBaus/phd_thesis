@@ -304,3 +304,4 @@ TSWLatexianTemp*
 # Ignore all, but source files in the figures folder
 figures/*
 !figures/*.tex
+source/spice/*.raw

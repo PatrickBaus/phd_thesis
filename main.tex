@@ -17,7 +17,8 @@
 
 \usepackage[english]{babel}
 \usepackage{caption}  % used in the appendix
-\usepackage[version=3]{mhchem}
+\usepackage{docmute}
+\usepackage[version=4]{mhchem}
 \usepackage{pgfplots}
 \usepackage{pgfplotstable}
 \usepackage[]{siunitx}
@@ -27,17 +28,28 @@
 \usepackage{tabularx}  % for 'tabularx' environment and 'X' column type
 \usepackage{booktabs}  % for \toprule, \midrule, and \bottomrule macros
 \usepackage{multirow}
+\usepackage{amsmath}  % align environment
+\usepackage{hyperref}
 \usepackage{amsfonts}  % Checkmark symbol
 \usepackage{aligned-overset}  % align overset in align environment
 \usepackage{mathrsfs}  % Laplace symbol
 \usepackage{mathtools}  % underbracket
-\usepackage{pifont}    % Cross symbol
+\usepackage{pifont}    % Cross symbol (ding)
 \usepackage[subpreambles=true]{standalone}
 \usepackage{import}
 \usepackage{pythonhighlight}
 \usepackage{tcolorbox}
 
-\usepackage{microtype}
+% See https://blog.martisak.se/2020/05/03/top-ten-latex-packages/ for further tips
+\usepackage[
+    protrusion=true,
+    activate={true,nocompatibility},
+    final,
+    tracking=true,
+    %kerning=true,  % does not work with LuaLaTex
+    %spacing=true,  % does not work with LuaLaTex
+    factor=1100]{microtype}
+\SetTracking{encoding={*}, shape=sc}{40}
 
 \usepackage[backend=biber, style=numeric, natbib=true, maxcitenames=1, backend=biber, sorting=nyt, autolang=hyphen]{biblatex}
 \usepackage{csquotes}  % Needed by biblatex when babel is active
@@ -60,6 +72,8 @@
 	nomarginpar
 }
 
+\captionsetup[subfigure]{width=0.9\textwidth}
+
 \hbadness=100 % Use the same settings as in the lua script below
 \vbadness=100
 \directlua{dofile("detect_underfull.lua")}
@@ -69,9 +83,10 @@
 \captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
 
 \DeclareSIUnit{\plc}{PLC}
-\sisetup{
-    mode=text
-}
+\sisetup{separate-uncertainty = true, per-mode = symbol}%}	% display the uncertenty as 10 \pm 2
+%\sisetup{
+%    mode=text,
+%}
 
 \pgfplotsset{compat=1.18}
 
@@ -103,11 +118,22 @@
     \circuitikzbasekey/bipole/label/position=-90 } 
 }
 \makeatother
+\ctikzloadstyle{romano}
+
+\makeatletter
+\renewcommand{\@chapapp}{}% Not necessary...
+\newenvironment{chapquote}[2][2em]
+  {\setlength{\@tempdima}{#1}%
+   \def\chapquote@author{#2}%
+   \parshape 1 \@tempdima \dimexpr\textwidth-2\@tempdima\relax%
+   \itshape}
+  {\par\normalfont\hfill--\ \chapquote@author\hspace*{\@tempdima}\par\bigskip}
+\makeatother
+
 
 %\setinstitutionlogo[width]{images/Titel_apq-logo.pdf}
 %\printpicturesize
 % \settitlepicture{images/front.pdf}
-\sisetup{separate-uncertainty = true}	% display the uncertenty as 10 \pm 2
 \usetikzlibrary{arrows.meta,calc,intersections}
 
 \newcommand{\device}[1]{\texttt{\small #1}}
@@ -128,9 +154,9 @@
 
     %\include{introduction}
 
-    \include{preparation}
+    %\include{preparation}
     %\showthe\textwidth
-    %\include{results}
+    \include{results}
     %\include{outlook}
 
     \phantomsection  % add an invisible section for the references
@@ -139,8 +165,6 @@
     %\addtocounter{page}{-1}  % Do not count the affidavit
 
     \printbibliography
-    \appendix  % Begin the appendix
-    \include{appendix/appendix_dmm_test.tex}
-    \include{appendix/appendix_kraken_sql.tex}
+    \subimport{appendix/}{appendix.tex}
 
 \end{document}

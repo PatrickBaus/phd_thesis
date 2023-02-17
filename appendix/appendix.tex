@@ -1,0 +1,25 @@
+\documentclass[12pt]{book}
+\usepackage{docmute}
+\usepackage{caption}  % used in the appendix
+\usepackage{import}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\DeclareCaptionFont{white}{\color{white}}
+\DeclareCaptionFormat{listing}{\colorbox{gray}{\parbox{0.95\textwidth}{#1#2#3}}}
+\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
+
+\begin{document}
+    \appendix  % Begin the appendix
+    \chapter{Appendix}
+        \subimport{}{appendix_dmm_test.tex}
+        \clearpage
+        \subimport{}{appendix_kraken_sql.tex}
+        \clearpage
+        \subimport{}{appendix_transconductance.tex}
+        \clearpage
+        \subimport{}{appendix_ltspice_output_impedance.tex}
+        \clearpage
+        \subimport{}{appendix_mosfet_noise.tex}
+\end{document}
+

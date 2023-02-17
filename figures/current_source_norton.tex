@@ -25,10 +25,10 @@
 			\draw
 			(0,0) to[I,name=I,l=I] (0,3)
 			(0,0) -- ++(1.5,0) coordinate (Rout bottom)
-			  to[R, l_=$R_\mathrm{out}$, i^<=$i_1$] ++(0,3) coordinate (Rout top) -| (I)
+			  to[R, l_=$R_{out}$, i^<=$i_e$] ++(0,3) coordinate (Rout top) -| (I)
 			(Rout bottom) to [short, *-] ++(3,0)
-			  to[R, l_=$R_\mathrm{load}$, i^<=$i_2$] ++(0,3)
-			  to[nV=$e_n$, fill=yellow!50!red] ++(-3,0) to [short,-*] (Rout top)
+			  to[R, l_=$R_{load}$, i_<=$I_{out}$] ++(0,3)
+			  to[nV, v<=$e_n$, fill=yellow!50!red] ++(-3,0) to [short,-*] (Rout top)
 			;
 		\end{scope}
 	\end{circuitikz}

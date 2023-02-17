@@ -1,7 +1,21 @@
 \chapter{Preparation}
+\begin{chapquote}{Lewis Carroll, \textit{Alice in Wonderland}}
+``Begin at the beginning,'' the King said gravely, ``and go on till you come to the end: then stop.''
+\end{chapquote}
 \section{Grounding and Shielding}
 Add parts from "references\\Grounding and Shielding.pdf"
+
+\section{Laser System}
+%Explanations exist; they have existed for all time; there is always a well-known solution to every human problem — neat, plausible, and wrong.
+\subsection{Requirements Laser System}
+One purpose of the laser system is to be used for the spectroscopy of highly charged ions in a Penning trap. For example, an interesting transition of \ce{Ar^13+} can be found at $\lambda = \qty{441.25575(17)}{\nm}$ \cite{ar13+_wavelength} with a lifetime of \qty{9.573(6)}{\ms} \cite{ar13+_lifetime}, which corresponds to natural linewidth of $\Gamma \approx 2 \pi \times \qty{16.63(1)}{\Hz}$. While this linewidth is fairly small, there is substantial doppler broadening at \qty{4}{\K} of
+\begin{equation}
+    \Delta \nu (\lambda = \qty{441}{\nm}, T=\qty{4}{\K}, m=\qty{39.948}{u}) = \frac{2}{\lambda}\sqrt{2 \ln 2 \frac{k_B T}{m}} \approx 2 \pi \times \qty{150}{\MHz} \, . \label{eqn:doppler_broadening}
+\end{equation}
+
+\clearpage
 \section{Laser Current Driver}
+\label{sec:laser_current_driver}
 % Include Emission wavelength dependence of characteristic temperature of InGaN laser diodes
 % Check Diode Laser Characteristics
 % I-lamda in Wavelength Dependence of InGaN Laser Diode Characteristics
@@ -16,7 +30,7 @@ and the diode current $I$ approximately follows the Shockley equation \cite{shoc
     I = I_0 \left( e^{\frac{qV_d}{k_B T}} - 1\right) \, .
 \end{equation}
 
-$k_B$ is Boltzmann constant, $T$ the temperature, $q$ the electron charge and $V_d$ the diode voltage. The exponential dependence of the current on the the supply voltage calls for a current source to drive a laser diode safely, without risking thermal damage.
+$k_B$ is Boltzmann constant, $T$ the temperature, $q$ the electron charge and $V_d$ the diode voltage. The exponential dependence of the current on the supply voltage calls for a current source to drive a laser diode safely, without risking thermal damage.
 
 The primary function of a laser driver is to provide a stable, but user adjustable, current. The user adjustable current can typically be modulated at frequencies up to serveral \unit{\MHz} to shape the frequency and ampltitude of the laser beam. Additional features like current and voltage limits aid in protecting the expensive laser diodes. This section deals with the design challenges of such a device used for high precission laser spectroscopy. First the design requirements are derived and then technical specifications are developed.
 
@@ -37,52 +51,151 @@ The laser driver is to be used in a clean laboratory environment. Typical lab te
 
 As it can be seen there are strong oszillations of the temperature as a result of the on–off air conditioning temperature controller. The commercial controller used back then was realized using an IMI Heimeier EMO T Valve \cite{datasheet_heimeier_emo_t}, which is a 2 step valve. Altough this solution was later replaced by a custom design described in section \ref{}, these type controllers are found in many other labs and temperature swings of \qty{2}{\kelvin} must therefore be expected.
 
-These expected environmental parameters can now be used to estimate the design requirements for the laser driver. The more demanding laser system is the \qty{450}{\nm} system \cite{thesis_baus} required for the spectroscopy of highly charged ions \cite{thesis_alex} at GSI. This system was found to be more susceptible to changes of the drive current since the wavelength selective filter element was far broader in comparison to a \qty{780}{\nm} system \cite{two_filter_paper}. This laser is stable over regions of tens of \unit{\uA} and requires a maximum drive current of \qty{145}{\mA} \cite{datasheet_osram_pl450b}. From these values, the driver should be able to supply at least \qty{150}{\mA} and stay well within \qty{10}{\uA} over the whole environmental range. Assuming the worst-case specifications a tolerance of $3\sigma$ (\qty{99.7}{\percent}) must be met \cite{worst_case_design}.
+These expected environmental parameters can now be used to estimate the design requirements for the laser driver. The more demanding laser system is the \qty{450}{\nm} system \cite{thesis_baus} required for the spectroscopy of highly charged ions \cite{thesis_alex} at GSI. This system was found to be more susceptible to changes of the drive current since the wavelength selective filter element was far broader in comparison to a \qty{780}{\nm} system \cite{two_filter_paper}. This laser is stable over regions of tens of \unit{\uA} and requires a maximum drive current of \qty{145}{\mA} \cite{datasheet_osram_pl450b}.
 
-The environmental parameters that mostly affect current sources are temperature and humidity. Air pressure is typically a matter of concern for high voltage systems \cite{IPC-2221B} and secondary to consider for this design as it is a low voltage system (\qty{<= 48}{\V}). Air pressure effects are also the most expensive to test for as a pressure chamber is required, therefore this will not be specified. While humidity does affect electronics due to corrosion and also indirectly because the epoxy used in the PCB and component moulding is hygroscopic and the absorbed humidty leads to swelling and mechanical stress \cite{epoxy_humidity}. This effect is very slow at ambient temperature and can easily take days \cite{epoxy_humidity}. This parameter is therefore included in the long-term stability and not specified separately.
+From these thoughts, the requirements for the driver can be inferred. It should be able to supply at least \qty{150}{\mA} and stay well within \qty{10}{\uA} over the whole environmental range. For a worst-case assumption a tolerance of $3\sigma$ (\qty{99.7}{\percent}) must be met \cite{worst_case_design}.
 
-it changes  of close to \qty[per-mode = symbol]{1}{\uA \per \A} is required, preferably better than that. The long-term stability should be less than \qty[per-mode = symbol]{10}{\uA \per \A} to allow open-loop adjustment of the laser.
+The environmental parameters that mostly affect current sources are temperature and humidity. Air pressure is typically a matter of concern for high voltage systems \cite{IPC-2221B} and secondary to consider for this design as it is a low voltage system (\qty{<= 48}{\V}). Air pressure effects are also the most expensive to test for, as a pressure chamber is required. While humidity does affect electronics due to corrosion and also indirectly because the epoxy resin used in the FR-4 PCBs and component moulding is hygroscopic and the absorbed humidty leads to swelling and mechanical stress. This effect is very slow at ambient temperature and can easily take days to show \cite{epoxy_humidity}. This parameter is therefore handled via the long-term stability and not specified separately.
 
-This leads to the following design specifications regarding the environmental conditions:
+Given environmental conditions, the relative coefficients can be calculated. This estimation assumes a minimum setpoint resolution of 2 steps within the mode-hop-free region of the laser and calculates the \qty{99.7}{\percent} confidence interval. The steps are given in table \ref{tab:dgdrive_tempco}:
+
+\begin{table}[hb]
+    \centering
+    \begin{tabular}{llr}
+        Property& Value& Result \\
+        \midrule
+        Stable range & \qty{10}{\uA}& \qty{10}{\uA}\\
+        2 steps of resolution  & $\div 2$& \qty{5}{\uA} \\
+        $1 \sigma$  & $\div 2$& \qty{2.5}{\uA} \\
+        Maximum output& \qty{150}{\mA}& \qty{17}{\uA \per \A}\\
+        Temperature range& \qty{5}{\K}& \qty{3}{\uA \per \A \per \K}\\
+        Worst case ($3 \sigma$)& $\div 3$& \qty{1}{\uA \per \A \per \K}\\
+    \end{tabular}
+    \caption{Estimated requirement for the temperature coefficient of the laser driver.}
+    \label{tab:dgdrive_tempco}
+\end{table}
+
+While the requirements look moderate at first sight, doing a quick estimation leeds to a temperature coeffiction of\qty[per-mode = symbol]{1}{\uA \per \A \per \K}, preferably better than that when using a higher output driver -- a rather formidable specification for a current source.
+
+Regarding the long-term stability, a \qty{30}{\day} figure can be estimated. One may be inclined to call for a drift, that is smaller than the stable range, but this would be short sighted, as there are other factors to consider. The laser including the external resonator has its own figure of merit regarding the spectral drift rate. \citeauthor{ecdl_stability} \cite{ecdl_stability} reported a drift of \qty{2.9}{\MHz \per \hour}, which was attributed either to the external resonator itself, the piezo or the collimation lens. It is most likely, that this drift was caused by mechanical changes of the external resonator as it defines the output mode of the laser. The mechanical drift limits the required stability of the current source considerably, as a typical frequency change of the internal resontor with the current of \qty[per-mode=symbol]{3}{\MHz \per \micro \A} \cite{diodelaser_modulation} can be assumed. The (linear) ageing drift of the external resonator over \qty{30}{\day} is equivalent to a \qty{720}{\uA} drift over the same period. For the electronics, the drift is assumed to follow an Arrhenius-like equation resulting from stress induced during manufacturing. This may eventually change to a slow linear drift after several months of relaxation. The coefficient may either be a positive or negative and leads to
+
+\begin{table}[hb]
+    \centering
+    \begin{tabular}{llr}
+        Property& Value& Result \\
+        \midrule
+        Ageing drift limit & \qty{720}{\uA}& \qty{720}{\uA}\\
+        $1 \sigma$  & $\div 2$& \qty{360}{\uA} \\
+        Maximum output& \qty{150}{\mA}& \qty{2400}{\uA \per \A}\\
+        Worst case ($3 \sigma$)& $\div 3$& \qty{800}{\uA \per \A}\\
+    \end{tabular}
+    \caption{Estimated requirement for the long-term stability of the laser driver.}
+    \label{tab:dgdrive_stability}
+\end{table}
+
+From these number, it straightforward to see, that the long-term stability of a laser driver is less important than the short-term temperature coefficient since the limiting factor is the mechanical construction of the laser. This necessitates an atomic reference for long-term stability and to compensate for accoustic resonances of the external resonator. Regarding the choice of suitable devices, the tight specification of the temperature coefficient most likely leads to a choice of components, that will pass these long-term criteria as well, alleviating the burden of proof a bit as long-term drift specifications are hard to come by since they literally need solid time to come by and cannot be extrapolated from high temperature burn-in tests \cite{voltage_reference_drift}.
+
+%While \qty{800}{\uA \per \A} over a \qty{30}{\day} period may seem large at first, it is actually very hard to accurately produce a current. To put this number in perspective, a commercial high-end current source like the Keithley \device{2600B} is specified for the \qty{100}{\mA} range at about \qty{170}{\uA \per \A} for a \qty{30}{\day} period when calcuated from the 1-year specification \cite{datasheet_keithley2600}, again assuming an Arrhenius-like equation as the basis.
+
+This leads to the following design specifications regarding the stabilty of the current driver:
 
 \begin{center}
     \begin{tcolorbox}[
+        new/auto counter,
+        new/number within=chapter,
         colback=red!5!white,
         colframe=red!75!black,
-        title=Current controller environmental design specifications,
+        title=Current controller stability specifications,
         width=0.8\linewidth,
-        ]
+        label={lst:dgDrive_specs_environment}
+    ]
     \begin{itemize}
-        \item Temperature range \qtyrange{20}{25}{\celsius}
-        \item Temperature coefficient \qty[per-mode = symbol]{<= 1}{\uA \per A}
+        \item Temperature range \qtyrange[text-series-to-math, reset-text-series = false, reset-math-version = false]{20}{25}{\celsius}
+        \item \textbf{Temperature coefficient \qty[text-series-to-math, reset-text-series = false, reset-math-version = false]{<= 1}{\uA \per \A \per \K}}
         \item Humidty (non-condensing) \qty{<= 75}{\percent rH}
         \item Humidty coefficient not specified, but included in the long-term drift
         \item Maximium altitude not specified
-        \item Long-term drift \qty[per-mode = symbol]{<= 10}{\uA \per \A}
+        \item Long-term drift over \qty{30}{\day} \qty{<= 800}{\uA \per \A}
     \end{itemize}
     \end{tcolorbox}
 \end{center}
 
+%A basic laser current driver design, that has some of the  can be found in the work of \citeauthor{libbrecht_hall} \cite{libbrecht_hall}. While this design contains all the basic features, like a current source, a modulation input and a voltage limit, there are several shortcomings that have emerged over the years with new generations of laser didoes. The laser driver used by legacy applications in this group is based on the aforementioned paper and has been successfully employed in several projects over the years, but several limitations have come up in recent years. In order to derive the design requirements of a new generation of laser drivers the important design elements need to be identified first. The essential design elements are the bulk current source, the modulation current source, the reference element and output programming. The next 4 sections will deal with each element and outline the design goals that were identified while employing the legacy generation of diode drivers in several experiments.
 
-A basic laser current driver design, that has some of the  can be found in the work of \citeauthor{libbrecht_hall} \cite{libbrecht_hall}. While this design contains all the basic features, like a current source, a modulation input and a voltage limit, there are several shortcomings that have emerged over the years with new generations of laser didoes. The laser driver used by legacy applications in this group is based on the aforementioned paper and has been successfully employed in several projects over the years, but several limitations have come up in recent years. In order to derive the design requirements of a new generation of laser drivers the important design elements need to be identified first. The essential design elements are the bulk current source, the modulation current source, the reference element and output programming. The next 4 sections will deal with each element and outline the design goals that were identified while employing the legacy generation of diode drivers in several experiments.
-
+\clearpage
 \subsection{Design Goals: Current Source}
-An idealized current source as shown in figure \ref{fig:ideal_current_source} has two properties. The output current $I$ and the output impedance $R_\mathrm{out}$. Ideally, $R_\mathrm{out}$ is infinite and all current is forced to flow through the load.
+% https://www.laserdiodecontrol.com/laser-diode-parameter-overview
+% Diode Lasers and Photonic Integrated Circuits (Characteristic temperature)
+% Near Threshold Operation of Semiconductor Lasers and Resonant-Type Laser Amplifiers
+The change in output current caused by load impedance should be an order of magnitude less than the drift specification to ensure a negligible effect compared to the drift over time. The load resistance presented by the laser diodes most commonly used in our experiments ranges from \qty{50}{\ohm} \cite{datasheet_osram_pl450b} to \qty{30}{\ohm} \cite{datasheet_adl_785} and \qtyrange{10}{15}{\ohm} for \qty{780}{\nm} laser diode \cite{datasheet_sharp_780nm,datasheet_thorlabs_780nm}. It can therefore be estimated as
+\begin{align}
+    \frac{R_{load}}{R_{out}} &= \frac{I_{set}}{I_{out}} - 1 \leq \qty[per-mode = symbol]{6.7}{\uA \per \A} \nonumber\\
+    R_{out} &\geq \frac{\qty{50}{\ohm}}{\qty[per-mode = symbol]{6.7}{\uA \per \A}} = \qty{7.5}{\mega \ohm}
+\end{align}
 
-\begin{figure}[ht]
-    \centering
-    \scalebox{1}{%
-        \import{figures/}{current_source_norton.tex}
-    } % scalebox
-    \caption{An ideal current source with output impedance $R_\mathrm{out}$.}
-    \label{fig:ideal_current_source}
-\end{figure}
+An output impedance of more than \qty{7.5}{\mega \ohm} for slowly changing loads is a fairly moderate requirement and can typically be realised using a high precision control loop with an operational amplifier, but another important aspect is the compliance voltage of the current source.
 
-\subsubsection{Simulation}
-\paragraph{Op Amp Stability}
-\subsection{Noise Considerations}
-\subsection{Voltage Reference}
-\subsection{MOSFET Selection}
+The compliance voltage is the maximum voltage the current source can apply to the load and is another non-ideal component of a real current source. The required voltage strongly depends on the type of laser diode used. The near-inrared laser diodes discussed above have an operating voltage of \qtyrange{1.5}{3}{\V}, while the Osram \device{PL 450B} blue laser diode is specified for \qtyrange{5.5}{7}{\V}. The \qty{7}{\V} required by the Osram laser diode is fairly high for a Fabry–Perot laser diode and has proven difficult in the past \cite{thesis_baus} as most laser current driver available are designed for the much forward voltage of the near infrad laser diodes. Even higher voltages of around \qtyrange{12}{15}{\V} are required for quantum cascade lasers, but these are currently neither used nor is their use planned in our experiments.
+
+The maximum output current of the laser driver currently required for laser diodes used in our group is \qty{250}{\mA} for the Thorlabs \device{L785H1} \cite{datasheet_thorlabs_780nm}. Therefore a maximum output current of \qty{300}{\mA} is considered sufficient.
+
+The current noise of the laser driver can be estimated from the laser linewidth sought as the laser frequency is sensitive to the injection current. At low frequencies, about \qty[per-mode=symbol]{-3}{\MHz \per \micro \A} can be attributed to the thermal expansion of the internal resonator of the diode due resistive heating \cite{diodelaser_modulation}. Above \qty{1}{\MHz} this effect starts declining and exposes the change of the refractive index due the presence of charge carriers. This second effect is an order of magnitude weaker. Since the frequency sensitivity to current variations of the laser diode drops with higher frequencies the most important range is from DC to \qty{100}{\kHz}.
+
+To estimate the linewidth requirement, it is important to look at the experimental setup. While the spectroscopy of \ce{Ar^13+} at \qty{4}{\K} is limited to around \qty{150}{\MHz}  as shown on page \pageref{eqn:doppler_broadening}, the quantum computing experiments in our group have more stringent needs. It was shown in \cite{ecdl_stability, ecdl_silicone_housing,ecdl_linewidth_scholten}, that with reasonable expense a passive linewidth of less than \qty{100}{\kHz} can be achieved. Using the frequency sensitivity to a current modulation of laser diodes \qty{100}{\kHz} translates to a current noise of \qty{30}{\nA_{rms}} from \qty{1}{\Hz} to \qty{100}{\kHz}. The lower \qty{1}{\Hz} limit is chosen fairly arbitrary, but the presence of $\frac 1 f$-noise inhibits a definition down to DC. There should be negligible amounts noise below \qty{1}{\Hz} compared to the upper \qty{100}{\kHz} though.
+
+The final aspect of the current source, that needs to be specified, is the bandwidth of the current steering input. The bandwidth in these terms define a reasonably flat (\qty{\leq 3}{\dB}) response. As it was discussed above, beyond a frequency of \qty{1}{\MHz}, the frequency sensitivity of the laser diode to current modulation drops by an order of magnitude, altering the transfer function and introducing new challenges for control loops. Therefore a bandwidth of \qty{1}{\MHz} or more is considered sufficient.
+
+Above \qty{1}{\MHz} it is recommended to either use more dedicated solutions like the direct modulation at the laser head presented in \cite{current_mod_paper} or switch to acousto-optic modulators (AOMs) or electro-optic modulators (EOMs).
+
+This leads to the following requirements regarding the current source of the laser driver:
+
+\begin{center}
+    \begin{tcolorbox}[
+        new/auto counter,
+        new/number within=chapter,
+        colback=red!5!white,
+        colframe=red!75!black,
+        title=Current source specifications,
+        width=0.8\linewidth,
+        label={lst:dgDrive_specs_electrical}
+        ]
+    \begin{itemize}
+        \item Maximum output current \qty{300}{\mA}, optionally \qty{500}{\mA}
+        \item \textbf{Compliance voltage \qty[text-series-to-math, reset-text-series = false, reset-math-version = false]{\geq 8}{\V}}
+        \item Output impedance \qty{\geq 7.5}{\mega \ohm} at low frequencies (close to DC)
+        \item \textbf{Current noise \qty[text-series-to-math, reset-text-series = false, reset-math-version = false]{\leq 30}{\nA_{rms}} from DC to \qty[text-series-to-math, reset-text-series = false, reset-math-version = false]{100}{\kHz}}
+        \item \qty{3}{\dB}-bandwidth of the modulation source \qty{\geq 1}{\MHz}
+    \end{itemize}
+    \end{tcolorbox}
+\end{center}
+
+\clearpage
+\subsection{Design Goals: User Interface and Form Factor}
+The user interface must be remote controllable, as the Penning trap and the laser system is spacially separated with the laser system being located in a special laser lab for environmental and safety reasons. The spatial separation is about \qty{30}{\meter}. Ideally this remote interface is computer controlled to give full access to all features of the laser system. USB or Ethernet is preferred as this does not require extra hardware in the lab.
+
+Regarding the application programming interface (API) support for both Labview and Python, with a strong tendency to Pyhton is favoured. The reason is, that most of the group has switched from Labview to labscript suite \cite{labscript_2013} on Python to run the experiments.
+
+The local interface must be accessible without a computer to allow simple adjustment of the parameters while on the bench.
+
+The form factor should allow integration into standard 19-inch racks to allow simple transportation from the experiment site at GSI to the university for testing and calibration.
+
+\begin{center}
+    \begin{tcolorbox}[
+        new/auto counter,
+        new/number within=chapter,
+        colback=red!5!white,
+        colframe=red!75!black,
+        title=Current source user interface and form factor,
+        width=0.8\linewidth,
+        label={lst:dgDrive_form_factor}
+        ]
+    \begin{itemize}
+        \item Remote computer interface required
+        \item Python and optionally Labview drivers
+        \item Rack mountable form factor preferred
+    \end{itemize}
+    \end{tcolorbox}
+\end{center}
 
 \clearpage
 \section{LabKraken}
@@ -152,23 +265,24 @@ While it is impossible to rule out the possibility of multiple controllers on a 
 
 \clearpage
 \section{Short Introduction to Control Theory}
-This section will give a very brief introduction into some basic concepts of control theory. Many systems require control over one or more process variables. For example, temperature control of a room or a device, or creating a current from a voltage. All of this requires control over a process and is established trough feedback, which allows a controller to sense the state of the system.
+This section will give a very brief introduction into some basic concepts of control theory. Many systems require control over one or more process variables. For example, temperature control of a room or a device, or creating a programmable current from a voltage. All of this requires control over a process and is established trough feedback, which allows a controller to sense the state of the system.
 
-The focus of this section lies on the principels feedback and control and will be detailed in the following sections.
+The focus of this section is narrowed down to the concept of feedback and control and will be detailed in the following sections, which first develop a model for the system and its controller, and then give advice on how to adjust the controller parameters using different tuning algorithms.
 
-\subsection{Transfer Functions}
-
-\subsection{Open and Closed Loop Systems}
-To understand feedback, one needs to take a look at dynamical systems. There are two types of systems: open and closed loop systems. A system is called open loop, if the output of a system does not influece its input as in figure \ref{fig:open_loop}. On the other hand, if the output is connected to the input of the system it is called closed loop system, an example is shown in figure \ref{fig:closed_loop}. $G(s)$ is called the transfer function of the system, while $R(s)$ is the input, $Y(s)$ is the output and $s$ the Laplace variable.
+\subsection{Introduction to the Transfer Function and the Laplace Domain}
+\label{sec:transfer_function}
+There are two types of systems: open and closed loop systems. A system is called open loop, if the output of a system does not feed back to its input as in figure \ref{fig:open_loop}. On the other hand, if the output influces the input of the system via feedback it is called a closed loop system, an example is shown in figure \ref{fig:closed_loop}. Although feedback can be treated in static systems, it is more useful to treat it in dynamic systems in either time-domain or frequency-domain. $G(s)$ is called the transfer function of the system, while $R(s)$ is the input, $Y(s)$ is the output and $s$ the Laplace variable. In this section, upper case letters  denote functions in the Laplace domain, while lower case letters are referring to functions in the time domain.
 
 \begin{figure}[ht]
     \centering
     \begin{subfigure}{0.4\linewidth}
+        \centering
         \import{figures/}{open_loop.tex}
         \caption{Open loop system.}
         \label{fig:open_loop}
     \end{subfigure}
     \begin{subfigure}{0.4\linewidth}
+        \centering
         \import{figures/}{closed_loop.tex}
         \caption{Closed loop system.}
         \label{fig:closed_loop}
@@ -176,14 +290,14 @@ To understand feedback, one needs to take a look at dynamical systems. There are
     \caption{Block diagram of closed and open loop systems.}
 \end{figure}
 
-It is convenient to express the transfer function as its Laplace transform. The unilateral Laplace transform is definded as:
+It is convenient to express the transfer function as its Laplace transform for a number of reasons shown below. The unilateral Laplace transform is definded as:
 \begin{equation}
     \mathscr{L}\left( f(t) \right) = F(s) = \int_0^\infty f(t) e^{-st}\,dt.
 \end{equation}
 
 with $f: \mathbb{R}^+ \to \mathbb{R}$, that is integrable and grows no faster than $e^{s_0t}$ for $s_0 \in \mathbb{R}$. The latter property is important for deriving the rules of differentiation and integration.
 
-To understand the benefits of using the Laplace representation for transfer function a few useful properties must be discussed. First of all the Laplace transform is linear:
+To understand the benefits of using the Laplace representation of the transfer function, a few useful properties should be discussed. First of all, the Laplace transform is linear:
 \begin{align}
     \mathscr{L}\left(a \cdot f(t) + b \cdot g(t) \right) &= \int_0^\infty (a \cdot f(t) + b \cdot g(t)) e^{-st}\,dt \nonumber\\
     &= a \int_0^\infty f(t) e^{-st}\,dt + b \int_0^\infty g(t) e^{-st}\,dt \nonumber\\
@@ -207,14 +321,14 @@ Another interesting property is the derivative and integral of a function $f$:
     &= \frac{1}{s} F(s) \label{eqn:lapace_integration}
 \end{align}
 
-If the initial state $f(0)$ can be chosen to be $0$, the differentiation becomes a simple multiplication by $s$, while the integration becomes a division by $s$. Finally, the most important aspect is, that a simple relation between the input $r(t)$ and the ouput $y(t)$ of a system can be given. The relation between input and the ouput of a system as shown in figure \ref{fig:open_loop} is given by the convolution, see e.g. \cite{pid_basics}. Assuming the system has an initial state of $0$ for $t<0$, hence $r(t<0) = 0$ and $g(t<0) = 0$, one can calculate:
+If the initial state $f(0)$ can be chosen to be $0$, the differentiation becomes a simple multiplication by $s$, while the integration becomes a division by $s$. Finally, the most important aspect is, that it is possible to give a simple relation between the input $r(t)$ and the ouput $y(t)$ of a system. The relationship between input and the ouput of a system as shown in figure \ref{fig:open_loop} is given by the convolution, see e.g. \cite{pid_basics}. Assuming the system has an initial state of $0$ for $t<0$, hence $r(t<0) = 0$ and $g(t<0) = 0$, one can calculate:
 
 \begin{equation}
     y(t) = (r \ast g)(t) = \int_0^\infty r(\tau) g(t-\tau)\,d\tau
     \label{eqn:convolution}
 \end{equation}
 
-Applying the Laplace transformation, greatly simplifies this:
+Applying the Laplace transform, greatly simplifies this:
 \begin{align}
     Y(s) &= \int_0^\infty e^{-st} y(t)\,dt \nonumber\\
     \overset{\ref{eqn:convolution}}&{=} \int_0^\infty \underbrace{e^{-st}}_{e^{-s(t-\tau)}e^{-s\tau}} \int_0^\infty r(\tau) g(t-\tau)\,d\tau\,dt \nonumber\\
@@ -225,16 +339,17 @@ Applying the Laplace transformation, greatly simplifies this:
 
 This formula is a lot simpler than the convolution of $r(t)$ and $g(t)$, therefore the use of the Laplace transform has become very popular in control theory.
 
-Another property that is heavily used in control theory is the time delay of functions. To show this property, let $f(t-\theta)$ be
+Another property, that is heavily used in control theory, is the time delay of functions. To demonstrate this property, let $f(t-\theta)$ be
 \begin{equation}
-    g(t) \coloneqq \begin{cases} f(t-\theta), & t \geq \theta \\ 0, & t < \theta \end{cases} \label{eqn:delayed_f}
+    g(t) \coloneqq \begin{cases} f(t-\theta), & t \geq \theta \\ 0, & t < \theta \end{cases} \,. \label{eqn:delayed_f}
 \end{equation}
 
-The reason for this definition is, that the system must be causal. This means, it is impossible to get data from the future ($t<\theta$). An example is shown in figure \ref{fig:heaviside}.
+The reason for this definition is, that the system must be causal. This means, it is impossible to get data from the future ($t<\theta$). The satisfy this requirement, any constant other than \num{0} can be chosen as well as is done in later in section \ref{sec:pid_tuning_rules}, when determining tuning parameters and fitting experimental data to a model. An example of such a time delayed function $g(t)$ is shown in figure \ref{fig:heaviside}.
 
 \begin{figure}[ht]
     \centering
     \begin{subfigure}{0.4\linewidth}
+        \centering
         \scalebox{0.75}{%
             \import{figures/}{laplace_no_delay.tex}
         } % scalebox
@@ -242,6 +357,7 @@ The reason for this definition is, that the system must be causal. This means, i
         \label{fig:heaviside}
     \end{subfigure}
     \begin{subfigure}{0.4\linewidth}
+        \centering
         \scalebox{0.75}{%
             \import{figures/}{laplace_time_delay.tex}
         } % scalebox
@@ -250,7 +366,7 @@ The reason for this definition is, that the system must be causal. This means, i
     \end{subfigure}
 \end{figure}
 
-The Laplace transform of a delayed signal can be calculated as follows:
+The Laplace transform of a delayed signal $g(t)$ can be calculated as follows:
 
 \begin{align}
     \mathscr{L}\left( g(t) \right) &= \int_0^\infty f(t-\theta) e^{-st}\,dt \nonumber\\
@@ -260,20 +376,22 @@ The Laplace transform of a delayed signal can be calculated as follows:
     &= e^{-s\theta} F(s) \label{eqn:laplace_delayed}
 \end{align}
 
-To satisfy the causaulity requirement, the Heaviside function $H(t)$ can be used:
+To satisfy the causaulity requirement in the time domain, the Heaviside function $H(t)$ can be used to give a more concise representation of $g(t)$:
 \begin{align}
     \mathscr{L}\left( f(t-\theta) H(t-\theta) \right) = e^{-s\theta} F(s) \label{eqn:laplace_causality}
 \end{align}
 
-Lastly, the Laplace transform of $e^{at}$, which is commonly used in differential equations:
+Lastly, the Laplace transform of $e^{at}$ is given, which is commonly used in differential equations:
 \begin{align}
     \mathscr{L}\left(e^{at} \right) &= \int_0^\infty e^{(a-s)t}\,dt = \frac{1}{a-s} \left[e^{(a-s)t} \right]_0^\infty = \frac{1}{s-a} \label{eqn:laplace_exponential}
 \end{align}
 
 
-Using these tools, it is possible calculate the transfer function of a temperature controller. This is done in the next section.
+Using these tools, it is possible calculate the transfer function of a closed-loop temperature controller. This is done in the next section.
 
+\clearpage
 \subsection{A Model for Temperature Control}
+
 \begin{figure}[ht]
     \centering
     \scalebox{1}{%
@@ -283,15 +401,17 @@ Using these tools, it is possible calculate the transfer function of a temperatu
     \label{fig:first_order_model_room}
 \end{figure}
 
-In order to describe a closed-loop system, one has to first create a model for the process and the controller involved. A simple model can be derived from the idea, that the system at temperature $T_{system}$ has a thermal capacitance $C_{system}$, an influx of heat $\dot Q_{load}$ from a thermal load and a controller removing heat from the system through a heat exchanger with a resistance of $R_{force}$. Additionally, there is some leakage through the walls of the system to the ambient environment via $R_{leakage}$. This analogy of thermodynamics with electrondynamics allows to create the model shown in figure \ref{fig:first_order_model_room}. Since this this model is to be used for a room temperature controller, an assumption to simplify it can be made.
+In order to describe a closed-loop system using a transfer function $G(s)$, one has to first create a model for the process and the controller involved. This section will derive the simple, but very useful first-order model with dead-time. This model can be derived from the idea, that the system at temperature $T_{system}$ has a thermal capacitance $C_{system}$, an influx of heat $\dot Q_{load}$ from a thermal load and a controller removing heat from the system through a heat exchanger with a resistance of $R_{force}$. Additionally, there is some leakage through the walls of the system to the ambient environment via $R_{leakage}$. This analogy of thermodynamics with electrondynamics allows to create the model shown in figure \ref{fig:first_order_model_room}. Since this model is to be used for a temperature controller, more simplifications can be made and the model can be split into a large-signal and a small-signal model.
 
-Typically, the room temperature is kept constant. Therefore, the controller will keep $T_{system}$ constant and if the outside temperature and the heat load $\dot Q_{load}$ is \textit{reasonably stable}, it is easy to see, that a constant thermal flux must flow through $R$ since it cannot pass through the thermal capacitance $C$. \textit{Reasonably stable} means that those fluxes can be treated as constant with respect to the temperature controller time constants. This will be further discussed in section \ref{} with regards to system stability. If this assumption holds, the thermal flux from the system load will only cause a constant offset of $T_{force}$, since the heat must be removed by the controller through the resistance $R_{force}$, and the model can be simplified further. Here $T_{force}$ and $T_{system}$ was replaced by $T_{in}$ and $T_{out}$ for better readability.:
+Typically, the room temperature is kept constant. Therefore, the controller will keep $T_{system}$ constant and if the outside temperature and the heat load $\dot Q_{load}$ is \textit{reasonably stable}, it is easy to see, that a constant thermal flux must flow through $R$ since it cannot pass through the thermal capacitance $C$. \textit{Reasonably stable} means that all fluxes can be treated as a small deviation with respect to the temperature controller time constants. If this assumption holds a Taylor approximation around $T_{system}$ can by applied. The thermal flux through $R_{leakage}$ can be treated as constant just like $\dot Q_{load}$ and becomes a fixed offset of $T_{force}$, since the heat must be removed by the controller through the resistance $R_{force}$. The model can now be simplified further. Here $T_{force}$ and $T_{system}$ was replaced by $T_{in}$ and $T_{out}$ for better readability:
 
 \begin{figure}[hb]
     \centering
     \scalebox{1}{%
         \import{figures/}{first_order_model_kirchhoff.tex}
     } % scalebox
+    \caption{First order model.}
+    \label{fig:first_order_model}
 \end{figure}
 
 This is the classic $RC$ circuit. Now, neglecting the constant thermal flux from the system load and exploiting the analogy of thermodynamics and electrondynamics again, using Kirchhoff's second law, one finds:
@@ -307,7 +427,7 @@ Taking the Laplace transform, applying equation \ref{eqn:lapace_integration} and
     \dot{Q}(s) = \frac{T_{in}(s)}{R-\frac{1}{sC}} &= \frac{T_{out}}{\frac{1}{sC}}
 \end{align*}
 
-This allows to calculate the transfer function of the process $P$:
+This allows to calculate the transfer function of the process $P$ using:
 \begin{align}
     P(s) &= \frac{T_{out}}{T_{in}} = \frac{\frac{1}{sC}}{R-\frac{1}{sC}} \nonumber\\
     &= \frac{1}{sRC + 1} \nonumber\\
@@ -381,12 +501,14 @@ The time domain solution of the FOPDT model can now be used extract the paramete
 
 \clearpage
 \subsection{PID tuning rules}
+\label{sec:pid_tuning_rules}
 
 %\subsubsection{SIMC}
 We use $\tau_c = \tau$ as suggested by \cite{simc,smic2} for “\textit{tightest possible subject to maintaining smooth control}“.
 
 \clearpage
-\section{Allan Deviation}
+\section{Noise and Allan Deviation}
+\label{sec:allan_deviation}
 The Allan variance \cite{adev} $\sigma_A^2(\tau)$ is a two-sample variance and used as a measure of stability. The Allan deviation $\sigma_A(\tau)$ is the square root of the variance. Originally, the Allan variance was used to quantify the performance of oscillators, namely the frequency stability, but it can be used evaluate any quantity. In order to define the Allan variance, a few terms need to be defined first. A single measurement value of the time series $y(t)$ can be written as
 \begin{equation}
     \bar y_k(t) = \frac{1}{\tau} \int_{t_{k}}^{t_{k}+\tau} y(t)\,dt . \label{eqn:allan_variance_measurement}
@@ -482,6 +604,7 @@ Figure \ref{fig:white_noise_simulated} shows a sample of white noise in three di
 \begin{figure}[ht]
     \centering
     \begin{subfigure}{0.32\linewidth}
+        \centering
         \scalebox{0.75}{%
             \input{images/white_noise_time.pgf}
         } % scalebox
@@ -490,6 +613,7 @@ Figure \ref{fig:white_noise_simulated} shows a sample of white noise in three di
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.32\linewidth}
+        \centering
         \scalebox{0.75}{%
             \input{images/white_noise_psd.pgf}
         } % scalebox
@@ -498,6 +622,7 @@ Figure \ref{fig:white_noise_simulated} shows a sample of white noise in three di
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.32\linewidth}
+        \centering
         \scalebox{0.75}{%
             \input{images/white_noise_adev.pgf}
         } % scalebox
@@ -612,6 +737,7 @@ The other interesting case is a case, where many trap sites with different time 
 
 \clearpage
 \subsubsection{Flicker Noise}
+\label{sec:flicker_noise}
 Flicker noise is also called $\frac 1 f$-noise and it can be observed in many naturally occuring phenomenen. Its origin is not clear, although there have been many explanations. An overview can be found in \cite{flicker_noise_overview, flicker_noise_overview2, origins_1_f_noise}. This work concentrates on flicker noise in electronic devices. In thick-film resistors, for example, it was shown to extend over at least 6 decades without any visible flattening \cite{1_f_noise_thick_film}. In transistors, flicker noise is caused by the existance of generation-recombination noise or burst noise discussed in the previous section \cite{origins_1_f_noise}. If there are many uncorrelated trap sites, that contribute to the total noise, the envelope of the noise spectral density changes from $\frac{1}{f^2}$ to $\frac{1}{f^1}$ as shown in figure \ref{fig:flicker_noise_evelope}
 
 \begin{figure}[hb]
@@ -686,7 +812,7 @@ As a last remark, a commonly used definition in combination with flicker noise i
 \begin{equation}
     f_c = \frac{h_{-1}}{h_0} \label{eqn:corner_frequency}
 \end{equation}
-It can be graphically extracted from the power spectral density plot by drawing a line trough the the flicker noise and the white noise and finding the intersection. This can be seen in figure \ref{fig:adev_example_psd} on page \pageref{fig:adev_example_psd}. The corner frequency can be found where the horizontal dashed blue and green line meet.
+It can be graphically extracted from the power spectral density plot by drawing a line trough the flicker noise and the white noise and finding the intersection. This can be seen in figure \ref{fig:adev_example_psd} on page \pageref{fig:adev_example_psd}. The corner frequency can be found where the horizontal dashed blue and green line meet.
 
 \clearpage
 \subsubsection{Random Walk}
@@ -779,7 +905,7 @@ with slope of the drift $D$.
 \label{sec:dead_time}
 The coefficients given here were derived using the assumption, that all sampling in a measurement are continous and the dead time $\theta = 0$. Unfortunately, measurement sometime have a dead time, that is non negligible. This problem was extensively discussed by \citeauthor{psd_to_adev} \cite{psd_to_adev}. \citeauthor{adev_frequency_counter} even developed special models to account for the algorithms of modern frequency counters \cite{adev_frequency_counter}. While some frequency counters support gapless measurements, the situation is entirely different for digitizers and digital multimeters. Several settings commonly used affect the dead time, which can be considerable. It is therefore important to discuss typical measurement settings for voltmeters to estimate the errors that arise from those settings. The focus of this discussion lies on the dead time introduced by digital multimeters, but the application is not limited to this field.
 
-The most commonly used settings, that affect the dead time of a voltmeter are auto-zeroing and line synchronization. Auto-zeroing is done by adding additional measurements to the normal input integration cycle. To correct for the zero offset drift a zero measurement is added where the adc is switched to the low terminal. Additionally, some devices add a reading of the reference voltage to correct for gain errors. The implementation details and type of measurements are manufacturer dependant and must be determinded for every multimeter used.
+The most commonly used settings, that affect the dead time of a voltmeter are auto-zeroing and line synchronization. Auto-zeroing is done by adding additional measurements to the normal input integration cycle. To correct for the zero offset drift a zero measurement is added where the adc is switched to the low terminal. Additionally, some devices add a reading of the reference voltage to correct for gain errors. The implementation details and type of measurements are manufacturer dependent and must be determinded for every multimeter used.
 
 The other setting, that can be enabled in voltmeters, is the line synchronization to increase the noise rejection of the instrument. This setting synchronizes the start of a measurement to the zero crossing of the power line. Depending on the instrument, this might cause a delay of one power line cycle (PLC) after each measurment if the instrument is not capable of processing the previous measurement while at the same time recording another one.
 
@@ -797,7 +923,7 @@ Finally, \citeauthor{psd_to_adev} \cite{psd_to_adev} notes that for measurement 
 \clearpage
 \subsection{Example}
 \label{sec:noise_example}
-Using the results from the previous sections, it is possible to simulate a typical measurement sample containing white noise, flicker noise and random walk behaviour. The simulation was written in Python using the \textit{AllanTools} library \cite{allantools} to generate the time domain data, which was then converted to a power spectrum using the algorithm of \citeauthor{welch} \cite{welch}. The Allan deviation was calculated using the \textit{AllanTools}. The full Python source is available at \cite{}. The time domain data shown here was downsampled from $2^{25}$ data points to $2000$ points for faster plotting, using the Largest-Triangle-Three-Buckets (LTTB) algorithm created by \citeauthor{lttb} \cite{lttb}. The downsampling algorithm chosen is optimal for this application, because it aims to visually keep the result the same by favouring parts of the data, where there is more change. The only difference noticable to the author is, that the edges of the white noise plot are a little rougher. The full data set can be obtained using the source code given above if one desires. The power spectrum and the Allan deviation were always calculated from the full dataset. The data of the power spectrum was additionally binned to be evenly spaced on a logarithmic scale. This considerably reduced the high frequency noise and made the plot easier while not negatively impacting the shape.
+Using the results from the previous sections, it is possible to simulate a typical measurement sample containing white noise, flicker noise and random walk behaviour. The simulation was written in Python using the \textit{AllanTools} library \cite{allantools} to generate the time domain data, which was then converted to a power spectrum using the algorithm of \citeauthor{welch} \cite{welch}. The Allan deviation was calculated using the \textit{AllanTools}. The full Python source is available at \cite{}. The time domain data shown here was downsampled from $2^{25}$ data points to \num{2000} points for faster plotting, using the Largest-Triangle-Three-Buckets (LTTB) algorithm created by \citeauthor{lttb} \cite{lttb}. The downsampling algorithm chosen is optimal for this application, because it aims to visually keep the result the same by favouring parts of the data, where there is more change. The only difference noticable to the author is, that the edges of the white noise plot are a little rougher. The full data set can be obtained using the source code given above if one desires. The power spectrum and the Allan deviation were always calculated from the full dataset. The data of the power spectrum was additionally binned to be evenly spaced on a logarithmic scale. This considerably reduced the high frequency noise and made the plot easier while not negatively impacting the shape.
 
 \begin{figure}[ht]
     \centering
@@ -826,7 +952,7 @@ Using the results from the previous sections, it is possible to simulate a typic
     \label{fig:adev_example_noise_types}
 \end{figure}
 
-The the three time series shown in figure \ref{fig:adev_example_noise_types} were sequentially generated using a fixed seed for the random number generator to ensure repeatability as long as the order of creation is kept the same. For generting the noise, the algorithm presented by \citeauthor{noise_generation} \cite{noise_generation} and implemented in the \textit{AllanTools} library was used. The noise strength parameters were deliberately chosen in such a way, that both the white noise and the random walk part have more noise power than the flicker noise. This allows to distinguish them in the plots at both extremes of the frequency scale. Finally, the three types of noise data were summed together to give the combined signal. The time series is shown in figure \ref{fig:adev_example_time}, again downsampled using LTTB. The summed series clearly shows the white noise content and it is possible to deduce some flicker or random walk noise, but it is highly obscured due to the amount of white noise. Using only the time domain plot makes it very hard to distinguish the type of noise present, let alone estimate the individual noise power of the three sources. Therefore, a different analysis tool is called for.
+The three time series shown in figure \ref{fig:adev_example_noise_types} were sequentially generated using a fixed seed for the random number generator to ensure repeatability as long as the order of creation is kept the same. For generting the noise, the algorithm presented by \citeauthor{noise_generation} \cite{noise_generation} and implemented in the \textit{AllanTools} library was used. The noise strength parameters were deliberately chosen in such a way, that both the white noise and the random walk part have more noise power than the flicker noise. This allows to distinguish them in the plots at both extremes of the frequency scale. Finally, the three types of noise data were summed together to give the combined signal. The time series is shown in figure \ref{fig:adev_example_time}, again downsampled using LTTB. The summed series clearly shows the white noise content and it is possible to deduce some flicker or random walk noise, but it is highly obscured due to the amount of white noise. Using only the time domain plot makes it very hard to distinguish the type of noise present, let alone estimate the individual noise power of the three sources. Therefore, a different analysis tool is called for.
 
 \begin{figure}[ht]
     \centering
@@ -902,7 +1028,7 @@ For this simulation, a noise-free and arbitrarily chosen \qty{10}{\V} input is a
 
 Figure \ref{fig:dmm_autozer_offset_nulling} shows the individual sequences of the offset-nulling algorithm. First, the source is sampled for $\tau_s = \qty{10}{\plc}$, then the input is switched to the LO terminal. While this operation is very fast and takes less than \qty{1}{\ms} \cite{article_3458A_input_mpedance}, if the instrument is synchronized to the line frequency the zero measurement will nontheless be delayed until the next zero crossing, hence the dead-time $\theta = \qty{1}{\plc}$. Finally, the zero reference is measured for another $\tau_r = \qty{10}{\plc}$ and then the instrument switches back to the HI terminal.
 
-The data is simulated in the following way. First, two sets of noise data are generated, a white noise spectrum with a noise spectral density of $\qty[power-half-as-sqrt, per-mode=symbol]{165}{\nV \Hz\tothe{-0.5}}$ and a flicker noise spectrum with an intesity scaled to result in a final spectrum with a corner frequency of \qty{1.5}{\Hz}. The required flicker noise intensity is calculated using equation \ref{eqn:corner_frequency}. To get a good low frequency estimate, $2^{20} \approx 10^{6}$ values were generated. Finally, the two noise data sets are summed with the noise-free input source to give the final result. Other effects, such as power-line hum are neglected in this simple simulation, because it would needlessly overcomplicate the example and limit the educational value. The same goes for higher order random-walk $f^{-2}$ noise components, which can be introduced by temperature fluctions and other environmental effects and would be present in a real measurement.
+The data is simulated in the following way. First, two sets of noise data are generated, a white noise spectrum with a noise spectral density of \qty[power-half-as-sqrt, per-mode=symbol]{165}{\nV \Hz\tothe{-0.5}} and a flicker noise spectrum with an intesity scaled to result in a final spectrum with a corner frequency of \qty{1.5}{\Hz}. The required flicker noise intensity is calculated using equation \ref{eqn:corner_frequency}. To get a good low frequency estimate, $2^{20} \approx 10^{6}$ values were generated. Finally, the two noise data sets are summed with the noise-free input source to give the final result. Other effects, such as power-line hum are neglected in this simple simulation, because it would needlessly overcomplicate the example and limit the educational value. The same goes for higher order random-walk $f^{-2}$ noise components, which can be introduced by temperature fluctions and other environmental effects and would be present in a real measurement.
 
 \begin{figure}[ht]
     \centering
@@ -955,7 +1081,7 @@ These consideration can be compared to the simulated data. Applying the autozero
     \label{fig:autozero_time}
 \end{figure}
 
-When comparing to figure \ref{fig:autozero_raw_time} it is immediately evident, that the $f^{-1}$ component is no longer present. The difference in white noise strength is difficult to compare and it must be turned gain to the power spectral density. When calculating the the spectral density it is important to remember, that the sampling rate is now halved. The result is shown in figure \ref{fig:autozero_psd} along with dashed lines showing the noise content prior to applying the autozero algorithm as before in figure \ref{fig:autozero_raw_psd}.
+When comparing to figure \ref{fig:autozero_raw_time} it is immediately evident, that the $f^{-1}$ component is no longer present. The difference in white noise strength is difficult to compare and it must be turned gain to the power spectral density. When calculating the spectral density it is important to remember, that the sampling rate is now halved. The result is shown in figure \ref{fig:autozero_psd} along with dashed lines showing the noise content prior to applying the autozero algorithm as before in figure \ref{fig:autozero_raw_psd}.
 
 \begin{figure}[ht]
     \centering
@@ -964,7 +1090,7 @@ When comparing to figure \ref{fig:autozero_raw_time} it is immediately evident, 
     \label{fig:autozero_psd}
 \end{figure}
 
-The power spectral density in figure \ref{fig:autozero_psd} confirms an increase in the white noise power as discussed above and it can be determined that the white noise power $\sqrt{h_{-1}}$ has increased from $\qty[power-half-as-sqrt, per-mode=symbol]{165}{\nV \Hz\tothe{-0.5}}$ to $\qty[power-half-as-sqrt, per-mode=symbol]{489}{\nV \Hz\tothe{-0.5}}$, an increase by a factor of $\sqrt{8.8}$, which is more than estimated by \ref{eqn:autozeroing}, including the factor of $2$ for the decimation, which gauged the increase of $\sqrt{h_{-1}}$ to be $\sqrt{4}$ . The reason for the additional noise was already mentioned above. There is still some substantial $f^{-1}$ noise present at the autozero frequency of \qty{5}{\Hz}. This type of noise is not uncorrelated and therefore the covariance is not zero, hence equation \ref{eqn:adding_white_noise} does not strictly hold. The hypothesis can be confirmed, by moving the corner frequency in the simulation from \qty{1.5}{\Hz} a decade lower to \qty{0.15}{\Hz}. The white noise floor would then only increase by a factor of $\sqrt{4.5}$.
+The power spectral density in figure \ref{fig:autozero_psd} confirms an increase in the white noise power as discussed above and it can be determined that the white noise power $\sqrt{h_{-1}}$ has increased from \qty[power-half-as-sqrt, per-mode=symbol]{165}{\nV \Hz\tothe{-0.5}} to \qty[power-half-as-sqrt, per-mode=symbol]{489}{\nV \Hz\tothe{-0.5}}, an increase by a factor of $\sqrt{8.8}$, which is more than estimated by \ref{eqn:autozeroing}, including the factor of $2$ for the decimation, which gauged the increase of $\sqrt{h_{-1}}$ to be $\sqrt{4}$ . The reason for the additional noise was already mentioned above. There is still some substantial $f^{-1}$ noise present at the autozero frequency of \qty{5}{\Hz}. This type of noise is not uncorrelated and therefore the covariance is not zero, hence equation \ref{eqn:adding_white_noise} does not strictly hold. The hypothesis can be confirmed, by moving the corner frequency in the simulation from \qty{1.5}{\Hz} a decade lower to \qty{0.15}{\Hz}. The white noise floor would then only increase by a factor of $\sqrt{4.5}$.
 
 Nonetheless, down to very low frequencies the $f^{-1}$ noise is effectively suppressed and the spectral density is almost perfectly flat.
 
@@ -988,7 +1114,7 @@ For the comparison of different intregation times before applying autozeroing fi
     \label{fig:autozero_nplcs_adev}
 \end{figure}
 
-It can be seen, that with increasing integration times before applying the AZ algorithm more uncertainty is accumulated due to the $f^{-1}$ content, which cannot be filtered. As a result, after removing the $f^{-1}$ content using autozeroing more time is required for filtering until the the same Allan deviation can be reached. From these simulations it can be said, that when there is negligible dead time $\theta$ involved when switching the inputs it is advantageous to switch to switch early, while white noise is still dominating the noise.
+It can be seen, that with increasing integration times before applying the AZ algorithm more uncertainty is accumulated due to the $f^{-1}$ content, which cannot be filtered. As a result, after removing the $f^{-1}$ content using autozeroing more time is required for filtering until the same Allan deviation can be reached. From these simulations it can be said, that when there is negligible dead time $\theta$ involved when switching the inputs it is advantageous to switch to switch early, while white noise is still dominating the noise.
 
 Finally, the case of a non-negligible dead time shall be treated. When the dead time has to be considered, it is clear, that the autozero frequency cannot be arbitrarily increased, because the proportion of sampling time lost, in comparison to the time spent sampling, increases. This effective loss in sampling time then increases the noise spectral density due to aliasing as discussed above. To show this effect the simulation above is modified to include a dead time of \qty{1}{\plc} as detailed in figure \ref{fig:dmm_autozer_offset_nulling}. The measurement sequence now includes a dead time after switching each input. \citeauthor{autozero_with_dead_time} proposes \cite{autozero_with_dead_time} splitting the measurement interval in two and instead of measuring HI-LO-HI-LO, to measure HI-LO-LO-HI. This scheme is a mixed bag, because the $f^{-1}$ noise is correlated and its autocorrelation function decays with $e^{-t}$, therefore constantly changing the order of subtracted samples is not as efficient in removing the noise as the normal autozero procedure. Only when the dead time is large in comparison to the measurement time, this method yields an advantage. Therefore only the simplest case of a HI-LO-HI-LO measurement is treated here. The Allan deviation for different integration times is evaluated in same way as in figure \ref{fig:autozero_nplcs_adev}. The results are shown in figure \ref{fig:autozero_deadtime_nplcs_adev}.
 
@@ -1020,7 +1146,7 @@ With respect to the gain correction, equation \ref{eqn:variance_multiplied} can 
     \sigma_{x \cdot y}^2 \approx \sigma_x^2 + \sigma_y^2 \langle x \rangle^2
 \end{equation}
 
-The gain correction noise therefore behaves similar to the offset correction case, except, that it scales with input voltage and has no effect, with a shorted input, while introducing its noise only for a full scale input.
+The gain correction noise therefore behaves similar to the offset correction case, except, that it scales with the input voltage and has no effect with a shorted input, while fully introducing its noise for a full scale input.
 
 
 % check \cite{psd_to_adev} Appendix II for details on dead time
@@ -1028,9 +1154,10 @@ The gain correction noise therefore behaves similar to the offset correction cas
 
 \clearpage
 \section{Temperature Controller}
+\label{sec:temperature_controller}
 
 % include Investigation of Long-Term Drift of NTC Temperature Sensors with less than 1 mK Uncertainty
 
 \subsection{Tuning of a PID controller}
-The number of emperical algorithms to determine a set of PID parameters ($\mathrm{K_p, K_i, K_d}$) are numerous. In this work only the most common algorithms and a few notable exceptions will be presented.
+The number of empirical algorithms to determine a set of PID parameters ($\mathrm{K_p, K_i, K_d}$) are numerous. In this work only the most common algorithms and a few notable exceptions will be presented.
 \subsection{Design}

@@ -1,10 +1,24 @@
 \documentclass[]{standalone}
 \usepackage[europeanresistors]{circuitikz}
-\usetikzlibrary{fit,positioning}
+\usetikzlibrary{fit,positioning,backgrounds}
+
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+}
 
 \begin{document}
     \ctikzloadstyle{romano}
-    \begin{circuitikz}[transform shape, romano circuit style, european resistors, voltage dir=noold]
+    \begin{circuitikz}[
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+        transform shape,
+        romano circuit style,
+        european resistors,
+        voltage dir=noold,
+    ]
         \draw
             (0,0) node[anchor=east] {$T_{force}$} to[R, l=$R_{force}$, o-, v<=$ $] ++ (2,0) -- ++(0.5,0) coordinate(room) node[anchor=south west] {$T_{system}$}
             to[C, l=$C_{system}$] ++(0,-1.5) node[ground] (GND) {}
