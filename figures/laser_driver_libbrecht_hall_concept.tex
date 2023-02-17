@@ -1,0 +1,90 @@
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{calc,positioning,backgrounds,fit}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+}
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+\begin{document}
+    \begin{circuitikz}[
+        american currents,
+        american voltages,
+        scale=0.7,
+        transform shape,
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+    ]
+        \tikzstyle{every node}=[font=\small]
+        \tikzstyle{every node}=[font=\small]
+        \begin{pgfonlayer}{foreground}
+            \draw
+                (0,0) to [L, o-, name=Lin+] ++(2,0) coordinate(Vdiode) to [C, *-, name=Cin+] ++(0,-2) to[short, -*] ++(0,-1.5) coordinate(GND)
+                -- ++(-1,0) node[ground]{}
+                (GND) -- ++(0,-1.5) to [C, -*, name=Cin-] ++(0,-2) coordinate(Vneg)
+                to [L, -o, mirror, name=Lin-] ++(-2,0)
+            ;
+        \end{pgfonlayer}
+        \begin{pgfonlayer}{main}
+            \node[draw=red!80!black, fill=red!20, rounded corners=2pt, fit={(Cin+) (Lin+) (Lin-)}]
+                (filter){};
+            \node[black, above, align=center] at (filter.north) {Supply filter};
+        \end{pgfonlayer}
+        \begin{pgfonlayer}{foreground}
+            \draw (Vdiode) -- ++(1.35,0) coordinate(Vzener)
+                to [zD, invert, *-*, name=Zener] ++(0,-5)
+                to [R, name=Rz] ++(0,-2) -- (Vneg)
+                (Vzener) -- ++(1,0) coordinate (vpot) to[short, *-] ++(0,-3) to [pR, name=Pot] ++(0,-2) -- ++ (-1,0)
+                (Pot.wiper) -- ++(0.5,0) coordinate(Vfilt) to[C, *-, name=Cfilt] ++(0,2) coordinate(tmp)  -- (tmp|-vpot) coordinate(Vfiltpos) to[short, *-] (vpot)
+            ;
+        \end{pgfonlayer}
+        \begin{pgfonlayer}{main}
+            \node[draw=green!80!black, fill=green!20, rounded corners=2pt, fit={($(vpot)+(0,0.2)$) (Zener) (Pot) ($(Rz)+(0,-1.1)$) (Cfilt)}](Ref){};
+            \node[black, above, align=center] at (Ref.north) {Setpoint};
+        \end{pgfonlayer}
+        \begin{pgfonlayer}{foreground}
+            \draw
+                (Vfilt) ++(1.5,0) node[op amp, anchor=+](opamp){}
+                (opamp.+) -- (Vfilt)
+                (opamp.out) node[pigfete, anchor=gate](FET){}
+                (FET.S) --++ (0,1) coordinate (VRs) to [R, *-, name=Rs] ++(0,2) |- (Vfiltpos)
+                (opamp.-) -|++ (-0.5,1) -| (VRs) (VRs) -- (FET.S)
+                (opamp.out) -- (FET.G)
+                (FET.D) --++ (0,-0.5) to [led] ++(0,-2)
+                node[ground]() {}
+            ;
+        \end{pgfonlayer}
+        \begin{pgfonlayer}{main}
+            \node[draw=orange!80!black, fill=orange!20, rounded corners=2pt, fit={(opamp) ($(opamp)+(-1.7,0)$) (Rs) ($(Rs)+(0,1.2)$) (FET)}](CCS){};
+            \node[black, above, align=center] at (CCS.north) {Unidirectional curre source};
+        \end{pgfonlayer}
+        \begin{pgfonlayer}{foreground}
+            % Howland current source
+            \draw
+            (VRs) ++ (0.8,0) node[op amp, xscale=-1, anchor=out](opamp2){}
+
+            (opamp2.out) to [short, *-] ++(0,2) to [R, -*, name=R1] ++(3,0) coordinate(VR1)
+            to [R, name=R2] ++ (2,0) node[ground]() {} node[anchor=west](ModInInv){}
+            (VR1) |- (opamp2.-)
+            %(Opamp2Output) to [short, *-] ++(0,-2)
+            (opamp2.out) -- ++(0,-2)
+            to [R, -*] ++(3,0) coordinate(R3)
+            to [R, -] ++ (2,0) node[ocirc] {} node[anchor=west](ModIn) {Mod In}
+            (R3) |- (opamp2.+)
+            (R3) |- ($(FET.D) + (0,-0.5)$) node[circ]{}
+            ;
+        \end{pgfonlayer}
+        \begin{pgfonlayer}{main}
+            \node[draw=yellow!80!black, fill=yellow!20, rounded corners=2pt, fit={(ModIn) (R1) (opamp2) ($(R3)+(0,-0.55)$)}] (HowlandCurrentSource){};
+            \node[black, above, align=center] at (HowlandCurrentSource.north) {Bidirectional Modulation Current Source};
+        \end{pgfonlayer}
+    \end{circuitikz}
+\end{document}
