@@ -4,7 +4,135 @@
 \end{chapquote}
 
 \section{Laser Current Driver}
+For this project several commercial and publicly available laser current drivers were evaluated for their performance. The following devices were all tested for the requirements listed in \ref{lst:dgDrive_specs_environment} and \ref{lst:dgDrive_specs_electrical}.
+\begin{itemize}
+    \item Moglabs \device{DLC-202}
+    \item Newport \device{TLB-6800-LN}
+    \item SISYPH \device{SMC11 Puy Mary}
+    \item Toptica \device{DCC 110}
+    \item Vescent \device{D2-105}
+    \item LQO \device{LQprO} \cite{datasheet_LQprO}
+    \item A driver based on the work of \citeauthor{laser_driver_digital} \cite{laser_driver_digital}
+\end{itemize}
+
+As a disclaimer, Moglabs, Vescent and SISYPH provided demo units, free of charge to the author and without any obligations regarding this work. The opinions and measurements in this work are in no way biased by this service. All of these drivers claim low-noise in various comparative forms, but vary in features. The \device{DLC-202}, the \device{TLB-6800-LN} and the \device{D2-105} additionally include a peltier controller. The \device{DLC-202} and the \device{TLB-6800-LN} have a modulation source. The \device{TLB-6800-LN}, the \device{DCC 110} and the design by \citeauthor{laser_driver_digital} also feature a digital interface.
+
+The drivers were all compared to our requirements. While not all drivers feature a remote accessible interface, their performance was assesed nonetheless to have a broader range of choices. A performance comparison can be found in section \ref{}. Unfortunately, none the drivers was able to properly drive the high compliance voltage required by the blue laser diode \device{PL 450B} of about \qtyrange[range-units = single]{6}{7}{\V} \cite{datasheet_osram_pl450b}. As it was discussed in section \ref{sec:compliance_voltage}, the compliance voltage of all laser drivers based on the design of \citeauthor{libbrecht_hall} \cite{libbrecht_hall} is limited to around \qtyrange[range-units = single]{2}{3}{\V} at full output (compare \ref{eqn:minimum_mosfet_vds} for details). Since the compliance voltage is rougly proportional to the reciprocal of the output current current, limiting the maximum output current to about \qtyrange[range-units = single]{30}{40}{\percent} increases the compliance voltage to the required level. Not only does this limit the choice of drivers, but also requiring a \qty{500}{\mA} driver for a \qty{150}{\mA} laser diode seems excessive and does not help with the noise requirements, because the output noise of those drivers scales roughly with $I_{max}$ as detailed in section \ref{sec:current_source_noise}, since the op-amp noise is the limiting factor. This lead to the decision to design a current source that meets all of our requirements, while surpassing all available alternative and tackling the compliance voltage limit. This design and its individual components are discussed in the following sections. First, the state of the art is presented, then the problems we encountered are outlined and finally our design, that resolves these issues is presented and the caveats and technical challenges are discussed.
+
+\subsection{The State of the Art in Laser Current Drivers}
+Prior to this work, all laser drivers for scientific purposes, were more or less strictly following the design proposed by \citeauthor{libbrecht_hall} \cite{libbrecht_hall}. This design was presented in 1993 and back then, blue laser diodes were were not available and only developed in 1996. See \cite{blue_laser_diodes_history} for an interesting historic summary. Finally, the efforts of Isamu Akasaki, Hiroshi Amano and Shuji Nakamura were rewarded with the Nobel Prize in Physics in 2014. The original laser driver design was therefore created for laser diodes requiring a low current and low compliance voltage compared to modern laser diodes. While the design remains useful for many low power near-infrared (NIR) laser diodes, these shortcommings were never addressed or even acknowleged by commercial alternatives. Sadly, the topic of the compliance voltage is usually not even mentioned in the datasheets -- the Moglabs \device{DLC-202} and SISYPH \device{SMC11} are notable exceptions, but it is unclear from the datasheet to which version and/or currents of the devices the numbers relate. The Newport \device{TLB-6800-LN} is a bit different to the rest of the drivers tested, because it comes with Newport laser heads and reads its configuration data from the laser head. Ours came with a \device{Vantage TLB-7100} and the laser head needs to be connected for it to work. Without some reverse engineering, these drivers can only be used with certain Newport laser heads. The \device{TLB-6800-LN} is included in the list of devices anyway to give an idea of its performance in existing systems.
+
+\begin{table}[ht]
+    \centering
+    \begin{tabularx}{0.95\linewidth}{l>{\raggedright\arraybackslash}Xl>{\raggedright\arraybackslash}X}
+        Laser driver& Output current& Compliance voltage & Additional features \\
+        \midrule
+        Moglabs \device{DLC-202} & \textbf{\qty[text-series-to-math, reset-text-series = false, reset-math-version = false]{100}{\mA}}, \qty{250}{\mA}, \qty{500}{\mA}& \qty{3.1}{\V} & TEC, PID, Piezo\\
+        Newport \device{TLB-6800-LN} & & --& TEC, Piezo, Digital\\
+        SISYPH \device{SMC11} & \qty{210}{\mA}, \textbf{\qty[text-series-to-math, reset-text-series = false, reset-math-version = false]{470}{\mA}}& \qty{5}{\V}&\\
+        Toptica \device{DCC 110} & \textbf{\qty[text-series-to-math, reset-text-series = false, reset-math-version = false]{100}{\mA}}, \qty{500}{\mA}, \qty{3}{\A}, \qty{5}{\A} & --&\\
+        Vescent \device{D2-105} & \qty{200}{\mA}, \textbf{\qty[text-series-to-math, reset-text-series = false, reset-math-version = false]{500}{\mA}} &  --& TEC\\
+        LQO \device{LQprO} & \textbf{\qty[text-series-to-math, reset-text-series = false, reset-math-version = false]{140}{\mA}}, \qty{400}{\mA} & --&
+    \end{tabularx}
+    \caption{Overview of laser current drivers tested. Marked in bold is the version tested in this work. A dash denotes that no official information is available.}
+    \label{tab:laser_current_drivers_tested}
+\end{table}
+
+The drivers shown in table \ref{tab:laser_current_drivers_tested} will now be discussed in a little more detail to familiarize with them.
+
+Starting with the Moglabs \device{DLC-202}, which is fully integrated unit, that leaves little functions to be desired, it includes the current driver, a pizo driver, a temperature controller for a thermoelectric cooler (TEC) and finally a lock-in amplifier with a PID controller. It is the most integrated solution, that was tested and brings all features required to set up an ECDL locked to an atomic transition. Some of its features are accessible via pin headers. The current source can be remotely enabled and the PID controller can be manipulated to allow relocking the laser or deliberately taking it out lock remotely. There is no way directly adjust the output current over the whole range. It also features a broad range of protection mechanisms for the laser diode, for example disconneting the driver in case of a short or open condition. All relavant quantities can be adjusted and read back from the front panel display. The manual is fairly comprehensive and gives a lot of examples to set up a laser system.
+
+The Vescent \device{D2-105} also features more than just the laser driver and includes a TEC controller as well. Unfortunately, adjusting this temperature controller prooved fairly cumbersome, because the driver has to be opened to adjust trimpots inside the driver. When the unit is placed in a rack, this might even be impossible to realize. The laser current is normally adjusted via a 10-turn potentiometer and can also be steered via an external input, but the stability of the current then depends on the external control voltage. It does not feature any protection features like open or short detection, so disconnecting and reconnecting the cable to the laser will most likely damage the laser diode. The display can be switched to show all relavant quantities. Moreover, the manual is not as comprehensive as the manual of the \device{DLC-202}, but covers all relavant settings of the driver.
+
+The SISYPH \device{SMC11} does not include any additional features, but covers the most important protection features like an open detection and shuts down the driver accordingly. It is fully rackmountable, unlike the drivers discussed so far. The setpoint of the driver is adjusted via a recessed trimpot using a screwdriver, which has prooven troublesome to adjust in the lab when not directly in front of the unit. The current can be externally adjusted using an input connector, but again this limits the stability to that of the external source. The driver does not have any display and all setpoints must either be adjusted blindly or a volmeter must be attached to the monitoring connector limiting the usefulness in a lab environment. The user manual covers only the basic settings and gives no details regaring the layout of the pin headers or external connectors making it hard to understand without having the device at hand.
+
+The Toptica \device{DCC 110} is also only a current source and is rack mounted. It comes with a separate display module, which connect via the backplane. The setpoint is adjusted via 10-turn potentiometer and can additionally be adjusted via the backplane with an external signal, again limiting the stability of the driver to the external source. The manual is fairly comprehensice and covers all essentials.
+
+The Newport \device{TLB-6800-LN} is the only driver, that has a digital interface and supports Standard Commands for Programmable Instruments (SCPI) commands. It incorporates a TEC controller and a piezo controller. Unfortunately, it only works with a limited number of lasers, because it reads some parameters, like the maximum output current from the laser head at startup. The user manual covers all device functions, but gives little detail about the hardware, making this a closed system.
+
+The results of the performance tests conducted prior to building our own solution will be presented on the following pages, including problems typically encountered and their solution. These tests include the stability, current noise and output impedance of the drivers. Not all drivers were put through the full test, if it was already clear that they could not perform in our setup for a laser system for the spectroscopy of highly charged ions driving a blue laser diode.
+
+\clearpage
+\subsection{Laser Driver: Design Concept}
+In order to interpret the results in sections \ref{sec:results_current_noise}, \ref{sec:results_stability}, it it helpful to discuss in more detail the design concept of the current state of the art, which is based on the driver design presented by \citeauthor{libbrecht_hall} \cite{libbrecht_hall}. The design can be split into the four building blocks shown in figure \ref{fig:laser_driver_libbrecht_hall_concept}. A supply voltage input filter, a reference voltage to create the setpoint, a unidrectional current source and some form of bidirectional current source used for modulating the laser current at high frequency.
+
+\begin{figure}[ht]
+    \centering
+    %\resizebox {0.8\textwidth} {!} {
+        \import{figures/}{laser_driver_libbrecht_hall_concept.tex}
+    %} % resizebox
+    \caption{Building blocks of a laser driver based on \cite{libbrecht_hall}.}
+    \label{fig:laser_driver_libbrecht_hall_concept}
+\end{figure}
+
+The original design is the most straightforward approach and it is possible to reproduce it even on prototype printed circuit boards (PCBs). \citeauthor{laser_driver_digital} \cite{laser_driver_digital} replaced the potentiometer with a DAC, but left the other parts untouched. \citeauthor{laser_driver_qcl_taubman} \cite{laser_driver_qcl_taubman,laser_driver_qcl_taubman_multiplexer} published some extensive modifications, which not only replaced the reference circuit with a DAC and an \device{LTZ1000} reference, but also added extensive filtering of the supply. The next sections will discuss these different elements separately and give some in insight into the different versions of the elements found in literature. The sections also details problems discoverd and the solution proposed in the design presented here.
+
+\clearpage
+\subsection{Supply Filtering}
+The supply section of the design by \citeauthor{libbrecht_hall} was shown simplified in figure \ref{fig:laser_driver_libbrecht_hall_concept}. The original filteronly consists of a CLC filter or sometimes called \pi-filter shown in figure \ref{fig:laser_driver_libbrecht_hall_filter}. Do note, that due to the small input capacitance, the filter is basically just an LC-filter.
+
+\begin{figure}[ht]
+    \centering
+    %\resizebox {0.8\textwidth} {!} {
+        \import{figures/}{laser_driver_libbrecht_hall_supply_filter.tex}
+    %} % resizebox
+    \caption{Power supply filter of a laser driver based on \cite{libbrecht_hall}. The op-amps are supply by the filtered voltage and the current source is supplied by the \device{LM317}.}
+    \label{fig:laser_driver_libbrecht_hall_filter}
+\end{figure}
+
+The LC-filter is best suited for a low impedance source like a power supply, because it has a high input impedance. From the transfer function
+\begin{equation}
+    H(s) = \frac{Z_{out}}{Z_{in}} = \frac{\frac{1}{sC}}{sL + \frac{1}{sC}} = \frac{1}{s^2LC +1} = \frac{\frac{1}{LC}}{s^2 + \frac{1}{LC}} = \frac{\frac{1}{LC}}{\left(s+i\frac{1}{\sqrt{LC}}\right)\left(s-i\frac{1}{\sqrt{LC}}\right)}\,, \label{eqn:transfer_function_lc_filter}
+\end{equation}
+one can deduce, that the gain is \num{1} (obviously) and there are two complex poles in the imaginary plane at $s = \frac{\pm i}{\sqrt{LC}}$, putting the cutoff frequency of the 2\textsuperscript{nd} order filter at $f_c = \qty{2.3}{\kHz}$. Do note, due to the imaginary poles, there is gain peaking at $f_c$. Normally, this is damped by the parasitic resistance of the inductor. A more detailed analysis follows below, because the cutoff frequency is all that is of interest right now.
+
+In this design, the op-amps are directly driven off the filtered supply rail. Using this information it is possible to estimate the effectiveness of the filter. Using the \qty{30}{\nA_{rms}} in a \qty{100}{\kHz} bandwidth current noise requirement from table \ref{lst:dgDrive_specs_electrical}, the voltage noise at the sense resistor (\qty{14}{\ohm}, (see section \ref{sec:component_selection}) should be no more than \qty{420}{\nV_{RMS}}. Now, taking for example a low-noise switch-mode power supply like the Rohde \& Schwarz \device{HMP4040} used at CERN \cite{hmp4040_noise}, which does have fairly pronouced noise at the switching frequency of around \qty{170}{\kHz} and harmonics. The author measured these glitches to be about \qty{3}{\mV_{pp}}. The noise will have to go through the filter and the supply rejection ratio (PSRR) of the op-amp. The PSRR of the \device{LT1028} at \qty{170}{\kHz} is about \num{e-2} under ideal conditions \cite{datasheet_LT1028} and the ideal filter gives about \numrange{1e-2}{1e-3} when accounting for a \qty{0.5}{\ohm} series resistance of the capacitor. The total filtering adds up to about \num{e-5}, which still leaves a \qty{2}{\uA_{pp}} ripple on the drive current.
+
+To have a better rejection of switch-mode noise the filter must be improved. \citeauthor{laser_driver_qcl_taubman} used a brute-force approach \cite{laser_driver_qcl_taubman} and applied ridiculously high values for the output capacitors of the LC filter, a total of about \qty{10}{\milli\farad} and then put a second filter based on a so-called capacitance multiplier behind it. This implementation is shown in figure \ref{fig:laser_driver_taubman_filter} and briefly discussed now to show the limits.
+
+\begin{figure}[ht]
+    \centering
+    %\resizebox {0.8\textwidth} {!} {
+        \import{figures/}{laser_driver_dgdrive_supply_filter.tex}
+    %} % resizebox
+    \caption{Power supply filter using a capacitance multiplier for a cutoff frequency of \qty{0.5}{\Hz}. This is a simplified schematic based on \cite{laser_driver_qcl_taubman}.}
+    \label{fig:laser_driver_taubman_filter}
+\end{figure}
+
+\citeauthor{laser_driver_qcl_taubman} built this filter for a driver with a driving capacity of \qty{2}{\A}, which limits the size of the inductor that can be used, in order to make up for that, he is forced to use giant capacitors. While this type of filter may work for their design, there several limitations that need to discussed. The first one is a simple technical detail the authors did not mention (,but hopefully included). This circuit must include a reverse polarity protection, or rather a reverse current protection. If the input is shorted by accident, the \qty{10}{\milli\farad} of capacitance will immediately discharge via the parasitic body diode of the slow start-up capacitor, likely vaporizing everything in its path. The second limitation is the fact, that the filter depends on the bipolar transistor. Not only does the gain of the transistor drop with increasing output current (although it rises with temperature), but also the effectiveness is tightly coupled to the bandwidth of the circuit. Since the current gain $h_{fe}$ of the transistor rolls off with frequency, the high frequency resonse of this filter becomes constant. This limits the suppression at higher frequencies a few \qty{100}{\kHz}. It is usefuly at low frequencies though, as it is shown in the publication. The last disadvantage is the voltage drop across the transistor. The transistor will drop around \qtyrange[range-units = single]{1}{2}{\V}. This may not be a problem for \citeauthor{laser_driver_qcl_taubman}, who is working with a \qty{24}{\V} rail, but there are many applications, where the supply voltage is more limited.
+
+The supply filters presented to far leaves one wanting quite a bit more. The solution we applied is using a passive LC filter combined with a low noise post-regulator, an \device{LT3045} and its negative counterpart, the \device{LT3094}. Both regulators have excellent power supply ripple rejection (PSRR) out to at least \qty{1}{\MHz} of more than \num{e3}. At low frequency the PSRR is even higher and more than \num{e5} and best of all the voltage dropped by the regulator depends on the amount of ripple present, but can easily be around \qty{1}{\V}.
+
+Going back to equation \ref{eqn:transfer_function_lc_filter}, it was said, that
+
+\clearpage
+\subsection{TODO: Need title}
+The author had actually intended to test the stability of the laser drivers first, but the plans were foiled by a misbehaving lab. First tests revealed, that depending on the temperature of cooling water supplied to the overhead air conditioning unit there were temperature fluctuation of up to \qty{2}{\K} observable in the lab. While the effect is not suprising, the observed temperature fluctuations impose a limit on the observable accuracy, due to the temperature coeficient of the multimeter used to record the data. To illustrate the effect, a sample measurement\footnote{\qty{100}{\mA} range, \qty{10}{\plc}, AZERO ON, $f_s = \qty{0.5}{\Hz}$} is shown in figure \ref{fig:laser_driver_aircon}. The Keysight \device{34470A} used to record the data is specified at \qty{6}{\uA \per \K} for a current of \qty{50}{\mA} on the \qty{100}{\mA} range.
+
+\begin{figure}[ht]
+    \centering
+    \input{images/laser_driver_aircon.pgf}
+    \caption{Measurering a \qty{50}{\mA} current using a Keysight \device{34470A} with changing ambient temperature. The current source is based on the design of \citeauthor{laser_driver_digital}.}
+    \label{fig:laser_driver_aircon}
+\end{figure}
+
+Admittedly, the example in figure \ref{fig:laser_driver_aircon} does not reflect the correct way to measure current with high stability, but serves as an excellent example to highlight the problem. The room temperature heavily depends on the inner workings of the air conditioning system used in the building and the problem is not always present. Nonetheless, longer measurements over several days necessitated the development of a PID controller module to replace the stock temperaure controller of the air conditioning unit in the lab. This project is described in section \ref{sec:lab_temp_control}.
+
+In the meantime, measurements, that only required short-term stability were conducted. Measurering the current noise of the drivers is one such measurement.
+
+\clearpage
+\subsection{Test Results: Current Noise}
+\label{sec:results_current_noise}
+The spectral current noise density is a quantity, that is both seemingly trivial to measure and also easy to understand and graphically compare, therefore many devices are emblazoned by such graphs. The upside is, that these numbers can used for reference. Defining the bandwidth of such a measurement is a matter of debate, the available measurement devices and depends of the future use-case of the current driver. We chose an upper frequency of \qty{1}{\MHz} for two reason, first, to limit the number of amplifiers required. As the noise power rises with the bandwidth (in the best case as $\sqrt{\Delta f}$ for white noise) and impedance matching comes into play, a higher power amplifier is required, a trait that does not bode well with low noise, low frequency frontends. So for frequencies above a few \unit{\MHz} different amplifiers are called for. More amplifiers make the whole measurement more intricate, because the amplifiers are the most critical parts in the whole chain. The second reason does not root in the lazyness of the researcher, but has a physical origin. Typical cables used in the lab like RG-58 or RG-223 have a capacitance of about \qty{100}{\pF \per \m}. With a cable length of around \qty{3}{\m} resulting in \qty{300}{\pF}, one finds, that at \qty{10}{\MHz} the impedance seen by the laser diode approaches \qty{50}{\ohm}, not unsurprising, given that the cable impedance is about \qty{50}{\ohm} and a signal at \qty{10}{\MHz} has a wavelength of $\lambda \approx \qty{2}{\m}$. This is aproaching the quarter-wave rule beyond which one should treat the cable as a transmission line.
+
+\clearpage
+\subsection{Test Results: Stability}
+\label{sec:results_stability}
+When remotely controlling a laser system, stability of the laser driver is of immediate concern, because uninterrupted operation of the system is a key requirement and if the laser cannot be locked again remotely, it is time consuming, if possible at all, to go to the remote laser lab and readjust the laser current driver. The development of the past years have also shown a greater demand of remote working rendering readjustment unfeasable. To assure the specifications given in \ref{lst:dgDrive_specs_environment}, the current drivers were first tested for \qty{24}{\hour} to ensure. This test was refined several times over the course of this work, to reflect the need for a better signal so noise ratio. The first tests were done by feeding the output current of the laser driver into a (calibrated) Keysight \device{34470A} and measuring the output over \qty{24}{\hour}. The \device{34470A} was warmed up for \qty{8}{\hour} and so was the laser driver. The ambient temperature and humidity were recorded by the lab monitoring system descibed in section \ref{}.
+
+
 \subsection{Zener Diode Selection}
+\label{sec:zener_diode_selection}
 Early tests of the LM399 Zener diode as a reference have confirmed, what the data sheet \cite{datasheet_LM399} already suggest in the 'Low Frequency Noise Voltage' plot. There are random bi-stable voltage step changes. This phenomenon is called burst noise or popcorn noise.
 
 \begin{figure}[ht]
