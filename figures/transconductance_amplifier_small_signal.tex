@@ -1,0 +1,47 @@
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{calc,positioning,backgrounds}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  csources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+}
+\ctikzloadstyle{romano}
+
+\begin{document}
+    \begin{circuitikz}[
+        american currents,
+        american voltages,
+        scale=0.81,
+        transform shape,
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+        romano circuit style,
+        european resistors,
+    ]
+        \tikzstyle{every node}=[font=\small]
+        \begin{scope}[circuitikz/bipoles/noise sources/fillcolor=dashed]
+            \fill[purple!20, rounded corners=1] (-1.75,2.25) rectangle ++(3.5, -5);
+            \draw
+                (0,0) coordinate(G) to[controlled current source, l=$g_m v_{GS}$,  a=$i_D$, *-*, invert] ++(0,2) coordinate(D) to[short, -o] ++(0,0.5) node[above]{D} -- ++(2,0) node[ground]{}
+                (D) -- ++(1,0) coordinate(ro) to[R, l=$R_o$] ++(0,-4.5) to[short, -*] ++(-1,0)
+                (0,0) to[R, -o, l=$\frac{1}{g_m}$, v=$v_{GS}$] ++(0,-3) node[below]{S}
+                -- ++(-1,0) coordinate(Vs)
+                (G) to[short, *-o] ++(-1.5,0) node[above]{G} -- ++(-1,0)
+                to[controlled voltage source, l_=$A_{ol} v_{id}$] ++(0,-2) node[ground]{}
+                (Vs) -- ++(-1,0) to [R, *-, l=$R_S$, v=$v_{R_S}$] ++(0,-1.5) node[ground]{}
+                (Vs) -- ++(-3.5,0) node[below]{--}
+                to[open, v<=$v_{id}$, o-o] ++(0,3) coordinate(Vref) node[above]{+}
+
+                (Vref) ++(-1,0) coordinate(Rid) to [R, *-, l_=$R_{id}$] ++(0,-3) -- ++(1,0)
+                (Rid) -- ++(-1,0) node[ground]{}
+                (Vref) edge[dashed, red] (Rid)
+            ;
+        \end{scope}
+	\end{circuitikz}
+\end{document}

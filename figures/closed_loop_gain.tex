@@ -1,0 +1,29 @@
+\documentclass[tikz,crop]{standalone}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning, backgrounds}
+
+\begin{document}
+    \begin{tikzpicture}[
+        auto,
+        >=stealth,
+        on grid,
+        block/.style={draw, rectangle, minimum height=10mm, minimum width=10mm, inner sep=1mm},
+        sum/.style={draw, circle, inner sep=1mm},
+        dot/.style={anchor=base, fill=black, circle, inner sep=0.4mm},
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+    ]
+        \node (input) at (0,0) {};
+        \node [sum, right=12mm of input] (sum) {$\Sigma$};
+        \node [block, right=12mm of sum, fill=cyan!25] (plant) {$A$};
+        \node [right=24mm of plant] (output) {};
+        \node [block, below=15mm of plant, fill=blue!25] (gain) {$\beta$};
+
+        \draw [->] (input) -- node[above]{$V_{ref}$} (sum);
+        \draw [->] (sum) -- (plant);
+        \draw [->] (plant) -- node[above, name=out]{$I_{out}$} (output);
+        \draw [->] (out) |- (gain) node[dot, at start]{};
+        \draw [->] (gain) -| (sum);
+    \end{tikzpicture}
+\end{document}
