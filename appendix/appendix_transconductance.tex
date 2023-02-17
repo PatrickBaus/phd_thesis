@@ -1,0 +1,125 @@
+\documentclass[12pt]{book}
+\usepackage{amsmath}  % \overset
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usepackage{docmute}
+\usepackage[backend=biber, style=numeric, natbib=true, maxcitenames=1, backend=biber, sorting=nyt, autolang=hyphen]{biblatex}
+\usepackage{import}
+\usepackage{siunitx}
+\usepackage{amsmath}  % align environment
+\usepackage{aligned-overset}  % align overset in align environment
+\usetikzlibrary{calc,positioning,backgrounds}
+
+% Define local constants, that will be removed when imported into the main file
+\addbibresource[location=local]{../bibliography.bib}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  csources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+}
+\ctikzloadstyle{romano}
+
+\providecommand{\device}[1]{\texttt{\small #1}}
+
+\begin{document}
+\section{The Transconductance Amplifier with a MOSFET}
+\label{sec:transfer_function_transconductance}
+\begin{figure}[ht]
+    \centering
+    \subimport{../figures/}{precision_current_source.tex}
+    \caption{Transconductance amplifier with a p-channel MOSFET.}
+    \label{fig:transconductance_amplifier}
+\end{figure}
+The amplifier shown in figure \ref{fig:transconductance_amplifier} is a feedback transconductance ampplifier as discussed in \cite{fet_equations}. Its transfer function can be derived using the techniques presented in section \ref{sec:transfer_function}. As a reminder, the general transfer function is definded as:
+\begin{equation}
+    P(s) = \frac{I_{out}}{V_{ref}} \equiv A_f \, .
+\end{equation}
+The closed-loop transfer function is sometimes also called gain-with-feedback $A_f$ \cite{fet_equations} or noise-gain.
+
+\begin{figure}[ht]
+    \centering
+    \scalebox{1}{%
+        \subimport{../figures/}{closed_loop_gain.tex}
+    } % scalebox
+    \caption{Block diagram of an amplifier with feedback $\beta$ and gain $A$.}
+    \label{fig:closed_loop_gain}
+\end{figure}
+For the system shown in figure \ref{fig:closed_loop_gain}, the closed-loop gain $A_f$ can be written as
+\begin{align}
+    A_f = \frac{A}{1 + A \beta} \overset{A \to \infty}{=} \frac 1 \beta\,. \label{eqn:transfer_function_closed_loop}
+\end{align}
+For the ideal transconductance amplifier with infinite open-loop gain $A$ it follows, that the gain is simply reduced by the feedback factor $\beta$. For the MOSFET source voltage shown in figure \ref{fig:transconductance_amplifier}, $\beta$ can be easily determined by inspection. The ideal op-amp with infinite open-loop gain $A_{ol}$ has the same voltage at the inverting and non-inverting input. This means that below $R_S$ at the source node of the MOSFET denoted in red, the voltage must be $V-V_{ref}$. This implies, that the voltage $V_{ref}$ is dropped across $R_S$, defining $I_{out}$. Using equation \ref{eqn:transfer_function_closed_loop}, $\beta$ can be calculated
+\begin{equation}
+    A_f = \frac{I_{out}}{V_{ref}} = \frac{\frac{V_{ref}}{R_S}}{V_{ref}} = \frac{1}{R_S} \approx \frac 1 \beta \,. \label{eqn:transconductance_amplifier_feedback_factor}
+\end{equation}
+
+Calculating the transconductance amplifier gain $A$ requires a little more work and it is useful to switch to the small-signal model of the circuit. To build the small-signal model, a number of simplifications can be applied. In the same same way as it was done for the MOSFET with a source resistor in figure \ref{fig:pmos_common_gate_amplifier} on page \pageref{fig:pmos_common_gate_amplifier}, the AC component of $V_{ref}$ can be set to zero, because it is considered constant and so can the supply voltage $V$. The load is also considered constant and hence shorted to ground. In order to ground $V_{ref}$, the non-inverting input of the MOSFET must be disconnected, because there still is the voltage $v_id$ connected to it. The model includes the differential input resistance $R_{id}$ between the inverting and non-inverting input of the op-amp, because for bipolar input op-amps, the differential input resistance can be as low as a few \unit{\kilo\ohm} and must be considered. The common-mode input resistance of the op-amp inputs is typically serveral dozens of \unit{\mega \ohm} or higher and can be safely neglected. This leads to the small signal model shown in figure \ref{fig:transconductance_amplifier_small_signal}. The MOSFET model is the Thévenin model introduced in figure \ref{fig:pmos_current_source_resistor_small_signal} on page \pageref{fig:pmos_current_source_resistor_small_signal}. Do note, that this model is for low frequencies only, as it neglects capacitive effects of the op-amp and mosfet. Capacitors are treated as having infinite impedance in this model.
+
+\begin{figure}[hb]
+    \centering
+    %\resizebox {0.8\textwidth} {!} {
+        \subimport{../figures/}{transconductance_amplifier_small_signal.tex}
+    %} % resizebox
+    \caption{Small signal model for a transconductance amplifier with a MOSFET as shown in figure \ref{fig:transconductance_amplifier}}
+    \label{fig:transconductance_amplifier_small_signal}
+\end{figure}
+
+From the model in figure \ref{fig:transconductance_amplifier_small_signal}, the following equations can be extracted in a similar fashion as it was done for the common-gate amplifier and equation \ref{eqn:mosfet_cg_vout} on page \pageref{eqn:mosfet_cg_vout}.
+\begin{align}
+    v_{GS} &= A_{ol} v_{id} - V_{R_S}\\
+    V_{R_S} &= i_D \left(R_o || R_S || R_{id}\right) = g_m v_{GS} \left(R_o || R_S || R_{id}\right)\\
+    A\beta &= \frac{V_{R_S}}{V_{id}} = \frac{g_m v_{GS} \left(R_o || R_S || R_{id}\right)}{\frac{1}{A_{ol}} \left(1 + g_m \left(R_o || R_S || R_{id}\right)\right) v_{GS}} \nonumber\\
+    &= A_{ol} \frac{g_m \left(R_o || R_S || R_{id}\right)}{1 + g_m \left(R_o || R_S || R_{id}\right)}
+\end{align}
+
+Dividing by $R_S$ yields the open-loop gain of the transconductance amplifier, a quantity, that is interesting for calculating the MOSFET noise contribution:
+\begin{equation}
+    A = \frac{A_{ol}}{R_S} \frac{g_m \left(R_o || R_S || R_{id}\right)}{1 + g_m \left(R_o || R_S || R_{id}\right)} \label{eqn:transconductance_amplifier_open_loop_gain}
+\end{equation}
+
+This leads to the closed-loop transfer function
+\begin{equation}
+    A_f = \frac{A_{ol}}{R_S} \frac{g_m \left(R_o || R_S || R_{id}\right)}{(A_{ol}+1)g_m \left(R_o || R_S || R_{id}\right) + 1} \label{eqn:transconductance_amplifier_transfer_function} \,,
+\end{equation}
+and finally the output impedance of the transconductance amplifier can be calculated using the output impedance of the common-gate amplifier \ref{eqn:mosfet_cg_rout}, calculated on page \pageref{eqn:mosfet_cg_rout}.
+\begin{align}
+    R_{out} &= \left(1+ A\beta\right) R_{out,cg} \nonumber\\
+    &= \left(1 + A_{ol} \frac{g_m \left(R_o || R_S || R_{id}\right)}{1 + g_m \left(R_o || R_S || R_{id}\right)} \right) \left(g_m R_S R_o + R_o + R_S \right) \nonumber\\
+    \overset{A_{ol} \gg 1}&{\approx} A_{ol} \frac{g_m \left(R_o || R_S || R_{id}\right)}{1 + g_m \left(R_o || R_S || R_{id}\right)} \left(g_m R_S R_o + R_o + R_S \right) \,. \label{eqn:transconductance_rout_full}
+\end{align}
+
+Equation \ref{eqn:transconductance_rout_full} can be simplified for typical applications by approximation of $g_m \left(R_o || R_S || R_{id}\right)$. Using the example parameters for the \device{IRF9610} in saturation used previously on page \pageref{eqn:mosfet_rout_irf9610} and additionally the ADI \device{AD797} \cite{datasheet_AD797} op-amp $g_m \left(R_o || R_S || R_{id}\right)$ with the following parameters
+\begin{align}
+    &I_D = \qty{250}{\mA} \,, \lambda = \qty[per-mode=power]{4}{\per \milli \volt} \,, V_{DS} = \qty{3.5}{\V}\,, R_S = \qty{30}{\ohm}\,, \nonumber\\
+    &R_{id} = \qty{7.5}{\kilo\ohm}\,, \kappa = \qty[per-mode=power]{0.813}{\ampere \per \square\volt}\,, A_{ol} = \qty[per-mode=power]{20}{\volt \per \uV} \nonumber
+\end{align}
+one finds
+\begin{align}
+    R_{o} &= \frac{I_D}{\frac{1}{\lambda} + V_{DS}} = \qty{1014}{\ohm} \nonumber\\
+    g_m &= \sqrt{2 \kappa I_D \left(1+ \lambda V_{DS}\right)} = \qty{0.642}{\siemens} \nonumber\\
+    g_m \left(R_o || R_S || R_{id}\right) &\approx g_m R_S \approx \num{29.03}\nonumber\\
+    \frac{g_m \left(R_o || R_S || R_{id}\right)}{1 + g_m \left(R_o || R_S || R_{id}\right)} &\approx \num{0.97} \nonumber
+\end{align}
+
+Using typical parameters, it can be seen, that dropping the $\frac{g_m \left(R_o || R_S || R_{id}\right)}{1 + g_m \left(R_o || R_S || R_{id}\right)}$ term will only lead to error of about \qty{3}{\percent}. Given the datasheet uncertainties for the MOSFET related parameters on the order of \qtyrange{50}{100}{\percent}, it can be safely neglected, leading to the following approximations
+\begin{align}
+    R_{out} &\approx A_{ol} \left(g_m R_o R_S + R_o + R_S \right)\\
+    A_f &\approx \frac{1}{R_S} \,. \nonumber
+\end{align}
+
+The approximation for the output impedance holds true when $g_m R_S \gg 1$, which typically is the case. While $R_S$ might become small, this is compensated by an increase in $g_m$ in our application, because a smaller source resistor implies a higher output current, demanding a MOSFET with a higher transconductance, so the product of $g_m R_S$ remains constant.
+
+It can therefore be said, that the op-amp is simply amplifying the output impedance of the MOSFET with the source resistor and the closed-loop gain is defined entirely by $R_S$, a very convenient property.
+
+If the model is to be considered at frequencies $\omega > 0$, $A_{ol}$ can be replaced by the first order approximation of the op-amp gain as
+\begin{equation}
+    A_1 (\omega) = \frac{A_{ol}}{\sqrt{1 + \left(\frac{\omega}{\omega_c}\right)^2}}\,,
+\end{equation}
+which is valid for most compensated op-amps, which have a dominant pole at $\omega_c \approx \qty{1}{\Hz}$.
+
+
+\end{document}
+

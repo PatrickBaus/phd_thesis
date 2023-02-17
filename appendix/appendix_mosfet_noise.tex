@@ -1,0 +1,105 @@
+\documentclass[12pt]{book}
+\usepackage{docmute}
+\usepackage[backend=biber, style=numeric, natbib=true, maxcitenames=1, backend=biber, sorting=nyt, autolang=hyphen]{biblatex}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{calc,positioning,backgrounds}
+\usepackage{amsmath}  % align environment
+\usepackage{aligned-overset}  % align overset in align environment
+\usepackage{import}
+ \usepackage{listings}
+\usepackage{subcaption}
+\usepackage{url}
+
+% Define local constants, that will be removed when imported into the main file
+\addbibresource[location=local]{../bibliography.bib}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  csources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+}
+\ctikzloadstyle{romano}
+
+\providecommand{\device}[1]{\texttt{\small #1}}
+
+\begin{document}
+\section{MOSFET Noise Sources}
+\label{sec:mosfet_noise}
+This section gives the reader a quick overlook of the noise sources found in MOSFETs.
+A good overview of different types of noise in MOSFETs can also be found in \cite{mosfet_noise_overview} and goes beyond the scope presented here.
+
+The MOSFET wideband noise can be attributed to thermal noise in the channel \cite{mosfet_thermal_noise}. \citeauthor{mosfet_thermal_noise} developed a model for the thermal noise in the saturation region of the MOSFET, while the classic Johnson–Nyquist noise \cite{thermal_noise} can be used for the ohmic region as it behaves like a voltage controlled resistor. This results in the noise density of
+\begin{equation}
+    i_{n,thermal} = \begin{cases}
+        \sqrt{4 k_B T \frac{2}{3} g_m} & \text{saturation}\\
+        \sqrt{4 k_B T g_{DS}} & \text{ohmic}
+    \end{cases}
+\end{equation}
+Using the example parameters from table \ref{tab:current_source_parameters}, one finds
+\begin{align}
+    g_m &= \sqrt{2 \kappa I_D \left(1+ \lambda V_{DS}\right)} = \qty{0.642}{\siemens} \nonumber\\
+    T &= \qty{25}{\celsius} \nonumber\\
+    i_{n,thermal} &\approx \qty[power-half-as-sqrt, per-mode=symbol]{83.9}{\pA \Hz \tothe{-0.5}} \,,
+\end{align}
+the equivalent noise of a resistor $R_D = \frac{3}{2 g_m} = \qty{2.3}{\ohm}$.
+
+
+%$i_{n,thermal}^2$ can be derived from the Johnson–Nyquist noise by looking at the MOSFET channel. As it was already mentioned in the discussion of equation \ref{eqn:mosfet_saturation}, the MOSFET channel changes in size over its length, because it is voltage dependent. Therefore the channel resistance must determined by integrating over the length $L$
+%\begin{align}
+%    i_{n,thermal}^2 &= 4 k_B T \left(\mu \frac{W}{L} \right)^2 \frac{1}{I_D} \int_0^{L} Q_n^2(l)\, dl\\
+%    &= 4 k_B T {\underbrace{\left(\mu C_{ox} \frac{W}{L} \right)}_{\kappa}}^2 \frac{1}{I_D} \int_0^{L} \left(V_{GS} - V_{th}(l) - V(l)\right)\, dl\\
+%    \overset{V_{th} = const}&{\approx} 4 k_B T \kappa^2
+%\end{align}
+
+A more detailed analysis, which also points out the limits of the model above can be found in \cite{mosfet_thermal_noise_details}.
+
+Additionally the MOSFET also suffers from shot noise due to leakage through the gate, but this can be neglected because this leakage current is very small and even a relatively large current of \qty{1}{\mA} only produces
+\begin{align}
+    i_{n,shot}^2 &= \sqrt{2 e I_D}\\
+    &\approx \qty[power-half-as-sqrt, per-mode=symbol]{1.8}{\pA \Hz \tothe{-0.5}} \,.
+\end{align}
+
+Shot noise becomes interesting, when the MOSFET is used well below threshold or at higher frequencies, because, then the parasitic gate-drain capacitor $C_{GD}$ will leak from the input to the ouptut as can be seen in figure \ref{fig:mosfet_parasitic_capacitors}. Figure \ref{fig:mosfet_parasitic_capacitors} shows the different parasitic capacitances of a MOSFET.
+\begin{figure}[hb]
+    \centering
+    %\resizebox {0.8\textwidth} {!} {
+        \import{../figures/}{pmos_capacitance.tex}
+    %} % resizebox
+    \caption{Parasitic capacitances of a MOSFET.}
+    \label{fig:mosfet_parasitic_capacitors}
+\end{figure}
+
+These capacitances can also be found in datasheets, although not directly, because there they are defined as
+\begin{alignat}{3}
+    C_{iss} &= C_{GD} + C_{GS} &\quad&\text{input capacitance}\\
+    C_{oss} &= C_{DS} + C_{GD} &\quad&\text{output capacitance}\\
+    C_{rss} &= C_{GD} &\quad&\text{reverse transfer capacitance} \,.
+\end{alignat}
+
+Regarding low frequencies, MOSFETs also show strong flicker noise. We know from section \ref{sec:flicker_noise}, that the sources of flicker noise are not clearly understood, so there are several theories regarding flicker noise models for MOSFETs.
+
+An an empirical model given by \cite{mosfet_noise_overview,mosfet_flicker_noise} can be used to describe the flicker noise as
+\begin{equation}
+    i_{n,flicker} = \sqrt{\frac{K_f I_D}{C_{ox} L^2} \frac{1}{f}}\,.
+\end{equation}
+
+This model is presented here, because it is also supported and easy to implement in LTSpice. While the parameter $K_f$ is approximately \qty{2e-10}{\femto \square \coulomb \per \square \micro\meter} \cite{mosfet_noise_overview} for p-channel MOSFETs, the gate width and length $W$, $L$ are device specific und unfortunately not given by the manufacturers. The typical corner frequency for MOSFETs, though, is between a few hundred \unit{\kHz} and a few dozen \unit{\MHz} depending on the size of the transistor. Larger transistors tend to show lower noise. Hence older processes are prefered in this regard. Given that the noise is uncorrelated, the total noise of the MOSFET in saturation can be written as
+\begin{equation}
+    i_{n} = \sqrt{4 k_B T \frac{2}{3} g_m + \frac{K_f I_D}{C_{ox} L^2} \frac{1}{f}} \label{eqn:current_noise_mosfet}
+\end{equation}
+
+
+As a reminder, the MOSFET is a (transconductance) amplifier, that takes a voltage at the input and outputs a current. To make the noise figures comparable, the noise is divided by the gain $g_m$. This called the input referred noise. The input referred (voltage) noise $e_n$ is given by:
+\begin{align}
+    e_{n,thermal} &= \sqrt{4 k_B T \frac{2}{3 g_m}}\\
+    e_{n,flicker} \overset{\ref{eqn:mosfet_gm_approximation}}&{\approx} \frac{K_f}{2 \kappa C_{ox} L^2} \frac{1}{f}
+\end{align}
+
+We can see, that flicker noise is fully determined by process parameters in this model.
+
+
+\end{document}
+
