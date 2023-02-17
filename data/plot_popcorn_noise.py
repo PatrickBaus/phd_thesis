@@ -6,6 +6,7 @@ import matplotlib.legend
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 import pandas as pd
 from matplotlib.ticker import ScalarFormatter
 from si_prefix import si_format
@@ -25,7 +26,15 @@ tex_fonts = {
     "legend.fontsize": 8,
     "xtick.labelsize": 8,
     "ytick.labelsize": 8,
-    "pgf.rcfonts": False,  # don't setup fonts from rc parameters
+    "pgf.rcfonts": False,     # don't setup fonts from rc parameters
+    "text.latex.preamble": "\n".join([ # plots will use this preamble
+        r"\usepackage{siunitx}",
+    ]),
+    #"pgf.texsystem": "lualatex",
+    "pgf.preamble": "\n".join([ # plots will use this preamble
+        r"\usepackage{siunitx}",
+    ]),
+    "savefig.directory": os.chdir(os.path.dirname(__file__)),
 }
 plt.rcParams.update(tex_fonts)
 plt.style.use("tableau-colorblind10")
@@ -235,6 +244,11 @@ def plot_series(plot):
     plt.tight_layout()
     if plot.get("title") is not None:
         plt.subplots_adjust(top=0.88)
+
+    if plot.get("output_file"):
+        print(f"  Saving image to '{plot['output_file']['fname']}'")
+        plt.savefig(**plot["output_file"])
+
     plt.show()
 
 
@@ -244,14 +258,17 @@ if __name__ == "__main__":
             "title": "LM399 Burnin",
             "title": None,
             "show": True,
+            "output_file": {
+                "fname": "../images/lm399_popcorn_noise.pgf"
+            },
             #'zoom': ['2021-12-03 12:30:00', '2022-04-01 08:00:00'],
             "zoom": [
                 "2022-08-31 06:00:00",
-                "2024-09-01 06:00:00",
+                "2022-09-01 06:00:00",
             ],  # popcorn noise comparison, used in PhD thesis
             "crop_secondary_to_primary": True,
             "primary_axis": {
-                "label": "Voltage deviation in V",
+                "label": r"Voltage deviation in \unit{\V}",
                 "plot_type": "relative",  # absolute, relative, proportional
                 "axis_fixed_order": 0,
                 "columns_to_plot": [f"K2002 CH{channel}" for channel in range(1, 11)],
@@ -297,41 +314,9 @@ if __name__ == "__main__":
             "files": [
                 {
                     "filename": "LM399_popcorn_noise_test_2022-08-19_18:00:34+00:00.csv",
-                    "show": False,
-                    "parser": "scan2000",
-                    "options": {
-                        "convert_temperature": True,
-                        #'remove_outliers': {
-                        #  'sigma': 2,
-                        # },
-                        "scaling": {
-                            #'K2002 CH10': lambda x : -x,
-                        },
-                    },
-                },
-                {
-                    "filename": "LM399_popcorn_noise_test_2022-12-22_16:04:29+00:00.csv",
                     "show": True,
                     "parser": "scan2000",
                     "options": {
-                        "convert_temperature": True,
-                        #'remove_outliers': {
-                        #  'sigma': 2,
-                        # },
-                        "scaling": {
-                            #'K2002 CH10': lambda x : -x,
-                        },
-                    },
-                },
-                {
-                    "filename": "LM399_popcorn_noise_test_2022-12-29_10:30:13+00:00.csv",
-                    "show": True,
-                    "parser": "scan2000",
-                    "options": {
-                        "convert_temperature": True,
-                        #'remove_outliers': {
-                        #  'sigma': 2,
-                        # },
                         "scaling": {
                             #'K2002 CH10': lambda x : -x,
                         },

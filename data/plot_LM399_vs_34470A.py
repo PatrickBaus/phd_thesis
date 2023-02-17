@@ -261,6 +261,11 @@ def plot_series(plot):
     plt.tight_layout()
     if plot.get("title") is not None:
         plt.subplots_adjust(top=0.88)
+
+    if plot.get("output_file"):
+        print(f"  Saving image to '{plot['output_file']['fname']}'")
+        plt.savefig(**plot["output_file"])
+
     plt.show()
 
 
@@ -274,6 +279,9 @@ if __name__ == "__main__":
                 "2017-06-25 00:00:00",
                 "2017-06-26 00:00:00",
             ],  # Serial no. ?, used in PhD thesis
+            "output_file": {
+                "fname": "../images/LM399_vs_34470A.pgf"
+            },
             "crop_secondary_to_primary": False,
             "primary_axis": {
                 "label": "Voltage deviation in V",
@@ -296,10 +304,10 @@ if __name__ == "__main__":
                 "label": "Temperature in °C",
                 "plot_type": "absolute",
                 "unit": "°C",
-                "columns_to_plot": ["sensor_value"],
+                "columns_to_plot": ["temperature"],
                 #        'filter': filter_savgol(window_length=151, polyorder=3),
                 "labels": {
-                    "sensor_value": "Ambient Temperature",
+                    "temperature": "Ambient Temperature",
                 },
                 #        'axis_fixed_order': -6,
                 "options": {
@@ -328,8 +336,10 @@ if __name__ == "__main__":
                     "show": True,
                     "parser": "smi",
                     "options": {
+                        "sensor_id": 8,
+                        "label": "temperature",
                         "scaling": {
-                            "sensor_value": lambda x: x - 273.15,
+                            "temperature": lambda x: x["temperature"] - 273.15,
                         },
                     },
                 },
@@ -342,6 +352,9 @@ if __name__ == "__main__":
                 "2020-05-26 06:45:00",
                 "2020-05-26 07:00:00",
             ],  # Serial no. 15, popcorn noise, used in thesis
+            "output_file": {
+                "fname": "../images/refurb_lm399_popcorn_noise.pgf"
+            },
             "crop_secondary_to_primary": True,
             "primary_axis": {
                 "label": "Voltage deviation in V",
