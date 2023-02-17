@@ -1,4 +1,8 @@
 \chapter{Results}
+\begin{chapquote}{Sir Terry Pratchett, \textit{A Hat Full of Sky}}
+``It's still magic even if you know how it's done.''
+\end{chapquote}
+
 \section{Laser Current Driver}
 \subsection{Zener Diode Selection}
 Early tests of the LM399 Zener diode as a reference have confirmed, what the data sheet \cite{datasheet_LM399} already suggest in the 'Low Frequency Noise Voltage' plot. There are random bi-stable voltage step changes. This phenomenon is called burst noise or popcorn noise.
@@ -36,7 +40,7 @@ Measuring two references against each other would then result in around \qty{2.1
 
 A third option is to use a high-pass filter and an amplifier. Additionally, the signal can be low-pass filtered to remove any excess high frequency noise. This approach also requires less resolution than directly measuring the voltage, because the signal-to-noise-ratio is improved du the amplifier. It is therefore possible to use an off-the-shelf analog-to-digital converter (ADC). One such circuit, along with some examples, is demonstrated in \cite{technote_ti_popcorn_noise,kay2012operational}. It must be noted, that due to the high-pass filtering, it not possible to measure slow voltage drifts using this method.
 
-The forth and final option presented here, is approaching the problem in the frequency domain and requires a low-noise amplifier with a low frequency cutoff. As it was already discussed in section \ref{}, popcorn noise is found to have a frequency dependence of $1/f^2$. This can be used to distinguish it from other random noise processes that show a frequency dependence of $1/f$. An good example is given in Horowitz and Hill in \textit{The Art of Electronics} on page 478 \cite{horowitz1989}. Going to frequencies below \qty{10}{\Hz}, one can sort the references by their noise spectrum.
+The forth and final option presented here, is approaching the problem in the frequency domain and requires a low-noise amplifier with a low frequency cutoff. As it was already discussed in section \ref{sec:theory_burst_noise}, popcorn noise is found to have a frequency dependence of $1/f^2$. This can be used to distinguish it from other random noise processes that show a frequency dependence of $1/f$. A good example of an op-amp, that has excessive burst in comparison to a good sample is given in \textit{The Art of Electronics} \citp[p. 478]{horowitz1989}. Going to frequencies below \qty{10}{\Hz}, one can sort the references by their noise spectrum.
 
 In this work only options one and two were were tested, as it was said above, with options three and four there is a chicken and egg problem. One needs a number on known good devices to compare other DUTs to. At the start of the evaluation, most of the data available about the LM399 was from the data sheet. Compiling a dataset of the performance of dozens of LM399 is expensive and time consuming and companies typically treat such data as a closely guarded secret.
 
@@ -109,7 +113,7 @@ The three \num{8.5} and \num{7.5} digit multimeters were connected using shielde
     \label{tab:dmm_settings_concise}
 \end{table}
 
-All DMMs were configured to have a similar conversion time. This lead to different integration times, which are given in power line cycles at \qty{50}{\Hz}. The \device{Model 2002} takes considerable longer for a measurement than the Keysight multimeters. The reason is the auto-zero function, which is shown in figure \ref{dmm_autozero_comparison}. The \device{Model 2002} does three steps when doing auto-zeroing, it measures the signal, the zero point for an offset compensation and also the reference voltage for a gain correction. In comparison, the \device{3458A} only corrects for the offset drift. The gain is adjusted when using the ACAL function. The former auto-zero routine, therefore takes longer by one half, but results in more stable measurements.
+All DMMs were configured to have a similar conversion time. This lead to different integration times, which are given in power line cycles at \qty{50}{\Hz}. The \device{Model 2002} takes considerable longer for a measurement than the Keysight multimeters. The reason is the auto-zero function, which is shown in figure \ref{fig:dmm_autozero_comparison}. The \device{Model 2002} does three steps when doing auto-zeroing, it measures the signal, the zero point for an offset compensation and also the reference voltage for a gain correction. In comparison, the \device{3458A} only corrects for the offset drift. The gain is adjusted when using the ACAL function. The former auto-zero routine, therefore takes longer by one half, but results in more stable measurements.
 
 These measurements were done by measuring the output voltage of a pre-production version of the reference PCB for the digital current driver. The reference board was kept at \qty{23}{\celsius} in a custom thermal chamber. The chamber is detailed in section \ref{}. Additionally, a \qty{500}{\g}  bag of Bentonite desiccant was added to keep the references at a low humidity of around \qty{20}{\percent} relative humidity. The reference board inserted into a motherboard holding up to 4 reference modules. The motherboard, also called LM399 breakout board, provides the voltage regulators and the operational amplifier for the kelvin sensed pins of the reference. The multimeter was directly connected to the reference via a DB9 connector, without an other components in between the reference and the DMM like buffers, multiplexers or filters. The DMM itself was exposed to the ambient temperature of the lab. The setup is shown in figure \ref{fig:lm399_vs_34470a_setup}.
 
@@ -141,7 +145,7 @@ With the amplified output the expected burst noise step size of about \qty[per-m
 \begin{figure}[ht]
     \centering
     \input{images/LM399_vs_34470A.pgf}
-    \caption{Voltage deviation from the mean voltage of a LM399 negative \qty{10}{\volt} reference measured with a Keysight 34470A at \qty{100}{\plc}.}
+    \caption{Voltage deviation from the mean voltage of an LM399 negative \qty{-10}{\volt} reference measured with a Keysight 34470A at \qty{100}{\plc}.}
     \label{fig:lm399_vs_34470a}
 \end{figure}
 
@@ -214,12 +218,8 @@ The scanner card used to multiplex the DMM does have to meet several specificati
 
 The reason is, that in this case, the voltage is low, there is no ac component involved and the the typical input impedance of high-end multimeters is far more than \qty{100}{\giga\ohm} \cite{datasheet_fluke8588A,article_3458A_input_mpedance_2,datasheet_keithley2002,article_3458A_input_mpedance}.
 
-
-
 In this work the Keithley (now Tektronix) \device{Model 2002} was chosen for three reasons. It is a very compact system requiring only a half-sized 2U rack in comparison to the other DMMs, that are typically full-sized 2U rack devices. The other two advantages are the integrated scanner card slot, that allows to to fit a 10 channel scanner card and finally the \qty{20}{\volt} range. The latter is interesting for testing the final voltage reference boards, as these have a \qty{15}{\volt} output, which is too much for the \qty{10}{\volt} range of most DMMs, so that testing the voltage reference Printed circuit boards
 (PCBs) one would have to switch to the \qty{100}{\volt} range and forgo an extra digit of resolution and add more noise.
-
-
 
 The test setup consists of a mounting PCB, that holds up to 20 Zener diode. It provides power regulation and a minimal circuit required to support each diode. This circuit is given here:
 
