@@ -268,7 +268,10 @@ if __name__ == "__main__":
     {
       'title': 'MOSFET gm LTSpice example',
       'title': None,
-      'show': False,
+      'show': True,
+      "output_file": {
+          "fname": "../images/ltspice_mosfet_transconductance_example.pgf"
+      },
       'crop_secondary_to_primary': True,
       'primary_axis': {
         "axis_settings": {
