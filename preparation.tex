@@ -1153,6 +1153,645 @@ The gain correction noise therefore behaves similar to the offset correction cas
 % Compare PSD in Generation-Recombination Noise, Allan Variance, and Low-Frequency Gain Instabilities in Microwave Amplifiers to our controller. The hump look similar. Due to popcorn noise
 
 \clearpage
+\section{Current Sources}
+% TODO: The FET Constant-Current Source/Limiter
+% TODO: Cable choice https://www.gore.com/resources/search?f[]=product:24241&f[]=content_type:6&f[]=language:en or http://www.jenving.com/products/view/hd5-hdmi-dvi-dp-blue-b75-1001000064
+Throughout this work the concept of current sources is widely used, for example section \ref{sec:laser_current_driver} discusses a current source to drive laser diodes and the temperature controller discussed in section \ref{sec:temperature_controller} uses a current source to measure the resistance of a temperature sensitive resistor. While there are many more use cases, this section will limit the discussion to a few examples used by the devices presented in this work. Namely, this is a unidirectional transconductance amplifier with an operational-amplifier and a field-effect transistor and a bidirectional Howland current pump invented by Bradford Howland in 1962 and first published in 1964 by \citeauthor{howland_current_source} \cite{howland_current_source}. The discussion will start with the properties of the ideal current source and, based on that, develop a more accurate model. The models developed typically represent the static, time-independent case unless explicitely stated. First, the unidirection current source is treated, then the bidirectional Howland current pump is discussed.
+
+\subsection{Current Sink and Current Source}
+%\begin{chapquote}{Adapted from William Shakespeare, \textit{Hamlet}}
+%``To sink, or not to sink, that is the question.''
+%\end{chapquote}
+
+The question whether to use a current source or a current sink is elemental for the design of a laser driver. Figure \ref{fig:current_sink_source} shows different configuration of current sinks and sources with respect to the laser diode.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}{0.225\linewidth}
+        \centering
+        \import{figures/}{current_source_high.tex}
+        \caption{Source with\protect\\grounded LD.}
+        \label{fig:current_source_high}
+    \end{subfigure}
+    \begin{subfigure}{0.225\linewidth}
+        \centering
+        \import{figures/}{current_source_low.tex}
+        \caption{Source with\protect\\floating LD.}
+        \label{fig:current_source_low}
+    \end{subfigure}
+    \begin{subfigure}{0.225\linewidth}
+        \centering
+        \import{figures/}{current_sink_high.tex}
+        \caption{Sink with\protect\\grounded LD.}
+        \label{fig:current_sink_high}
+    \end{subfigure}
+    \begin{subfigure}{0.225\linewidth}
+        \centering
+        \import{figures/}{current_sink_low.tex}
+        \caption{Sink with\protect\\floating LD.}
+        \label{fig:current_sink_low}
+    \end{subfigure}
+    \caption{Different configuration of current sinks and sources with respect to the laser diode. A green checkmark denotes a fail-safe configuration when accidentally shorting one or more pins of the diode to the laser chassis, illustrated by a dashed connection.}
+    \label{fig:current_sink_source}
+\end{figure}
+
+The most practical configuration depends on the laser diode and safety aspects in terms of protecting the laser diode. The protection of the laser diode is discussed first. The laser resonator is assumed grounded in our setup. While not intended, there are numerous ways to accidently short the diode to ground and since there are no immediate consequences arrising from it, when the controller is disconnected, it might easily be overlooked. This blunder should not bear the risk of destroying an expensive laser diode. To ensure this, a configuration where the laser diode is shorted out instead of the current source or sink must be chosen. That way, the laser diode is automatically removed from the circuit in case of an error condition.
+Choosing between a current sink and a current source is more subtle. If the can of the laser diode is connected to anode, a current sink can be considered, to keep the can at ground potential. This is not an issue with our laser design though, because the laser diode mount is floating. Another aspect is the electronics side. A current source is typically implemented using p-channel field-effect transistors, while current sinks are using n-channel transistors and additionally the input of a current source is referenced to the positive supply, while the sink is referenced to the negative supply. Using the negative supply as a reference for control signals brings more challenges than vice versa, because typically integrated components like digital-to-analog converters prefer working with positive voltages and would need additional support to be floated to a negative reference. This makes a current source simpler to implement in this scenario and this work focusses on the current source, but in principle all methods derived can be applied to a current sink as well.
+
+\subsection{Ideal Current Source}
+The ideal current source as shown in figure \ref{fig:ideal_current_source} has two major properties besides the output current $I_{out}$, the output impedance and the compliance voltage, which are best understood when looking at the two equivalent representations of a current source separately. On the left in figure \ref{fig:ideal_current_source_norton}, the Norton representation can be seen. Norton's theorem reduces any linear circuit to a current source, shown in green, with a parallel resistance $R_{out}$, usually called output resistance or impedance. On the right, the Thévenin representation can be see, which simplifies a circuit as a voltage source, also shown in green, with a series resistance.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}{0.4\linewidth}
+        \centering
+        \import{figures/}{current_source_norton.tex}
+        \caption{Norton representation.}
+        \label{fig:ideal_current_source_norton}
+    \end{subfigure}
+    \begin{subfigure}{0.4\linewidth}
+        \centering
+        \import{figures/}{current_source_thevenin.tex}
+        \caption{Thévenin representation.}
+        \label{fig:ideal_current_source_thevenin}
+    \end{subfigure}
+    \caption{An ideal current source with output impedance $R_{out}$ and noise $e_n$.}
+    \label{fig:ideal_current_source}
+\end{figure}
+
+First, the output impedance is discussed. Ideally, $R_{out}$ is infinite and all current is forced to flow through the load. Given a finite output impedance leads to a decreased accuracy of $I_{out}$, because it is influenced by the load impedance as
+\begin{equation}
+    I_{out} = I_{set} \cdot \frac{R_{out}}{R_{load} + R_{out}} \, .
+\end{equation}
+
+In addition to a decreased accuracy, inserting a noise voltage source between the current source and the load as shown in figure \ref{fig:ideal_current_source} in orange, has the same effect as a changing load resistance and due to the finite output impedance $R_{out}$, any voltage noise $e_n$ translates to current noise $i_n$ through the load as
+\begin{equation}
+    i_n = \frac{e_n}{R_{load} + R_{out}} \approx \frac{e_n}{R_{out}} \, ,
+\end{equation}
+
+again making a high output impedance desirable to supress noise sources between the current source and the load.
+
+Going to figure \ref{fig:ideal_current_source_thevenin} of a current source in Thévenin representation allows to discuss the compliance voltage property. As it was said above, the output impedance of an ideal current source is infinite and so is the maximum output voltage of said current source. A finite output impedance immediately implies a finite supply voltage to keep the current to a finite limit, which dictates a maximum output voltage. This is called the compliance voltage.
+
+\subsection{The Field-Effect Transistor Current Source}
+\label{sec:mosfet_current_source}
+% Good slides can be found here: https://www.ittc.ku.edu/~jstiles/312/handouts/
+Given the limited supply voltage of a real current source drives the need for a resistive element that has a finite resitance and infinite, or very high, frequency dependent dynamic impedance to react to load changes. One such pass element, having these properties, is a field-effect-transisistor (FET). A junction-gate field-effect transistor (JFET) or metal–oxide–semiconductor field-effect transistor (MOSFET) can be used either as a current source or sink, depending on its doping. A p-channel FET, which uses a positve doping of the channel, is a current source, while an n-channel FET works as a current sink. This discussin is focussing on the p-channel FET with MOSFETs at its center, because it covers the bulk of the laser current driver design in section \ref{sec:laser_current_driver}.
+
+\begin{figure}[hb]
+    \centering
+    \begin{subfigure}{0.4\linewidth}
+        \centering
+        \import{figures/}{p-channel_jfet.tex}
+        \caption{P-Channel JFET.}
+        \label{fig:pjfet}
+    \end{subfigure}
+    \begin{subfigure}{0.4\linewidth}
+        \centering
+        \import{figures/}{p-channel_mosfet.tex}
+        \caption{P-Channel MOSFET.}
+        \label{fig:pmos}
+    \end{subfigure}
+    \caption{The simplified semiconductor structure of a JFET and a MOSFET.}
+    \label{fig:FETs}
+\end{figure}
+
+The difference between a JFET and a MOSFET, is the gate structure as illustrated in figure \ref{fig:FETs}. While a MOSFET has an insulated gate, the JFET does not. This reduces the gate leakage current, typically by about three orders of magnitude, and allows to forward bias the device since there is no diode, resulting in larger current handling capacity. So for low currents up to a few \unit{\mA} or low noise applications, JFETS are preferred, while MOSFETs can handle several hundred ampere. The same mathematical approach can be applied to both types of FETs though. The other difference between a JFET and a MOSFET is the fact that JFETs are only available as depletion-mode (normally-on) devices, while MOSFETs are available as both depletion and enhancement (normally-off) devices. The reason is the gate structure as mentioned above. An enhancement-mode device does not conduct, when the gate-to-source voltage $V_{GS} = \qty{0}{\V}$, so $|V_{GS}|$ must be increased or enhanced for the device to allow conduction. This is not possible with an uninsulated gate like a simple p-n junction of a JFET, which would then start conducting start leaking. A p-channel depletion-mode device on the other hand conducts at $V_{GS} = \qty{0}{\V}$ and $|V_{GS}|$ must be decreased or depleted to reduce the current, which is not possible with the uninsulated gate, because the p-n junction is reverse biased. The annotated circuit symbol and the quantities used to discuss the device properties are shown in figure \ref{fig:fet_symbols}.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}{0.4\linewidth}
+        \centering
+        \import{figures/}{jfet_pins.tex}
+        \caption{P-channel JFET.}
+        \label{fig:fet_symbols_jfet}
+    \end{subfigure}
+    \begin{subfigure}{0.4\linewidth}
+        \centering
+        \import{figures/}{pmos_pins.tex}
+        \caption{P-channel MOSFET.}
+        \label{fig:fet_symbols_mosfet}
+    \end{subfigure}
+    \caption{Basic p-channel FET circuit.}
+    \label{fig:fet_symbols}
+\end{figure}
+
+A p-channel FET has its source (S) connected to the positive supply and the drain (D) is connected to a more negative voltage, typically the load. For the MOSFET the gate (G) is biased below the source to allow conduction. The source is is usually connected to the substrate for solitary devices as shown in figure \ref{fig:pmos}. This will be assumed in all further discussions and the consequences of a substrate, that is biased differently are omitted here. The interested reader may look up these details in \cite{mosfet_details}.
+
+As it was mentioned above, if appropriately biased, a FET can be considered a voltage controlled current source. This property can be seen in figure \ref{fig:fet_curret_gate_bias}.
+
+\begin{figure}[hb]
+    \centering
+    \input{images/mosfet_current_gate_bias.pgf}
+    \caption{Simulated drain current for different gate bias voltages of an \device{IRF9610} p-channel MOSFET.}
+    \label{fig:fet_curret_gate_bias}
+\end{figure}
+
+Figure \ref{fig:fet_curret_gate_bias} shows the current $I_D$ flowing out of the drain of a p-channel MOSFET over the drain-to-source voltage $V_{DS}$ that is applied accross the FET. For illustrative purposes an example p-channel MOSFET was chosen and its \textit{Simulation Program with Integrated Circuit Emphasis} (SPICE) model \cite{irf9610_spice,irf9610_spice_better} was used to generate the data, yet the overall shape is the same for all FETs. For more information on modelling MOSFETs in SPICE, \citep[p. 442]{spice_mosfets} can be consulted. There are two regions, the first region, where $V_{DS} > V_{GS} - V_{th}$, demonstrates an almost linear linear correlation of the channel current and the voltage across the device. This is called the ohmic region, where the MOSFET behaves much like a (gate-) voltage controlled resistor and can be described \cite{shockley_fet_equations} as
+\begin{equation}
+    I_{D,ohmic} = \underbrace{\kappa (V_{GS} - V_{th}) V_{DS}}_{\text{ohmic}} - \underbrace{\frac 1 2 \kappa V_{DS}^2}_{\text{pinch off}} \, .
+\end{equation}
+For small voltages $V_{DS}$ the output current is proportional to the applied voltage $V_{DS}$ accross the channel, just like a normal resistor, hence calling its name: ohmic region. As the voltage increases further $I_D$ starts leveling off, because $V_{DS}$ starts affecting the channel conductivity. The channel is slowly getting pinched off at one end and becomes tapered. The reason is, that the voltage $V_{DS}$ is dropped accross the length of the channel. This voltage drop is linear with $V_{DS}$, resulting in a $-V_{DS}^2$ dependency of the current, reducing the conductivity of the channel. $V_{th}$ is called the threshold voltage of a MOSFET or pinch-off voltage $V_p$ in case of a JFET and is the voltage at which a current starts flowing.
+
+The parameter $\kappa$ is a device specific parameter and depends on process parameters and the geometry of the device.
+\begin{equation}
+    \kappa = \kappa' \frac W L = \mu C_{ox} \frac W L
+\end{equation}
+$\mu$ is the electron mobility, which is about \qty{1350}{\square \cm \per \V} for n-channel MOSFETs and about \qty{540}{\square \cm \per \V} for p-channel MOSFETs \cite{fet_equations}. $C_{ox}$ is the gate-oxide capacitance per unit area and determined by the thickness $t_{ox}$ of the silicon dioxide layer of the gate
+\begin{equation}
+    C_{ox} = \frac{\epsilon_{ox}}{t_{ox}} \approx \frac{3.9 \cdot \epsilon_{0}}{t_{ox}} \approx \frac{\qty{3.45e-11}{\F \per \m}}{t_{ox}}\,,
+\end{equation}
+W is the width of the channel, and L is the length of the channel.
+
+The letter $\kappa$ is used here instead of the usual $k$ as it is used by \citeauthor{fet_equations} \cite{fet_equations} to avoid confusion with the Boltzmann constant $k_B$. Unfortunately, $\kappa$ is not well controlled \cite{horowitz1989}, because it is not just determined by the size, but also the doping of the material. While the size of the structure can be well controlled to within a few \unit{\nm} using lithography masks, the doping is a matter of temperature and time in a diffusion furnace. The ohmic mode of operation is, for example, used in linear voltage regulators to control the output voltage of the regulator, forming a low impedance voltage source, not the desired current source. This brings up the next region to discuss.
+
+Once the voltage $V_{DS}$ has reached $V_{GS} - V_{th}$, the channel is fully pinched off, any further increase in $V_{DS}$ will not lead to an increase in $I_D$, in other words the output resistance becomes infinite. The MOSFET is said to be pinched-off or in saturation. In practice there still is a small influence of $V_{DS}$ on the channel. While the depth can no longer decrease as its length is \num{0} at one end already, the channel will retract a small amount in length with increasing $V_{DS}$. This is taken into account by the factor $\lambda$, called channel-length modulation. The drain current in saturation can now be described \cite{shockley_fet_equations} as
+\begin{equation}
+    I_{D,sat} = \underbrace{\frac 1 2 \kappa \left(V_{GS} - V_{th} \right)^2}_{\text{ideal FET}} (1 + \lambda V_{DS}) \, . \label{eqn:mosfet_saturation}
+\end{equation}
+
+The parameter $\lambda$ is the first order Taylor exapansion of the length dependence of $\kappa$ and typically is small and on the order of \qtyrange[per-mode=power]{0.01}{0.05}{\per \volt} for p-channel MOSFETs \citep[p. 23]{mosfet_flicker_noise}. It mainly depends on the length of the channel to which it is inversely proportional, since the channel length defines the slope of the tapered channel. Sometimes the value $\frac{1}{\lambda}$ is also referred to as the Early voltage $V_A$. It is noteworthy, that more modern processes choose a smaller channel length to reduce the on-state resistance of the MOSFET, because the main application of a MOSFET nowadays is as a switch. The reduced channel length makes the MOSFET more susceptible to the channel length modulation effect. This will be discussed in more detail in section \ref{sec:component_selection}, when choosing a suitable MOSFET.
+
+Going back to figure \ref{fig:fet_curret_gate_bias} the effect of the channel-length modulation can be seen as a small slope of $I_D$ in the saturation region.
+
+Combining the previous equations, the FET drain current behaviour can be summed up as
+\begin{equation}
+    I_D = \begin{cases}
+        0 & \text{if } V_{GS} - V_{th} < 0\\
+        \kappa (V_{GS} - V_{th}) V_{DS} - \frac 1 2 \kappa V_{DS}^2 & \text{if } V_{GS} - V_{th} >= 0 \text{ and } V_{DS} < V_{GS} - V_{th}\\
+        \frac 1 2 \kappa \left(V_{GS} - V_{th} \right)^2 (1 + \lambda V_{DS}) & \text{if } V_{GS} - V_{th} >= 0 \text{ and } V_{DS} \geq V_{GS} - V_{th}
+    \end{cases}
+    \label{eqn:mosfet_id_large_signal}
+\end{equation}
+
+The saturation region is the region of interest for building a high output impedance current source, because for a wide range of $V_{DS}$, the current remains almost constant and can be adjusted using the gate voltage $V_{GS}$. As a reminder, for the p-channel MOSFET, all voltages are reversed. $V_{GS}$, $V_{th}$, $V_{DS}$, $\kappa$ and $I_D$ are negative. Some datasheets therefore only give the magnitude of those quantities. The important aspect to remember, is that for the p-channel enhancement-mode MOSFET the gate must be biased negative with respect to the source pin by a least the threshold voltage ($V_{GS} < V_{th}$ or $|V_{GS}| > |V_{th}|$) to turn the transistor on and allow current to flow.
+
+Before proceeding to the precision current source in section \ref{sec:precision_current_source}, the concept of conductance and transconductance must be explored. The transconductance describes the relationship of the input voltage with the output currrent. The conductance is a measure for how well current flows from input to output. The transconductance $g_m$ and the channel conductance $g_{DS}$ are defined as
+\begin{align}
+    g_{m, sat} &\coloneqq \left. \frac{\partial I_{D,sat}}{\partial V_{GS}} \right|_{V_{DS} = const} = \kappa \left(V_{GS} - V_{th} \right) (1 + \lambda V_{DS}) \, , \label{eqn:mosfet_gm}\\
+    &= \sqrt{2 \kappa I_D \left(1+ \lambda V_{DS}\right)} \approx \sqrt{2 \kappa I_D} \label{eqn:mosfet_gm_approximation} \\
+    g_{DS, sat} &\coloneqq \left. \frac{\partial I_{D,sat}}{\partial V_{DS}} \right|_{V_{GS} = const} = \frac{1}{2} \kappa \left(V_{GS} - V_{th} \right)^2 \lambda\\
+    &= \frac{I_D}{\frac{1}{\lambda} + V_{DS}} = \frac{1}{R_o} \approx I_D \lambda \label{eqn:mosfet_gds}\,.
+\end{align}
+The transconductance $g_m$, as a measure of the current gain with respect to the gate-source voltage of the MOSFET, is proportional to the square root of the drain current $I_D$. The inverse of the channel conductance $g_{DS}$ is called output resistance $R_o$ and discussed below. Typically the $V_{DS}$ term in the denominator of the output resistance in equation \ref{eqn:mosfet_gds} can be neglected.
+
+The meaning of $g_{m}$ and $g_{GS}$ can be best understood, when looking at a mathematical model of the MOSFET. These models come in varying complexity and either as a large-signal or small-signal model. Only the latter is used here. The small-signal model, is a first-order Taylor approximation around the working point, for a constant gate-source voltage $V_{GS}$ and constant drain-source $V_{DS}$, hence both $g_{m}$ and $g_{GS}$ are constants.
+\begin{align}
+    I_D &\approx \frac{\partial I_D}{\partial V_{GS}} \Delta V_{GS} + \frac{\partial I_D}{\partial V_{DS}} \Delta V_{DS}\\
+    &= g_{m} \Delta V_{GS} + g_{DS} \Delta V_{DS}\\
+    &= g_{m} v_{GS} + \frac{1}{R_o} v_{DS} = i_D \label{eqn:mosfet_id_small_signal}
+\end{align}
+The lower case letters denote the variables of the small-signal model as they only change very little compared to the working point parameters.
+From \ref{eqn:mosfet_id_small_signal} it can be seen, that the $g_{DS}$ term adds to the output current and is proportional to $v_{DS}$. Comparing with figure \ref{fig:ideal_current_source_norton}, this the proportionality constant can be identified as $\frac{1}{R_o}$ like proposed above. Just like the ideal current source in figure \ref{fig:ideal_current_source}, the model can be given in the Norton or Thévenin representation both shown in figure \ref{fig:mostfet_small_signa_model}.
+
+\begin{figure}[hb]
+    \centering
+    \begin{subfigure}{0.4\linewidth}
+        \centering
+        \import{figures/}{mosfet_small_signal.tex}
+        \caption{Small signal model of a saturated MOSFET including the output resistance. The output resistance models the channel-length modulation as given by equation \ref{eqn:mosfet_id_small_signal}.}
+        \label{fig:mostfet_small_signa_model_model_norton}
+    \end{subfigure}
+    \begin{subfigure}{0.4\linewidth}
+        \centering
+        \import{figures/}{mosfet_small_signal_t-model.tex}
+        \caption{MOSFET model in Thévenin representation.}
+        \label{fig:mostfet_small_signa_model_thevenin}
+    \end{subfigure}
+    \caption{Equivalent MOSFET models in Norton and Thévenin representations.}
+    \label{fig:mostfet_small_signa_model}
+\end{figure}
+
+A detailed graphic derivation of the Thévenin representation can be found in \cite{fet_equations}. The Thévenin representation will prove especially valuable, when treating circuits with a resistance in the source leg.
+The small-signal model now shows, that the output impedance is dependent on the channel-length modulation $\lambda$ and $v_{DS}$. Typically, $\frac{1}{\lambda} \gg v_{DS}$, so $\lambda$ is the most important factor governing the output impedance of a MOSFET.
+
+To give an example of the output impedance of a MOSFET, parameters were taken from the aforementioned SPICE model of the \device{IRF9610}. Do note, that these parameters of a model are tuned to match certain operating conditions by their creatros and only present an estimation of the real MOSFET. Using the example parameters from \ref{tab:current_source_parameters} $I_D=\qty{250}{\mA}$, $\lambda = \qty[per-mode=power]{4}{\per \milli \volt}$, $V_{DS}=\qty{3.5}{\V}$ yields
+\begin{equation}
+    R_{out} = R_{o}\left(I_D=\qty{250}{\mA}, \lambda = \qty[per-mode=power]{4}{\per \milli \volt}\right) = \qty{1014}{\ohm} \overset{V_{DS} = 0}{\approx} \qty{1}{\kilo \ohm} \, , \label{eqn:mosfet_rout_irf9610}
+\end{equation}
+which is not very convincing as a current source. The small impact of $V_{DS}$ on the output impedance can be seen when dropping the $V_{GS}$ term, which leads to an output impedance of \qty{1}{\kilo \ohm}. Usually, in textbooks, this dependence is therefore neglected. To improve $R_{out}$, the focus thus lies on the $\lambda$ dependence. The model derived from equation \ref{eqn:mosfet_id_small_signal} can be used to do so, leading to the precision current source presented next.
+
+% This can be demonstrated building a simple current source and then cascoding it. A very simple current source can be built using a JFET. As mentioned above, a JFET is a depletion-mode device and is already turned on at $V_{GS} = \qty{0}{\V}$. To turn it off the gate voltage must be increased above the source leg. For an illustration, refer to figure \ref{fig:jfet_curret_gate_bias}, which is very similar to the MOSFET behaviour.
+%
+% \begin{figure}[ht]
+%     \centering
+%     \input{images/jfet_current_gate_bias.pgf}
+%     \caption{Simulated drain current for different gate bias voltages of a \device{2N5460} p-channel JSFET.}
+%     \label{fig:jfet_curret_gate_bias}
+% \end{figure}
+%
+% The topmost curve of figure \ref{fig:jfet_curret_gate_bias} is the case with a direct connection of the gate to the source. Above about $V_{DS}=\qty{4}{\V}$, the JFET works as a current source, although the effect of the Early voltage given in equation \ref{eqn:mosfet_saturation} can be clearly seen with a slight dependence of the output current on $V_{DS}$. With increasing $V_{GS}$, it can be observed, that the slope of $I_D$ flattens.
+%
+%
+% An example for a cascode is shown in figure \ref{fig:current_source_jfet_cascode}.
+%
+% \begin{figure}[ht]
+%     \centering
+%     \begin{subfigure}[t]{0.3\linewidth}
+%         \centering
+%         \import{figures/}{current_source_fet_no_bias.tex}
+%         \caption{JFET current source.}
+%         \label{fig:current_source_jfet_no_bias}
+%     \end{subfigure}%
+%     %\hfill%
+%     \begin{subfigure}[t]{0.3\linewidth}
+%         \centering
+%         \import{figures/}{current_source_fet_bias.tex}
+%         \caption{Self-biased JFET current source.}
+%         \label{fig:current_source_jfet_bias}
+%     \end{subfigure}%
+%     %\hfill%
+%     \begin{subfigure}[t]{0.3\linewidth}
+%         \centering
+%         \import{figures/}{current_source_fet_cascode.tex}
+%         \caption{Cascoded JFET current source.}
+%         \label{fig:current_source_jfet_cascode}
+%     \end{subfigure}
+%     \caption{Different types of JFET current sources with increasing output impedance.}
+%     \label{fig:current_source_jfet}
+% \end{figure}
+
+\clearpage
+\subsection{Precision Current Source}
+\label{sec:precision_current_source}
+In the previous section \ref{sec:mosfet_current_source} it was shown in equation \ref{eqn:mosfet_id_small_signal}, that the output impedance of a MOSFET depends on the channel-length modulation $\lambda$ and is too low for practical purposes. On the quest to improve the output impedance of the MOSFET circuit \ref{fig:mostfet_small_signa_model_model_norton}, the most obvious solution would be to simply add a source resistor $R_S$ into the circuit as shown in in figure \ref{fig:pmos_current_source_resistor}. At first glance, this may seem to only add a series resistance to $R_o$, but the attempt is more interesting and will lead to an even better solution.
+
+\begin{figure}[ht]
+    \centering
+    \begin{subfigure}[t]{0.45\linewidth}
+        \centering
+        \import{figures/}{current_source_resistor.tex}
+        \caption{P-channel MOSFET with source resistor $R_S$ to improve the output impedance $R_{out}$.}
+        \label{fig:pmos_current_source_resistor}
+    \end{subfigure}%
+    \begin{subfigure}[t]{0.45\linewidth}
+         \centering
+         \import{figures/}{pmos_small_signal_resistor.tex}
+         \caption{Equivalent small-signal Thévenin model.}
+         \label{fig:pmos_current_source_resistor_small_signal}
+     \end{subfigure}%
+     \caption{Circuit of a MOSFET with source degeneration resistor and equivalent Thévenin model.}
+\end{figure}
+
+Before calculating the output impedance, we shall have a look at $v_{GS}$ and the input signal $v_i$ derived from it. With the introduction of the sense resistor $R_S$, $v_i$ no longer equals $v_{GS}$, because $\frac{1}{g_m}$ now forms a voltage divider with $R_S$ and it follows
+\begin{equation}
+    v_{GS} = v_i \frac{\frac{1}{g_m}}{R_S + \frac{1}{g_m}} = v_i \frac{1}{1 + g_m R_S} \,.
+\end{equation}
+This implies a reduction in gain, by the factor $\frac{1}{1 + R_S g_m}$ compared to the previously discussed approach. The cause of this reduction is negative feedback. To understand this, imagine, that with a constant $v_i$ and hence a constant current $I_D$ flowing, a changing load resistance is trying to modulate $I_D$. Any increase in $I_D$ will cause the voltage across $R_S$ to rise, reducing $v_{GS}$, because $v_i$ is still constant. The decreasing $v_{GS}$ will then reduce $I_D$, thus introducing negative feedback. Having realized there is negative feedback present, it can be postulated, that the reduction in input sensitivity, or effective transconductance, will passed on to the output impedance. This very interesting relationship will now be derived.
+
+To calculate the output impedance, figure \ref{fig:pmos_current_source_resistor_small_signal} can be simplified by grounding $v_i$, because there is no AC component as there is no current flowing through the insulated MOSFET gate and is not modulated. The load $R_{load}$ resistance must is replaced by an AC test voltage $v_{load}$ to modulate $I_D$. These changes result in the small signal model shown in figure \ref{fig:pmos_common_gate_amplifier}. As a sidenote, this configuration is also called a common-gate amplifier.
+
+\begin{figure}[ht]
+    \centering
+    \import{figures/}{mosfet_small_signal_cg.tex}
+    \caption{Small signal model of the common-gate amplifier with source resistance $R_S$.}
+    \label{fig:pmos_common_gate_amplifier}
+\end{figure}
+
+The (dynamic) output impedance is given by
+\begin{equation}
+    R_{out,cg} = \frac{v_{load}}{i_D}\,, \label{eqn:mosfet_rout}
+\end{equation}
+with $i_D = i_S$, since there is no gate current. $v_{load}$ can easily be calculated by looking at figure \ref{fig:pmos_common_gate_amplifier} and is the total voltage across $R_o$ and $R_S$. $v_{GS}$ can also be found, because the gate is grounded. With the resistance $\frac{1}{g_m}$ at one end, the voltage at the source pin must be $-v_{GS}$.
+\begin{align}
+    v_{load} &= \left(i_D - i\right) R_o + i_S R_S \nonumber\\
+    &= \left(i_D - g_m v_{gs}\right) R_o + i_D R_S \nonumber\\
+    &= \left(i_D + g_m i_D R_S\right) R_o + i_D R_S \label{eqn:mosfet_cg_vout}
+\end{align}
+Using equations \ref{eqn:mosfet_rout} and \ref{eqn:mosfet_cg_vout} gives
+\begin{equation}
+    R_{out,cg} = \left(1 + g_m R_S\right) R_o + R_S \label{eqn:mosfet_cg_rout}
+\end{equation}
+for the output impedance.
+
+This result is interesting, as it can be be immediately seen, that the output impedance scales very quickly with the transconductance $g_m$ and $R_S$. As it was already speculated above, the reduction in the transconductance $\frac{1}{1 + g_m R_S}$ of the MOSFET is transfered to the output impedance, which is increasing by the inverse of the loss in transconductance.
+
+Going back to the quest for increased output impedance, it is appararent, that increasing $R_S$ quickly raises the output impedance, as it scales with $gm_m R_o$, but it would come at the cost of a significantly reduced compliance voltage. So, other means need to be explored. As we have seen, the scale factor $gm_m R_o$ is explained by feedback and this brings up another solution. The amount of feedback can be increased further using an operational amplifier (op-amp) as shown in figure \ref{fig:precision_current_source}.
+
+\begin{figure}[ht]
+    \centering
+    \import{figures/}{precision_current_source.tex}
+    \caption{Transconductance amplifier with a p-channel MOSFET.}
+    \label{fig:precision_current_source}
+\end{figure}
+
+The output impedance of this transconductance amplifier is amplified by the open-loop gain of the op-amp as shown in appendix \ref{sec:transfer_function_transconductance}, while the transfer function greatly simplified and found to be
+\begin{align}
+    R_{out} &\approx A_{ol} \left(g_m R_o R_S + R_o + R_S \right) \nonumber\\
+    I_{out} &\approx \frac{V_{ref}}{R_S} \label{eqn:current_source_transfer_function}
+\end{align}
+
+In addition to the increased output impedance, the current $I_D = I_{out}$ can now steered by adjusting $V_{ref}$ and is, given sufficient loop gain of the op-amp, no longer dependent on the MOSFET, but rather only on the sense resistor $R_S$.
+
+This has the added benefit, that it is possible to leverage the tight accuracy and precision of a resistor, over the poor specifications of a MOSFET. Resistors can be manufactured with tolerances of less than \qty{100}{\micro \ohm \per \ohm}, which is orders of magnitude better than FETs, which can be matched to low \unit{\percent} values with patience.
+
+Using the example parameters from table \ref{tab:current_source_parameters}, the output impedance in staturation can now be calculated again for $I_{out}=\qty{250}{\mA}$ and the ideal \device{IRF9610} model with the addition of an idealized \device{AD797} op-amp using the worst-case specifications.
+\begin{equation}
+    R_{out} \approx \qty[per-mode=power]{2}{\volt \per \uV} \left(\qty{0.64}{\siemens}\cdot \qty{1014}{\ohm} \cdot \qty{30}{\ohm} + \qty{1014}{\ohm} + \qty{30}{\ohm} \right) \approx \qty{40}{\giga\ohm}
+\end{equation}
+
+From these consideration, it can be seen, that the open-loop gain and the unity-gain bandwidth of the op-amp essentially determine the properties of the current source, given that $R_{id} \gg R_S$ and $R_o \gg R_S$. This will be important for selecting an operational amplifier later.
+
+The next section will focus on the MOSFET and discuss the compliance voltage of the current source, which was only briefly touched during the introdution. It will give rise to criteria for selecting a MOSFET for the precision current source.
+
+\clearpage
+\subsection{Compliance Voltage}
+\label{sec:compliance_voltage}
+The compliance voltage of a current source is the maximum voltage it can output to maintain the requested output current. For an ideal current source, the compliance voltage is infinite, but obviously limited in the physical world.
+
+The precision current source discussed in section \ref{sec:precision_current_source} has several limiting factors of the compliance voltage, which shall be discussed now. The compliance voltage is taxed most at the maximum output current $I_{out,max}$. So for the following discussion, the output is always treated as set to maximum.
+
+Looking at figure \ref{fig:precision_current_source} of the precision current source it is immediately evident, that the output voltage can be calculated by subtracting the voltage accross the source resistor $V_{R_S}$ and the MOSFET $V_{DS}$ from the supply voltage $V_{sup}$
+\begin{equation}
+    V_{out} = V_{sup} - V_{R_S} - V_{DS} = V_{sup} - V_{ref} - V_{DS} \nonumber\,.
+\end{equation}
+
+The voltage $V_{R_S}$ is given by equation \ref{eqn:current_source_transfer_function} and equal to the setpoint voltage and hence given by the system parameters. This leads to the question of the minimum working point voltage $V_{DS}$ at $I_{out,max}$. As a reminder, from equation \ref{eqn:mosfet_id_large_signal} and figure \ref{fig:fet_curret_gate_bias} one can see, that the drain current is almost constant over $V_{DS}$ in the saturation region and in the ohmic region is proportional to $V_{DS}$. The transition point from the ohmic region to the saturation region is at $V_{DS} = V_{GS} - V_{th}$ and putting this into equation \ref{eqn:mosfet_id_large_signal} yields for the drain current
+\begin{align}
+    I_D &= \frac{1}{2} \kappa V_{DS}^2 \left(1+ \lambda V_{DS}\right) \nonumber\\
+    \Rightarrow V_{DS} &\approx \sqrt{\frac{2 I_D}{\kappa}}\\
+    &\approx \qty{784}{\mV}
+\end{align}
+
+The latter result was calculated using the example parameters from table \ref{tab:current_source_parameters}. At this point it can already be postulated, that the MOSFET will severly change in its function as a current source for $V_{DS} < \qty{0.78}{\V}$. To quantify this, one has to look at the output impedance of the transconductance amplifier once again. In the last section, the output impedance was only treated for the staturation region, but this time, $R_{out}$ must must be considered over a wide range of $V_{DS}$, thus not only in the saturation region, but also in the ohmic region. Instead of using the small-signal model as before, which assumed only small changes of $V_{DS}$, a large-signal model must applied, which also includes the non-linear nature of the piece-wise defined equation \ref{eqn:mosfet_id_large_signal} of the drain current.
+
+For the sake of simplicity, a SPICE simulation of figure \ref{fig:precision_current_source} was carried out in LTSpice \cite{ltspice}. Solving this analytically, bears no educational value over the numerical solution shown below as will be seen. Additionally, the SPICE simulation also offers the opportunity to add additional, parasitic elements to the model to evaluate their effect, for example, the capacitive nature of the MOSFET gate.
+
+The simulation itself is numerically fairly challenging and the typical approaches will lead to the limits of the numerical precision. To make simulation possible, the large-signal model is broken down into several small segements. For each these segments, the small-signal models at its respective working point is evaluated and then the result joined back together to reconstruct the large-signal model sought. How this is done in detail, is shown in appendix \ref{sec:ltspice_current_source} as it is beyond the scope of this section. The final result was calculated for two different frequencies, one frequency was deliberately chosen so low (\qty{1}{\micro\Hz}), that it is well below the dominant pole of the op-amp, meaning, that the full open-loop gain applies and the other frequency chosen was \qty{1}{\MHz}, were the gain had dropped to \qty[per-mode=power]{10}{\V \per V}. This is shown in figure \ref{fig:ltspice_output_impedance_simulation}.
+
+\begin{figure}[ht]
+    \centering
+    \input{images/ltspice_output_impedance_simulation.pgf}
+    \caption{Simulated output impedance for the precision current source from figure \ref{fig:precision_current_source} at DC and \qty{1}{\MHz} over the drain-source voltage.}
+    \label{fig:ltspice_output_impedance_simulation}
+\end{figure}
+
+Looking at figure \ref{fig:ltspice_output_impedance_simulation} clearly shows the effect of entering the ohmic region of the MOSFET. Over a range of about \qty{100}{\mV} below the \qty{0.78}{\V} calculated above, the output impedance drops by two orders of magnitude and then keeps dropping at an exponential rate with decreasing $V_{DS}$. The same effect applies to the output impedance at \qty{1}{\MHz}, although the starting value is around \qty{200}{\kilo\ohm} due to the reduced gain from the op-amp at \qty{1}{\MHz}. It can also be seen, that $R_{out}$ levels off at \qty{30}{\ohm}, the value of the sense resistor.
+
+This overall effect of leaving the saturation region is so drastic, that the compliance voltage must be defined in such a way, that the MOSFET remains in saturation and this leads to
+\begin{equation}
+    V_{comp} = V_{sup} - V_{ref} - \sqrt{\frac{2 I_D}{\kappa}} \,.
+\end{equation}
+
+Now turning to the supply voltage, it is limited by the op-amp which must drive the gate of the MOSFET all the way up to the supply to turn off the current source. The reference voltage is, unless one divides it down, which is a delicate matter, dictated by the reference chosen. This, unfortunately, leaves only little room for the MOSFET and it must be carefully chosen not limit the compliance voltage too much.
+
+At this point a fallacy, the author has observed multiple times must addressed. In order to address the limited compliance voltage, one may be tempted to use multiple MOSFETs in parallel to divide the current between the MOSFETs and thereby reduce the voltage that needs to be dropped across the FET proportional to $\frac{1}{\sqrt{N}}$, where $N$ is the number of MOSFETs paralleled.
+
+Imagine the following modified circuit of the precision current source shown in figure \ref{fig:precision_current_source_two_mosfets} with two MOSFETs in parallel. For clarity the gate resistors required are not included.
+
+\begin{figure}[ht]
+    \centering
+    \import{figures/}{precision_current_source_2fets.tex}
+    \caption{Transconductance amplifier with two p-channel MOSFETs in parallel.}
+    \label{fig:precision_current_source_two_mosfets}
+\end{figure}
+
+While at first, this seems like a solution to the limited $V_{DS}$, it is not that easy and a bad idea for number of reasons given here. The first reason is, MOSFET specifactions are very loose, notably the threshold voltage $V_{th}$, the transconductance $g_m$ and the capacitances, but the latter is of little concern here. Paralleling MOSFETs works well under certain conditions, when using the MOSFETs as a switch, not as a current source. It seems to be a common misunderstanding, that MOSFETs are imune to thermal runaway. This is true, when using them as a switch fully turned on and in the ohmic region. In this case, there a two effects occuring, the first is, that the (absolute) value of $V_{th}$ decreases with temperature, thus increasing $I_D$ and the second effect is, $R_{DS,on}$ is rising with temperature \cite{mosfet_thermal_runaway}. But here, the MOSFET is operating in pinch-off and not the ohmic region, $R_{DS,on}$ has no influence on the current, therefore, the only effect at work is the decreasing $V_{th}$, so depending on how bad the imbalance in $V_{th}$ of the paralled MOSFETs is, one MOSFET will gobble up most of the current and power. Adding source resistors, can compensate for this by pushing down the source voltage as the current goes up. This will then reduce $V_{GS}$. The size of the resistor depends on the transconductance $g_m$ and the temperature coefficent of $V_{GS}$, which is around \qtyrange[range-units = single]{1.5}{2}{\mV \per \K} \cite{mosfet_vgs_tempco}. Unfortunately, \qty{1}{\ohm} or \qty{2}{\ohm}, will already eat up, most of the benefits gained in compliance voltage as will be shown below. A detailed analyis of paralleling MOSFETs can be found in \cite{paralleling_mosfets}.
+
+The second reaon, why paralleling MOSFETs is a bad idea can be found, when
+remembering equation \ref{eqn:mosfet_id_large_signal}. We know that the transition from the undesirable ohmic region to the saturation region is
+\begin{equation}
+    V_{DS} \geq V_{GS} − V_{th}
+\end{equation}
+
+Looking at \ref{fig:precision_current_source_two_mosfets}, we see that $V_{GS}$ is set by the op-amp and is the same for both MOSFETs, but $V_{th}$ is device specific and according to the datasheet of our example \device{IRF9610} \cite{datasheet_IRF9610} $V_{th}$ values can show a spread of as much as \qtyrange[range-units = single]{-2}{-4}{\V}, although \cite{appnote_mosfet_parameter_spread} suggests, that MOSFETs from the same reel show a spread of only \qty{\pm 125}{\mV} of $V_{th}$  within the same batch for consecutive devices. The \qty{125}{\mV} was found for the \device{BUK7S1R5-40H} \cite{datasheet_BUK7S1R5}, which was sampled in this report. The number given in the report is for $3\sigma$ and assuming the datasheet values are also referring to $3\sigma$, the value found in the report is about twice as good as the datasheet value of \qtyrange[range-units = single]{2.4}{3.6}{\V}. Assuming similar numbers for \device{IRF9610} MOSFET used in our examples, this leads to \qty{\pm 208}{\mV} for the \device{IRF9610}, again applying $3\sigma$. Using this number, a Monte Carlo simulation (not quite, because the dice were biased to yield a Gaussian distribution) was run using LTSpice, simulating the circuit shown in figure \ref{fig:precision_current_source_two_mosfets} and also the original circuit using only one MOSFET. The current source was set to \qty{250}{\mA} as per table \ref{tab:current_source_parameters}. The load voltage was set to
+\begin{equation}
+    V_{DS, parallel} = \sqrt{\frac{2 \frac{I_d}{2}}{\kappa}} \approx \qty{555}{\mV}\,,
+    V_{DS, single} = \sqrt{\frac{2 I_d}{\kappa}} \approx \qty{784}{\mV} \,. \nonumber
+\end{equation}
+
+$\frac{I_D}{2}$ was used for the parallel configuration to show the effect assuming perfect current sharing between the MOSFETs. Additionally, $V_{DS, parallel} + 1\sigma$ was also investigated. \num{4000} samples were drawn and the spread of the output impedance was calculated for each circuit. The results are shown as a histogram in figure \ref{fig:ltpsice_mosfet_mc_output_impedance}. The counts give the number of cases for each bin of the output imdedance.
+
+\begin{figure}[ht]
+    \centering
+    \input{images/ltspice_mosfet_mc_output_impedance.pgf}
+    \caption{Results of a Monte Carlo simulation of the output impedance for different configurations of MOSFETs.}
+    \label{fig:ltpsice_mosfet_mc_output_impedance}
+\end{figure}
+
+Unsurprisingly, there is no variance of the output impedance in the single MOSFET case in accordance to what we have learnt in appendix \ref{sec:transfer_function_transconductance}. The op-amp gain simply supresses all device properties of the MOSFET. The slight variation of $g_m$ for different samples was not simulated, because this variation stems from the variation of $\kappa$ and goes as $\frac{1}{\sqrt{\kappa}}$, so its effect is not as pronounced as the threshold.
+
+In case of two mosfets, the output impedance varies over an order of magnitude from about \qtyrange[range-units = single]{1.8}{52}{\giga \ohm}. Even when increasing the drain-source voltage by $1 \sigma = \qty{70}{\mV}$ to \qty{625}{\mV} on average, the spread is still an order of magnitude. Only when increasing $V_{DS}$ to around \qty{700}{\mV}, the situation stabilizes, but then the net gain from this measure has shrunk to a meager \qty{84}{\mV}. We can see from this simuation, that the system-to-system spread becomes very unstable in tough situations. This instability can also be brought into the system by temperature effects as $V_{th}$ is temperature dependent as discussed above. This is a designers nightmare, because these devices are no longer interchangeable in situations of high load currents and load impedances. Additionally, they may suffer from thermal runaway if each individual MOSFET is not layed to carry the full current. As a final remark: Do not parallel MOSFETs in saturation, ever.
+
+\clearpage
+\subsection{Noise Sources}
+\label{sec:current_source_noise}
+The fundamentals of different types of noise were already introduced in section \ref{sec:allan_deviation}. Here, a subset of these noise types is treated. It is expected, that the dominant noise observed in this circuit is $\frac{1}{f}$-noise at low frequencies and white wideband-noise. All noise components will be converted to the so-called input referred notation to make the noise sources comparable. This can be easily understood, when looking at two amplifiers with different gain. If both of them add a fixed amount of noise to the output signal, the absolute amount of noise may be the same, but the signal to noise ratio shows a different picture. To compare these amplifiers it is useful to divide the noise by the transfer function (gain) of the amplifier. This is called input-referred noise, since it treats the noise in relation to the input signal. Additionally, when calculating noise figures, the noise bandwidth is always considered to be \qty{1}{\Hz}.
+
+\begin{figure}[ht]
+    \centering
+    \import{figures/}{precision_current_source.tex}
+    \caption{Transconductance amplifier with a p-channel MOSFET. Repeated from page \pageref{fig:precision_current_source}.}
+    \label{fig:precision_current_source_noise}
+\end{figure}
+
+Noise sources are ubiquitous in the circuit in figure \ref{fig:precision_current_source} on page \pageref{fig:precision_current_source}, repeated here as figure \ref{fig:precision_current_source_noise} for clarity. The resistor $R_S$, the MOSFET, the op-amp, the setpoint voltage $V_{ref}$ and the supply voltage $V_{sup}$ can all contribute noise to the output current. Fortunately, some of those noise contributions are either very small or are well suppressed in this design, so each component must be briefly discussed.
+
+Starting with the supply voltage $V_{sup}$, it can be seen, that any change of this voltage affects the string $R_S$-$Q$-$R_{load}$. From equation \ref{eqn:transconductance_amplifier_transfer_function}, we know that if the op-amp gain is high, that is, within the bandwidth of the op-amp, all disturbances of the voltage accross $R_S$ will be suppressed and the output current is only defined by the reference input and $R_S$. Looking closer, the supply noise is present at the inverting and non-inverting input of the op-amp with the same magnitude. If there is no current flowing into the op-amp pins, which is true for low frequecies, the noise is affecting both pins equally and it will be suppressed by the common-mode-rejection ratio (CMRR) of the device. Fortunately, this is a strong quality of precision op-amps and values of more than \qty[per-mode=power]{1}{\uV \per \volt} are not uncommon. The op-amp will therefore take care of the supply noise at low frequencies. At high frequencies the parasitic capacitance of the input pins and the reduced gain and CMRR come into play, reducing the CMRR and the gain also drop at high frequencies. To take care of this, it is therefore prudent to filter the supply for high frequency noise.
+
+The next noise source is the reference voltage. The reference is directly connected to the input and its noise dictates most of the circuit noise. While the high-frequency noise can again be filtered to some extend, the low frequency noise, which is mostly $\frac{1}{f}$-noise can not be filtered as was shown in section \ref{sec:flicker_noise}, so it must be kept low from the start and the reference selected for low flicker noise.
+
+The MOSFET as a noise source is considered in appendix \ref{sec:mosfet_noise} and the interested reader may find the derivation of the MOSFET noise within our circuit there. The two types of noise that need to be considered are the flicker noise of the MOSFET and its wideband thermal noise as calculated in equation \ref{eqn:current_noise_mosfet}
+\begin{equation}
+    i_{n} = \sqrt{\underbrace{4 k_B T \frac{2}{3} g_m}_{\text{thermal}} + \underbrace{\frac{K_f I_D}{C_{ox} L^2} \frac{1}{f}}_{\text{flicker}}} \,.\nonumber
+\end{equation}
+
+To calculate the input referred noise and show that the MOSFET noise will be suppressed by the op-amp, the current noise needs to be divided by the open-loop gain derived as equation \ref{eqn:transconductance_amplifier_open_loop_gain}
+\begin{equation}
+    e_{n,FET} = \frac{i_n}{A_f} = \frac{\sqrt{4 k_B T \frac{2}{3} g_m + \frac{K_f I_D}{C_{ox} L^2} \frac{1}{f}}}{\frac{A_{op}}{R_S} \frac{g_m \left(R_o || R_S || R_{id}\right)}{g_m \left(R_o || R_S || R_{id}\right) + 1}} \,.
+\end{equation}
+
+Looking at the parameters from table \ref{tab:current_source_parameters}, we find $\left(R_o || R_S || R_{id}\right) \approx R_S$ and $e_n$ can be simplified to
+\begin{align}
+    e_{n,FET} &\approx \frac{\sqrt{4 k_B T \frac{2}{3} g_m + \frac{K_f I_D}{C_{ox} L^2} \frac{1}{f}}}{A_1 \frac{1}{R_S + \frac{1}{g_m}}} \nonumber\\
+    &\approx \frac{R_S + \frac{1}{g_m}}{A_1} \sqrt{4 k_B T \frac{2}{3} g_m + \frac{K_f I_D}{C_{ox} L^2} \frac{1}{f}} \nonumber\\
+    \overset{A_1 \to \infty}&{=} 0\nonumber
+\end{align}
+
+Unless the MOSFET transconductance $g_m$ or the gain of the op-amp $A_1$ become very small, the noise of the MOSFET is very well suppressed. This means, that if the wideband thermal noise contribution is small (it is, see \ref{sec:mosfet_noise}) and the flicker noise corner frequency is within the bandwdith of the op-amp, the noise contribution from the MOSFET can be neglected.
+
+The noise contribution from the sense resistor $R_S$ is the (approximated) Johnson–Nyquist noise, which when transformed to its Norton representation can be written as current noise
+\begin{equation}
+    i_{n,R} = \sqrt{\frac{4 k_B T}{R_S}} \,.
+\end{equation}
+
+Additionally, it was shown, that depending on the material of the resistive element, a flicker noise component can also be present. This is especially prevalent in carbon and tick-film resistors \cite{flicker_noise_carbon_film,1_f_noise_thick_film}. While thin-film resistors are less noisy, their performance varies greatly between different models \cite{resistor_current_noise_ligo}, so their make and model must be carefully selected for the application. Foil and wirewound resistors were shown to perform best and have almost no flicker noise \cite{resistor_current_noise_ligo,flicker_noise_foil_resistor_beev}. Using a high quality resistor the flicker noise can be neglected and only the thermal noise must be taken into account.
+
+The sense resistor is part of the feedback network and therefore it contributes fully to the noise of the transimpedance amplifier. Input referred, the current noise must be divided by the closed-loop gain $A_f$ given by \ref{eqn:transfer_function_closed_loop}.
+\begin{equation}
+    e_{n,R} = i_{n,R} \cdot \beta \approx i_n \cdot R_S = \sqrt{4 k_B T R_S} \label{eqn:noise_sense_resistor}
+\end{equation}
+
+The final component to be discussed is the operational amplifier. Although the op-amp is a rather complex device, its noise can be modeled by a small number of noise sources. This noise model of the op-amp is shown in figure \ref{fig:op-amp_noise_model}.
+
+\begin{figure}[ht]
+    \centering
+    \scalebox{1}{%
+        \import{figures/}{op-amp_noise_model.tex}
+    } % scalebox
+    \caption{Noise model of the operational amplifier.}
+    \label{fig:op-amp_noise_model}
+\end{figure}
+
+In figure \ref{fig:op-amp_noise_model} we can see, that there are three noise sources required to treat the op-amp. The input voltage noise $e_{n}$ and two input current noise sources $i_n$. The current noise noise source are assumed to be mostly uncorrelated. This assumption will lead to an upper bound as can seen from figure \ref{fig:op-amp_input_stage}, which shows the the input differential amplifier, that is the first stage of a typical bipolar op-amp.
+
+\begin{figure}[hb]
+    \centering
+    \scalebox{1}{%
+        \import{figures/}{op-amp_input_stage.tex}
+    } % scalebox
+    \caption{Bipolar op-amp input stage with noise sources.}
+    \label{fig:op-amp_input_stage}
+\end{figure}
+
+Of the three noise sources $i_{n,p}$ and $i_{n,n}$ are uncorrelated, because it is the input bias current of the individual transistors, and only the effect of $i_{n,EE}$ is correlated, because the current of the emitter bias current souce is equally distributed between the two input transistors. Since effects of equal magnitude and sign cancel out due to the differential nature of the input stage, correlated effects are suppressed. An equal magnitude can be assumed, because the gain of the two transistors is well matched, due to their close proximity on the semiconductor die. Therefore assuming all noise is uncorrelated, presents an upper bound. A more detailed analysis can be found in \cite{op-amp_noise_correlation}, if interested. Due to the matching of the transistors, the magnitude $i_{n,p}$ and $i_{n,n}$ are also closely matched, hence in our model, they are assumed equal.
+
+As we have done before in this section with referring all noise sources to the input, the same was done manufacturer and they are given in the datasheet. The two current noise sources can not be combined into the input voltage noise, because the depend on the external impedances connected to the op-amp. Given the complete circuit as in figure \ref{fig:precision_current_source_noise} it is possible to calculate the full noise contribution of the op-amp
+\begin{equation}
+    e_{n,op} = \sqrt{e_n^2 + e_{n,+}^2 + e_{n,-}^2}
+\end{equation}
+given that the noise sources are uncorrelated. The input referred noise $e_{n,-}$ of the inverting input can be calculated in a similar fashion as $e_{n_R}$ in equation \ref{eqn:noise_sense_resistor}. It is likewise part of the feedback network and must therefore be divided by the closed-loop gain $A_f$ as before.
+\begin{equation}
+    e_{n,-} \approx i_n \cdot R_S
+\end{equation}
+
+The current noise of the input can be translated by looking at the input impedance. This will be determined by the output filter of the reference voltage, which is required to remove the high frequency noise as discussed above. Assuming an RC-filter of first order,
+the output impedance can be calculated from the transfer function of the low-pass filter, derived in equation \ref{eqn:first_order_model}
+\begin{align}
+    R_{out,filt} &= R_{filt} \cdot A = \frac{R_{filt}}{1+sR_{filt}C} \nonumber\\
+    \lim_{s \to 0} R_{out,filt} &= R_{filt} \nonumber\\
+    \lim_{s \to \infty} R_{out,filt} &= 0 \,.\nonumber\\
+     e_{n,-} &\approx \frac{i_n R_{filt}}{1+sR_{filt}C}
+\end{align}
+
+As it can be seen, for high frequecies, the output impedance goes to \num{0}, while for low frequencies it is $R_{filt}$. If the filter corner frequency $\omega_0 = \frac{1}{RC}$ is close to or at the flicker noise corner frequency of the reference voltage, it means that there is almost no wideband current noise contribution as well. The only the $\frac{1}{f}$ component of the op-amp current noise multiplied with $R_{filt}$ should be lower than the reference noise to have negligible impact.
+This leads to the total noise of the op amp
+\begin{equation}
+    e_{n,op} = \sqrt{e_n^2 + (i_n R_S)^2 + \left|\frac{i_n R_{filt}}{1+sRC}\right|^2} \,.
+\end{equation}
+
+To conclude, table \ref{tab:current_source_noise_contributers} is given as a reference for the noise contributions in the low-frequency and also the wideband domain. From this table, it can be seen, that the only wideband-noise contributors are the reference resistor and the op-amp. The low-frequency contributors are the voltage reference and the op-amp, since they have a strong flicker noise component. A low-noise, precision op-amp typically has far less low frequency noise than a voltage reference and the dominant low frequency contributor is the voltage reference.
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{lll}
+        Noise component& Low frequency& Wideband \\
+        \midrule
+        $V_{sup}$ & $\approx 0$ & $\approx 0$\\
+        MOSFET & $\approx 0$ & $\approx 0$\\
+        $V_{ref}$ & $\sqrt{e_{n,ref}^2 + 4 k_B T R_{filt}} $ & $\approx 0$\\
+        $R_S$ & $\sqrt{4 k_B T R_S}$ & $\sqrt{4 k_B T R_S}$\\
+        Op-amp & $\sqrt{e_n^2 + i_n^2 (R_S^2 + R_{filt}^2)}$ & $\sqrt{e_n^2 + i_n^2 R_S^2}$
+    \end{tabular}
+    \caption{Input referred noise components of the transimpedance amplifier. Multiply by $\frac{1}{R_S}$ to get the output referred current noise.}
+    \label{tab:current_source_noise_contributers}
+\end{table}
+
+\clearpage
+\subsection{Component Selection}
+\label{sec:component_selection}
+%TODO: Fix link to lst:dgDrive_specs_environment and lst:dgDrive_specs_electrical
+This section deals with selecting the right components for the precision current source presented in section \ref{sec:precision_current_source}. The focus lies on the requirements defined in section \ref{sec:laser_current_driver}, notably tables \ref{lst:dgDrive_specs_environment} and \ref{lst:dgDrive_specs_electrical}. Most attention will be on the MOSFET, the operational amplifier and the voltage reference. We will start with the voltage reference, because this will define several parameters down the road. Then, the op-amp is discussed, for which several examples from scientific publications and other alternatives are shown and the best solution is presented. Finally, the selection parameters for the MOSFET will be elaborated. The reader must warned though, that the lineup of p-channel MOSFETs in production is decreasing, with more and more products being discontinued in favor of n-channel MOSFETs and the examples may be outdated.
+
+Numerous laser driver designs can be found in literature \cite{libbrecht_hall, laser_driver_mosfet_noise, laser_driver_digital, laser_driver_digital_update, laser_driver_qcl_space, laser_driver_qcl_taubman, laser_driver_qcl_taubman_multiplexer}. While \citeauthor{libbrecht_hall} where not first to present a design and similar design can already be found in \cite{laser_driver_old}, their design stands out for its simplicity. The design in literature can be divided into two groups. High power drivers for quantum cascade lasers (QCL) typically featuring a compliance voltage of more than \qty{10}{\V} and output currents of up to serveral ampere based on the work of \citeauthor{laser_driver_qcl_taubman} and medium power devices for laser diodes having a lower compliance voltage of around \qty{2}{\V} and able to driver a few hundred \unit{\mA} based on the work of \citeauthor{libbrecht_hall}. Our requirements mostly fall into the latter category, except for the compliance voltage, which is targeted to be $\qty{\ge 8}{\V}$. All these drivers share one common aspect, though, the type of voltage reference. Most laser drivers in literature and commercial products are designed around low-noise, low-drift buried Zener diode voltage references, namely the \device{LM399} \cite{datasheet_LM399} or \device{LTZ1000} \cite{datasheet_LTZ1000}.
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{lllll}
+        Component& Voltage& Temperature coefficent & Stability& Package \\
+        \midrule
+        \device{LT1021} & \qty{7}{\V} & \qtyrange[range-units = single]{2}{5}{\uV \per \V \per \K} & \qty[per-mode = symbol, power-half-as-sqrt]{15}{\uV \per \V \per \kilo\hour\tothe{0.5}} & SO-8\\
+        \device{LT1027} & \qty{5}{\V} & \qtyrange[range-units = single]{1}{2}{\uV \per \V \per \K} & not specified & SO-8\\
+        \device{LM399} & \qty{7}{\V} & \qtyrange[range-units = single]{0.3}{1}{\uV \per \V \per \K} & \qty[power-half-as-sqrt]{8}{\uV \per \V \per \kilo\hour\tothe{0.5}} & TO-46\\
+        \device{ADR1399} & \qty{7}{\V} & \qtyrange[range-units = single]{0.2}{1}{\uV \per \V \per \K} & \qty[power-half-as-sqrt]{7}{\uV \per \V \per \kilo\hour\tothe{0.5}} & TO-46\\
+        \device{LTZ1000} & \qty{7.2}{\V} & \qty{0.05}{\uV \per \V \per \K} & \qty[power-half-as-sqrt]{0.3}{\uV \per \V \per \kilo\hour\tothe{0.5}} & TO-99\\
+        \device{ADR1000} & \qty{6.6}{\V} & \qty{<0.2}{\uV \per \V \per \K} & \qty[power-half-as-sqrt]{0.2}{\uV \per \V \per \kilo\hour\tothe{0.5}} & TO-99
+    \end{tabular}
+    \caption{List of buried Zener diodes and selected properties.}
+    \label{tab:overview_buried_zener_diodes}
+\end{table}
+
+The buried types of voltage references are \textit{Zener} diodes, that are created within the bulk silicon using ion implantation. This reduces noise due to surface contamination \cite{zener_diode_stability}. These diodes are not true Zener diodes, but called Zeners nonetheless and use a mix of Zener and avalanche breakdown to compensate the temperature coefficient. The Zener effect is the tunneling of electrons through the barier from the valence band to conduction band. It  has a negative temperature coefficient, because in increase in temperature reduces the size of the bandgap. Avalanche breakdown, on the other hand describes the mechanism, that free electrons (due to temperature) are accelerated to such energies, that they knock out other electrons, causing a avalanche of electrons. This effect has a positive temperature coefficient, because a higher temperature results in more free carriers, that cause leakage but no avalanche. While the zero temperature coefficient point is around \qty{5}{\V}, this operating point implies a high succeptibility to changes in the reverse current. So typically the Zener voltage is shifted slightly upwards to result in a net positive coefficent, which is then compensated by the negative temperature coefficent of a forward biased diode \cite{zener_diode_stability}. This results in the typical Zener diode voltage of around $\qty{6.2}{\V} + \qty{0.7}{\V} = \qty{6.9}{\V}$. In comparison to other types of diodes, buried Zeners have the best stability and lowest noise. In order to achieve high stability and low noise, $V_{ref} \approx \qty{7}{\V}$ is therefore pretty much set in stone. Table \ref{tab:overview_buried_zener_diodes}, lists some commercially available buried Zener diodes. All diodes are manufactured by Analog Devices as they are the sole manufacturer left to produce these kind of diodes.
+
+Choosing a voltage reference can be done according to table \ref{lst:dgDrive_specs_environment}. A temperature coefficent of \qty{<= 1}{\uA \per \A \per \K} rules out any non-hermetic unheated voltage reference. Using a hermetic package improves the stability against humidity as the epoxy used for an SO-8 package is hydrophilic and swells when exposed to water vapour causing pressure on the die, resulting in a change of the output voltage. The hermetic voltage references can be divided into two groups, the \device{LM399} and the newer \device{ADR1399} in one group and the \device{LTZ1000} and its newer counterpart \device{ADR1000} in aother. While the \device{LM399} requires very few external components, the external circuit for the \device{LTZ1000} is far more elaborate requiring more parts and space. Additionally, the \device{LTZ1000} is more than four times the price of the \device{LM399} in quantities of \num{10} at the time of writing. Last but not least, the stability and temperature coefficent of the \device{LTZ1000} cannot be matched by the performance of the sense resistor, so the sense resistor gives a lower bound of about \qty{0.5}{\uA \per \A \per \K}. Unless the better low frequency noise performance is absolutely required, the \device{LM399} and \device{ADR1399} are the more economical parts. The performance of those two references will be discussed in section \ref{sec:zener_diode_selection}.
+
+With the maximum reference voltage of \qty{7}{\V} known, a sense resitor between \qty{14}{\ohm} (\qty{500}{\mA}) and \qty{28}{\ohm} (\qty{250}{\mA} is required. Combined with the requirement for a low noise output, this limits the choice of op-amps to bipolar low-noise devices or discrete implementations. Table \ref{tab:overview_bipolar_op-amps} lists some choices compiled from the literature sources, which will now be discussed.
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{llll}
+        Component& Wideband-noise& Low frequency noise & Temperature coefficent \\
+        \midrule
+        \device{LT1028} & \qty[power-half-as-sqrt]{0.85}{\nV \per \Hz\tothe{0.5}} & \qty{35}{\nV_{p-p}} & \qty{0.2}{\uV \per \K}\\
+        \device{AD797} & \qty[power-half-as-sqrt]{0.9}{\nV \per \Hz\tothe{0.5}} & \qty{50}{\nV_{p-p}} & \qty{0.2}{\uV \per \K}\\
+        \device{ADA4898} & \qty[power-half-as-sqrt]{0.9}{\nV \per \Hz\tothe{0.5}} & not specified & \qty{1}{\uV \per \K}\\
+        \device{ADA4004} & \qty[power-half-as-sqrt]{1.8}{\nV \per \Hz\tothe{0.5}} & \qty{150}{\nV_{p-p}} & \qty{0.7}{\uV \per \K}\\
+        \device{AD8671} & \qty[power-half-as-sqrt]{2.8}{\nV \per \Hz\tothe{0.5}} & \qty{77}{\nV_{p-p}} & \qty{0.3}{\uV \per \K}
+    \end{tabular}
+    \caption{List of low-noise precision bipolar operational amplifiers with typical performance properties.}
+    \label{tab:overview_bipolar_op-amps}
+\end{table}
+
+The low value of the sense resistor makes a bipolar op-amp the preferred choice, because they have a very low voltage noise and their current noise and input bias current do not interfere with such a low value resistor. While a discrete solution using matched jfets or bipolar transistors may push the input noise even lower, the temperature stability, circuit complexity and again the size speaks against this option, so the disussion will be limited to integrated solutions only. To find a reference point for the choice of op-amp, the thermal noise of the sense resistor must looked at. The \qty{28}{\ohm} sense resistor has a thermal noise of
+\begin{equation}
+    e_n\left(\qty{23}{\celsius}\right) = \qty[power-half-as-sqrt]{0.67}{\nV \per \Hz\tothe{0.5}} \,. \nonumber
+\end{equation}
+
+This means, that even the lowest noise op-amp from table \ref{tab:overview_bipolar_op-amps} dominates the wideband-noise. The \device{AD8671} chosen by \cite{laser_driver_digital} only makes sense, because they have chosen a very large filter resistor $R_{filt}$ of $2 \times \qty{3}{\kilo\ohm}$. The \device{ADA4004} was used by Moglabs in the \device{DLC-202}, again likely due to the high values of $R_{filt}$ used. The \device{ADA4898} might seem like a good choice at first sight but the very limited (in terms of precision op-amps) open-loop gain of \qty{0.14}{\V \per \uV} makes this op-amp a cheap, but poor choice. The final choice is between the \device{AD797} and the \device{LT1028}, both op-amps have very similar specifications, but there is a peculiarity in the datasheet of the \device{LT1028} \cite{datasheet_LT1028}. While there is a current noise spectrum, there is no voltage noise spectrum to be found in the datasheet. The author assumes a good deal of specsmanship at this point. The publication by \citeauthor{libbrecht_hall} already blames the \device{LT1028} for a noise peak around \qty{400}{\kHz}. This peak is also included in the noise models for the op-amp and was additionally confirmed by the author with a measurement. This peak is the reason why \citeauthor{laser_driver_mosfet_noise} found the AD797 to be higher noise than the \device{AD797}. Additionally to the superior noise performance, the \device{AD797B} has excellent specifications overall. The open-loop gain is between \qtyrange[range-units = single]{2}{20}{\V \per \uV}, the supply rejection is greater than \qty{1}{\uV \per \V}, the bias current is almost constant between \qtyrange[range-units = single]{20}{100}{\celsius} and the unity gain bandwidth is around \qty{10}{\MHz}. Finally it does have a very high output drive capability of \qty{50}{\mA}, which allows to drive fairly large MOSFETs. These features make the \device{AD797} the ideal op-amp for those low-value sense resistors, although it puts limits on the maximum filter resistor to limit the low frequency current noise contribution.
+
+Finally, the choice of MOSFETs can be discussed. As it was shown in section \ref{sec:mosfet_current_source} in equation \ref{eqn:mosfet_saturation}, the channel length modulation playes an important role in increasing the channel conductance $g_{DS}$ and limiting the output impedance. To reduce the channel length modulation a longer channel is preferred. Manufacturers do not give these numbers, nor the manufacturing process. Older technologies like the planar (lateral) FET is better suited for operating in the saturation region than the modern trench (vertical) FET. Trench MOSFETs are geared towards a low on-state resistance $R_{DS,on}$, which is important for MOSFETs in switching applications, but their lower resistance comes from a shorter channel. One of the few planar MOSFETs still available on the market is the HEXFET, which was designed for switching applications, but prooves useful nonetheless as we will see. High voltage MOSFETs also have longer channels than low voltage MOSFETs, so browsing for MOSFETs, that are rated for \qtyrange[range-units = single]{60}{100}{\V} or more can narrow down the candidates. While the output impedance is a factor worth keeping in mind, the most important aspect is, whether the MOSFET can drive the load regarding the compliance voltage. To outline the problem, we can again refer to the example parameters from table \ref{tab:current_source_parameters}.
+
+Assuming a supply voltage of \qty{15}{\V} and the \device{AD797} op-amp, the current source supply voltage $V_{sup}$ is then limited to about \qtyrange[range-units = single]{11}{12}{\V}, because the \device{AD797} is no rail-to-rail op-amp and its output only swings to within \qty{3}{\V} of the rail (minimum) and the input is limited to within \qty{2}{\V} of the rail (minimum). Considering the maximum $V_{ref}$ at full output of \qty{7}{\V} and a load voltage of \qty{3}{\V} in case of the \device{L785H1} \cite{datasheet_thorlabs_780nm} used as an example in this section leaves only
+\begin{equation}
+    V_{DS,min} = V_{sup} - V_{ref} - V_{load} = \qtyrange[range-units = bracket]{11}{12}{\V} - \qty{7}{\V} - \qty{3}{\V} = \qtyrange[range-units = bracket]{1}{2}{\V} \label{eqn:minimum_mosfet_vds}
+\end{equation}
+for the MOSFET -- a serious challenge.
+
+To find a suitable MOSFET, one has to consult the \textit{Typical Output Characteristics} graph in the datasheet. Using the maxium output current specifaction it is possible to estimate the minimum drain-source voltage $V_{DS}$ to keep the MOSFET in saturation at the given maxium output current. This again narrows down the list of candidates.
+
+The final aspect is the capacitive nature of the MOSFET gate. This property was brushed in appendix \ref{sec:mosfet_noise} and the parasitic capacitances can be found in figure \ref{fig:mosfet_parasitic_capacitors}. The \device{AD797} can drive fairly large capacitive loads and several hundred \unit{\pF} are possible. It is best to keep the input capacitance $C_{iss}$ below \qty{500}{\pF}. Do remember the output impedance of the \device{AD797}, is about \qty{10}{\ohm} at \qty{1}{\MHz} and rising by an order of magnitude at \qty{10}{\MHz}. The \qty{500}{\pF} results in an impedance of around \qty{300}{\ohm} dropping by an order of magnitude at \qty{10}{\MHz}, so keeping capacitance low, allows a higher bandwidth of the current source.
+
+Using these guidelines, searching a MOSFET across a lot of manufactures can still be tedious, but, for example, the distributor Digikey allows filtering and sorting by voltage and input capacitance. The follwing MOSFETs in table are given as an example and can be chosen for their respective current ranges.
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{llll}
+        MOSFET& Maximum $V_{DS}$& Input capacitance $C_{iss}$ & Current range \\
+        \midrule
+        \device{IRF9610} & \qty{200}{\V}& \qty{170}{\V} & \qtyrange[range-units = single]{100}{250}{\mA}\\
+        \device{IRF9Z10} & \qty{50}{\V}& \qty{270}{\V} & \qtyrange[range-units = single]{250}{500}{\mA}\\
+        \device{IRF9Z14} & \qty{60}{\V}& \qty{270}{\V} & \qtyrange[range-units = single]{250}{500}{\mA}
+    \end{tabular}
+    \caption{Example MOSFETs for a current source and recommended current ranges.}
+    \label{tab:example_mosfet_selection}
+\end{table}
+
+The current range of the MOSFETs in table \ref{tab:example_mosfet_selection} is given based on the datasheet, making sure, that the MOSFET can be biased into saturation for the estimated minimum $V_{DS}$ according to \ref{eqn:minimum_mosfet_vds}. The \device{IRF9Z10} is a lower voltage version of the \device{IRF9Z14} and the \device{IRF9Z14} should be preferred if available. Those MOSFETs starting with \textit{IRF} are all HEXFETs formerly made by International Recitfier, whose MOSFET business was bought by Vishay in 2007.
+
+\clearpage
+\subsection{Current Source Example Parameters}
+\label{sec:current_source_summary}
+Throughout this section, example calculations are performed to give the reader an idea of real-life parameters derived from the theoretical models. These parameters are summarized in table \ref{tab:current_source_parameters}, including their origin.
+
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{lll}
+        Parameter& Value& Source \\
+        \midrule
+        MOSFET drain current $I_D$ & \qty{250}{\mA} & \device{L785H1} \cite{datasheet_thorlabs_780nm}\\
+        MOSFET $\kappa$ & \qty[per-mode=power]{0.813}{\ampere \per \square\volt} & \device{IRF9610} SPICE model \cite{irf9610_spice}\\
+        MOSFET channel length modulation $\lambda$ & \qty[per-mode=power]{4}{\per \milli \volt} & \device{IRF9610} SPICE model \cite{irf9610_spice}\\
+        MOSFET source voltage & \qtyrange{3.5}{4}{\V} & section \ref{}\\
+        Source/Sense Resistor $R_S$ & \qty{30}{\ohm} or \qty{50}{\ohm} & section \ref{}\\
+        Op-amp differential input impedance $R_{id}$ & \qty{7.5}{\kilo\ohm} & \device{AD797} \cite{datasheet_AD797}\\
+        Op-amp open-loop gain $A_{ol}$ & \qty[per-mode=power]{2}{\volt \per \uV} & \device{AD797} \cite{datasheet_AD797}\\
+        Op-amp gain bandwidth product $GBP$ & \qty{10}{\MHz} & \device{AD797} \cite{datasheet_AD797}
+    \end{tabular}
+    \caption{Parameters used throughout this section and their sources.}
+    \label{tab:current_source_parameters}
+\end{table}
+
+\clearpage
 \section{Temperature Controller}
 \label{sec:temperature_controller}
 
