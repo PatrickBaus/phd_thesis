@@ -1,7 +1,7 @@
 \documentclass[tikz,crop]{standalone}
 
 \usepackage{tikz}
-\usetikzlibrary{positioning,backgrounds}
+\usetikzlibrary{positioning, backgrounds}
 
 \begin{document}
     \begin{tikzpicture}[
@@ -16,13 +16,16 @@
     ]
         \node (input) at (0,0) {};
         \node [sum, right=12mm of input] (sum) {$\Sigma$};
-        \node [block, right=12mm of sum, fill=cyan!25] (plant) {$G(s)$};
-        \node [block, below=12 mm of plant, fill=blue!25] (beta) {$\beta$};
+        \node [block, right=12mm of sum, fill=cyan!25] (controller) {$C(s)$};
+        \node [block, right=15mm of controller, fill=cyan!25] (plant) {$G(s)$};
         \node [right=24mm of plant] (output) {};
+        \node [block, below=15mm of plant, fill=blue!25] (gain) {$-1$};
 
         \draw [->] (input) -- node[above]{$U(s)$} (sum);
-        \draw [->] (sum) -- (plant);
+        \draw [->] (sum) -- (controller);
+        \draw [->] (controller) -- (plant);
         \draw [->] (plant) -- node[above, name=out]{$Y(s)$} (output);
-        \draw [->] (out) |- (beta) node[dot, at start]{} -| (sum);
+        \draw [->] (out) |- (gain) node[dot, at start]{};
+        \draw [->] (gain) -| (sum);
     \end{tikzpicture}
 \end{document}

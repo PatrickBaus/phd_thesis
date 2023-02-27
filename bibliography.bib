@@ -1017,15 +1017,6 @@
 	year = {2012}
 }
 
-@book{advanced_pid_control,
-	author = {{\AA}str{\"o}m, K.J. and H{\"a}gglund, T.},
-	isbn = {9781556179426},
-	lccn = {2005014664},
-	publisher = {ISA-The Instrumentation, Systems, and Automation Society},
-	title = {Advanced PID Control},
-	year = {2006}
-}
-
 @article{pessen_integral,
 	author = {Pessen, David W.},
 	doi = {10.1115/1.2899252},
@@ -1037,7 +1028,7 @@
 	year = {1994}
 }
 
-@article{smic2,
+@article{simc_paper,
 	abstract = {The aim of this paper is to present analytic rules for PID controller tuning that are simple and still result in good closed-loop behavior. The starting point has been the IMC-PID tuning rules that have achieved widespread industrial acceptance. The rule for the integral term has been modified to improve disturbance rejection for integrating processes. Furthermore, rather than deriving separate rules for each transfer function model, there is a just a single tuning rule for a first-order or second-order time delay model. Simple analytic rules for model reduction are presented to obtain a model in this form, including the ``half rule'' for obtaining the effective time delay.},
 	author = {Skogestad, Sigurd},
 	doi = {10.1016/S0959-1524(02)00062-8},
@@ -1552,7 +1543,7 @@
 @manual{datasheet_adl_785,
 	edition = {00},
 	organization = {Arima Lasers Corporation},
-	title = {ADL-78901TX}
+	title = {ADL-78901TX Datasheet}
 }
 
 @article{diodelaser_modulation,
@@ -1725,7 +1716,7 @@
 	edition = {K},
 	howpublished = {{https://www.analog.com/media/en/technical-documentation/data-sheets/AD797.pdf}},
 	organization = {Analog Devices, Inc.},
-	title = {Ultralow Distortion, Ultralow Noise Op Amp},
+	title = {AD797 Datasheet - Ultralow Distortion, Ultralow Noise Op Amp},
 	year = {2015}
 }
 
@@ -1917,7 +1908,7 @@
 	edition = {D},
 	howpublished = {{https://www.analog.com/media/en/technical-documentation/data-sheets/1028fd.pdf}},
 	organization = {Analog Devices, Inc.},
-	title = {Ultralow Noise Precision High Speed Op Amps},
+	title = {LT1028 Datasheet - Ultralow Noise Precision High Speed Op Amps},
 	year = {2015}
 }
 
@@ -1943,7 +1934,7 @@
 	howpublished = {{https://assets.nexperia.com/documents/data-sheet/BUK7S1R5-40H.pdf}},
 	month = {8},
 	organization = {Nexperia B.V},
-	title = {N-channel 40 V, 1.5 m\ensuremath{\Omega} standard level MOSFET in LFPAK88},
+	title = {BUK7S1R5 Datasheet - N-channel 40 V, 1.5 m\ensuremath{\Omega} standard level MOSFET in LFPAK88},
 	year = {2002}
 }
 
@@ -2046,5 +2037,77 @@
 	title = {Power Electronics: Modeling, Analysis and Measurements},
 	volume = {2},
 	year = {2015}
+}
+
+@book{transistor_bible,
+	author = {Dept, General Electric Company. Semiconductor Products},
+	edition = 7,
+	title = {GE Transistor Manual},
+	year = {1964}
+}
+
+@manual{datasheet_bode100,
+	edition = {1.3},
+	howpublished = {{https://www.omicron-lab.com/fileadmin/assets/Bode\_100/Documents/Bode\_100\_R2\_Technical\_Data\_V1.3.pdf}},
+	organization = {OMICRON electronics GmbH},
+	title = {Technical Data Sheet Bode 100},
+	year = {2021}
+}
+
+@misc{line_injector_github,
+	author = {Baus, Patrick},
+	month = {7},
+	title = {Line Injector},
+	url = {https://github.com/PatrickBaus/line_injector},
+	version = {1.0.1},
+	year = {2022}
+}
+
+@book{transformer_windings,
+	isbn = {9780070593855},
+	month = {12},
+	publisher = {McGraw-Hill/TAB Electronics},
+	title = {Secrets Of Rf Circuit Design, Third Edition},
+	volume = {3},
+	year = {2000}
+}
+
+@inproceedings{pid_in_industry,
+	author = {Desborough, Lane and Miller, Randy},
+	title = {Increasing Customer Value of Industrial Control Performance Monitoring --- Honeywell{\rq}s Experience},
+	year = {2002}
+}
+
+@book{pid_controller,
+	author = {Seborg, D.E. and Mellichamp, D.A. and Edgar, T.F. and Doyle, F.J.},
+	edition = 4,
+	publisher = {John Wiley \& Sons},
+	title = {Process Dynamics and Control},
+	year = {2016}
+}
+
+@book{advanced_pid_control,
+	abstract = {The authors of the best-selling book PID Controllers: Theory, Design, and Tuning once again combine their extensive knowledge in the PID arena to bring you an in-depth look at the world of PID control. A new book, Advanced PID Control builds on the basics learned in PID Controllers but augments it through use of advanced control techniques. Design of PID controllers are brought into the mainstream of control system design by focusing on requirements that capture effects of load disturbances, measurement noise, robustness to process variations and maintaining set points. In this way it is possible to make a smooth transition from PID control to more advanced model based controllers. It is also possible to get insight into fundamental limitations and to determine the information needed to design good controllers. The book provides a solid foundation for understanding, operating and implementing the more advanced features of PID controllers, including auto-tuning, gain scheduling and adaptation. Particular attention is given to specific challenges such as reset windup, long process dead times, and oscillatory systems. As in their other book, modeling methods, implementation details, and problem-solving techniques are also presented.},
+	author = {{\AA}str{\"o}m, {Karl Johan} and H{\"a}gglund, Tore},
+	isbn = {978-1-55617-942-6},
+	language = {English},
+	publisher = {ISA - The Instrumentation, Systems and Automation Society},
+	title = {Advanced PID Control},
+	year = {2006}
+}
+
+@mastersthesis{liebmann_thesis,
+	author = {Liebmann, Tobias},
+	school = {TU Darmstadt},
+	title = {Mikrocontrollergesteuerte Temperaturregelung},
+	type = {Bachelor's Thesis},
+	year = 2017
+}
+
+@misc{supplemental_material,
+	author = {Baus, Patrick},
+	title = {Simualtion Scripts for the PhD Thesis},
+	url = {https://github.com/PatrickBaus/php_supplemental},
+	year = {2023}
 }
 

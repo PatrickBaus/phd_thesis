@@ -22,6 +22,7 @@
 \ctikzloadstyle{romano}
 
 \providecommand{\device}[1]{\texttt{\small #1}}
+\providecommand{\external}[1]{\textsf{#1}}
 
 \begin{document}
 \section{Simulating Current Source Properties in LTSpice}
@@ -38,7 +39,7 @@ The output characterisic is a graph found in all MOSFET datasheets and is shown 
     \label{fig:ltspice_mosfet_drain_current_example}
 \end{figure}
 
-Plotting this graph allows to compare the model to the datasheet or the measured values in order to tweak the model. To create this graph the simulation file found in the folder \url{source/spice/mosfet_gm-id.asc} as part of this document can be used. The SPICE simulation for the output characteristics of the MOSFET simulate the following circuit shown in figure \ref{fig:circuit_mosfet_output_characteristic}.
+Plotting this graph allows to compare the model to the datasheet or the measured values in order to tweak the model. To create this graph the simulation file found in the folder \external{source/spice/mosfet\_gm-id.asc} as part of this document can be used. The SPICE simulation for the output characteristics of the MOSFET simulate the following circuit shown in figure \ref{fig:circuit_mosfet_output_characteristic}.
 
 \begin{figure}[ht]
     \centering
@@ -152,11 +153,7 @@ is used to change $V_{load}$ from \qtyrange{2.5}{3.5}{\V} in steps of \qty{1}{\m
 \end{lstlisting}
 The \textbf{.meas} command shown will save the value of $\frac{1}{i_{D}} = \frac{1}{I(R1)}$ at \qty{1}{\micro\hertz} to the (error) log file whenever the \textbf{.ac} command is run. The value of $v_{DS}$ was already set to \qty{1}{\V_{rms}} in the LTSpice simulation as shown in figure \ref{fig:ltspice_output_impedance_example}, thus $\frac{\qty{1}{\V}}{I(R1)} = R_{out}$. The current through sense resistor instead of $i_D$ was chosen because it is numerically more stable and since there is no gate current it is the same as $i_D$. The frequency were the $R_{out}$ is measured was chosen to be well below the corner frequency of the op-gain, which was calculated above to be \qty{5}{\Hz}. This gives the near DC output impedance of the current source.
 
-To plot the values stored in the log file, click on \textit{View} in top menu, then \textit{SPICE Error Log}. Now right-click on the error log and select \textit{Plot stepp'ed .meas data}. This will open a new plot window showing the output impedance curve.
+To plot the values are stored in the log file, click on \textit{View} in the top menu, then \textit{SPICE Error Log}. Now right-click on the error log and select \textit{Plot stepp'ed .meas data}. This will open a new plot window showing the output impedance curve.
 
 Those results are discussed in more detail in section \ref{sec:compliance_voltage}.
-
-
-
 \end{document}
-

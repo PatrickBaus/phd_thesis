@@ -16,6 +16,7 @@
 ]{tudapub}
 
 \usepackage[english]{babel}
+\usepackage{cancel}
 \usepackage{caption}  % used in the appendix
 \usepackage{docmute}
 \usepackage[version=4]{mhchem}
@@ -51,7 +52,7 @@
     factor=1100]{microtype}
 \SetTracking{encoding={*}, shape=sc}{40}
 
-\usepackage[backend=biber, style=numeric, natbib=true, maxcitenames=1, backend=biber, sorting=nyt, autolang=hyphen]{biblatex}
+\usepackage[backend=biber, style=numeric, natbib=true, maxcitenames=1, backend=biber, sorting=nyt, autolang=hyphen, sortcites=true]{biblatex}
 \usepackage{csquotes}  % Needed by biblatex when babel is active
 \bibliography{bibliography}
 
@@ -83,6 +84,7 @@
 \captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
 
 \DeclareSIUnit{\plc}{PLC}
+\DeclareSIUnit{\year}{a}
 \sisetup{separate-uncertainty = true, per-mode = symbol}%}	% display the uncertenty as 10 \pm 2
 %\sisetup{
 %    mode=text,
@@ -136,7 +138,10 @@
 % \settitlepicture{images/front.pdf}
 \usetikzlibrary{arrows.meta,calc,intersections}
 
-\newcommand{\device}[1]{\texttt{\small #1}}
+\providecommand{\device}[1]{\texttt{\small #1}}
+\providecommand{\external}[1]{\textsf{#1}}
+
+\urlstyle{same}
 
 \begin{document}
 	\title{Development of Laser Systems and Spectroscopy of Highly Charged Ions}

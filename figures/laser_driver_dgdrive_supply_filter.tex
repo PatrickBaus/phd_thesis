@@ -36,35 +36,35 @@
             \draw
                 % positive rail
                 (0,0) to[short, o-] ++(1,0) coordinate(vin+) ++(0,-6) coordinate(GND) -- ++(-1,0) node[ground]{}
-                (vin+) to [L, l=\qty{1.2}{\mH}, name=Lin+] ++(2,0) coordinate(tmp) to [eC, *-*, l=\qty{100}{\uF}, name=Cout+] (tmp |- GND)
-                (tmp) -- ++(2,0) coordinate(snubber+) to[R, *-, name=Rs+] ++(0,-3) to[eC, -*, l=\qty{390}{\uF}, name=Cs+] (snubber+ |- GND) -- (GND)
+                (vin+) to [L, a=\qty{1.2}{\mH}, l=$L_1$, name=Lin+] ++(2,0) coordinate(tmp) to [eC, *-*, a=\qty{100}{\uF}, l=$C_1$, name=Cout+] (tmp |- GND)
+                (tmp) -- ++(2,0) coordinate(snubber+) to[R, *-, l=$R_d$, name=Rs+] ++(0,-3) to[eC, -*, a=\qty{390}{\uF}, l=$C_d$, name=Cs+] (snubber+ |- GND) -- (GND)
                 (snubber+) -- ++(4,0) coordinate(tmp) node[pnp, anchor=E, rotate=90](Q1){} node[above] at (Q1) {Q1}
                 (Q1.B) -- ++(0,-0.5) to[R, *-*] ++(-3,0) coordinate(tmp2) to[short, -*] (tmp2 |- tmp)
                 (Q1.B) ++(0,-0.5) node[npn, anchor=C, rotate=90](Q2){} (Q2.E) to[short, -*] (Q2.E |- Q1.C) -- (Q1.C) node[above] at (Q2) {Q2}
-                (Q2.B) -- ++(0,-0.5) to[R, *-, name=Rd] ++ (-2,0) to[leD, invert, mirror, name=led1] ++(-1.5,0) -| (tmp2)
-                (Q2.B) ++(0,-0.5) -- ++(0,-1.5) coordinate(tmp) to[R] (tmp -| tmp2) to [short, -*] (tmp2 |- led1)
-                (tmp) to[C, *-*, l=\qty{10}{\uF}] (tmp |- GND)
-                (Q2.E |- Q1.C) -- ++(1,0) coordinate(tmp) to[eC, *-*, l=\qty{100}{\uF}] (tmp |- GND) -- (snubber+ |- GND)
+                (Q2.B) -- ++(0,-0.5) to[R, *-, name=Rdiode] ++ (-2,0) to[leD, invert, mirror, name=led1] ++(-1.5,0) -| (tmp2)
+                (Q2.B) ++(0,-0.5) -- ++(0,-1.5) coordinate(tmp) to[R, l_=$R_m$, a^=\qty{10}{\kilo\ohm}] (tmp -| tmp2) to [short, -*] (tmp2 |- led1)
+                (tmp) to[C, *-*, l_=$C_m$, a^=\qty{10}{\uF}] (tmp |- GND)
+                (Q2.E |- Q1.C) -- ++(1,0) coordinate(tmp) to[eC, *-*, a=\qty{100}{\uF}] (tmp |- GND) -- (snubber+ |- GND)
                 (tmp) to[short, -o] ++ (1,0)
                 % negative rail
                 (GND) ++(0,-6)  coordinate(vin-) to[short, -o] ++(-1,0)
-                (vin-) to [L, l=\qty{1.2}{\mH}, name=Lin-] ++(2,0) coordinate(tmp) to [eC, *-, l_=\qty{100}{\uF}, name=Cout+, invert] (tmp |- GND)
-                (tmp) -- ++(2,0) coordinate(snubber-) to[R, *-, name=Rs-] ++(0,3) to[eC, l_=\qty{390}{\uF}, name=Cs-, invert] (snubber- |- GND)
+                (vin-) to [L, a^=\qty{1.2}{\mH}, name=Lin-] ++(2,0) coordinate(tmp) to [eC, *-, a^=\qty{100}{\uF}, name=Cout+, invert] (tmp |- GND)
+                (tmp) -- ++(2,0) coordinate(snubber-) to[R, *-, name=Rs-] ++(0,3) to[eC, a^=\qty{390}{\uF}, name=Cs-, invert] (snubber- |- GND)
                 (snubber-) -- ++(4,0) coordinate(tmp) node[npn, anchor=E, rotate=-90](Q3){}
                 (Q3.B) -- ++(0,0.5) to[R, *-*] ++(-3,0) coordinate(tmp2) to[short, -*] (tmp2 |- tmp) node[below] at (Q3) {Q3}
                 (Q3.B) ++(0,0.5) node[pnp, anchor=C, rotate=-90](Q4){} (Q4.E) to[short, -*] (Q4.E |- Q3.C) -- (Q3.C) node[below] at (Q4) {Q4}
                 (Q4.B) -- ++(0,0.5) to[R, *-] ++ (-2,0) to[leD, name=led2] ++(-1.5,0) -| (tmp2)
                 (Q4.B) ++(0,0.5) -- ++(0,1.5) coordinate(tmp) to[R] (tmp -| tmp2) to [short, -*] (tmp2 |- led2)
-                (tmp) to[C, *-, l_=\qty{10}{\uF}] (tmp |- GND)
-                (Q4.E |- Q3.C) -- ++(1,0) coordinate(tmp) to[eC, *-, l_=\qty{100}{\uF}, invert] (tmp |- GND) -- (snubber- |- GND)
+                (tmp) to[C, *-] (tmp |- GND)
+                (Q4.E |- Q3.C) -- ++(1,0) coordinate(tmp) to[eC, *-, a^=\qty{100}{\uF}, invert] (tmp |- GND) -- (snubber- |- GND)
                 (tmp) to[short, -o] ++ (1,0)
             ;
         \end{pgfonlayer}
         \begin{pgfonlayer}{main}
             \node[draw=red!80!black, fill=red!20, rounded corners=2pt, fit={(Cs+) (Rs+) (snubber+) ($(snubber+) + (0.5,0)$) ($(snubber+) - (0.5,0)$)}](damping){};
-            \node[black, above, align=center] at (damping.north) {Snubber};
-            \node[draw=green!80!black, fill=green!20, rounded corners=2pt, fit={(led1) (Rd)}](Ref){};
-            \node[black, below, align=center] at (Ref.south) {Fast startup};
+            \node[black, above, align=center] at (damping.north) {Damping Element};
+            \node[draw=green!80!black, fill=green!20, rounded corners=2pt, fit={(led1) (Rdiode)}](Ref){};
+            \node[black, above, align=center] at (Ref.north) {Fast startup};
         \end{pgfonlayer}
     \end{circuitikz}
 \end{document}
