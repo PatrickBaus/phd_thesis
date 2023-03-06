@@ -100,11 +100,11 @@ one finds
 \begin{align}
     R_{o} &= \frac{I_D}{\frac{1}{\lambda} + V_{DS}} = \qty{1014}{\ohm} \nonumber\\
     g_m &= \sqrt{2 \kappa I_D \left(1+ \lambda V_{DS}\right)} = \qty{0.642}{\siemens} \nonumber\\
-    g_m \left(R_o || R_S || R_{id}\right) &\approx g_m R_S \approx \num{29.03}\nonumber\\
-    \frac{g_m \left(R_o || R_S || R_{id}\right)}{1 + g_m \left(R_o || R_S || R_{id}\right)} &\approx \num{0.97} \nonumber
+    g_m \left(R_o || R_S || R_{id}\right) &\approx g_m R_S \approx \num{18.63}\nonumber\\
+    \frac{g_m \left(R_o || R_S || R_{id}\right)}{1 + g_m \left(R_o || R_S || R_{id}\right)} &\approx \num{0.95} \nonumber
 \end{align}
 
-Using typical parameters, it can be seen, that dropping the $\frac{g_m \left(R_o || R_S || R_{id}\right)}{1 + g_m \left(R_o || R_S || R_{id}\right)}$ term will only lead to error of about \qty{3}{\percent}. Given the datasheet uncertainties for the MOSFET related parameters on the order of \qtyrange{50}{100}{\percent}, it can be safely neglected, leading to the following approximations
+Using typical parameters, it can be seen, that dropping the $\frac{g_m \left(R_o || R_S || R_{id}\right)}{1 + g_m \left(R_o || R_S || R_{id}\right)}$ term will only lead to error of about \qty{5}{\percent}. Given the datasheet uncertainties for the MOSFET related parameters on the order of \qtyrange{50}{100}{\percent}, it can be safely neglected, leading to the following approximations
 \begin{align}
     R_{out} &\approx A_{ol} \left(g_m R_o R_S + R_o + R_S \right)\\
     A_f &\approx \frac{1}{R_S} \,. \nonumber
@@ -112,7 +112,7 @@ Using typical parameters, it can be seen, that dropping the $\frac{g_m \left(R_o
 
 The approximation for the output impedance holds true when $g_m R_S \gg 1$, which typically is the case. While $R_S$ might become small, this is compensated by an increase in $g_m$ in our application, because a smaller source resistor implies a higher output current, demanding a MOSFET with a higher transconductance, so the product of $g_m R_S$ remains constant.
 
-It can therefore be said, that the op-amp is simply amplifying the output impedance of the MOSFET with the source resistor and the closed-loop gain is defined entirely by $R_S$, a very convenient property.
+It can therefore be said, that the op-amp is simply amplifying the output impedance of the MOSFET along with the source resistor and the closed-loop gain is defined entirely by $R_S$, a very convenient property.
 
 If the model is to be considered at frequencies $\omega > 0$, $A_{ol}$ can be replaced by the first order approximation of the op-amp gain as
 \begin{equation}

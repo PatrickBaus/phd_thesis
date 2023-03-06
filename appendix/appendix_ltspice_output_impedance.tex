@@ -39,7 +39,7 @@ The output characterisic is a graph found in all MOSFET datasheets and is shown 
     \label{fig:ltspice_mosfet_drain_current_example}
 \end{figure}
 
-Plotting this graph allows to compare the model to the datasheet or the measured values in order to tweak the model. To create this graph the simulation file found in the folder \external{source/spice/mosfet\_gm-id.asc} as part of this document can be used. The SPICE simulation for the output characteristics of the MOSFET simulate the following circuit shown in figure \ref{fig:circuit_mosfet_output_characteristic}.
+Plotting this graph allows to compare the model to the datasheet or the measured values in order to tweak the model. To create this graph, the simulation file found in the folder \external{source/spice/mosfet\_gm-id.asc} as part of this document can be used. The SPICE simulation for the output characteristics of the MOSFET simulates the following circuit shown in figure \ref{fig:circuit_mosfet_output_characteristic}.
 
 \begin{figure}[ht]
     \centering
@@ -58,15 +58,15 @@ Plotting this graph allows to compare the model to the datasheet or the measured
     \caption{P-channel MOSFET circuit and its LTSpice model.}
 \end{figure}
 
-Do note, that the $V_{DS}$ and $V_{GS}$ are inverted and given as $V_{SD}$ and $V_{SG}$. The reason is, that the plotter in LTSpice works better with positive numbers to guess the correct scaling of the axis. Figure \ref{fig:ltspice_mosfet_output_characteristic} shows the same circuit drawn in LTSpice. The MOSFET parameters are entered using the \textbf{.model} syntax
+Do note, that $V_{DS}$ and $V_{GS}$ are inverted and given as $V_{SD}$ and $V_{SG}$. The reason is, that the plotter in LTSpice works better with positive numbers to guess the correct scaling of the axis. Figure \ref{fig:ltspice_mosfet_output_characteristic} shows the same circuit drawn in LTSpice. The MOSFET parameters are entered using the \textbf{.model} syntax
 \begin{lstlisting}[frame=single, xleftmargin=5mm, xrightmargin=5mm, columns=fullflexible, morekeywords={model, dc}, keywordstyle=\bfseries, basicstyle=\rmfamily]]
 .model test_mos pmos (kp=0.813, lambda=4m, Vto=-3.667)
 \end{lstlisting}
-with the parameters $\kappa = \qty[per-mode=power]{0.813}{\ampere \per \square\volt}$, $\lambda = \qty[per-mode=power]{4}{\per \milli \volt}$ and $V_{th} = \qty{-3.667}{\V}$. The options \textbf{plotwinsize} and \textbf{numdgt} make sure, that LTSpice does not compress the output data and increases the floating point precision. This is important, because $I_D$ spans a large range values. Setting \textbf{gmin} to \num{0} prevents LTSpice from adding small transconductance to every pn-junction, thus changing the MOSFET model. Finally, the most important command is the \textbf{.dc} command, which instructs LTSpice to step the voltage sources $V_{SD}$ and $V_{SG}$ to evaluate $I_D$ over $V_{SD}$. The command
+with the parameters $\kappa = \qty[per-mode=power]{0.813}{\ampere \per \square\volt}$, $\lambda = \qty[per-mode=power]{4}{\per \milli \volt}$ and $V_{th} = \qty{-3.667}{\V}$. The options \textbf{plotwinsize} and \textbf{numdgt}, shown in figure \ref{fig:ltspice_mosfet_output_characteristic}, make sure, that LTSpice does not compress the output data and increases the floating point precision. This is important, because $I_D$ spans a large range of values. Setting \textbf{gmin} to \num{0} prevents LTSpice from adding a small transconductance to every pn-junction, thus changing the MOSFET model. Finally, the most important command is the \textbf{.dc} command, which instructs LTSpice to step the voltage sources $V_{SD}$ and $V_{SG}$ to evaluate $I_D$ over $V_{SD}$. The command
 \begin{lstlisting}[frame=single, xleftmargin=5mm, xrightmargin=5mm, columns=fullflexible, morekeywords={model, dc}, keywordstyle=\bfseries, basicstyle=\rmfamily]]
 .dc Vsd 0 2 1m Vsg 3.867 4.467 0.2
 \end{lstlisting}
-steps the voltage source $V_{SD}$ from $\qtyrange{0}{2}{\V}$ in steps of \qty{10}{\mV} and for each step of $V_{SD}$, steps $V_{SG}$ from \qtyrange{0.2}{0.8}{\V - V_{th}} in steps of \qty{200}{\mV}. Plotting
+steps the voltage source $V_{SD}$ from \qtyrange[range-units = single]{0}{2}{\V} in steps of \qty{10}{\mV} and for each step of $V_{SD}$, steps $V_{SG}$ from \qtyrange[range-units = single]{0.2}{0.8}{\V -  V_{th}} in steps of \qty{200}{\mV}. Plotting
 \begin{lstlisting}[frame=single, xleftmargin=5mm, xrightmargin=5mm, columns=fullflexible, morekeywords={model, dc}, keywordstyle=\bfseries, basicstyle=\rmfamily]]
 Id(M1)
 \end{lstlisting}
@@ -86,7 +86,7 @@ To derive $g_m$, we need to generate values of $I_D(V_{GS})$. This can again be 
 \begin{lstlisting}[frame=single, xleftmargin=5mm, xrightmargin=5mm, columns=fullflexible, morekeywords={model, dc}, keywordstyle=\bfseries, basicstyle=\rmfamily]]
 .dc Vsg 3.667 4.667 1m
 \end{lstlisting}
-To produce a smooth plot, the the steps size of $V_{SG}$ was decreased to \qty{1}{\mV}. $V_{DS}$ is now fixed and can be set using the voltage source $V_{SD}$. The MOSFET is intentionally biased into the saturation region at $V_{DS} = \qty{-1}{\V}$ as can be seen in figure \ref{fig:ltspice_mosfet_drain_current_example}.
+To produce a smooth plot, the the steps size of $V_{SG}$ was decreased to \qty{1}{\mV}. $V_{DS}$ is constant in this plot and can be set using the voltage source $V_{SD}$. The MOSFET is intentionally biased into the saturation region at $V_{DS} = \qty{-1}{\V}$ as can be seen in figure \ref{fig:ltspice_mosfet_drain_current_example}.
 
 LTSpice is now able to numerically differentiate the data, which can be invoked by by plotting
 \begin{lstlisting}[frame=single, xleftmargin=5mm, xrightmargin=5mm, columns=fullflexible, morekeywords={model, dc}, keywordstyle=\bfseries, basicstyle=\rmfamily]]
@@ -115,7 +115,7 @@ This sections will explain how to calculate the dyncamic output impedance using 
     R_{out} = \frac{1}{\frac{\partial I_D}{\partial V_{DS}}} \,. \nonumber
 \end{equation}
 
-Using the technique presented in the previous section, the obvious solution would be to again use the \textbf{.dc} sweep command and then numerically differentiate the result. Unfortunately this will lead to disappointing results, because the output impedance in question is very large and the limits of the numerical precision will be reached, nicely demonstrating the boundries of numercial methods. LTSpice allows to increase the numeric precision to double using the option \textbf{numdgt}
+Using the technique presented in the previous section, the obvious solution would be to again use the \textbf{.dc} sweep command and then numerically differentiate the result. Unfortunately this will lead to disappointing results, because the output impedance in question is very large and the limits of the numerical precision will be reached, nicely demonstrating the boundries of numercial methods. LTSpice allows to increase the numeric precision to double floating point values using the option \textbf{numdgt}
 \begin{lstlisting}[frame=single, xleftmargin=5mm, xrightmargin=5mm, columns=fullflexible, morekeywords={model, dc, options}, keywordstyle=\bfseries, basicstyle=\rmfamily]]
  .options numdgt=15
 \end{lstlisting}
@@ -123,7 +123,7 @@ Unfortunately, this only forces LTSpice to interally use the double floating poi
 \begin{equation}
     R_{out} = \frac{v_{load}}{i_D} = \frac{v_{DS}}{i_D} \nonumber
 \end{equation}
-at several different points of $V_{DS}$, therefore reconstructing the large-signal model from rasterized versions of the small-signal model. For the small-signal model, $v_{DS} = v_{load}$, because the supply voltage and the voltage across the sense resistor can be considered constant, so any change in the voltage across the load must cause the opposite change in the source-drain voltage $v_{SD} = - v_{DS}$.
+at several different points of $V_{DS}$, thereby reconstructing the large-signal model from rasterized versions of the small-signal model. For the small-signal model, $v_{DS} = v_{load}$, because the supply voltage and the voltage across the sense resistor can be considered constant, so any change in the voltage across the load must cause the opposite change in the source-drain voltage $v_{SD} = - v_{DS}$.
 
 To run this simulation the small-signal simulation must be used and additionally some commands not available through the graphical user interface need to be entered by hand.
 
@@ -147,7 +147,7 @@ Additionally, as discussed, the load will be stepped, by stepping voltage source
 \begin{lstlisting}[frame=single, xleftmargin=5mm, xrightmargin=5mm, columns=fullflexible, morekeywords={model, ac, dc, options, step}, keywordstyle=\bfseries, basicstyle=\rmfamily]]
 .step param Vload 2.5 3.5 1m
 \end{lstlisting}
-is used to change $V_{load}$ from \qtyrange{2.5}{3.5}{\V} in steps of \qty{1}{\mV}, which is exactly the maximum $V_{DS}$, which is $V_{sup} - V_{ref} = \qty{3.5}{\V}$. This is done to show the effect of the complete loss of regulation. The last thing to do, is to extract the desired output impedance from the many stepped small-signal simulations. This can be done using the \textbf{.meas} command telling LTSpice to save a single value at certain frequency from each step.
+is used to change $V_{load}$ from \qtyrange[range-units = single]{2.5}{3.5}{\V} in steps of \qty{1}{\mV}, which is exactly the maximum $V_{DS}$, which is $V_{sup} - V_{ref} = \qty{3.5}{\V}$. This is done to show the effect of the complete loss of regulation. The last thing to do, is to extract the desired output impedance from the many stepped small-signal simulations. This can be done using the \textbf{.meas} command telling LTSpice to save a single value at a certain frequency from each step.
 \begin{lstlisting}[frame=single, xleftmargin=5mm, xrightmargin=5mm, columns=fullflexible, morekeywords={model, ac, dc, options, step, meas}, keywordstyle=\bfseries, basicstyle=\rmfamily]]
 .meas AC Ro FIND 1/I(R1) AT 1uHz
 \end{lstlisting}

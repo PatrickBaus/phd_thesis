@@ -2,6 +2,7 @@
 \usepackage{docmute}
 \usepackage{caption}  % used in the appendix
 \usepackage{listings}
+\usepackage{siunitx}
 \usepackage{xcolor}
 
 \DeclareCaptionFont{white}{\color{white}}
@@ -9,22 +10,24 @@
 \captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
 
 \begin{document}
-\section{Multimeter Settings for the Comparison Test}
+\section{Querying the TimescaleDB via SQL}
+SQL query to extract binned data from the Timescale DB of two sensors in lab 011: \textsf{011\_humidity} and \textsf{011\_temperature}. The data returned is of the form \textsf{date,humidity,temperature}. The database groups the asynchronous data into bins of \qty{6}{\hour} and averages the data inside those bins. The timeframe is from 2022-01-01 until 2023-01-01.
+
 \begin{lstlisting}[language=sql,title=SQL query]
-SELECT
-  time
-  ,data_values [1] humidity  --1st value in the array
-  ,data_values [2] temperature --2nd value
-FROM (
   SELECT
-    bucket as "time"
-    ,array_agg("data") as data_values
+    time
+    ,data_values [1] humidity  --1st value in the array
+    ,data_values [2] temperature --2nd value
   FROM (
     SELECT
-      time_bucket('6h',"time") AS "bucket"
-      ,sensor_id
-      ,avg(value) AS "data"
-        FROM sensor_data
+      bucket as "time"
+      ,array_agg("data") as data_values
+    FROM (
+      SELECT
+        time_bucket('6h',"time") AS "bucket"
+        ,sensor_id
+        ,avg(value) AS "data"
+      FROM sensor_data
         WHERE
         time BETWEEN
           '2022-01-01T00:00:00.00Z' AND '2023-01-01T00:00:00Z'
@@ -34,11 +37,11 @@ FROM (
           WHERE label = '011_humidity' OR label = '011_temperature'
             AND enabled
         )
-    GROUP BY bucket, sensor_id
-    ORDER BY 1
-  ) t1
-  GROUP BY "bucket"
-) t2
+      GROUP BY bucket, sensor_id
+      ORDER BY 1
+    ) t1
+    GROUP BY "bucket"
+  ) t2
 \end{lstlisting}
 \end{document}
 
