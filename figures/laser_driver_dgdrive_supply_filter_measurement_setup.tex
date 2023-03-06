@@ -1,0 +1,84 @@
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{calc,positioning,backgrounds,fit}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+  blocks/fill=cyan!25,
+}
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+% bare shape for the object.
+\tikzset{regulatorshape/.style={muxdemux,
+    muxdemux def={
+        Lh=2, Rh=2, w=4,
+        NL=1,NR=1,NT=0,NB=1,
+    }
+}}
+\begin{document}
+    \begin{circuitikz}[
+        american currents,
+        american voltages,
+        scale=0.7,
+        transform shape,
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+        >=stealth,
+        block/.style={draw, fill=white, rectangle, minimum height=20mm, minimum width=6mm, inner sep=1mm},
+    ]
+        \tikzstyle{every node}=[font=\small]
+        \tikzstyle{every node}=[font=\small]
+        \begin{pgfonlayer}{foreground}
+            \node [block, minimum height=20mm, align=center](hmp4040) {Power Supply\\R\&S HMP4040};
+            \node [block, minimum width=60mm] (bode100) at (-15,3) {Bode 100};
+            \draw
+                ($(hmp4040.east) + (0,0.5)$) node[inputarrow, rotate=180] {} -- ++(1,0)
+                (hmp4040.east) node[inputarrow, rotate=180] {} -- ++(1,0) node[right] {\qty{230}{\V} Mains}
+                ($(hmp4040.east) + (0,-0.5)$) node[inputarrow, rotate=180] {} -- ++(1,0) coordinate(earth) -- ++(1,0) node[cground]{}
+                ($(bode100.south) +(-2,0.2)$) node[above]{Mod out} to [short, o-] ++ (0,-2) -- ++(0.5,0) coordinate(modout) ++(0.5,0) node[transformer, anchor=west, scale=0.6, circuitikz/inductors/coils=4] (T1) {} node[behind path, draw, fill=cyan!25, fit=(T1), label=below:PB01](T1box) {} node[above] at (T1box.north) {2:1}
+                (modout) |- (T1box)
+                % to PB02
+                (T1-L2.midtap) -- ++(0.5,0)
+                ($(T1box.east)+(0,0.5)$) -- ++(9.5,0) -- ++(0,1) to[amp, boxed, name=PB02, a^=PB02] ++ (0,2) coordinate(pos out)
+                ($(T1box.east)+(0,-0.5)$) -- ++(11,0) -- ++(0,2) to[amp, boxed, name=J2123A, a=J2123A] ++(0,2) coordinate(neg out)
+                (neg out) -- (pos out)
+                ($(neg out)!0.5!(pos out)$) to[short, *-] ++(0,1) node[inputarrow, rotate=90] {}
+                node[block, above](dgdrive){Current Driver}
+                ($(dgdrive.east) + (0,0.75)$) -- ++(2,0) to[R, a=$R_{load}$, resistors/scale=0.5,  i>^=\qty{500}{\mA}] ++(0,-1.5) -- ++(-2,0)
+                (dgdrive.west) to[amp, boxed, name=SR560, a=SR560, t=\ctikzflipxy{\tiny{x100}}] ++ (-2.5,0)
+                -- ++(0,-3) coordinate(vout)
+                ++(-1,0) node[transformer, anchor=east, scale=0.6] (T2) {}
+                node[behind path, draw, fill=cyan!25, fit=(T2), label=below:J2101A](T2box) {} node[above] at (T2box.north) {1:1}
+                (vout) -- (T2box)
+                (T2box.west) -- ++(-0.5,0) -- ++(0,-1.5) -| ($(bode100.south) +(2,0.2)$) node[ocirc]{} node[above]{Ch 2}
+                ($(bode100.south) +(1,0.2)$) node[above](ch1){Ch 1} to[short, o-*] ++(0,-1.5)
+                ($(PB02.west) + (0.2,0)$) -- ++(0,-0.5) coordinate(pos in)
+                ($(J2123A.west) + (-0.2,0)$) -- ++(0,-0.5) coordinate(neg in)
+                (pos in) to[short, -*] ($(neg in)!0.5!(pos in)$) -- (neg in)
+                ($(neg in)!0.5!(pos in)$) |- (hmp4040.west)
+
+                (earth) to[short, *-] ++(0,-1) to[short, -*] ++(-4,0) node[ground](gnd){} -- ++(-17,0) |- (bode100.west)
+                (hmp4040.west -| gnd) to[short, *-] (gnd)
+                (SR560.north) to[short, -*] (SR560 |- gnd)
+
+                (bode100.north) node[inputarrow, rotate=-90] {} to[sacdc] ++(0,2) node[above]{\qty{230}{V} Mains}
+            ;
+            \draw[red]
+                (pos out) -- ++(0,1) node[inputarrow, rotate=90, draw=red] {}
+                ($(PB02.west) + (-0.2,0)$) |- ($(hmp4040.west) + (0,-0.5)$)
+            ;
+            \draw[blue]
+                (neg out) -- ++(0,1) node[inputarrow, rotate=90, draw=blue] {}
+                ($(J2123A.west) + (0.2,0)$) |- ($(hmp4040.west) + (0,0.5)$)
+                %(J2123A) ($(hmp4040.west) + (0,0.5)$) -- ++(-1,0)
+            ;
+        \end{pgfonlayer}
+    \end{circuitikz}
+\end{document}

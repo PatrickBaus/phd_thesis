@@ -1562,14 +1562,49 @@ def parse_data_ltspice_fets(filename, options, delimiter=",", **kwargs):
         filename,
         comment="#",
         header=None,
-        usecols=range(len(options["columns"])),
-        names=options["columns"],
+        usecols=options["columns"].keys(),
+        names=options["columns"].values(),
     )
 
     for key, scaling_function in options.get("scaling", {}).items():
         data[key] = scaling_function(data)
 
     return data, 0
+
+def parse_bode100_file(filename, options, **kwargs):
+    starting_row = None
+    final_row = None
+    selected_trace = options.get("trace", 0)
+    current_trace = 0
+
+    with open(filename) as lines:
+        for row_num, line in enumerate(lines):
+            if starting_row is None and line == "------\n":
+                starting_row = row_num + 2  # Skip this row + header
+            if starting_row is not None and line == "\n":
+                if current_trace == selected_trace:
+                    final_row = row_num
+                    break
+                else:
+                    starting_row = row_num + 2  # Skip this row + header
+                    current_trace += 1
+
+    if starting_row is None or final_row is None or selected_trace != current_trace:
+        raise Exception(f"Invalid data file or incorrect trace selected: {filename}")
+
+    data = pd.read_csv(
+        filename,
+        skiprows=starting_row,
+        nrows=final_row-starting_row,
+        delimiter=",",
+        usecols=options["columns"].keys(),
+        names=options["columns"].values(),
+    )
+
+    for key, scaling_function in options.get("scaling", {}).items():
+        data[key] = scaling_function(data)
+
+    return data,0
 
 
 FILE_PARSER = {
@@ -1631,6 +1666,7 @@ FILE_PARSER = {
     "noise_gen": noise_gen,
     "dgdrive_powermeter": parse_data_dgdrive_powermeter,
     "ltspice_fets": parse_data_ltspice_fets,
+    "bode100": parse_bode100_file,
 }
 
 

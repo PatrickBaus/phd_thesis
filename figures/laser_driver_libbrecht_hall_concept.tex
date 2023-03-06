@@ -64,7 +64,7 @@
         \end{pgfonlayer}
         \begin{pgfonlayer}{main}
             \node[draw=orange!80!black, fill=orange!20, rounded corners=2pt, fit={(opamp) ($(opamp)+(-1.7,0)$) (Rs) ($(Rs)+(0,1.2)$) (FET)}](CCS){};
-            \node[black, above, align=center] at (CCS.north) {Unidirectional curre source};
+            \node[black, above, align=center] at (CCS.north) {Unidirectional current source};
         \end{pgfonlayer}
         \begin{pgfonlayer}{foreground}
             % Howland current source
@@ -77,14 +77,14 @@
             %(Opamp2Output) to [short, *-] ++(0,-2)
             (opamp2.out) -- ++(0,-2)
             to [R, -*] ++(3,0) coordinate(R3)
-            to [R, -] ++ (2,0) node[ocirc] {} node[anchor=west](ModIn) {Mod In}
+            to [R, -] ++ (2,0) node[ocirc] {} node[anchor=west](ModIn) {Mod in}
             (R3) |- (opamp2.+)
             (R3) |- ($(FET.D) + (0,-0.5)$) node[circ]{}
             ;
         \end{pgfonlayer}
         \begin{pgfonlayer}{main}
             \node[draw=yellow!80!black, fill=yellow!20, rounded corners=2pt, fit={(ModIn) (R1) (opamp2) ($(R3)+(0,-0.55)$)}] (HowlandCurrentSource){};
-            \node[black, above, align=center] at (HowlandCurrentSource.north) {Bidirectional Modulation Current Source};
+            \node[black, above, align=center] at (HowlandCurrentSource.north) {Bidirectional modulation current source};
         \end{pgfonlayer}
     \end{circuitikz}
 \end{document}

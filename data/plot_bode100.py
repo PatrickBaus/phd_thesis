@@ -237,279 +237,244 @@ if __name__ == "__main__":
       'title': None,
       'show': False,
       "output_file": {
-          "fname": "../images/ltspice_output_impedance_simulation.pgf"
+          "fname": "../images/injection_transformer_bode.pgf"
       },
-      'primary_axis': {
-        "axis_settings": {
-          'x_label': r"Drain-source voltage $V_{DS}$ in \unit{\V}",
-          'y_label': r"Ouput Impedance $R_{out}$ in \unit{\ohm}",
-          "invert_x": False,
-          "invert_y": False,
-          "fixed_order": 9,
-          "y_scale": "log",
-          #"x_scale": "log",  # Turn this on to show, that R_out is a power law
-        },
-        'x-axis': "vds",
-        'plot_type': 'absolute',  # absolute, relative, proportional
-        'columns_to_plot': {
-            "rout": {
-                "label": r"DC",
-                "color": colors[0],
-            },
-            "rout10MegHz": {
-                "label": r"\qty{1}{\MHz}",
-                "color": colors[1],
-            },
-        },
-        'filter': None,#filter_savgol(window_length=101, polyorder=3),
-      },
-      'files': [
-        {
-          'filename': 'mosfet_current_source_output_impedance.csv',
-          'show': True,
-          'parser': 'ltspice_fets',
-          'options': {
-            "columns": ["vload", "rout", "rout10MegHz"],
-            "scaling": {
-              "vds": lambda x : 3.5-x["vload"],
-              "rout": lambda x : 10**(x["rout"]/20),
-              "rout10MegHz": lambda x : 10**(x["rout10MegHz"]/20),
-            },
-          },
-        },
-      ],
-    },
-    {
-      'title': 'MOSFET gm LTSpice example',
-      'title': None,
-      'show': False,
-      "output_file": {
-          "fname": "../images/ltspice_mosfet_transconductance_example.pgf"
-      },
-      'crop_secondary_to_primary': True,
-      'primary_axis': {
-        "axis_settings": {
-          'x_label': r"Drain Current $I_{D}$ in \unit{\A}",
-          'y_label': r"Transconductance $g_m$ in \unit{\siemens}",
-          "invert_x": True,
-          "invert_y": False,
-          "fixed_order": -3,
-          "y_scale": "linear",
-        },
-        'plot_type': 'absolute',  # absolute, relative, proportional
-        'x-axis': "Id",
-        'columns_to_plot': {
-            "gm": {
-                "label": r"$g_m$",
-                "color": colors[0],
-            },
-        },
-        'filter': None,#filter_savgol(window_length=101, polyorder=3),
-      },
-      'files': [
-        {
-          'filename': 'mosfet_gm.csv',
-          'show': True,
-          'parser': 'ltspice_fets',
-          'options': {
-            "columns": ["Vsg", "Id", "gm"],
-            "scaling": {
-              "gm": lambda x : -x["gm"],
-            },
-          },
-        },
-      ],
-    },
-    {
-      'title': 'MOSFET Id LTSpice example',
-      'title': None,
-      'show': False,
-      "output_file": {
-          "fname": "../images/ltspice_mosfet_drain-current_example.pgf"
-      },
-      'crop_secondary_to_primary': True,
-      'primary_axis': {
-        "axis_settings": {
-          'x_label': r"Drain-source voltage $V_{DS}$ in \unit{\V}",
-          'y_label': r"Drain Current $I_{D}$ in \unit{\A}",
-          "invert_x": True,
-          "invert_y": True,
-          "fixed_order": -3,
-          "y_scale": "linear",
-        },
-        'x-axis': "vds",
-        'plot_type': 'absolute',  # absolute, relative, proportional
-        'columns_to_plot': {
-            "Vgs0.2": {
-                "label": "$V_{GS} + V_{th} = \qty{-0.2}{\V}$",
-                "color": colors[0],
-            },
-            "Vgs0.4": {
-                "label": "$V_{GS} + V_{th} = \qty{-0.4}{\V}$",
-                "color": colors[1],
-            },
-            "Vgs0.6": {
-                "label": "$V_{GS} + V_{th} = \qty{-0.6}{\V}$",
-                "color": colors[2],
-            },
-            "Vgs0.8": {
-                "label": "$V_{GS} + V_{th} = \qty{-0.8}{\V}$",
-                "color": colors[3],
-            },
-            "isat": {
-                "label": "$I_{sat}$",
-                "color": colors[4],
-                "linestyle": "--",
-            },
-        },
-        'filter': None,#filter_savgol(window_length=101, polyorder=3),
-      },
-      'files': [
-        {
-          'filename': 'mosfet_id.csv',
-          'show': True,
-          'parser': 'ltspice_fets',
-          'options': {
-            "columns": ["Vsd",] + [f"Vgs{val:.1f}" for val in np.arange(0.2, 0.9, 0.2)],
-            "scaling": {
-              'vds': lambda x : -x["Vsd"],
-              'isat': lambda x : calculate_saturation_current(x["vds"][x["vds"]>=-0.81], -0.813, -4/1000),
-            },
-          },
-        },
-      ],
-    },
-    {
-      'title': 'IRF9610 MOSFET simulation',
-      'title': None,
-      'show': False,
-      "output_file": {
-        "fname": "../images/mosfet_current_gate_bias.pgf"
-      },
-      'crop_secondary_to_primary': True,
-      'primary_axis': {
-        "axis_settings": {
-          'x_label': r"Drain-Source Voltage $V_{DS}$ in \unit{\V}",
-          'y_label': r"Drain Current $I_D$ in \unit{\A}",
-          "invert_x": True,
-          "invert_y": True,
-          "fixed_order": -3,
-          "y_scale": "linear",
-        },
-        'x-axis': "vds",
-        'plot_type': 'absolute',  # absolute, relative, proportional
-        'columns_to_plot': {
-            "Vgs3.5": {
-                "label": "$V_{GS} = \qty{-3.5}{\V}$",
-                "color": colors[0],
-            },
-            "Vgs4.0": {
-                "label": "$V_{GS} = \qty{-4}{\V}$",
-                "color": colors[1],
-            },
-            "Vgs4.5": {
-                "label": "$V_{GS} = \qty{-4.5}{\V}$",
-                "color": colors[2],
-            },
-            "Vgs5": {
-                "label": "$V_{GS} = \qty{-5}{\V}$",
-                "color": colors[3],
-            },
-            "isat": {
-                "label": "$I_{sat}$",
-                "color": colors[4],
-                "linestyle": "--",
-            },
-        },
-        'filter': None,#filter_savgol(window_length=101, polyorder=3),
-      },
-      'files': [
-        {
-          'filename': 'mosfet_current_source.csv',
-          'show': True,
-          'parser': 'ltspice_fets',
-          'options': {
-            "columns": ["vsd", "Vgs3.5", "Vgs4.0", "Vgs4.5", "Vgs5"],
-            "scaling": {
-              'vds': lambda x : -x["vsd"],
-              #'isat': lambda x : calculate_saturation_current(x["vds"][x["vds"]>=-0.81], -0.813, -4/1000),
-            },
-          },
-        },
-      ],
-    },
-    {
-      'title': 'DgDrive input filter simulation',
-      'title': None,
-      'show': True,
-      "output_file": {
-        "fname": "../images/input_filter_dgdrive.pgf"
-      },
-      'crop_secondary_to_primary': True,
-      "legend_position": "upper right",
+      "legend_position": "lower left",
       'primary_axis': {
         "axis_settings": {
           'x_label': r"Frequency in \unit{\Hz}",
-          'y_label': r"Magnitude in \unit{\V \per \V}",
+          'y_label': r"Magnitude in \unit{\dB}",
           "invert_x": False,
           "invert_y": False,
-          "fixed_order": -3,
+          #"fixed_order": 9,
+          #"y_scale": "lin",
           "x_scale": "log",
-          "y_scale": "log",
         },
-        'x-axis': "freq",
+        'x-axis': "frequency",
         'plot_type': 'absolute',  # absolute, relative, proportional
         'columns_to_plot': {
-            "lc_filter": {
-                "label": "Mag. LC only",
+            "magnitude ch1": {
+                "label": "PB01 CH1",
                 "color": colors[0],
             },
-            "cap_mult": {
-                "label": "Mag. LC + C Mult.",
+            "magnitude ch2": {
+                "label": "PB01 CH2",
                 "color": colors[1],
             },
+            "magnitude picotest": {
+                "label": "Picotest J2101A",
+                "color": colors[2],
+            },
         },
-        'filter': None,#filter_savgol(window_length=101, polyorder=3),
       },
       'secondary_axis': {
         "show": True,
         "axis_settings": {
-          'y_label': r"Impedance in \unit{\ohm}",
+          "show_grid": False,
+          'y_label': r"Phase in \unit{\degree}",
           "invert_x": False,
           "invert_y": False,
-          "show_grid": False,
-          #"fixed_order": -3,
+          #"fixed_order": 9,
+          #"y_scale": "lin",
           "x_scale": "log",
-          "y_scale": "lin",
         },
-        'x-axis': "freq",
+        'x-axis': "frequency",
         'plot_type': 'absolute',  # absolute, relative, proportional
         'columns_to_plot': {
-            "z_lc": {
-                "label": r"$Z_{out}$ LC filter",
-                "color": colors[2],
+            "phase ch1": {
                 "linestyle": "--",
+                "label": None,
+                "color": colors[0],
             },
-            "z_cap_mult": {
-                "label": r"$Z_{out}$ C Mult.",
-                "color": colors[4],
+            "phase ch2": {
                 "linestyle": "--",
+                "label": None,
+                "color": colors[1],
+            },
+            "phase picotest": {
+                "linestyle": "--",
+                "label": None,
+                "color": colors[2],
             },
         },
-        'filter': None,#filter_savgol(window_length=101, polyorder=3),
       },
       'files': [
+        {
+          'filename': 'isolation_transformer_PB01_2023-03-02T10_26_57.csv',
+          'show': True,
+          'parser': 'bode100',
+          'options': {
+            "trace": 1,
+            "columns": {
+                0: "frequency",
+                1: "magnitude ch1",
+                2: "phase ch1",
+            },
+            "scaling": {
+              #"vds": lambda x : 3.5-x["vload"],
+            },
+          },
+        },
+        {
+          'filename': 'isolation_transformer_PB01_2023-03-02T10_26_57.csv',
+          'show': True,
+          'parser': 'bode100',
+          'options': {
+            "trace": 2,
+            "columns": {
+                0: "frequency",
+                1: "magnitude ch2",
+                2: "phase ch2",
+            },
+            "scaling": {
+              #"vds": lambda x : 3.5-x["vload"],
+            },
+          },
+        },
+        {
+          'filename': 'isolation_transformer_PB01_2023-03-02T10_26_57.csv',
+          'show': True,
+          'parser': 'bode100',
+          'options': {
+            "trace": 3,
+            "columns": {
+                0: "frequency",
+                1: "magnitude picotest",
+                2: "phase picotest",
+            },
+            "scaling": {
+              #"vds": lambda x : 3.5-x["vload"],
+            },
+          },
+        },
+      ],
+    },
+    {
+      'title': 'Supply Filter Transfer function',
+      'title': None,
+      'show': True,
+      "output_file": {
+          "fname": "../images/dgDrive_supply_filter_bode.pgf"
+      },
+      "legend_position": "lower left",
+      'primary_axis': {
+        "axis_settings": {
+          'x_label': r"Frequency in \unit{\Hz}",
+          'y_label': r"Magnitude in \unit{\dB}",
+          "invert_x": False,
+          "invert_y": False,
+          #"fixed_order": 9,
+          #"y_scale": "lin",
+          "x_scale": "log",
+        },
+        'x-axis': "frequency",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "magnitude": {
+                "label": "LC Filter",
+                "color": colors[1],
+            },
+            "lc_filter": {
+                "label": "Simulation",
+                "color": colors[0],
+            },
+        },
+      },
+      'files': [
+        {
+          'filename': 'DgDrive PSRR_take2_2023-02-18T01_12_08.csv',
+          'show': True,
+          'parser': 'bode100',
+          'options': {
+            "trace": 1,
+            "columns": {
+                0: "frequency",
+                1: "magnitude",
+            },
+            "scaling": {
+              "magnitude": lambda x : x["magnitude"]-40,
+            },
+          },
+        },
         {
           'filename': 'input_filter_dgdrive.csv',
           'show': True,
           'parser': 'ltspice_fets',
           'options': {
-            "columns": ["freq", "lc_filter", "cap_mult", "z_lc", "z_cap_mult"],
+            "columns": {
+                0: "frequency",
+                1: "lc_filter"
+            },
             "scaling": {
-              'lc_filter': lambda x : 10**(x["lc_filter"]/20),
-              'cap_mult': lambda x : 10**(x["cap_mult"]/20),
-              'z_lc': lambda x : 10**(x["z_lc"]/20),
-              'z_cap_mult': lambda x : 10**(x["z_cap_mult"]/20),
+              'lc_filter': lambda x : x["lc_filter"][(x["frequency"] >= 100) & (x["frequency"] <= 1e6)],
+            },
+          },
+        },
+      ],
+    },
+{
+      'title': 'Line injector Transfer function',
+      'title': None,
+      'show': True,
+      "output_file": {
+          "fname": "line_injector_bode.png",
+          "dpi": 300,
+      },
+      "legend_position": "upper left",
+      'primary_axis': {
+        "axis_settings": {
+          'x_label': r"Frequency in \unit{\Hz}",
+          'y_label': r"Magnitude in \unit{\dB}",
+          "invert_x": False,
+          "invert_y": False,
+          #"fixed_order": 9,
+          #"y_scale": "lin",
+          "x_scale": "log",
+        },
+        'x-axis': "frequency",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "magnitude": {
+                "label": "Magnitude",
+                "color": colors[0],
+            },
+        },
+      },
+      'secondary_axis': {
+        "show": True,
+        "axis_settings": {
+          "show_grid": False,
+          'y_label': r"Phase in \unit{\degree}",
+          "invert_x": False,
+          "invert_y": False,
+          #"fixed_order": 9,
+          #"y_scale": "lin",
+          "x_scale": "log",
+        },
+        'x-axis': "frequency",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "phase": {
+                "linestyle": "--",
+                "label": "Phase",
+                "color": colors[1],
+            },
+        },
+      },
+      'files': [
+        {
+          'filename': 'Line Injector_JFW_2023-03-03T15_07_00.csv',
+          'show': True,
+          'parser': 'bode100',
+          'options': {
+            "trace": 0,
+            "columns": {
+                0: "frequency",
+                2: "magnitude",
+                3: "phase",
+            },
+            "scaling": {
+              "magnitude": lambda x : x["magnitude"][(x["frequency"] >= 4)],
             },
           },
         },
