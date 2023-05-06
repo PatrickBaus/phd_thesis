@@ -15,13 +15,6 @@
 \pgfdeclarelayer{foreground}
 \pgfsetlayers{background,main,foreground}
 
-% bare shape for the object.
-\tikzset{regulatorshape/.style={muxdemux,
-    muxdemux def={
-        Lh=2, Rh=2, w=4,
-        NL=1,NR=1,NT=0,NB=1,
-    }
-}}
 \begin{document}
     \begin{circuitikz}[
         american currents,
@@ -52,7 +45,7 @@
                 ($(neg out)!0.5!(pos out)$) to[short, *-] ++(0,1) node[inputarrow, rotate=90] {}
                 node[block, above](dgdrive){Current Driver}
                 ($(dgdrive.east) + (0,0.75)$) -- ++(2,0) to[R, a=$R_{load}$, resistors/scale=0.5,  i>^=\qty{500}{\mA}] ++(0,-1.5) -- ++(-2,0)
-                (dgdrive.west) to[amp, boxed, name=SR560, a=SR560, t=\ctikzflipxy{\tiny{x100}}] ++ (-2.5,0)
+                (dgdrive.west) to[amp, boxed, name=SR560, a=SR560, t=\tiny{x100}] ++ (-2.5,0)
                 -- ++(0,-3) coordinate(vout)
                 ++(-1,0) node[transformer, anchor=east, scale=0.6] (T2) {}
                 node[behind path, draw, fill=cyan!25, fit=(T2), label=below:J2101A](T2box) {} node[above] at (T2box.north) {1:1}

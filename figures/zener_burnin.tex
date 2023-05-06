@@ -2,11 +2,25 @@
 \documentclass[]{standalone}
 \usepackage[]{siunitx}
 \usepackage[siunitx, europeanresistors]{circuitikz}
-\usetikzlibrary{fit}
+\usetikzlibrary{backgrounds,fit}
+
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+  blocks/fill=orange!25,
+}
 
 \begin{document}
-    \ctikzloadstyle{romano}
-    \begin{circuitikz}[transform shape, romano circuit style, european resistors]
+    \begin{circuitikz}[
+            american currents,
+            american voltages,
+            scale=0.7,
+            transform shape,
+            show background rectangle,
+            background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+    ]
         \draw (0,0) node[vcc](VCC){V$_{CC}=\qty{13}{V}$}
             to[R=R$_1$] ++(0,-1.5)  coordinate(VZ) to[empty Zener diode, l=D, a^=D, l2_=LM399 or and ADR1399, invert] ++(0,-1) node[ground](VZN){}
             (VZ) to[short, *-] ++(2,0) coordinate(VFILT) to[R, l2=R$_2$ and \qty{5.1}{\ohm}, *-, name=RSnubber] ++(0,-2) to[C, l2=C$_1$ and \qty{1}{\uF}, name=CSnubber] ++(0,-1) node[ground]{}
@@ -22,11 +36,11 @@
             (VPROTN) -- ++(0,-1.5) -- ++(-9.5,0) -- ++(0,2.25) to[short, -*] (VZN)
         ;
         % boxes
-        \node [rectangle, draw, dashed, fit=(RSnubber) (RSnubberlabel) (CSnubber) (CSnubberlabel)] (BoxSnubber){};
+        \node [draw=red!80!black, rectangle, dashed, fit=(RSnubber) (RSnubberlabel) (CSnubber) (CSnubberlabel)] (BoxSnubber){};
         \node [anchor=south west, align=left] at (BoxSnubber.south east) {Compensation network};
-        \node [rectangle, draw, dashed, fit=(OA) (Rout) (Rfb)] (BoxBuffer){};
+        \node [draw=red!80!black, rectangle, dashed, fit=(OA) (Rout) (Rfb)] (BoxBuffer){};
         \node [anchor=south, align=center] at (BoxBuffer.north) {Output protection buffer};
-        \node [rectangle, draw, dashed, fit=(Cfilt1) (Cfilt2) (Cfilt2label) (Choke) (Chokelabel)] (BoxFilter){};
+        \node [draw=red!80!black, rectangle, dashed, fit=(Cfilt1) (Cfilt2) (Cfilt2label) (Choke) (Chokelabel)] (BoxFilter){};
         \node [anchor=south, align=center] at (BoxFilter.north) {Common mode filter};
     \end{circuitikz}
 \end{document}

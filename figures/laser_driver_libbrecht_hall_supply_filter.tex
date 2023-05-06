@@ -52,16 +52,16 @@
         \tikzstyle{every node}=[font=\small]
         \begin{pgfonlayer}{foreground}
             \draw
-                (0,0) to[short, o-] ++(1,0) coordinate(vin+) to [C, *-*, l_=\qty{1}{\uF}, name=Cin+] ++(0,-2) coordinate(GND) -- ++(-1,0) node[ground]{}
+                node[left]{$V_{in}+$} (0,0) to[short, o-] ++(1,0) coordinate(vin+) to [C, *-*, l_=\qty{1}{\uF}, name=Cin+] ++(0,-2) coordinate(GND) -- ++(-1,0) node[ground]{}
                 (vin+) to [L, l=\qty{100}{\uH}, name=Lin+] ++(2,0) coordinate(vout+) to [eC, *-, l=\qty{47}{\uF}, name=Cout+] ++(0,-2) -- (GND)
-                (vout+) to[short, -*] ++(1,0) coordinate(v15) to[short, -o] ++(1,0)
+                (vout+) to[short, -*] ++(1,0) coordinate(v15) to[short, -o] ++(1,0) node[above]{\qty[retain-explicit-plus]{+15}{\V}}
                 (v15) -- ++(0,-0.5) -- ++(1,0)
                 \lmTOS{myreg}{in}
-                (myreg-out) -- ++(0,0.5) to[short, -o] ++(0.5,0)
+                (myreg-out) -- ++(0,0.5) to[short, -o] ++(0.5,0) node[right]{$V_{sup}$}
                 (myreg-adj) to[short, *-] ++(0,-0.5) node[below]{\vdots}
-                (GND) to[C, -*, l_=\qty{1}{\uF}, name=Cin-] ++(0,-2) coordinate(vin-) to[short, -o] ++(-1,0)
+                (GND) to[C, -*, l_=\qty{1}{\uF}, name=Cin-] ++(0,-2) coordinate(vin-) to[short, -o] ++(-1,0) node[left]{$V_{in}-$}
                 (vin-) to [L, l_=\qty{100}{\uH}, name=Lin-] ++(2,0) coordinate(vout-) to[eC, *-*, l_=\qty{47}{\uF}, name=Cout-, invert] ++(0,2)
-                (vout-) to[short, -o] ++(1,0)
+                (vout-) to[short, -o] ++(1,0) node[right]{\qty[retain-explicit-plus]{-15}{\V}}
             ;
         \end{pgfonlayer}
         \begin{pgfonlayer}{main}

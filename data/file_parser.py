@@ -31,9 +31,13 @@ def calculate_plc100(data):
     return new_data
 
 
-def parse_Keysight34470A_file(filename, options, delimiter=",", **kwargs):
+def parse_Keysight34470A_file(filename, options, **kwargs):
     # Parse the sampling rate and start date from the header
-    header = pd.read_csv(filename, nrows=2, delimiter=delimiter, header=None)
+    header = pd.read_csv(
+        filename, nrows=2,
+        delimiter=options.get("delimiter", ","),
+        header=None
+    )
     sample_interval = float(header.at[1, 1])
     # Use UTC -1 for all dates *before* 2017-05-09
     start_date = dateutil.parser.parse(
@@ -50,13 +54,10 @@ def parse_Keysight34470A_file(filename, options, delimiter=",", **kwargs):
     data = pd.read_csv(
         filename,
         skiprows=3,
-        delimiter=",",
         header=None,
-        usecols=[
-            0,
-            1,
-        ],
-        names=["date", "value"],
+        delimiter=options.get("delimiter", ","),
+        usecols=(0, 1,),
+        names=("date", "value",),
         parse_dates=["date"],
         date_parser=dateparser,
     )
@@ -167,7 +168,7 @@ def parse_smi_file(filename, options, **kwargs):
     return data, 0
 
 
-def parse_fluke1524_file(filename, options):
+def parse_fluke1524_file(filename, options, **kwargs):
     date_parser = lambda times, dates: [
         pd.datetime.strptime(d, "%Y-%m-%d %H:%M:%S.%f") for d in (dates + " " + times)
     ]
@@ -177,14 +178,14 @@ def parse_fluke1524_file(filename, options):
         delimiter=",",
         header=None,
         usecols=[1, 2, 3, 4, 5],
-        names=["sensor_id", "value", "unit", "time", "date"],
+        names=["sensor_id", "temperature", "unit", "time", "date"],
         parse_dates={"datetime": ["time", "date"]},
         date_parser=date_parser,
     )
 
     # Convert to SI units
-    data["value"] = np.where(
-        (data["unit"] == "C"), data["value"] + 273.15, (data["value"] + 459.67) * 5 / 9
+    data["temperature"] = np.where(
+        (data["unit"] == "C"), data["temperature"] + 273.15, (data["temperature"] + 459.67) * 5 / 9
     )
     data.drop(columns=["unit"], inplace=True)
 
@@ -198,13 +199,13 @@ def parse_fluke1524_file(filename, options):
     # Rename datetime field
     data.rename(columns={"datetime": "date"}, inplace=True)
 
-    data = data.reindex(columns=["date", "value"])
+    data = data.reindex(columns=["date", "temperature"])
     # Data before 2018-03-15 18:00 was recorded with the wrong timezone
     if data["date"].max() > datetime.datetime(2018, 3, 15, 18):
         data["date"] = data["date"].dt.tz_localize("utc")
     else:
         data["date"] = data["date"].dt.tz_localize("Europe/Berlin").dt.tz_convert("utc")
-    return data
+    return data, 0
 
 
 def parse_RSA306_file(filename, options):
@@ -1557,11 +1558,13 @@ def parse_data_dgdrive_powermeter(filename, options, delimiter=",", **kwargs):
 
     return data, 0
 
-def parse_data_ltspice_fets(filename, options, delimiter=",", **kwargs):
+def parse_data_ltspice_fets(filename, options, **kwargs):
     data = pd.read_csv(
         filename,
         comment="#",
         header=None,
+        skiprows=options.get("skiprows", 1),
+        delimiter=options.get("delimiter", ","),
         usecols=options["columns"].keys(),
         names=options["columns"].values(),
     )

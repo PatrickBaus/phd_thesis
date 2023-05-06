@@ -1,8 +1,15 @@
-%\documentclass[convert={density=600,outext=.png}]{standalone}
-\documentclass[]{standalone}
-\usepackage[]{siunitx}
-\usepackage[siunitx, europeanresistors]{circuitikz}
-\usetikzlibrary{fit}
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{calc,positioning,backgrounds,fit}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+}
 
 \begin{document}
     \ctikzloadstyle{romano}

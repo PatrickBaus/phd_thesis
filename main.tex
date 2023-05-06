@@ -30,7 +30,6 @@
 \usepackage{booktabs}  % for \toprule, \midrule, and \bottomrule macros
 \usepackage{multirow}
 \usepackage{amsmath}  % align environment
-\usepackage{hyperref}
 \usepackage{amsfonts}  % Checkmark symbol
 \usepackage{aligned-overset}  % align overset in align environment
 \usepackage{mathrsfs}  % Laplace symbol
@@ -40,19 +39,33 @@
 \usepackage{import}
 \usepackage{pythonhighlight}
 \usepackage{tcolorbox}
+\usepackage{multirow}
+\usepackage{xcolor}
+
+\usepackage{hyperref}% load last
 
 % See https://blog.martisak.se/2020/05/03/top-ten-latex-packages/ for further tips
-\usepackage[
-    protrusion=true,
-    activate={true,nocompatibility},
-    final,
-    tracking=true,
+\usepackage[%
+    protrusion=true,%
+    activate={true,nocompatibility},%
+    final,%
+    tracking=true,%
     %kerning=true,  % does not work with LuaLaTex
     %spacing=true,  % does not work with LuaLaTex
-    factor=1100]{microtype}
+    factor=1100%
+]{microtype}
 \SetTracking{encoding={*}, shape=sc}{40}
 
-\usepackage[backend=biber, style=numeric, natbib=true, maxcitenames=1, backend=biber, sorting=nyt, autolang=hyphen, sortcites=true]{biblatex}
+\usepackage[%
+    backend=biber,%
+    style=numeric,%
+    natbib=true,%
+    maxcitenames=1,%
+    sorting=nyt,%name, year, title
+    autolang=hyphen,%
+    sortcites=true%
+]{biblatex}
+\usepackage{xurl}% fixes url line breaks in biblatex, load after biblatex
 \usepackage{csquotes}  % Needed by biblatex when babel is active
 \bibliography{bibliography}
 
@@ -85,10 +98,13 @@
 
 \DeclareSIUnit{\plc}{PLC}
 \DeclareSIUnit{\year}{a}
-\sisetup{separate-uncertainty = true, per-mode = symbol}%}	% display the uncertenty as 10 \pm 2
-%\sisetup{
-%    mode=text,
-%}
+\sisetup{%
+    separate-uncertainty = true,% display the uncertainty as 10 \pm 2
+    input-digits = 0123456789\pi,%
+    power-half-as-sqrt,%
+    per-mode=symbol,%
+    range-phrase=\textup{~to~}%
+}
 
 \pgfplotsset{compat=1.18}
 
@@ -143,12 +159,27 @@
 
 \urlstyle{same}
 
+\newtcolorbox[auto counter, number within=chapter]{specifications}[2][]{%
+    colback=red!5!white,%
+    colframe=red!75!black,%
+    width=0.8\linewidth,%
+    title=Specification~\thetcbcounter: #2,#1%
+}
+
+\newtcolorbox[auto counter, number within=chapter]{deviceProperties}[2][]{%
+    colback=green!10!white,%
+    colframe=green!55!black,%
+    width=0.8\linewidth,%
+    title=Device Properties~\thetcbcounter: #2,#1%
+}
+
+\newcommand{\versionNumber}{v.0.9.0}
 \begin{document}
 	\title{Development of Laser Systems and Spectroscopy of Highly Charged Ions}
 	\author{Patrick Baus}
 	\birthplace{Mannheim}
-	\reviewer{Prof. Dr. Gerhard Birkl}
-	\publishers{Foobar}
+	\reviewer{Prof. Dr. Gerhard Birkl \and Prof. Dr. Thomas Walther}
+	%\publishers{Foobar}
 	\department{phys}
 	\institute{Institut für Angewandte Physik}
 	\group{APQ}
@@ -158,6 +189,7 @@
 	\maketitle
 
     %\include{introduction}
+	\include{changelog}
 
     \include{preparation}
     %\showthe\textwidth
