@@ -16,7 +16,7 @@ pd.plotting.register_matplotlib_converters()
 
 from file_parser import parse_file
 
-# Use these setting for the PhD thesis
+# Use these settings for the PhD thesis
 plt.rcParams.update(
     {
         "font.family": "serif",  # use serif/main font for text elements

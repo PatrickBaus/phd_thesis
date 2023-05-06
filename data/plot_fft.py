@@ -8,6 +8,7 @@ import numpy as np
 import os
 import pandas as pd
 from matplotlib.ticker import ScalarFormatter
+from scipy.constants import elementary_charge, k as kB
 import seaborn as sns
 
 pd.plotting.register_matplotlib_converters()
@@ -84,8 +85,8 @@ def load_data(plot_file):
 
     return data
 
-def crop_data(data, crop_index="date", crop=None):
-    if crop is not None:
+def crop_data(data, crop_index=None, crop=None):
+    if crop_index is not None:
         index_to_drop = data[(data[crop_index] < crop[0]) | (data[crop_index] > crop[1])].index if len(crop) > 1 else data[data[crop_index] < crop[0]].index
         data.drop(index_to_drop , inplace=True)
 
@@ -120,6 +121,11 @@ def filter_rolling(window_length):
 
     return filter
 
+def plotShotNoise(ax, current):
+  x = np.sqrt(2 * elementary_charge * current)
+
+  ax.axhline(x, color='r', linestyle='--', label="Shot noise, {current} A".format(current=current))
+
 def process_data(data, columns, plot_type):
     if plot_type=='relative':
         data[columns] = data[columns] - data[columns].mean().tolist()
@@ -144,8 +150,8 @@ def prepare_axis(ax, axis_settings, color_map=None):
   if axis_settings.get("show_grid", True):
     ax.grid(True, which="minor", ls="-", color='0.85')
     ax.grid(True, which="major", ls="-", color='0.45')
-  #else:
-  #  ax.grid(False, which="both")
+  else:
+    ax.grid(False, which="both")
 
   ax.set_ylabel(axis_settings["y_label"])
   if axis_settings.get("x_label") is not None:
@@ -178,7 +184,7 @@ def plot_series(plot):
 
   # If we have something to plot, proceed
   if not data.empty:
-    crop_data(data, crop_index="date", crop=plot.get('crop'))
+    crop_data(data, **plot.get('crop', {}))
 
     plot_settings = plot['primary_axis']
     process_data(data=data, columns=plot_settings['columns_to_plot'], plot_type=plot_settings.get('plot_type','absolute'))
@@ -193,6 +199,10 @@ def plot_series(plot):
 
     x_axis = plot_settings["x-axis"]
     plot_data(ax1, data, x_axis=x_axis, column_settings=plot_settings['columns_to_plot'])
+
+    #plotShotNoise(ax1, 0.5)
+    #plotShotNoise(ax1, 0.1)
+    #plotShotNoise(ax1, 0.02)
 
     lines, labels = ax1.get_legend_handles_labels()
 
@@ -212,14 +222,15 @@ def plot_series(plot):
       lines2, labels2 = ax2.get_legend_handles_labels()
       lines += lines2
       labels += labels2
-    plt.legend(lines, labels, loc=plot.get("legend_position", "upper left"))
+    if labels:
+      plt.legend(lines, labels, loc=plot.get("legend_position", "upper left"))
 
   fig = plt.gcf()
 #  fig.set_size_inches(11.69,8.27)   # A4 in inch
 #  fig.set_size_inches(128/25.4 * 2.7 * 0.8, 96/25.4 * 1.5 * 0.8)  # Latex Beamer size 128 mm by 96 mm
   phi = (5**.5-1) / 2  # golden ratio
-  fig.set_size_inches(441.01773 / 72.27 * 0.9, 441.01773 / 72.27 * 0.9 * phi)
-  fig.set_size_inches(441.01773 / 72.27 * 0.9, 441.01773 / 72.27 * 0.9 * phi)
+  fig.set_size_inches(441.01773 / 72.27 * 0.8 / phi, 441.01773 / 72.27 * 0.8)  # landscape
+  #fig.set_size_inches(441.01773 / 72.27 * 0.9, 441.01773 / 72.27 * 0.9 * phi)  # thesis
   if plot.get('title') is not None:
     plt.suptitle(plot['title'], fontsize=16)
 
@@ -234,370 +245,65 @@ def plot_series(plot):
 if __name__ == "__main__":
   plots = [
     {
-      'title': 'Output impedance simulation',
+      'title': 'DgDrive Noise comparison',
       'title': None,
-      'show': False,
+      'show': True,
       "output_file": {
-          "fname": "../images/ltspice_output_impedance_simulation.pgf"
+        "fname": "../images/laser_driver_noise_measurement.pgf"
       },
-      'primary_axis': {
-        "axis_settings": {
-          'x_label': r"Drain-source voltage $V_{DS}$ in \unit{\V}",
-          'y_label': r"Ouput Impedance $R_{out}$ in \unit{\ohm}",
-          "invert_x": False,
-          "invert_y": False,
-          "fixed_order": 9,
-          "y_scale": "log",
-          #"x_scale": "log",  # Turn this on to show, that R_out is a power law
-        },
-        'x-axis': "vds",
-        'plot_type': 'absolute',  # absolute, relative, proportional
-        'columns_to_plot': {
-            "rout": {
-                "label": r"DC",
-                "color": colors[0],
-            },
-            "rout10MegHz": {
-                "label": r"\qty{1}{\MHz}",
-                "color": colors[1],
-            },
-        },
-        'filter': None,#filter_savgol(window_length=101, polyorder=3),
-      },
-      'files': [
-        {
-          'filename': 'mosfet_current_source_output_impedance.csv',
-          'show': True,
-          'parser': 'ltspice_fets',
-          'options': {
-            "columns": ["vload", "rout", "rout10MegHz"],
-            "scaling": {
-              "vds": lambda x : 3.5-x["vload"],
-              "rout": lambda x : 10**(x["rout"]/20),
-              "rout10MegHz": lambda x : 10**(x["rout10MegHz"]/20),
-            },
-          },
-        },
-      ],
-    },
-    {
-      'title': 'MOSFET gm LTSpice example',
-      'title': None,
-      'show': False,
-      "output_file": {
-          "fname": "../images/ltspice_mosfet_transconductance_example.pgf"
-      },
-      'crop_secondary_to_primary': True,
-      'primary_axis': {
-        "axis_settings": {
-          'x_label': r"Drain Current $I_{D}$ in \unit{\A}",
-          'y_label': r"Transconductance $g_m$ in \unit{\siemens}",
-          "invert_x": True,
-          "invert_y": False,
-          "fixed_order": -3,
-          "y_scale": "linear",
-        },
-        'plot_type': 'absolute',  # absolute, relative, proportional
-        'x-axis': "Id",
-        'columns_to_plot': {
-            "gm": {
-                "label": r"$g_m$",
-                "color": colors[0],
-            },
-        },
-        'filter': None,#filter_savgol(window_length=101, polyorder=3),
-      },
-      'files': [
-        {
-          'filename': 'mosfet_gm.csv',
-          'show': True,
-          'parser': 'ltspice_fets',
-          'options': {
-            "columns": ["Vsg", "Id", "gm"],
-            "scaling": {
-              "gm": lambda x : -x["gm"],
-            },
-          },
-        },
-      ],
-    },
-    {
-      'title': 'MOSFET Id LTSpice example',
-      'title': None,
-      'show': False,
-      "output_file": {
-          "fname": "../images/ltspice_mosfet_drain-current_example.pgf"
-      },
-      'crop_secondary_to_primary': True,
-      'primary_axis': {
-        "axis_settings": {
-          'x_label': r"Drain-source voltage $V_{DS}$ in \unit{\V}",
-          'y_label': r"Drain Current $I_{D}$ in \unit{\A}",
-          "invert_x": True,
-          "invert_y": True,
-          "fixed_order": -3,
-          "y_scale": "linear",
-        },
-        'x-axis': "vds",
-        'plot_type': 'absolute',  # absolute, relative, proportional
-        'columns_to_plot': {
-            "Vgs0.2": {
-                "label": "$V_{GS} + V_{th} = \qty{-0.2}{\V}$",
-                "color": colors[0],
-            },
-            "Vgs0.4": {
-                "label": "$V_{GS} + V_{th} = \qty{-0.4}{\V}$",
-                "color": colors[1],
-            },
-            "Vgs0.6": {
-                "label": "$V_{GS} + V_{th} = \qty{-0.6}{\V}$",
-                "color": colors[2],
-            },
-            "Vgs0.8": {
-                "label": "$V_{GS} + V_{th} = \qty{-0.8}{\V}$",
-                "color": colors[3],
-            },
-            "isat": {
-                "label": "$I_{sat}$",
-                "color": colors[4],
-                "linestyle": "--",
-            },
-        },
-        'filter': None,#filter_savgol(window_length=101, polyorder=3),
-      },
-      'files': [
-        {
-          'filename': 'mosfet_id.csv',
-          'show': True,
-          'parser': 'ltspice_fets',
-          'options': {
-            "columns": ["Vsd",] + [f"Vgs{val:.1f}" for val in np.arange(0.2, 0.9, 0.2)],
-            "scaling": {
-              'vds': lambda x : -x["Vsd"],
-              'isat': lambda x : calculate_saturation_current(x["vds"][x["vds"]>=-0.81], -0.813, -4/1000),
-            },
-          },
-        },
-      ],
-    },
-    {
-      'title': 'IRF9610 MOSFET simulation',
-      'title': None,
-      'show': False,
-      "output_file": {
-        "fname": "../images/mosfet_current_gate_bias.pgf"
-      },
-      'crop_secondary_to_primary': True,
-      'primary_axis': {
-        "axis_settings": {
-          'x_label': r"Drain-Source Voltage $V_{DS}$ in \unit{\V}",
-          'y_label': r"Drain Current $I_D$ in \unit{\A}",
-          "invert_x": True,
-          "invert_y": True,
-          "fixed_order": -3,
-          "y_scale": "linear",
-        },
-        'x-axis': "vds",
-        'plot_type': 'absolute',  # absolute, relative, proportional
-        'columns_to_plot': {
-            "Vgs3.5": {
-                "label": "$V_{GS} = \qty{-3.5}{\V}$",
-                "color": colors[0],
-            },
-            "Vgs4.0": {
-                "label": "$V_{GS} = \qty{-4}{\V}$",
-                "color": colors[1],
-            },
-            "Vgs4.5": {
-                "label": "$V_{GS} = \qty{-4.5}{\V}$",
-                "color": colors[2],
-            },
-            "Vgs5": {
-                "label": "$V_{GS} = \qty{-5}{\V}$",
-                "color": colors[3],
-            },
-            "isat": {
-                "label": "$I_{sat}$",
-                "color": colors[4],
-                "linestyle": "--",
-            },
-        },
-        'filter': None,#filter_savgol(window_length=101, polyorder=3),
-      },
-      'files': [
-        {
-          'filename': 'mosfet_current_source.csv',
-          'show': True,
-          'parser': 'ltspice_fets',
-          'options': {
-            "columns": ["vsd", "Vgs3.5", "Vgs4.0", "Vgs4.5", "Vgs5"],
-            "scaling": {
-              'vds': lambda x : -x["vsd"],
-              #'isat': lambda x : calculate_saturation_current(x["vds"][x["vds"]>=-0.81], -0.813, -4/1000),
-            },
-          },
-        },
-      ],
-    },
-    {
-      'title': 'DgDrive input filter simulation',
-      'title': None,
-      'show': False,
-      "output_file": {
-        "fname": "../images/input_filter_dgdrive.pgf"
-      },
-      'crop_secondary_to_primary': True,
+      #'crop': {
+      #    "crop_index": "frequency",
+      #    "crop": [1e2, 5e6],
+      #},
       "legend_position": "upper right",
-      'primary_axis': {
-        "axis_settings": {
-          'x_label': r"Frequency in \unit{\Hz}",
-          'y_label': r"Magnitude in \unit{\V \per \V}",
-          "invert_x": False,
-          "invert_y": False,
-          "fixed_order": -3,
-          "x_scale": "log",
-          "y_scale": "log",
-        },
-        'x-axis': "freq",
-        'plot_type': 'absolute',  # absolute, relative, proportional
-        'columns_to_plot': {
-            "lc_filter": {
-                "label": "Mag. LC only",
-                "color": colors[0],
-            },
-            "cap_mult": {
-                "label": "Mag. LC + C Mult.",
-                "color": colors[1],
-            },
-        },
-        'filter': None,#filter_savgol(window_length=101, polyorder=3),
-      },
-      'secondary_axis': {
-        "show": True,
-        "axis_settings": {
-          'y_label': r"Impedance in \unit{\ohm}",
-          "invert_x": False,
-          "invert_y": False,
-          "show_grid": False,
-          #"fixed_order": -3,
-          "x_scale": "log",
-          "y_scale": "lin",
-        },
-        'x-axis': "freq",
-        'plot_type': 'absolute',  # absolute, relative, proportional
-        'columns_to_plot': {
-            "z_lc": {
-                "label": r"$Z_{out}$ LC filter",
-                "color": colors[2],
-                "linestyle": "--",
-            },
-            "z_cap_mult": {
-                "label": r"$Z_{out}$ C Mult.",
-                "color": colors[4],
-                "linestyle": "--",
-            },
-        },
-        'filter': None,#filter_savgol(window_length=101, polyorder=3),
-      },
-      'files': [
-        {
-          'filename': 'input_filter_dgdrive.csv',
-          'show': True,
-          'parser': 'ltspice_fets',
-          'options': {
-            "columns": ["freq", "lc_filter", "cap_mult", "z_lc", "z_cap_mult"],
-            "scaling": {
-              'lc_filter': lambda x : 10**(x["lc_filter"]/20),
-              'cap_mult': lambda x : 10**(x["cap_mult"]/20),
-              'z_lc': lambda x : 10**(x["z_lc"]/20),
-              'z_cap_mult': lambda x : 10**(x["z_cap_mult"]/20),
-            },
-          },
-        },
-      ],
-    },
-    {
-      'title': 'Hot Swap Oscillations',
-      'title': None,
-      'show': False,
-      "output_file": {
-        "fname": "../images/hot_swap.pgf"
-      },
-      'crop_secondary_to_primary': True,
-      "legend_position": "best",
-      'primary_axis': {
-        "axis_settings": {
-          'x_label': r"Time in \unit{\ms}",
-          'y_label': r"Voltage in \unit{\V}",
-          "invert_x": False,
-          "invert_y": False,
-          "fixed_order": None,
-          "y_scale": "linear",
-        },
-        'x-axis': "time",
-        'plot_type': 'absolute',  # absolute, relative, proportional
-        'columns_to_plot': {
-            "vout": {
-                "label": "Input voltage",
-                "color": colors[0],
-            },
-        },
-        'filter': None,#filter_savgol(window_length=101, polyorder=3),
-      },
-      'files': [
-        {
-          'filename': 'hot_swap.txt',
-          'show': True,
-          'parser': 'ltspice_fets',
-          'options': {
-            "delimiter": "\t",
-            "columns": {
-              0: "time",
-              1: "vout",
-            },
-            "scaling": {
-                "time": lambda x: x["time"]*1000
-            },
-          },
-        },
-      ],
-    },
-    {
-      'title': 'Current Source noise (different R_filt)',
-      'title': None,
-      'show': False,
-      "output_file": {
-        "fname": "../images/current_source_noise_filter_resistors.pgf"
-      },
-      'crop_secondary_to_primary': True,
-      "legend_position": "best",
       'primary_axis': {
         "axis_settings": {
           'x_label': r"Frequency in \unit{\Hz}",
           'y_label': r"Noise density in \unit[power-half-as-sqrt,per-mode=symbol]{\A \Hz\tothe{-0.5}}",
           "invert_x": False,
           "invert_y": False,
-          "fixed_order": -9,
+          #"fixed_order": -9,
           "x_scale": "log",
-          "y_scale": "lin",
+          "y_scale": "log",
+          #"y_scale": "lin",
         },
-        'x-axis': "frequency",
+        'x-axis': "freq",
         'plot_type': 'absolute',  # absolute, relative, proportional
         'columns_to_plot': {
-            "249ohm": {
-                "label": r"$R_{filt} = \qty{249}{\ohm}$",
+            "lna_background": {
+                "label": r"LNA background (\qty{10}{\ohm})",
                 "color": colors[0],
             },
-            "510ohm": {
-                "label": r"$R_{filt} = \qty{510}{\ohm}$",
+            "tia_background": {
+                "label": r"SR560 background (\qty{1}{\kilo\ohm})",
+                "color": colors[7],
+            },
+            "dgDrive": {
+                "label": "DgDrive-500 v2.3.0",
+                "color": colors[5],
+            },
+            "dgDrive_hmp4040": {
+                "label": "DgDrive-500 v2.1.0 (HMP4040)",
+                "color": colors[6],
+            },
+            "lqo": {
+                "label": "LQprO-140",
                 "color": colors[1],
             },
-            "1000ohm": {
-                "label": r"$R_{filt} = \qty{1}{\kilo\ohm}$",
+            "moglabs": {
+                "label": "Moglabs DLC-202",
                 "color": colors[2],
             },
-            "1500ohm": {
-                "label": r"$R_{filt} = \qty{1.5}{\kilo\ohm}$",
+            "smc11": {
+                "label": "SMC11 (\qty{470}{\mA})",
+                "color": colors[4],
+            },
+            "toptica_dcc": {
+                "label": "Toptica DCC 110",
+                "color": colors[9],
+            },
+            "vescent": {
+                "label": "Vescent D2-105-500 (no display)",
                 "color": colors[3],
             },
         },
@@ -605,16 +311,106 @@ if __name__ == "__main__":
       },
       'files': [
         {
-          'filename': 'current_regulator_v3_AD797_noise.csv',
+          'filename': './current_source_noise/lna_background.csv',
           'show': True,
           'parser': 'ltspice_fets',
           'options': {
             "columns": {
-              0: "frequency",
-              1: "249ohm",
-              2: "510ohm",
-              3: "1000ohm",
-              4: "1500ohm",
+              0: "freq",
+              1: "lna_background",
+            },
+            "scaling": {
+            },
+          },
+        },
+        {
+          'filename': './current_source_noise/dgDrive-500_2-3-0.csv',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+              0: "freq",
+              1: "dgDrive",
+            },
+            "scaling": {
+              #"dgDrive": lambda x: 20*np.log10(x["dgDrive"])
+            },
+          },
+        },
+        {
+          'filename': './current_source_noise/tia_background_1k.csv',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+              0: "freq",
+              1: "tia_background",
+            },
+            "scaling": {
+            },
+          },
+        },
+        {
+          'filename': './current_source_noise/toptica_dcc_110.csv',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+              0: "freq",
+              1: "toptica_dcc",
+            },
+            "scaling": {
+            },
+          },
+        },
+        {
+          'filename': './current_source_noise/moglabs_dlc_202.csv',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+              0: "freq",
+              1: "moglabs",
+            },
+            "scaling": {
+            },
+          },
+        },
+        {
+          'filename': './current_source_noise/vescent_d2-105-500_no_display.csv',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+              0: "freq",
+              1: "vescent",
+            },
+            "scaling": {
+            },
+          },
+        },
+        {
+          'filename': './current_source_noise/smc11.csv',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+              0: "freq",
+              1: "smc11",
+            },
+            "scaling": {
+                #"smc11": lambda x: 20*np.log10(x["smc11"])
+            },
+          },
+        },
+        {
+          'filename': './current_source_noise/LQprO-140.csv',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+              0: "freq",
+              1: "lqo",
             },
             "scaling": {
             },
@@ -623,64 +419,168 @@ if __name__ == "__main__":
       ],
     },
     {
-      'title': 'Output impedance Libbrecht & Hall current source',
+      'title': 'DgDrive vs HMP4040',
       'title': None,
-      'show': True,
+      'show': False,
       "output_file": {
-        "fname": "../images/output_impedance_libbrecht_hall.pgf"
+        "fname": "../images/laser_driver_noise_hmp4040.pgf"
       },
-      'crop_secondary_to_primary': True,
-      "legend_position": "best",
+      #'crop': {
+      #    "crop_index": "frequency",
+      #    "crop": [1e2, 5e6],
+      #},
+      "legend_position": "upper right",
       'primary_axis': {
         "axis_settings": {
           'x_label': r"Frequency in \unit{\Hz}",
-          'y_label': r"Output impedance in \unit{\ohm}",
+          'y_label': r"Noise density in \unit[power-half-as-sqrt,per-mode=symbol]{\A \Hz\tothe{-0.5}}",
           "invert_x": False,
           "invert_y": False,
-          "fixed_order": 6,
+          #"fixed_order": -9,
           "x_scale": "log",
           "y_scale": "log",
+          #"y_scale": "lin",
         },
-        'x-axis': "frequency",
+        'x-axis': "freq",
         'plot_type': 'absolute',  # absolute, relative, proportional
         'columns_to_plot': {
-            "noC": {
-                "label": r"no $C_1$",
-                "color": colors[0],
+            "dgDrive": {
+                "label": "DgDrive-500 v2.3.0",
+                "color": colors[5],
             },
-            "1u": {
-                "label": r"$C_1 = \qty{1}{\uF}$",
-                "color": colors[1],
+            "dgDrive_hmp4040": {
+                "label": "DgDrive-500 v2.1.0 (HMP4040)",
+                "color": colors[6],
             },
         },
         'filter': None,#filter_savgol(window_length=101, polyorder=3),
       },
       'files': [
         {
-          'filename': 'modulation_input_LibrechtHall.txt',
+          'filename': './current_source_noise/dgDrive-500_2-3-0.csv',
           'show': True,
           'parser': 'ltspice_fets',
           'options': {
             "columns": {
-              0: "frequency",
-              1: "noC"
+              0: "freq",
+              1: "dgDrive",
             },
             "scaling": {
-                'noC': lambda x : 10**(x["noC"]/20),
+              #"dgDrive": lambda x: 20*np.log10(x["dgDrive"])
             },
           },
         },
         {
-          'filename': 'modulation_input_LibrechtHall_1u.txt',
+          'filename': './current_source_noise/dgDrive-500_2-1-0_hmp4040.csv',
           'show': True,
           'parser': 'ltspice_fets',
           'options': {
             "columns": {
-              0: "frequency",
-              1: "1u"
+              0: "freq",
+              1: "dgDrive_hmp4040",
             },
             "scaling": {
-                '1u': lambda x : 10**(x["1u"]/20),
+              #"dgDrive": lambda x: 20*np.log10(x["dgDrive"])
+            },
+          },
+        },
+      ],
+    },
+    {
+      'title': 'Vescent D2-105-500 gain peaking',
+      'title': None,
+      'show': False,
+      "output_file": {
+        "fname": "../images/vescent_gain_peaking.pgf"
+      },
+      #'crop': {
+      #    "crop_index": "frequency",
+      #    "crop": [1e2, 5e6],
+      #},
+      "legend_position": "upper right",
+      'primary_axis': {
+        "axis_settings": {
+          'x_label': r"Frequency in \unit{\Hz}",
+          'y_label': r"Noise density in \unit[power-half-as-sqrt,per-mode=symbol]{\A \Hz\tothe{-0.5}}",
+          "invert_x": False,
+          "invert_y": False,
+          #"fixed_order": -9,
+          "x_scale": "log",
+          "y_scale": "log",
+          #"y_scale": "lin",
+        },
+        'x-axis': "freq",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "vescent": {
+                "label": "Vescent D2-105-500 (\qty{50}{\mA}, $V_{DS} = \qty{9.9}{\V} V$)",
+                "color": colors[3],
+            },
+            "vescent_300mA": {
+                "label": "Vescent D2-105-500 (\qty{300}{\mA}, $V_{DS} = \qty{4.4}{\V} V$)",
+                "color": colors[0],
+            },
+            "vescent_400mA": {
+                "label": r"Vescent D2-105-500 (\qty{400}{\mA}, $V_{DS} = \qty{2.2}{\V} V$)",
+                "color": colors[4],
+            },
+            "vescent_450mA": {
+                "label": "Vescent D2-105-500 (\qty{450}{\mA}, $V_{DS} = \qty{1.1}{\V} V$)",
+                "color": colors[2],
+            },
+        },
+        'filter': None,#filter_savgol(window_length=101, polyorder=3),
+      },
+      'files': [
+        {
+          'filename': './current_source_noise/vescent_d2-105-500_no_display.csv',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+              0: "freq",
+              1: "vescent",
+            },
+            "scaling": {
+            },
+          },
+        },
+        {
+          'filename': './current_source_noise/vescent_d2-105-500_300mA.csv',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+              0: "freq",
+              1: "vescent_300mA",
+            },
+            "scaling": {
+            },
+          },
+        },
+        {
+          'filename': './current_source_noise/vescent_d2-105-500_400mA.csv',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+              0: "freq",
+              1: "vescent_400mA",
+            },
+            "scaling": {
+            },
+          },
+        },
+        {
+          'filename': './current_source_noise/vescent_d2-105-500_450mA.csv',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+              0: "freq",
+              1: "vescent_450mA",
+            },
+            "scaling": {
             },
           },
         },

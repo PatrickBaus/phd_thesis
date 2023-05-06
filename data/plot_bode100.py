@@ -16,7 +16,7 @@ from file_parser import parse_file
 
 colors = sns.color_palette("colorblind")
 
-# Use these setting for the PhD thesis
+# Use these settings for the PhD thesis
 tex_fonts = {
     "text.usetex": True,  # Use LaTeX to write all text
     "font.family": "serif",

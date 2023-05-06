@@ -15,7 +15,7 @@ pd.plotting.register_matplotlib_converters()
 
 from file_parser import parse_file
 
-# Use these setting for the PhD thesis
+# Use these settings for the PhD thesis
 tex_fonts = {
     "text.usetex": True,  # Use LaTeX to write all text
     "font.family": "serif",
@@ -258,9 +258,9 @@ if __name__ == "__main__":
             "title": "LM399 Burnin",
             "title": None,
             "show": True,
-            "output_file": {
-                "fname": "../images/lm399_popcorn_noise.pgf"
-            },
+            #"output_file": {
+            #    "fname": "../images/lm399_popcorn_noise.pgf"
+            #},
             #'zoom': ['2021-12-03 12:30:00', '2022-04-01 08:00:00'],
             "zoom": [
                 "2022-08-31 06:00:00",

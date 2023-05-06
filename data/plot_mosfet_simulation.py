@@ -41,9 +41,6 @@ plt.rcParams.update(tex_fonts)
 plt.style.use('tableau-colorblind10')
 # end of settings
 
-def calculate_saturation_current(vds, kappa, ld):
-    return 0.5 * kappa * vds**2 * (1 + ld * vds)
-
 class FixedOrderFormatter(ScalarFormatter):
     """Formats axis ticks using scientific notation with a constant order of 
     magnitude"""
@@ -126,49 +123,24 @@ def process_data(data, columns, plot_type):
     elif plot_type=='proportional':
         data[columns] = data[columns] / data[columns].iloc[:30].mean().tolist() - 1
 
-def prepare_axis(ax, axis_settings, color_map=None):
-  if axis_settings.get("y_fixed_order") is not None:
-      ax.yaxis.set_major_formatter(FixedOrderFormatter(axis_settings["y_fixed_order"], useOffset=True))
+def prepare_axis(ax, label, invert_yaxis, color_map=None, fixed_order=None):
+  if fixed_order is not None:
+    ax.yaxis.set_major_formatter(FixedOrderFormatter(fixed_order, useOffset=True))
   else:
-      ax.yaxis.get_major_formatter().set_useOffset(False)
+    ax.yaxis.get_major_formatter().set_useOffset(False)
 
-  if axis_settings.get("x_fixed_order") is not None:
-      ax.xaxis.set_major_formatter(FixedOrderFormatter(axis_settings["x_fixed_order"], useOffset=True))
-  else:
-      ax.xaxis.get_major_formatter().set_useOffset(False)
-
-  if axis_settings.get("y_scale") == "log":
-    ax.set_yscale('log')
-  if axis_settings.get("x_scale") == "log":
-    ax.set_xscale('log')
-  if axis_settings.get("invert_y"):
+  #ax.set_yscale('log')
+  if invert_yaxis:
     ax.invert_yaxis()
-  if axis_settings.get("invert_x"):
-    ax.invert_xaxis()
-
-  ax.grid(True, which="minor", ls="-", color='0.85')
-  ax.grid(True, which="major", ls="-", color='0.45')
-
-  ax.set_ylabel(axis_settings["y_label"])
-  ax.set_xlabel(axis_settings["x_label"])
+  ax.invert_xaxis()
 
   if color_map is not None:
     ax.set_prop_cycle('color', color_map)
 
 def plot_data(ax, data, x_axis, column_settings):
-  shared_bins = np.histogram_bin_edges(data[column_settings.keys()], bins="sturges")
   for column, settings in column_settings.items():
       if column in data:
-          n, bins, _ = ax.hist(
-            data[column],
-            alpha=0.7,
-            #bins=shared_bins,
-            **settings
-          )
-          # To calculate the probability, calculate the one we do want and subtract it from 1, because the very high
-          # impedances are ignored (see range option) for readability
-          print(f"Smallest bin with more than zero counts: {bins[:-1][n > 0][0]/1e6} MΩ")
-          print(f"Probability of getting more than 7.5 MΩ: {1-(sum(n[bins[:-1]<7.5e6]) / len(data[column]))}")
+          ax.plot(data[x_axis], data[column], color=settings["color"], marker="", label=settings["label"], alpha=0.7, linewidth=settings.get("linewidth", 1))
 
 def plot_series(plot):
   # Load the data to be plotted
@@ -177,12 +149,10 @@ def plot_series(plot):
     (load_data(plot_file)[0] for plot_file in plot_files),
     sort=True
   )
-  # Removes NAs from each column by shifting the values up, then remove all rows, that have no data
-  data = data.apply(lambda x: pd.Series(x.dropna().values)).dropna()
 
   # If we have something to plot, proceed
   if not data.empty:
-    crop_data(data, crop_index="Rout", crop=plot.get('crop'))
+    crop_data(data, crop_index="date", crop=plot.get('crop'))
 
     plot_settings = plot['primary_axis']
     process_data(data=data, columns=plot_settings['columns_to_plot'], plot_type=plot_settings.get('plot_type','absolute'))
@@ -191,12 +161,16 @@ def plot_series(plot):
     #plt.tick_params('x', labelbottom=False)
     prepare_axis(
         ax=ax1,
-        axis_settings=plot_settings["axis_settings"],
+        fixed_order=plot_settings['axis_fixed_order'],
+        label=plot_settings['label'],
+        invert_yaxis=plot_settings.get("invert_yaxis", False),
         color_map=plt.cm.tab10.colors
       )
 
     plot_data(ax1, data, x_axis=plot_settings["x-axis"], column_settings=plot_settings['columns_to_plot'])
 
+    ax1.set_ylabel(plot_settings["label"])
+    ax1.set_xlabel(r"Drain Current $I_{D}$ in \unit{\A}")
     lines, labels = ax1.get_legend_handles_labels()
 
     plot_settings = plot.get('secondary_axis', {})
@@ -209,7 +183,7 @@ def plot_series(plot):
       lines2, labels2 = ax2.get_legend_handles_labels()
       lines += lines2
       labels += labels2
-    plt.legend(lines, labels, loc="best")
+    plt.legend(lines, labels, loc="upper left")
 
   fig = plt.gcf()
 #  fig.set_size_inches(11.69,8.27)   # A4 in inch
@@ -232,177 +206,181 @@ def plot_series(plot):
 if __name__ == "__main__":
   plots = [
     {
-      'title': 'Parallel IRF9610 MOSFET Monto-Carlo Simulation',
+      'title': '2N5460 JFET simulation',
       'title': None,
       'show': False,
-      "output_file": {
-          "fname": "../images/ltspice_mosfet_mc_output_impedance.pgf"
-      },
       'crop_secondary_to_primary': True,
       'primary_axis': {
-        "axis_settings": {
-          'x_label': r"Output impedance in \unit{\ohm}",
-          'y_label': r"Counts",
-          "invert_x": False,
-          "invert_y": False,
-          "y_fixed_order": None,
-          "x_scale": "linear",
-        },
-        'x-axis': "num",
+        'label': r"Drain Current $I_D$ in \unit{\A}",
         'plot_type': 'absolute',  # absolute, relative, proportional
+        'invert_yaxis': True,
+        'axis_fixed_order': -3,
         'columns_to_plot': {
-            "Rout": {
-                "label": "Parallel MOSFETs",
-                "color": colors[1],
-                #"bins": 50,
-            },
-            "Rout_s": {
-                "label": "Single MOSFET",
-                "color": colors[2],
-                #"bins": auto,
-            },
-            "Rout_p_sigma": {
-                "label": r"Parallel MOSFET $V_{th}-1\sigma$",
+            "Vgs0.0": {
+                "label": "$V_{GS} = \qty{0}{\V}$",
                 "color": colors[0],
-                #"bins": auto,
             },
+            "Vgs0.5": {
+                "label": "$V_{GS} = \qty{0.5}{\V}$",
+                "color": colors[1],
+            },
+            "Vgs1.0": {
+                "label": "$V_{GS} = \qty{1}{\V}$",
+                "color": colors[2],
+            },
+            "Vgs1.5": {
+                "label": "$V_{GS} = \qty{1.5}{\V}$",
+                "color": colors[3],
+            },
+            "Vgs2.0": {
+                "label": "$V_{GS} = \qty{2}{\V}$",
+                "color": colors[4],
+            },
+            "Vgs2.5": {
+                "label": "$V_{GS} = \qty{2.5}{\V}$",
+                "color": colors[5],
+            },
+
         },
         'filter': None,#filter_savgol(window_length=101, polyorder=3),
       },
       'files': [
         {
-          'filename': 'mosfet_current_source_parallel_mc.csv',
+          'filename': 'jfet_current_source.csv',
           'show': True,
           'parser': 'ltspice_fets',
           'options': {
-            "columns": {0: "num", 1: "Rout"},
+            "columns": ["Vgs0.0", "Vgs0.5", "Vgs1.0", "Vgs1.5", "Vgs2.0", "Vgs2.5"],
             "scaling": {
-              "Rout": lambda x : 10**(x["Rout"]/20),
-            },
-          },
-        },
-        {
-          'filename': 'mosfet_current_source_single_mc.csv',
-          'show': True,
-          'parser': 'ltspice_fets',
-          'options': {
-            "columns": {0: "num", 1: "Rout_s"},
-            "scaling": {
-              "Rout_s": lambda x : 10**(x["Rout_s"]/20),
-            },
-          },
-        },
-        {
-          'filename': 'mosfet_current_source_parallel_mc-sigma.csv',
-          'show': True,
-          'parser': 'ltspice_fets',
-          'options': {
-            "columns": {0: "num", 1: "Rout_p_sigma"},
-            "scaling": {
-              "Rout_p_sigma": lambda x : 10**(x["Rout_p_sigma"]/20),
+              'Vds': lambda x : -x["Vsd"],
             },
           },
         },
       ],
     },
     {
-      'title': 'Howland Current Source Output Impedance',
+      'title': 'IRF9610 MOSFET simulation',
       'title': None,
       'show': True,
-      "output_file": {
-          "fname": "../images/ltspice_howland_mc_output_impedance.pgf"
-      },
+      #"output_file": {
+      #  "fname": "../images/temperature_011_2016.pgf"
+      #},
       'crop_secondary_to_primary': True,
       'primary_axis': {
-        "axis_settings": {
-          'x_label': r"Resistance in \unit{\ohm}",
-          'y_label': r"Normalized resistance density in \unit{\per \ohm}",
-          "invert_x": False,
-          "invert_y": False,
-          "x_fixed_order": 6,
-          "x_scale": "linear",
-        },
-        'x-axis': "num",
+        'label': r"Drain Current $I_D$ in \unit{\A}",
         'plot_type': 'absolute',  # absolute, relative, proportional
+        'invert_yaxis': True,
+        'axis_fixed_order': -3,
+        'x-axis': "Vds",
         'columns_to_plot': {
-            "Rout005": {
-                "label": r"HCS, \qty{0.05}{\percent} tolerance",
+            "Vgs3.5": {
+                "label": "$V_{GS} = \qty{-3.5}{\V}$",
                 "color": colors[0],
-                "density": True,
-                "bins": 100,
-                "range": (-1e8, 1e8),
-                "range": (0, 5e7),
             },
-            "Rout001": {
-                "label": r"HCS, \qty{0.01}{\percent} tolerance",
+            "Vgs4.0": {
+                "label": "$V_{GS} = \qty{-4}{\V}$",
                 "color": colors[1],
-                "density": True,
-                "bins": 100,
-                "range": (0, 5e7),
             },
-            "Routi005": {
-                "label": r"improved HCS, \qty{0.05}{\percent} tolerance",
-                "color": colors[3],
-                "density": True,
-                "bins": 100,
-                "range": (0, 5e7),
-            },
-            "Routi001": {
-                "label": r"improved HCS, \qty{0.01}{\percent} tolerance",
+            "Vgs4.5": {
+                "label": "$V_{GS} = \qty{-4.5}{\V}$",
                 "color": colors[2],
-                "density": True,
-                "bins": 100,
-                "range": (0, 5e7),
             },
+            "Vgs5": {
+                "label": "$V_{GS} = \qty{-5}{\V}$",
+                "color": colors[3],
+            },
+
         },
         'filter': None,#filter_savgol(window_length=101, polyorder=3),
       },
       'files': [
         {
-          'filename': 'howland_current_source_001.txt',
+          'filename': 'mosfet_current_source.csv',
           'show': True,
           'parser': 'ltspice_fets',
           'options': {
-            "delimiter": "\t",
-            "columns": {0: "num", 1: "Rout001"},
+            "columns": ["Vsd", "Vgs3.5", "Vgs4.0", "Vgs4.5", "Vgs5"],
             "scaling": {
-                "Rout001": lambda x: np.abs(x["Rout001"])
+              'Vds': lambda x : -x["Vsd"],
             },
           },
         },
+      ],
+    },
+    {
+      'title': 'MOSFET Id LTSpice example',
+      'title': None,
+      'show': False,
+      'crop_secondary_to_primary': True,
+      'primary_axis': {
+        'label': r"Drain Current $I_D$ in \unit{\A}",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'invert_yaxis': True,
+        'axis_fixed_order': -3,
+        'columns_to_plot': {
+            "Vgs0.2": {
+                "label": "$V_{GS} + V_{th} = \qty{-0.2}{\V}$",
+                "color": colors[0],
+            },
+            "Vgs0.4": {
+                "label": "$V_{GS} + V_{th} = \qty{-0.4}{\V}$",
+                "color": colors[1],
+            },
+            "Vgs0.6": {
+                "label": "$V_{GS} + V_{th} = \qty{-0.6}{\V}$",
+                "color": colors[2],
+            },
+            "Vgs0.8": {
+                "label": "$V_{GS} + V_{th} = \qty{-0.8}{\V}$",
+                "color": colors[3],
+            },
+
+        },
+        'filter': None,#filter_savgol(window_length=101, polyorder=3),
+      },
+      'files': [
         {
-          'filename': 'howland_current_source_005.txt',
+          'filename': 'mosfet_id.csv',
           'show': True,
           'parser': 'ltspice_fets',
           'options': {
-            "delimiter": "\t",
-            "columns": {0: "num", 1: "Rout005"},
+            "columns": [f"Vgs{val:.1f}" for val in np.arange(0.2, 0.9, 0.2)],
             "scaling": {
-                "Rout005": lambda x: np.abs(x["Rout005"])
+              'Vds': lambda x : -x["Vsd"],
             },
           },
         },
-        {
-          'filename': 'improved_howland_current_source_001.txt',
-          'show': True,
-          'parser': 'ltspice_fets',
-          'options': {
-            "delimiter": "\t",
-            "columns": {0: "num", 1: "Routi001"},
-            "scaling": {
-                "Rout005": lambda x: np.abs(x["Routi001"])
+      ],
+    },
+    {
+      'title': 'MOSFET gm LTSpice example',
+      'title': None,
+      'show': True,
+      'crop_secondary_to_primary': True,
+      'primary_axis': {
+        'label': r"Transconductance $g_m$ in \unit{\siemens}",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'invert_yaxis': False,
+        'axis_fixed_order': -3,
+        'x-axis': "Id",
+        'columns_to_plot': {
+            "gm": {
+                "label": r"$g_m$",
+                "color": colors[0],
             },
-          },
+
         },
+        'filter': None,#filter_savgol(window_length=101, polyorder=3),
+      },
+      'files': [
         {
-          'filename': 'improved_howland_current_source_005.txt',
+          'filename': 'mosfet_gm.csv',
           'show': True,
           'parser': 'ltspice_fets',
           'options': {
-            "delimiter": "\t",
-            "columns": {0: "num", 1: "Routi005"},
+            "columns": ["Vsg", "Id", "gm"],
             "scaling": {
-                "Rout005": lambda x: np.abs(x["Routi005"])
+              "gm": lambda x : -x["gm"],
             },
           },
         },
