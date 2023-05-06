@@ -92,17 +92,17 @@ and finally the output impedance of the transconductance amplifier can be calcul
 \end{align}
 
 Equation \ref{eqn:transconductance_rout_full} can be simplified for typical applications by approximation of $g_m \left(R_o || R_S || R_{id}\right)$. Using the example parameters for the \device{IRF9610} in saturation used previously on page \pageref{eqn:mosfet_rout_irf9610} and additionally the ADI \device{AD797} \cite{datasheet_AD797} op-amp $g_m \left(R_o || R_S || R_{id}\right)$ with the following parameters
-\begin{align}
-    &I_D = \qty{250}{\mA} \,, \lambda = \qty[per-mode=power]{4}{\per \milli \volt} \,, V_{DS} = \qty{3.5}{\V}\,, R_S = \qty{30}{\ohm}\,, \nonumber\\
-    &R_{id} = \qty{7.5}{\kilo\ohm}\,, \kappa = \qty[per-mode=power]{0.813}{\ampere \per \square\volt}\,, A_{ol} = \qty[per-mode=power]{20}{\volt \per \uV} \nonumber
-\end{align}
+\begin{align*}
+    &I_D = \qty{250}{\mA} \,, \lambda = \qty[per-mode=power]{4}{\per \milli \volt} \,, V_{DS} = \qty{3.5}{\V}\,, R_S = \qty{30}{\ohm}\,,\\
+    &R_{id} = \qty{7.5}{\kilo\ohm}\,, \kappa = \qty[per-mode=power]{0.813}{\ampere \per \square\volt}\,, A_{ol} = \qty[per-mode=power]{20}{\volt \per \uV}
+\end{align*}
 one finds
-\begin{align}
-    R_{o} &= \frac{I_D}{\frac{1}{\lambda} + V_{DS}} = \qty{1014}{\ohm} \nonumber\\
-    g_m &= \sqrt{2 \kappa I_D \left(1+ \lambda V_{DS}\right)} = \qty{0.642}{\siemens} \nonumber\\
-    g_m \left(R_o || R_S || R_{id}\right) &\approx g_m R_S \approx \num{18.63}\nonumber\\
-    \frac{g_m \left(R_o || R_S || R_{id}\right)}{1 + g_m \left(R_o || R_S || R_{id}\right)} &\approx \num{0.95} \nonumber
-\end{align}
+\begin{align*}
+    R_{o} &= \frac{I_D}{\frac{1}{\lambda} + V_{DS}} = \qty{1014}{\ohm}\\
+    g_m &= \sqrt{2 \kappa I_D \left(1+ \lambda V_{DS}\right)} = \qty{0.642}{\siemens}\\
+    g_m \left(R_o || R_S || R_{id}\right) &\approx g_m R_S \approx \num{18.63}\\
+    \frac{g_m \left(R_o || R_S || R_{id}\right)}{1 + g_m \left(R_o || R_S || R_{id}\right)} &\approx \num{0.95}
+\end{align*}
 
 Using typical parameters, it can be seen, that dropping the $\frac{g_m \left(R_o || R_S || R_{id}\right)}{1 + g_m \left(R_o || R_S || R_{id}\right)}$ term will only lead to error of about \qty{5}{\percent}. Given the datasheet uncertainties for the MOSFET related parameters on the order of \qtyrange{50}{100}{\percent}, it can be safely neglected, leading to the following approximations
 \begin{align}
@@ -110,13 +110,13 @@ Using typical parameters, it can be seen, that dropping the $\frac{g_m \left(R_o
     A_f &\approx \frac{1}{R_S} \,. \nonumber
 \end{align}
 
-The approximation for the output impedance holds true when $g_m R_S \gg 1$, which typically is the case. While $R_S$ might become small, this is compensated by an increase in $g_m$ in our application, because a smaller source resistor implies a higher output current, demanding a MOSFET with a higher transconductance, so the product of $g_m R_S$ remains constant.
+The approximation for the output impedance holds true when $g_m R_S \gg 1$, which typically is the case. While $R_S$ might become small, this is compensated by an increase in $g_m$ in this application, because a smaller source resistor implies a higher output current, demanding a MOSFET with a higher transconductance, so the product of $g_m R_S$ remains constant.
 
 It can therefore be said, that the op-amp is simply amplifying the output impedance of the MOSFET along with the source resistor and the closed-loop gain is defined entirely by $R_S$, a very convenient property.
 
 If the model is to be considered at frequencies $\omega > 0$, $A_{ol}$ can be replaced by the first order approximation of the op-amp gain as
 \begin{equation}
-    A_1 (\omega) = \frac{A_{ol}}{\sqrt{1 + \left(\frac{\omega}{\omega_c}\right)^2}}\,,
+    A_1 (\omega) = \frac{A_{ol}}{\sqrt{1 + \left(\frac{\omega}{\omega_c}\right)^2}}\,,\label{eqn:op-amp_gain}
 \end{equation}
 which is valid for most compensated op-amps, which have a dominant pole at $\omega_c \approx \qty{1}{\Hz}$.
 

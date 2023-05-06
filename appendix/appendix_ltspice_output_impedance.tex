@@ -4,7 +4,8 @@
 \usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
 \usetikzlibrary{calc,positioning,backgrounds}
 \usepackage{import}
- \usepackage{listings}
+\usepackage{amsmath}
+\usepackage{listings}
 \usepackage{subcaption}
 \usepackage{url}
 
@@ -79,9 +80,9 @@ This command must be adjusted for the value of $\kappa$ and do note, that $\kapp
 
 \subsection{MOSFET Transconductance}
 Another interesting property to plot is the transconductance $g_m$ of the MOSFET. Again, using the same model used previously in figure \ref{fig:ltspice_mosfet_output_characteristic} and from equation \ref{eqn:mosfet_gm} we known that $g_m$ is defined as
-\begin{equation}
-    g_{m} = \left. \frac{\partial I_{D}}{\partial V_{GS}} \right|_{V_{DS} = const} \,. \nonumber
-\end{equation}
+\begin{equation*}
+    g_{m} = \left. \frac{\partial I_{D}}{\partial V_{GS}} \right|_{V_{DS} = const} \,.
+\end{equation*}
 To derive $g_m$, we need to generate values of $I_D(V_{GS})$. This can again be done by stepping $V_{GS}$
 \begin{lstlisting}[frame=single, xleftmargin=5mm, xrightmargin=5mm, columns=fullflexible, morekeywords={model, dc}, keywordstyle=\bfseries, basicstyle=\rmfamily]]
 .dc Vsg 3.667 4.667 1m
@@ -111,18 +112,18 @@ As a sidenote, if the MOSFET model includes gate leakage, this leakage current m
 
 \subsection{Output Impedance}
 This sections will explain how to calculate the dyncamic output impedance using LTSpice. The example circuit used, is the precision current source from section \ref{sec:precision_current_source}. The dynamic output impedance was defined in equation \ref{eqn:mosfet_gds} as the inverse of the conductance leading to
-\begin{equation}
-    R_{out} = \frac{1}{\frac{\partial I_D}{\partial V_{DS}}} \,. \nonumber
-\end{equation}
+\begin{equation*}
+    R_{out} = \frac{1}{\frac{\partial I_D}{\partial V_{DS}}} \,.
+\end{equation*}
 
 Using the technique presented in the previous section, the obvious solution would be to again use the \textbf{.dc} sweep command and then numerically differentiate the result. Unfortunately this will lead to disappointing results, because the output impedance in question is very large and the limits of the numerical precision will be reached, nicely demonstrating the boundries of numercial methods. LTSpice allows to increase the numeric precision to double floating point values using the option \textbf{numdgt}
 \begin{lstlisting}[frame=single, xleftmargin=5mm, xrightmargin=5mm, columns=fullflexible, morekeywords={model, dc, options}, keywordstyle=\bfseries, basicstyle=\rmfamily]]
  .options numdgt=15
 \end{lstlisting}
 Unfortunately, this only forces LTSpice to interally use the double floating point number format, which does have a precision of \qty{53}{\bit} which means $\log_{10}\left(2^{53}\right) = 15.95$ decimals. So instead of using the large-signal model of the MOSFET, it becomes more convenient to evaluate the small-signal model
-\begin{equation}
-    R_{out} = \frac{v_{load}}{i_D} = \frac{v_{DS}}{i_D} \nonumber
-\end{equation}
+\begin{equation*}
+    R_{out} = \frac{v_{load}}{i_D} = \frac{v_{DS}}{i_D}
+\end{equation*}
 at several different points of $V_{DS}$, thereby reconstructing the large-signal model from rasterized versions of the small-signal model. For the small-signal model, $v_{DS} = v_{load}$, because the supply voltage and the voltage across the sense resistor can be considered constant, so any change in the voltage across the load must cause the opposite change in the source-drain voltage $v_{SD} = - v_{DS}$.
 
 To run this simulation the small-signal simulation must be used and additionally some commands not available through the graphical user interface need to be entered by hand.

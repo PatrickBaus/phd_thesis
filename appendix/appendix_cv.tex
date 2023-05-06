@@ -1,0 +1,58 @@
+\documentclass[12pt]{book}
+\usepackage{docmute}
+\usepackage{caption}  % used in the appendix
+\usepackage{listings}
+\usepackage{xcolor}
+
+\DeclareCaptionFont{white}{\color{white}}
+\DeclareCaptionFormat{listing}{\colorbox{gray}{\parbox{0.95\textwidth}{#1#2#3}}}
+\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
+
+\begin{document}
+\chapter*{Curriculum Vitae}
+\begingroup
+\renewcommand{\arraystretch}{1.5}
+{\Large \textbf{Personal data}}\\
+\\%
+\noindent%
+\begin{tabular}{@{}ll}
+Name & Patrick Baus \\
+Adress & Darmstadt \\
+Date of birth & November 26, 1984 \\
+Place of birth & Mannheim \\
+Family status & Married \\
+Nationality & German
+\end{tabular}\\
+\vspace{1cm}\\%
+\noindent%
+{\Large \textbf{Graduation}}\\
+\\%
+\noindent%
+\begin{tabular}{@{}ll}
+08/2017 -- 06/2023 & \parbox[t]{11cm}{Graduation in the group of Prof. Dr. Gerhard Birkl, Institute for Applied Physics, Technical University of Darmstadt \\
+Thesis title: \textit{Development of Laser Systems and Spectroscopy of Highly Charged Ions} }
+\end{tabular}\\
+\vspace{1cm}\\%
+\noindent%
+{\Large \textbf{University education}}\\
+\\%
+\noindent%
+\begin{tabular}{@{}ll}
+    2008-06 & \parbox[t]{11cm}{Master thesis in the group of Prof. Dr. Gerhard Birkl, Institute for Applied Physics, Technical University of Darmstadt \\
+    Thesis title: \textit{Two-Photon Rydberg Excitation of Neutral Atoms in Optical Dipole-Trap Arrays} }\\
+    09/2014 -- 04/2017 & \parbox[t]{11cm}{Master of Science Physics, Double Degree, Technical University of Darmstadt and KTH Royal Institute of Technology}\\
+    2008-06 & \parbox[t]{11cm}{Bachelor thesis in the group of Prof. Dr. Gerhard Birkl, Institute for Applied Physics, Technical University of Darmstadt \\
+    Thesis title: \textit{Untersuchungen zur Durchstimmbarkeit von Diodenlasern}} \\
+    10/2011 -- 2008-06 & \parbox[t]{11cm}{Bachelor of Science Physics, Technical University of Darmstadt}
+\end{tabular}\\
+\vspace{1cm}\\%
+\noindent%
+{\Large \textbf{School education}}\\
+\\%
+\noindent%
+\begin{tabular}{@{}ll}
+1994-09 -- 2003-07 & Abitur at Bunsengymnasium, Heidelberg, Germany
+\end{tabular}
+\endgroup
+
+\end{document}

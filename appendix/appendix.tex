@@ -2,6 +2,8 @@
 \usepackage{docmute}
 \usepackage{caption}  % used in the appendix
 \usepackage{import}
+\usepackage{siunitx}
+\usepackage[siunitx, europeanresistors, nooldvoltagedirection]{circuitikz}
 \usepackage{listings}
 \usepackage{xcolor}
 
@@ -23,5 +25,9 @@
         \subimport{}{appendix_mosfet_noise.tex}
         \clearpage
         \subimport{}{appendix_injection_transformer.tex}
+        \clearpage
+        \subimport{}{appendix_howland_current_source.tex}
+        \clearpage
+        \subimport{}{list_of_publications.tex}
 \end{document}
 
