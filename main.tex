@@ -196,12 +196,7 @@
     \include{results}
     %\include{outlook}
 
-    \phantomsection  % add an invisible section for the references
-    \addcontentsline{toc}{section}{References}  % add the references to the TOC
-    %\affidavit[3. Dezember 2014]{Patrick Baus}
-    %\addtocounter{page}{-1}  % Do not count the affidavit
-
-    \printbibliography
+    \printbibliography[heading=bibintoc, title={References}]
     \subimport{appendix/}{appendix.tex}
 
 \end{document}
