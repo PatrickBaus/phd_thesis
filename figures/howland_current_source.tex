@@ -1,0 +1,43 @@
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{arrows,backgrounds}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+  blocks/fill=orange!25,
+}
+
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+\begin{document}
+    \begin{circuitikz}[
+        american currents,
+        american voltages,
+        scale=0.7,
+        transform shape,
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+    ]
+        \tikzstyle{every node}=[font=\small]
+        % Help lines for debugging
+        %\draw[help lines] (0,-8) grid (30,0);
+        \begin{pgfonlayer}{foreground}
+            \draw
+                (0,0) node[ground]{} to[R, a^=$R_3$, i=$I_3$] ++(3,0) coordinate(inv) to[R, *-, a^=$R_4$, i<=$I_4$] ++ (3,0) -- ++(1,0) -- ++(0,-3) coordinate(out) to[short, *-] ++(-1,0) node[op amp, anchor=out] (opamp) {U1}%
+                node[above]{$V_o$} (opamp.-) -| (inv)%
+                (opamp.-) node[above]{$V_-$}
+                (inv) -- ++(0,1.5) to [C, a^=$C_c$] ++(3,0) to[short, -*] ++(0,-1.5)%
+                (out) to[R, *-*, a^=$R_{2b}$, i=$I_{2b}$] ++(0,-3) coordinate(Iout) -- ++(-1,0) to [R, -*, a^=$R_{2a}$, i=$I_{2a}$] ++(-3,0) coordinate(non-inv) to[R, -o, a^=$R_1$, i<^=$I_1$] ++(-3,0) node[left]{$V_{in}$}%
+                (opamp.+) node[below]{$V_+$} -| (non-inv)%
+                (Iout) to[twoport, i>^=$I_{out}$, t=$Z_L$, v=$V_L$] ++(0,-2.5) node[ground]{}
+            ;
+        \end{pgfonlayer}
+    \end{circuitikz}
+\end{document}
