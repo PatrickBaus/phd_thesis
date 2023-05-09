@@ -790,14 +790,18 @@
 	year = {1939}
 }
 
-@article{RFC-UUID,
-	author = {Leach, Paul J and Mealling, Michael and Salz, Rich},
-	journal = {RFC},
-	pages = {1–32},
+@misc{rfc_uuid,
+	abstract = {This specification defines a Uniform Resource Name namespace for UUIDs (Universally Unique IDentifier), also known as GUIDs (Globally Unique IDentifier). A UUID is 128 bits long, and can guarantee uniqueness across space and time. UUIDs were originally used in the Apollo Network Computing System and later in the Open Software Foundation\textbackslash{}'s (OSF) Distributed Computing Environment (DCE), and then in Microsoft Windows platforms. This specification is derived from the DCE specification with the kind permission of the OSF (now known as The Open Group). Information from earlier versions of the DCE specification have been incorporated into this document. {[}STANDARDS-TRACK{]}},
+	author = {Leach, Paul J. and Salz, Rich and Mealling, Michael H.},
+	doi = {10.17487/RFC4122},
+	howpublished = {RFC 4122},
+	month = jul,
+	number = 4122,
+	pagetotal = 32,
+	publisher = {RFC Editor},
+	series = {Request for Comments},
 	title = {A Universally Unique IDentifier (UUID) URN Namespace},
-	url = {https://datatracker.ietf.org/doc/html/rfc4122},
-	volume = {4122},
-	year = {2005}
+	year = 2005
 }
 
 @misc{TinkerforgeAsync,
@@ -1016,6 +1020,7 @@
 	abstract = {The aim of this paper is to present analytic rules for PID controller tuning that are simple and still result in good closed-loop behavior. The starting point has been the IMC-PID tuning rules that have achieved widespread industrial acceptance. The rule for the integral term has been modified to improve disturbance rejection for integrating processes. Furthermore, rather than deriving separate rules for each transfer function model, there is a just a single tuning rule for a first-order or second-order time delay model. Simple analytic rules for model reduction are presented to obtain a model in this form, including the “half rule” for obtaining the effective time delay.},
 	author = {Skogestad, Sigurd},
 	doi = {10.1016/S0959-1524(02)00062-8},
+	file = {../References/Simple analytic rules for model reduction and PID controller tuning.pdf},
 	journal = {Journal of Process Control},
 	keywords = {Process control; Feedback control; IMC; PI-control; Integrating process; Time delay},
 	number = {4},
@@ -1427,6 +1432,7 @@
 	doi = {10.1063/1.1143949},
 	file = {../References/LIBrsi93.pdf},
 	journal = {Review of Scientific Instruments},
+	month = mar,
 	number = {8},
 	pages = {2133–2135},
 	title = {A low‐noise high‐speed diode laser current controller},
@@ -1444,10 +1450,11 @@
 
 @phdthesis{thesis_alex,
 	author = {Martin, Alexander},
+	file = {../References/thesis_alex.pdf},
 	month = apr,
 	school = {Technische Universität Darmstadt},
 	title = {Laser Spectroscopic Investigation of Exotic States in Noble Gases},
-	url = {http://tuprints.ulb.tu-darmstadt.de/6666/},
+	url = {http://tuprints.ulb.tu-darmstadt.de/6666},
 	year = {2017}
 }
 
@@ -2092,14 +2099,6 @@
 	year = {2006}
 }
 
-@mastersthesis{liebmann_thesis,
-	author = {Liebmann, Tobias},
-	school = {TU Darmstadt},
-	title = {Mikrocontrollergesteuerte Temperaturregelung},
-	type = {Bachelor's Thesis},
-	year = 2017
-}
-
 @misc{supplemental_material,
 	author = {Baus, Patrick},
 	title = {Simualtion Scripts for the PhD Thesis},
@@ -2688,7 +2687,7 @@ current swing authority for electrical impedance tomography applications.pdf},
 	author = {John, Holger},
 	file = {../References/Dissertation_hjohn.pdf},
 	month = feb,
-	school = {school = {Institut für Angewandte Physik der Technischen Universität Darmstadt},},
+	school = {Technische Universität Darmstadt},
 	title = {Entwicklung eines Systems zum Fangen und Kühlen von atomarem Quecksilber},
 	url = {http://tuprints.ulb.tu-darmstadt.de/8381},
 	year = {2019}
@@ -2898,5 +2897,392 @@ current swing authority for electrical impedance tomography applications.pdf},
 	url = {https://github.com/PatrickBaus/sensorDaemon},
 	version = {4.1.16},
 	year = {2023}
+}
+
+@mastersthesis{thesis_liebmann,
+	author = {Liebmann, Tobias},
+	month = nov,
+	school = {Technische Universität Darmstadt},
+	title = {Mikrocontrollergesteuerte Temperaturregelung},
+	type = {Bachelor's Thesis},
+	year = {2017}
+}
+
+@misc{rfc_cbor,
+	abstract = {The Concise Binary Object Representation (CBOR) is a data format whose design goals include the possibility of extremely small code size, fairly small message size, and extensibility without the need for version negotiation. These design goals make it different from earlier binary serializations such as ASN.1 and MessagePack. This document obsoletes RFC 7049, providing editorial improvements, new details, and errata fixes while keeping full compatibility with the interchange format of RFC 7049. It does not create a new version of the format.},
+	author = {Bormann, Carsten and Hoffman, Paul E.},
+	doi = {10.17487/RFC8949},
+	howpublished = {RFC 8949},
+	month = dec,
+	number = 8949,
+	pagetotal = 66,
+	publisher = {RFC Editor},
+	series = {Request for Comments},
+	title = {Concise Binary Object Representation (CBOR)},
+	year = 2020
+}
+
+@misc{rfc_json,
+	abstract = {JavaScript Object Notation (JSON) is a lightweight, text-based, language-independent data interchange format. It was derived from the ECMAScript Programming Language Standard. JSON defines a small set of formatting rules for the portable representation of structured data. This document removes inconsistencies with other specifications of JSON, repairs specification errors, and offers experience-based interoperability guidance.},
+	author = {Bray, Tim},
+	doi = {10.17487/RFC8259},
+	howpublished = {RFC 8259},
+	month = dec,
+	number = 8259,
+	pagetotal = 16,
+	publisher = {RFC Editor},
+	series = {Request for Comments},
+	title = {The JavaScript Object Notation (JSON) Data Interchange Format},
+	year = 2017
+}
+
+@misc{git_labnode,
+	author = {Baus, Patrick},
+	month = sep,
+	title = {LabNode Python API},
+	url = {https://github.com/PatrickBaus/labnode_async},
+	version = {0.16.1},
+	year = {2022}
+}
+
+@misc{git_pid,
+	author = {Baus, Patrick},
+	month = apr,
+	title = {PID-CPP},
+	url = {https://github.com/PatrickBaus/PID-CPP},
+	version = {1.0.0},
+	year = {2022}
+}
+
+@manual{datasheet_AD5681R,
+	edition = {D},
+	month = dec,
+	organization = {Analog Devices Inc.},
+	title = {AD5681R Data Sheet - Tiny 16-/14-/12-Bit SPI nanoDAC+, with \ensuremath{\pm}2 (16-Bit) LSB INL and 2 ppm/°C Reference},
+	url = {https://www.analog.com/media/en/technical-documentation/data-sheets/AD5683R_5682R_5681R_5683.pdf},
+	year = {2016}
+}
+
+@misc{git_labnode_kicad,
+	author = {Baus, Patrick},
+	month = jan,
+	title = {Labnode - A Laboratory Temperature Controller},
+	url = {https://github.com/TU-Darmstadt-APQ/Labnode_PID},
+	version = {1.4.1},
+	year = {2022}
+}
+
+@article{split_pid,
+	abstract = {{The traditional proportional-integral-derivative (PID) algorithm for regulation suffers from a tradeoff: placing the sensor near the sample being regulated ensures that its steady-state temperature matches the desired setpoint. However, the propagation delay (lag) between heater and sample can limit the control bandwidth. Moving the sensor closer to the heater reduces the lag and increases the bandwidth but introduces offsets and drifts into the temperature of the sample. Here, we explore the consequences of using two probes—one near the heater, one near the sample—and assigning the integral term to the sample probe and the other terms to the heater probe. The split-PID algorithm can outperform PID control loops based on one sensor.}},
+	author = {Znaimer, Leith and Bechhoefer, John},
+	doi = {10.1063/1.4898197},
+	journal = {Review of Scientific Instruments},
+	month = {10},
+	note = {106105},
+	number = {10},
+	title = {Note: Split PID control—Two sensors can be better than one},
+	volume = {85},
+	year = {2014}
+}
+
+@book{multi_sensor_pid,
+	address = {Hoboken, NJ, USA},
+	author = {Skogestad, Sigurd and Postlethwaite, Ian},
+	isbn = {0470011688},
+	publisher = {John Wiley \&amp; Sons, Inc.},
+	title = {Multivariable Feedback Control: Analysis and Design},
+	year = {2005}
+}
+
+@manual{datasheet_LTC6655,
+	edition = {J},
+	month = apr,
+	organization = {Analog Devices Inc.},
+	title = {LTC6655 Data Sheet - 0.25ppm Noise, Low Drift Precision References},
+	url = {https://www.analog.com/media/en/technical-documentation/data-sheets/ltc6655-6655ln.pdf},
+	year = {2021}
+}
+
+@manual{datasheet_AD5760,
+	edition = {F},
+	month = apr,
+	organization = {Analog Devices Inc.},
+	title = {AD5760 Data Sheet - 0Ultra Stable, 16-Bit \ensuremath{\pm}0.5 LSB INL, Voltage Output DAC},
+	url = {https://www.analog.com/media/en/technical-documentation/data-sheets/ltc6655-6655ln.pdf},
+	year = {2018}
+}
+
+@manual{datasheet_LTC2508-32,
+	edition = {C},
+	month = apr,
+	organization = {Analog Devices Inc.},
+	title = {LTC2508-32 Data Sheet - 32-Bit Oversampling ADC with Configurable Digital Filter},
+	url = {https://www.mouser.de/datasheet/2/609/250832fc-3125031.pdf},
+	year = {2017}
+}
+
+@manual{datasheet_s102,
+	month = mar,
+	organization = {Vishay Precision Group, Inc.},
+	title = {S Series - High Precision Foil Resistor},
+	url = {https://foilresistors.com/docs/63001/63001.pdf},
+	year = {2015}
+}
+
+@manual{datasheet_amphenol_thermistor,
+	month = mar,
+	organization = {Analog Devices Inc.},
+	title = {RL0503-5820-97-MS Data Sheet - NTC Type MS Thermometrics Epoxy-Coated Thermistor},
+	url = {https://www.amphenol-sensors.com/hubfs/AAS-920-574B-Thermometrics-NTC-Type-MS-032822-web.pdf},
+	year = {2022}
+}
+
+@article{steinhart-hart,
+	abstract = {A function for use in interpolating thermistor calibrations has been found which is suitable for use with a wide variety of thermistors for ranges of a few degrees to a few hundred degrees. It is T−1 = A + B log R + C (log R)3 where T is the Kelvin temperature, R the resistance, and A, B and C constants. This function possesses a number of desirable properties and fits thermistor data considerably better than many such functions now in use.},
+	author = {Steinhart, John S. and Hart, Stanley R.},
+	doi = {10.1016/0011-7471(68)90057-0},
+	issn = {0011-7471},
+	journal = {Deep Sea Research and Oceanographic Abstracts},
+	number = {4},
+	title = {Calibration curves for thermistors},
+	volume = {15},
+	year = {1968}
+}
+
+@article{thermistor_noise,
+	abstract = {{As part of the development of a spectrally uniform room-temperature absolute radiometer, we have studied the electrical noise of several bulk chip thermistors in order to estimate the noise floor and optical dynamic range. Understanding the fundamental limits of the temperature sensitivity leads inevitably to studying the noise background of the complex electro-thermal system. To this end, we employ a measurement technique based on alternating current synchronous demodulation. Results of our analysis show that the combination of a low-current noise Junction Field Effect Transistor (JFET) preamplifier together with chip thermistors is optimal for our purpose, yielding a root mean square noise temperature of 2.8 \ensuremath{\mu}K in the frequency range of 0.01 Hz to 1 Hz.}},
+	author = {Ryger, Ivan and Harber, Dave and Stephens, Michelle and White, Malcolm and Tomlin, Nathan and Spidell, Matthew and Lehman, John},
+	doi = {10.1063/1.4976029},
+	file = {../DgTemp/References/Noise characteristics of thermistors: Measurement methods and results of selected devices.pdf},
+	journal = {Review of Scientific Instruments},
+	month = {02},
+	note = {024707},
+	number = {2},
+	title = {Noise characteristics of thermistors: Measurement methods and results of selected devices},
+	volume = {88},
+	year = {2017}
+}
+
+@manual{datasheet_MAX329,
+	edition = {3},
+	month = feb,
+	organization = {Analog Devices Inc.},
+	title = {MAX329 Data Sheet - Ultra-Low Leakage Monolithic CMOS Analog Multiplexers},
+	url = {https://www.analog.com/media/en/technical-documentation/data-sheets/max328-max329.pdf},
+	year = {2011}
+}
+
+@manual{datasheet_vhp101,
+	month = mar,
+	organization = {Vishay Precision Group, Inc.},
+	title = {VHP101 data sheet - Ultra-High Precision Hermetically Sealed Bulk Metal® Foil Resistor Ultra-High Precision Hermetically Sealed Bulk Metal® Foil Resisto},
+	url = {https://foilresistors.com/docs/63003/vhp100.pdf},
+	year = {2021}
+}
+
+@inproceedings{dielectric_absorption_pvc_pe_ptfe,
+	author = {Mergos, John A. and Athanassopoulou, Maria D. and Argyropoulos, Theodore G. and Dervos, Constantine T. and Vassiliou, Panayota},
+	booktitle = {2010 10th IEEE International Conference on Solid Dielectrics},
+	doi = {10.1109/ICSD.2010.5568019},
+	file = {../DgTemp/References/The effect of accelerated UV-ageing on the dielectric properties of PVC, PTFE and HDPE.pdf},
+	title = {The effect of accelerated UV-ageing on the dielectric properties of PVC, PTFE and HDPE},
+	year = {2010}
+}
+
+@article{ecdl_paris,
+	abstract = {We have developed external cavity diode lasers, where the wavelength selection is assured by a low loss interference filter instead of the common diffraction grating. The filter allows a linear cavity design reducing the sensitivity of the wavelength and the external cavity feedback against misalignment. By separating the feedback and wavelength selection functions, both can be optimized independently leading to an increased tunability of the laser. The design is employed for the generation of laser light at 698, 780 and 852nm. Its characteristics make it a well suited candidate for space-born lasers.},
+	author = {Baillard, X. and Gauguet, A. and Bize, S. and Lemonde, P. and Laurent, Ph. and Clairon, A. and Rosenbusch, P.},
+	doi = {10.1016/j.optcom.2006.05.011},
+	journal = {Optics Communications},
+	keywords = {External cavity laser; Interference filter; Grating; Stability; Tunability; Laser cooling},
+	number = {2},
+	title = {Interference-filter-stabilized external-cavity diode lasers},
+	volume = {266},
+	year = {2006}
+}
+
+@article{gfactor_theory,
+	abstract = {The anomalous magnetic moment of the electron a e measured in a Penning trap occupies a unique position among high precision measurements of physical constants in the sense that it can be compared directly with the theoretical calculation based on the renormalized quantum electrodynamics (QED) to high orders of perturbation expansion in the fine structure constant \ensuremath{\alpha} , with an effective parameter \ensuremath{\alpha} / \ensuremath{\pi} . Both numerical and analytic evaluations of a e up to ( \ensuremath{\alpha} / \ensuremath{\pi} ) 4 are firmly established. The coefficient of ( \ensuremath{\alpha} / \ensuremath{\pi} ) 5 has been obtained recently by an extensive numerical integration. The contributions of hadronic and weak interactions have also been estimated. The sum of all these terms leads to a e ( theory ) = 1 159 652 181.606 ( 11 ) ( 12 ) ( 229 ) \ensuremath{\times} 10 − 12 , where the first two uncertainties are from the tenth-order QED term and the hadronic term, respectively. The third and largest uncertainty comes from the current best value of the fine-structure constant derived from the cesium recoil measurement: \ensuremath{\alpha} − 1 ( Cs ) = 137.035 999 046 ( 27 ) . The discrepancy between a e ( theory ) and a e ( ( experiment ) ) is 2.4 \ensuremath{\sigma} . Assuming that the standard model is valid so that a e (theory) = a e (experiment) holds, we obtain \ensuremath{\alpha} − 1 ( a e ) = 137.035 999 1496 ( 13 ) ( 14 ) ( 330 ) , which is nearly as accurate as \ensuremath{\alpha} − 1 ( Cs ) . The uncertainties are from the tenth-order QED term, hadronic term, and the best measurement of a e , in this order.},
+	article-number = {28},
+	author = {Aoyama, Tatsumi and Kinoshita, Toichiro and Nio, Makiko},
+	doi = {10.3390/atoms7010028},
+	journal = {Atoms},
+	number = {1},
+	title = {Theory of the Anomalous Magnetic Moment of the Electron},
+	volume = {7},
+	year = {2019}
+}
+
+@article{gfactor_theory_codegen,
+	abstract = {Among 12 672 Feynman diagrams contributing to the electron anomalous magnetic moment at the tenth order, 6354 are the diagrams having no lepton loops, i.e., those of quenched type. Because the renormalization structure of these diagrams is very complicated, some automation scheme is inevitable to calculate them. We developed an algorithm to write down FORTRAN programs for numerical evaluation of these diagrams, where the necessary counterterms to subtract out ultraviolet subdivergence are generated according to Zimmermann's forest formula. Thus far we have evaluated crudely integrals of 2232 tenth-order vertex diagrams which require vertex renormalization only. Remaining 4122 diagrams, which have ultraviolet-divergent self-energy subdiagrams and infrared-divergent subdiagrams, are being evaluated by giving small mass \ensuremath{\lambda} to photons to control the infrared problem.},
+	author = {Aoyama, T. and Hayakawa, M. and Kinoshita, T. and Nio, M.},
+	doi = {10.1016/j.nuclphysb.2006.01.040},
+	issn = {0550-3213},
+	journal = {Nuclear Physics B},
+	number = {1},
+	pages = {138–180},
+	title = {Automated calculation scheme for \ensuremath{\alpha}n contributions of QED to lepton g−2: Generating renormalized amplitudes for diagrams without lepton loops},
+	url = {https://www.sciencedirect.com/science/article/pii/S0550321306000940},
+	volume = {740},
+	year = {2006}
+}
+
+@inbook{gfactor_ions_scaling,
+	abstract = {In this review we address the topic of X-ray spectroscopic investigations of the ground-state transitions in the heaviest one-electron systems by using the intense beams of cooled heavy ions provided by the Experimental Storage Ring (ESR) at GSI Darmstadt. Such experiments on high-Z ions open up unique possibilities for the investigation of the quantum electrodynamical (QED) effects in the nonperturbative domain of extremely strong electromagnetic fields. Particular emphasis is given to the developments as well as to the current progress for the future experiments aiming for the sensitive tests of the higher-order bound-state QED effects. These include novel high-resolution detection systems: crystal spectrometers in combination with position-sensitive solid-state detectors and bolometers.},
+	address = {Berlin, Heidelberg},
+	author = {Stöhlker, Th. and Gumberidze, A. and Trassinelli, M. and Andrianov, V. and Beyer, H. F. and Kraft-Bermuth, S. and Bleile, A. and Egelhof, P. and collaboration, The FOCAL},
+	booktitle = {Precision Physics of Simple Atoms and Molecules},
+	doi = {10.1007/978-3-540-75479-4_9},
+	editor = {Karshenboim, Savely G.},
+	isbn = {978-3-540-75479-4},
+	pages = {157–163},
+	publisher = {Springer Berlin Heidelberg},
+	title = {Quantum Electrodynamics in Extreme Fields: Precision Spectroscopy of High-Z H-like Systems},
+	year = {2008}
+}
+
+@article{gfactor_experimental,
+	author = {Fan, X. and Myers, T. G. and Sukra, B. A. D. and Gabrielse, G.},
+	doi = {10.1103/PhysRevLett.130.071801},
+	issue = {7},
+	journal = {Phys. Rev. Lett.},
+	month = {Feb},
+	numpages = {6},
+	pages = {071801},
+	publisher = {American Physical Society},
+	title = {Measurement of the Electron Magnetic Moment},
+	url = {https://link.aps.org/doi/10.1103/PhysRevLett.130.071801},
+	volume = {130},
+	year = {2023}
+}
+
+@article{penning_trap_laser_spectroscopy,
+	abstract = { An overview is presented of laser spectroscopy experiments with cold, trapped, highly charged ions, which will be performed at the HITRAP facility at GSI in Darmstadt (Germany). These high-resolution measurements of ground-state hyperfine splittings will be three orders of magnitude more precise than previous measurements. Moreover, from a comparison of measurements of the hyperfine splittings in hydrogen-like and lithium-like ions of the same isotope, QED effects at high electromagnetic fields can be determined within a few percent. Several candidate ions suited for these laser spectroscopy studies are presented.PACS Nos.: 12.20.Fv, 21.10.Ky, 32.10.Fn, 32.30.–r },
+	author = {Winters, D FA and Vogel, M and Segal, D M and Thompson, R C and Nörtershäuser, W},
+	doi = {10.1139/p07-023},
+	journal = {Canadian Journal of Physics},
+	number = {5},
+	title = {Laser spectroscopy of hyperfine structure in highly charged ions: a test of QED at high fields},
+	volume = {85},
+	year = {2007}
+}
+
+@article{laser_microwave_double_resonance_spectroscopy,
+	author = {Quint, W. and Moskovkhin, D. L. and Shabaev, V. M. and Vogel, M.},
+	doi = {10.1103/PhysRevA.78.032517},
+	issue = {3},
+	journal = {Phys. Rev. A},
+	month = sep,
+	numpages = {8},
+	publisher = {American Physical Society},
+	title = {Laser-microwave double-resonance technique for g-factor measurements in highly charged ions},
+	volume = {78},
+	year = {2008}
+}
+
+@article{penning_trap_transparent,
+	abstract = {{We have conceived, built, and operated a cryogenic Penning trap with an electrically conducting yet optically transparent solid electrode. The trap, dedicated to spectroscopy and imaging of confined particles under large solid angles, is of “half-open” design with one open endcap and one closed endcap that mainly consists of a glass window coated with a highly transparent conductive layer. This arrangement allows for the trapping of externally or internally produced particles and yields flexible access for optical excitation and efficient light collection from the trapping region. At the same time, it is electrically closed and ensures long-term ion confinement under well-defined conditions. With its superior surface quality and its high as well as homogeneous optical transmission, the window electrode is an excellent replacement for partially transmissive electrodes that use holes, slits, metallic meshes, and the like.}},
+	author = {Wiesel, M. and Birkl, G. and Ebrahimi, M. S. and Martin, A. and Quint, W. and Stallkamp, N. and Vogel, M.},
+	doi = {10.1063/1.5002180},
+	eprint = {https://pubs.aip.org/aip/rsi/article-pdf/doi/10.1063/1.5002180/13475514/123101\_1\_online.pdf},
+	issn = {0034-6748},
+	journal = {Review of Scientific Instruments},
+	month = {12},
+	note = {123101},
+	number = {12},
+	title = {Optically transparent solid electrodes for precision Penning traps},
+	url = {https://doi.org/10.1063/1.5002180},
+	volume = {88},
+	year = {2017}
+}
+
+@article{penning_trap_half_open,
+	author = {Lindenfels, David and Vogel, Manuel and Quint, Wolfgang and Birkl, Gerhard and Wiesel, Marco},
+	doi = {10.1007/s10751-013-0961-z},
+	journal = {Hyperfine interactions},
+	publisher = {Springer Science + Business Media B.V},
+	title = {{H}alf-open {P}enning trap with efficient light collection for precision laser spectroscopy of highly charged ions},
+	year = {2013}
+}
+
+@article{artemis_commissioning,
+	abstract = { Precise determination of bound-electron g-factors in highly charged ions provides stringent tests for state of the art theoretical calculations. The scope reaches from relativistic electron-correlation effects on the one hand to bound-state QED terms on the other. Besides, the investigation can contribute to the determination of the fine-structure constant \ensuremath{\alpha}. In a first approach with boron-like ions of spinless nuclei (e.g., 40Ar13+ and 40Ca15+), we will excite the 22P1/2 – 22P3/2 fine-structure transition with laser radiation and probe microwave transitions between Zeeman sublevels. From this laser-microwave double-resonance technique the g-factor can be determined on a ppb level of accuracy. We have prepared a cryogenic trap assembly with a creation trap and a spectroscopy trap — a half-open compensated cylindrical Penning trap. Argon gas will be injected through a remotely controlled valve, working at cryogenic temperature and in the field of a superconducting magnet. Ions are produced by electron impact ionization and transferred to the spectroscopy trap. In the future, the trap will be connected to the HITRAP facility at GSI, and the method will be applied to hyperfine-structure transitions of hydrogen-like heavy ions to measure electronic and nuclear magnetic moments. We present important techniques employed in the experiment. },
+	author = {von Lindenfels, David and Brantjes, Nicolaas P.M. and Birkl, Gerhard and Quint, Wolfgang and Shabaev, Vladimir M. and Vogel, Manuel},
+	doi = {10.1139/P10-071},
+	journal = {Canadian Journal of Physics},
+	number = {1},
+	title = {Bound electron g-factor measurement by double-resonance spectroscopy on a fine-structure transitionThis paper was presented at the International Conference on Precision Physics of Simple Atomic Systems, held at École de Physique, les Houches, France, 30 May – 4 June, 2010.},
+	volume = {89},
+	year = {2011}
+}
+
+@article{bi82+_wavelength,
+	author = {Shabaev, Vladimir M. and Bondarev, Andrey I. and Glazov, Dmitry A. and Kaygorodov, M. Y. and Kozhedub, Yury S. and Maltsev, Ilia A. and Malyshev, Aleksei V. and Popov, R V and Tupitsyn, I. I. and Zubova, Nadezhda},
+	journal = {Hyperfine Interactions},
+	title = {Stringent tests of QED using highly charged ions},
+	volume = {239},
+	year = {2018}
+}
+
+@phdthesis{thesis_seppo,
+	abstract = {Mit Hilfe von optischen Messmethoden können atomare Strukturen mit außerordentlicher Präzision untersucht werden. Abweichungen von den theoretischen Vorhersagen können dabei Hinweise auf neue physikalische Effekte liefern. Daher kommt Präzisionsmessungen an atomaren Übergängen auch in Zukunft große Bedeutung zu. Mit der vorliegenden Arbeit wurde ein Lasersystem für Präzisionsmessungen an Bismuth (209 Bi82+ ), Tellur (130 Te2 ) sowie Rydberg-Zuständen von Rubidium (85 Rb) entwickelt und charakterisiert. In der Anwendung konnten spektroskopische Frequenzmessungen an Tellur und Rubidium realisiert werden. Das Lasersystem besteht aus einem zweifach frequenzverdoppelten Diodenlaser, der über einen optischen Resonator und ein RF-Schwebungssignal bei allen zugänglichen Wellenlängen absolut stabilisierbar ist. Der Aufbau des Lasersystems wird vorgestellt sowie die systematischen Abweichungen diskutiert, die durch Druckabhängigkeit des Brechungsindex der im Transferresonator enthaltenen Luft entstehen. Für ein geplantes Experiment zur Messung der Hyperfeinaufspaltung des Grundzustands von 209 Bi82+ ergibt sich eine Stabilität, die besser als 6,14 MHz bei 244 nm ist. Dies erlaubt eine Verbesserung der Präzision der Übergangsfrequenzmessung von vier Größenordnungen. Durch die Nutzung eines bereits installierten evakuierten Resonators lässt sich die Präzision zusätzlich steigern. Die erreichte Genauigkeit wird an einer 130 Te2 -Spektroskopie bestimmt. Acht aus der Literatur bekannte Referenzlinien mit Frequenzen zwischen 613720,717 GHz und 616803,545 GHz wurden erneut aufgenommen. Bei drei Linien, die im Emissionsspektrum eines Argon-Ionen-Lasers liegen, wurde eine Abweichung zu den in der Literatur angegebenen Frequenzen festgestellt. Weitere Unklarheiten in der Literatur werden behoben. Ebenfalls Teil dieser Arbeit ist die erstmalige präzise Vermessung von 843 dopplerfreien Referenzen zwischen 613881,150 GHz und 616614,258 GHz mit einer Genauigkeit von größtenteils unter 4 MHz. Des weiteren werden Messungen der elektromagnetisch induzierten Transparenz (EIT) an Rydberg-Übergängen von 85 Rb vorgestellt. Aufgenommene Übergangslinien mit Hauptquantenzahlen von n=20, 58, 79, 97 und 150 werden vorgestellt. Beispielhaft am Übergang mit dem Rydberg-Zustand 97 2 D an 85Rb wird das auftretende Spektrum an Zwei-Photonen-Resonanzen bei Variation von Anfangs-, Zwischen- und Endzustand analysiert und erklärt. Die Energieverschiebung von Unterzuständen durch elektrische und magnetische Felder wird untersucht. Durch eine Frequenzmessung am Zwei-Photonen-Übergang 5 2 S1/2 {$\rightarrow$} 150 2 D5/2 wird die Ionisationsenergie von 85 Rb erneut bestimmt. },
+	address = {Darmstadt},
+	author = {Albrecht, Sebastian},
+	month = aug,
+	school = {Technische Universität Darmstadt},
+	title = {Ein Lasersystem zur Spektroskopie von hochgeladenen Ionen, Tellurmolekülen und Rubidium-Rydberg-Zuständen },
+	url = {http://tuprints.ulb.tu-darmstadt.de/3906/},
+	year = {2014}
+}
+
+@article{blue_laser_nobel_lecture,
+	author = {Akasaki, Isamu},
+	doi = {10.1103/RevModPhys.87.1119},
+	issue = {4},
+	journal = {Rev. Mod. Phys.},
+	month = oct,
+	numpages = {13},
+	publisher = {American Physical Society},
+	title = {Nobel Lecture: Fascinated journeys into blue light},
+	volume = {87},
+	year = {2015}
+}
+
+@article{Nakamura_1996,
+	abstract = {InGaN multi-quantum-well (MQW) structure laser diodes (LDs) fabricated from   III-V nitride materials were grown by metalorganic chemical vapor deposition on   sapphire substrates. The mirror facet for a laser cavity was formed by etching of III-V   nitride films without cleaving. As an active layer, the InGaN MQW structure was used.   The InGaN MQW LDs produced 215 mW at a forward current of 2.3 A, with a sharp   peak of light output at 417 nm that had a full width at half-maximum of 1.6 nm under   the pulsed current injection at room temperature. The laser threshold current density   was  4 kA/cm2. The emission wavelength is the shortest one ever generated by a   semiconductor laser diode.},
+	author = {Nakamura, Shuji and Senoh, Masayuki and Nagahama, Shin-ichi and Iwasa, Naruhito and Yamada, Takao and Matsushita, Toshio and Kiyoku, Hiroyuki Kiyoku Hiroyuki and Sugimoto, Yasunobu Sugimoto Yasunobu},
+	doi = {10.1143/JJAP.35.L74},
+	journal = {Japanese Journal of Applied Physics},
+	month = jan,
+	number = {1B},
+	title = {InGaN-Based Multi-Quantum-Well-Structure Laser Diodes},
+	volume = {35},
+	year = {1996}
+}
+
+@article{uv_cw_laser_diode_first,
+	author = {Akasaki, I and Sota, S and Sakai, H and Tanaka, T and Koike, M and Amano, H},
+	journal = {Electronics Letters},
+	number = {12},
+	pages = {1105–1106},
+	publisher = {IET},
+	title = {Shortest wavelength semiconductor laser diode},
+	volume = {32},
+	year = {1996}
+}
+
+@article{uv_pulsed_laser_diode_first,
+	abstract = {Quantum well structures composed of GaInN well and GaN barrier were fabricated. Room-temperature stimulated emission by pulsed current injection is observed from group III nitride using the very thin active layer, for the first time.},
+	author = {Akasaki, Isamu and Amano, Hiroshi and Sota, Shigetoshi and Sakai, Hiromitsu and Tanaka, Toshiyuki and Koike, Masayoshi},
+	doi = {10.7567/JJAP.34.L1517},
+	journal = {Japanese Journal of Applied Physics},
+	month = nov,
+	number = {11B},
+	pages = {L1517},
+	publisher = {},
+	title = {Stimulated Emission by Current Injection from an AlGaN/GaN/GaInN Quantum Well Device},
+	url = {https://dx.doi.org/10.7567/JJAP.34.L1517},
+	volume = {34},
+	year = {1995}
 }
 
