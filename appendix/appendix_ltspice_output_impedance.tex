@@ -10,7 +10,9 @@
 \usepackage{url}
 
 % Define local constants, that will be removed when imported into the main file
-\addbibresource[location=local]{../bibliography.bib}
+\IfFileExists{../bibliography.bib}
+  {\addbibresource[location=local]{../bibliography.bib}}
+  {}
 
 % Define constants here
 \ctikzset{
