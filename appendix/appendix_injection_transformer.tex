@@ -10,7 +10,9 @@
 \usepackage{url}
 
 % Define local constants, that will be removed when imported into the main file
-\addbibresource[location=local]{../bibliography.bib}
+\IfFileExists{../bibliography.bib}
+  {\addbibresource[location=local]{../bibliography.bib}}
+  {}
 
 % Define constants here
 \ctikzset{
@@ -79,7 +81,7 @@ The box requires one \qty{6}{\mm} hole for the earthing connector and 3 \qty{9.7
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.75\textwidth]{../images/transformer_cropped.jpg}
+    \includegraphics[width=0.75\textwidth]{../images/transformer_cropped_lowres.jpg}
     \caption{Photo of the finished injection transformer in its box. The black rubber is used to secure it in the box.}
     \label{fig:injection_transformer_assembled}
 \end{figure}
