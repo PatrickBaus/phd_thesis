@@ -97,6 +97,8 @@
 \captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
 
 \DeclareSIUnit{\plc}{PLC}
+\DeclareSIUnit{\ppm}{ppm}
+\DeclareSIUnit{\ppb}{ppb}
 \DeclareSIUnit{\year}{a}
 \sisetup{%
     separate-uncertainty = true,% display the uncertainty as 10 \pm 2
@@ -149,7 +151,7 @@
 \makeatother
 
 
-%\setinstitutionlogo[width]{images/Titel_apq-logo.pdf}
+
 %\printpicturesize
 % \settitlepicture{images/front.pdf}
 \usetikzlibrary{arrows.meta,calc,intersections}
@@ -174,22 +176,26 @@
 }
 
 \newcommand{\versionNumber}{v.0.9.0}
+
+\addTitleBoxLogo*{\includegraphics[width=\linewidth]{images/titel_apq-logo.pdf}}
+
 \begin{document}
 	\title{Development of Laser Systems and Spectroscopy of Highly Charged Ions}
 	\author{Patrick Baus}
 	\birthplace{Mannheim}
 	\reviewer{Prof. Dr. Gerhard Birkl \and Prof. Dr. Thomas Walther}
 	%\publishers{Foobar}
-	\department{phys}
-	\institute{Institut für Angewandte Physik}
-	\group{APQ}
+	%\department{phys}
+	%\institute{Institut für Angewandte Physik}
+	%\group{APQ}
 
 	\submissiondate{\today}
 	\examdate{\today}
 	\maketitle
 
-    %\include{introduction}
+	\tableofcontents
 	\include{changelog}
+    \include{introduction}
 
     \include{preparation}
     %\showthe\textwidth
