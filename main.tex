@@ -1,3 +1,7 @@
+\makeatletter
+\def\input@path{{./apqdesign/}}
+\makeatother
+
 \documentclass[
 	ruledheaders=chapter,% Ebene bis zu der die Überschriften mit Linien abgetrennt werden, vgl. DEMO-TUDaPub
 	class=book,% Basisdokumentenklasse. Wählt die Korrespondierende KOMA-Script Klasse
@@ -9,11 +13,10 @@
 	%BCOR=5mm,%Bindekorrektur, falls notwendig
 %	parskip=half-,%Absatzkennzeichnung durch Abstand vgl. KOMA-Script
 	fontsize=11pt,%Basisschriftgröße laut Corporate Design ist mit 9pt häufig zu klein
-	logofile=example-image, %Falls die Logo Dateien nicht vorliegen
 	IMRAD=false,
 	twoside,
 %	draft  % Use draft to find overfull boxes, this seems to break the hyperref package
-]{tudapub}
+]{apqpub}
 
 \usepackage[english]{babel}
 \usepackage{cancel}
@@ -63,7 +66,8 @@
     maxcitenames=1,%
     sorting=nyt,%name, year, title
     autolang=hyphen,%
-    sortcites=true%
+    sortcites=true,%
+    isbn=false%
 ]{biblatex}
 \usepackage{xurl}% fixes url line breaks in biblatex, load after biblatex
 \usepackage{csquotes}  % Needed by biblatex when babel is active
@@ -177,7 +181,8 @@
 
 \newcommand{\versionNumber}{v.0.9.0}
 
-\addTitleBoxLogo*{\includegraphics[width=\linewidth]{images/titel_apq-logo.pdf}}
+\addTitleBoxLogo*{\makebox[\linewidth][l]{\includegraphics[width=55mm]{images/titel_apq-logo.pdf}}}
+
 
 \begin{document}
 	\title{Development of Laser Systems and Spectroscopy of Highly Charged Ions}
