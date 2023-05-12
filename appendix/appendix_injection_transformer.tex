@@ -10,9 +10,10 @@
 \usepackage{url}
 
 % Define local constants, that will be removed when imported into the main file
-\IfFileExists{../bibliography.bib}
-  {\addbibresource[location=local]{../bibliography.bib}}
-  {}
+\ifthenelse{\equal{\detokenize{appendix_injection_transformer}}{\jobname}}{%
+% Only add the bib resource when compiling this document as a standalone doc
+\addbibresource[location=local]{../bibliography.bib}
+}{}
 
 % Define constants here
 \ctikzset{
