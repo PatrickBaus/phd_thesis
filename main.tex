@@ -1,9 +1,11 @@
+%\directlua{pdf.setminorversion(5)}
+
 \makeatletter
-\def\input@path{{./apqdesign/}}
+\def\input@path{{./apqdesign}}
 \makeatother
 
 \documentclass[
-	ruledheaders=chapter,% Ebene bis zu der die Überschriften mit Linien abgetrennt werden, vgl. DEMO-TUDaPub
+	ruledheaders=all,% Ebene bis zu der die Überschriften mit Linien abgetrennt werden, vgl. DEMO-TUDaPub
 	class=book,% Basisdokumentenklasse. Wählt die Korrespondierende KOMA-Script Klasse
 	thesis={type=dr, dr=rernat},
 	accentcolor=1b,  % APQ blue is not available :(
@@ -146,6 +148,10 @@
 \ctikzloadstyle{romano}
 
 \makeatletter
+\renewcommand*{\@pnumwidth}{3em}
+\makeatother
+
+\makeatletter
 \renewcommand{\@chapapp}{}% Not necessary...
 \newenvironment{chapquote}[2][2em]
   {\setlength{\@tempdima}{#1}%
@@ -170,14 +176,14 @@
     colback=red!5!white,%
     colframe=red!75!black,%
     width=0.8\linewidth,%
-    title=Specification~\thetcbcounter: #2,#1%
+    title=Design requirements~\thetcbcounter: {#2},#1%
 }
 
 \newtcolorbox[auto counter, number within=chapter]{deviceProperties}[2][]{%
     colback=green!10!white,%
     colframe=green!55!black,%
     width=0.8\linewidth,%
-    title=Device Properties~\thetcbcounter: #2,#1%
+    title=Device Properties~\thetcbcounter: {#2},#1%
 }
 
 \newcommand{\versionNumber}{v.0.9.0}

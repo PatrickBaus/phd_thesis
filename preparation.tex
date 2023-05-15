@@ -12,15 +12,15 @@
 The ARTEMIS experiment is currently in the process of commissioning. Due to the relative abundance of Argon, the ability to create highly charged ion species using an electron beam along with an interesting transition at $\lambda = \qty{441.25575(17)}{\nm}$ \cite{ar13+_wavelength} with a lifetime of \qty{9.573(6)}{\ms} \cite{ar13+_lifetime} makes \ce{Ar^{13+}} an ideal candidate for this purpose. Figure \ref{fig:bohr_ar13} shows the simplified electronic configuration of the boron-like \ce{Ar^{13+}} investigated.
 \begin{figure}[ht]
     \centering
-    \begin{subfigure}{0.3\linewidth}
+    \begin{subfigure}{0.28\linewidth}
         \centering
         \import{figures/}{fig_bohr_Ar13.tex}
-        \caption{Shell model of boron-like \ce{Ar^{13+}} with three outer electrons.}
+        \caption{Shell model of boron-like \ce{Ar^{13+}}.}
         \label{fig:bohr_ar13}
     \end{subfigure}
     \begin{subfigure}{0.6\linewidth}
         \centering
-        \scalebox{0.8}{%
+        \scalebox{0.75}{%
             \import{figures/}{fig_level_transitions.tex}
         }% scalebox
         \caption{Level diagram of the \ce{Ar^{13+}} transitions accessible at \qty{441}{\nm}. Frequencies with numbers denote optical transitions, letters denote microwave transitions.}
@@ -65,39 +65,36 @@ To conclude, the Achilles' heel of the system is the transfer cavity and replaci
 % also Determination of piezoelectric fields in strained GaInN quantum wells using the quantum-confined Stark effect
 Laser diodes are current driven devices, because
 \begin{equation*}
-    P_{out} \propto I\,,
+    P_{out} \propto I
 \end{equation*}
-
 and the diode current $I$ approximately follows the Shockley equation \cite{shockley_diode}
 \begin{equation}
     I = I_0 \left( e^{\frac{qV_d}{k_B T}} - 1\right) \, . \label{eqn:shockley}
 \end{equation}
 
-$k_B$ is Boltzmann constant, $T$ the temperature, $q$ the electron charge and $V_d$ the diode voltage. The exponential dependence of the current on the supply voltage calls for a current source to drive a laser diode safely, without risking thermal damage.
+$k_B$ is Boltzmann constant, $T$ the temperature, $q$ the electron charge and $V_d$ the diode voltage. The exponential dependence of the current on the supply voltage calls for a current source to drive a laser diode safely without risking thermal damage due to excessive injection currents.
 
-The primary function of a laser driver is to provide a stable, but user adjustable, current. The user adjustable current can typically be modulated at frequencies up to several \unit{\MHz} to shape the frequency and amplitude of the laser beam. Additional features, like current and voltage limits, aid in protecting the expensive laser diodes.
+The primary function of a laser driver is therefore to provide a stable, but user adjustable, current. This current can typically be modulated at frequencies up to several \unit{\MHz} to shape the frequency and amplitude of the laser beam. Additional features, like current and voltage limits, aid in protecting the expensive laser diodes and it is not uncommon to have additional safeguards inside the laser head that are under control of the laser driver like a shorting relay to ensure the laser diode is shorted when the driver is disconneted or disabled.
 
 This section deals with the design challenges of such a device used for high precision laser spectroscopy. First the design requirements are established and then technical specifications are developed.
 
-The focus of this work lies on two types of laser diodes, indium gallium nitride (InGaN) and aluminium gallium arsenide (AlGaAs), but is not limited to those two types. The former material is used for blue laser didoes at around \qty{450}{\nm} and diodes up to green wavelengths, the latter is used for near-infrared (NIR) laser diodes at \qty{780}{\nm}. Both wavelengths are used for experiments in this group.
+The focus of this work lies on two types of laser diodes, indium gallium nitride (InGaN) and aluminium gallium arsenide (AlGaAs), but is not limited to those two types. The former material is, for example, used for blue laser didoes at around \qty{450}{\nm}, discussed in the previous section, and laser diodes up to green wavelengths, the latter is used for near-infrared (NIR) laser diodes such as \qty{780}{\nm} laser diodes. Both wavelengths are used for experiments in this group. The former type is used in the ARTEMIS experiment for the spectroscopy of highly charged ions, the latter is extensively used to manipulate and control the rubidium atoms used by the quantum computing experiments.
 
-The design requirements are split into four parts, which need to be discussed: The ambient environment, the diode voltage and current requirements, the modulation bandwidth and finally the noise specifications.
+The design requirements are split into three parts which need to be discussed: The ambient environment is one of those parameters and mostly focuses on the ambient temperature, because its effects are the most pronounced. The current source electrical requirements, like the drift, its noise, the output impedance and the modulation bandwidth are discussed as these have a profound impact on the intended application in experiments. Finally, the user interface including the external communication interfaces are defined.
 
-\clearpage
 \subsection{Design Goals: Ambient Environment}%
 \label{sec:design_goal_environment}
-The laser driver is to be used in a clean laboratory environment. Typical lab temperatures are in the range of \qtyrange[range-phrase=\textup{ to }]{20}{30}{\celsius}. This temperature range was also encountered in our labs, before improvements were implemented as part of this work. Humidity is only controlled with dehumidifiers and therefore in the range of \qtyrange{15}{60}{\percent rH}. The air is typically filtered using H14 HEPA filters.
+The lasers and therefore the laser driver is to be mostly used in a clean laboratory environment. In this particular use case the air is filtered using H14 HEPA filters, but less rigorously controlled environments must be considered as well, because not all fields of application are in optical labs. A mostly dustfree industrial environment is considered acceptable as well. Typical lab temperatures are in the range of \qtyrange[range-phrase=\textup{~to~}]{20}{30}{\celsius}. This temperature range was also encountered in the labs discussed in this work before improvements were implemented as part of this work. The upper end of the range must be considered when operating the devices inside a rack where the temperatures are even higher and the device should therefore be tested for its upper limit. \qty{35}{\celsius} is a typical value measured inside the racks used in the lab. Humidity is only controlled with dehumidifiers limiting the upper bound to the range of \qtyrange[range-phrase=\textup{~to~}]{15}{60}{\percent rH}.
 
 Figure \ref{fig:lab_temperature_start_of_project} shows a typical one day span of the lab temperature as it was found at the start of this project.
-
 \begin{figure}[ht]
     \centering
     \input{images/temperature_011_2016.pgf}
-    \caption{Temperature in Lab 011 on 2016-11-26.}
+    \caption{Temperature in Lab 011 on 2016-11-26. Recorded by the LabKraken monitor.}
     \label{fig:lab_temperature_start_of_project}
 \end{figure}
 
-As it can be seen there are strong oscillations of the temperature as a result of the on–off air conditioning temperature controller. The commercial controller used back then was realized using an IMI Heimeier \device{EMO T} valve \cite{datasheet_heimeier_emo_t}, which is a two-step valve. Although this solution was later replaced by a custom design described in section \ref{sec:lab_temp_control}, these type of controllers are found in many other labs and temperature swings of \qty{2}{\kelvin} must therefore be expected.
+As it can be seen there are strong oscillations of the temperature around the setpoint of \qty{21}{\celsius} as a result of the on–off air conditioning temperature controller. The commercial controller initially installed was using an IMI Heimeier \device{EMO T} thermoelectric actuator \cite{datasheet_heimeier_emo_t}, which is a two-step valve. Although this solution was later replaced by a custom design described in section \ref{sec:lab_temp_control}, these type of controllers are found in many other labs and temperature swings of \qty{2}{\kelvin} must therefore be expected.
 
 These environmental parameters can now be used to estimate the design requirements for the laser driver. In comparison to the other laser system used in this group, the \qty{450}{\nm} system \cite{thesis_baus} required for the spectroscopy of highly charged ions \cite{thesis_alex} at GSI is the more demanding system. This system was found to be more susceptible to changes of the drive current since the wavelength selective filter element was far broader in comparison to a \qty{780}{\nm} system \cite{two_filter_paper}. This laser is stable over regions of tens of \unit{\uA} and requires a maximum drive current of \qty{145}{\mA} \cite{datasheet_osram_pl450b}.
 
@@ -152,7 +149,7 @@ Based on these numbers, it is straightforward to see that the long-term stabilit
 All of this leads to the following design specifications regarding the stability of the current driver:
 
 \begin{center}
-    \begin{specifications}[label={lst:dgDrive_specs_environment}]{Current controller stability specifications}
+    \begin{specifications}[label={lst:dgDrive_specs_environment}]{Current source, environmental}
     \begin{itemize}
         \item Temperature range \qtyrange[text-series-to-math, reset-text-series = false, reset-math-version = false, range-phrase=\textup{ to }]{20}{35}{\celsius}
         \item \textbf{Temperature coefficient \qty[text-series-to-math, reset-text-series = false, reset-math-version = false]{<= 1}{\uA \per \A \per \K}}
@@ -166,7 +163,6 @@ All of this leads to the following design specifications regarding the stability
 
 %A basic laser current driver design, that has some of the  can be found in the work of \citeauthor{libbrecht_hall} \cite{libbrecht_hall}. While this design contains all the basic features, like a current source, a modulation input and a voltage limit, there are several shortcomings that have emerged over the years with new generations of laser didoes. The laser driver used by legacy applications in this group is based on the aforementioned paper and has been successfully employed in several projects over the years, but several limitations have come up in recent years. In order to derive the design requirements of a new generation of laser drivers the important design elements need to be identified first. The essential design elements are the bulk current source, the modulation current source, the reference element and output programming. The next 4 sections will deal with each element and outline the design goals that were identified while employing the legacy generation of diode drivers in several experiments.
 
-\clearpage
 \subsection{Design Goals: Current Source}
 % https://www.laserdiodecontrol.com/laser-diode-parameter-overview
 % Diode Lasers and Photonic Integrated Circuits (Characteristic temperature)
@@ -194,7 +190,7 @@ Above \qty{1}{\MHz} it is recommended to either use more dedicated solutions lik
 This leads to the following requirements regarding the current source of the laser driver:
 
 \begin{center}
-    \begin{specifications}[label={lst:dgDrive_specs_electrical}]{Current source specifications}
+    \begin{specifications}[label={lst:dgDrive_specs_electrical}]{Current source, electrical}
     \begin{itemize}
         \item Maximum output current \qty{300}{\mA}, optionally \qty{500}{\mA}
         \item \textbf{Compliance voltage \qty[text-series-to-math, reset-text-series = false, reset-math-version = false]{\geq 8}{\V}}
@@ -205,15 +201,26 @@ This leads to the following requirements regarding the current source of the las
     \end{specifications}
 \end{center}
 
-\clearpage
 \subsection{Design Goals: User Interface and Form Factor}
-The user interface must be remote-controllable, because the Penning trap and the laser system are spatially separated with the laser system being located in a special laser lab for environmental as well as safety reasons. The spatial separation is about \qty{30}{\meter}. Ideally this remote interface is computer controlled to give full access to all features of the laser system. USB or Ethernet is preferred as this does not require extra hardware in the lab.
+The user interface must allow repeatability and reproducibility of the outputs. The reason is that the laser system is intended to be portable to be moved from the university where it is performance tested to the GSI facility. Within the labs, systems are usually moved from test stands to the actual experiment as well. Requiring as little setup effors as possible is a big advantage.
+
+The interface must both be accessible both locally and remotely to allow simple adjustment of the parameters while on the bench and also from within the experimental control software. The local controlls must be directly accessible by humans without tools to give a better user experience.
+
+The remote user interface is strictly required because the Penning trap and the laser system are spatially separated with the laser system being located in a special laser lab for environmental as well as safety reasons. This separation is about \qty{30}{\meter}. Ideally this remote interface is computer controlled to give full access to all features of the laser system. USB or Ethernet is preferred as this does not require extra hardware in the lab.
 
 Regarding the application programming interface (API), support for both Python and optionally LabVIEW is favoured, as most of this group has switched from LabVIEW to labscript suite \cite{labscript_2013} on Python to run the experiments.
 
-The local interface must be accessible without a computer to allow simple adjustment of the parameters while on the bench.
-
 The form factor should allow integration into standard 19-inch racks to allow simple transportation from the experiment location at GSI to the university for testing and calibration.
+
+\begin{center}
+    \begin{specifications}[label={lst:dgDrive_specs_api}]{Current source, user interface}
+    \begin{itemize}
+        \item Local control via the front end without tools
+        \item Remote access via a digital interface
+        \item Software API supporting \textbf{Python} and optionally LabVIEW
+    \end{itemize}
+    \end{specifications}
+\end{center}
 
 \clearpage
 \section{Laser Temperature Controller}%
@@ -254,7 +261,7 @@ The laser design used in this group uses two Peltier elements to cool both the r
 The requirements for the temperature controller can now be summarised as:
 
 \begin{center}
-    \begin{specifications}[label={lst:dgTemp_requirements}]{Temperature controller design requirements}
+    \begin{specifications}[label={lst:dgTemp_requirements}]{Temperature controller}
     \begin{itemize}
         \item Stability: \qty{<1}{\milli \K}
         \item Resolution: \qty{<200}{\micro \K}, \qty{<100}{\micro \K} preferred
@@ -304,7 +311,7 @@ Using this programming style the intend of the program is revealed immediately, 
 This style of programming was found ideal for real-time data processing, as it allows to continuously update configurations or add and remove sensors, or even hosts, without having to worry about what happens along the pipeline.
 
 \subsubsection{Device Identifiers}
-Every sensor network needs device identifiers. Preferably those identifiers should be unique. Typically a device has some kind of internal identifier. Here are a few examples of the sensors used in our network:
+Every sensor network needs device identifiers. Preferably those identifiers should be unique. Typically a device has some kind of internal identifier. Here are a few examples of the sensors used in the authors network:
 
 \begin{table}[ht]
 \centering
@@ -316,7 +323,7 @@ Every sensor network needs device identifiers. Preferably those identifiers shou
     \hline
     Tinkerforge& Each sensor has a base58 encoded integer device id& QE9 (163684)\\
     \hline
-    Labnode& Universal Unique Identifier (UUID) & cc2f2159-e2fb-4ed9-\newline8021-7771890b37ad\\
+    LabNode& Universal Unique Identifier (UUID) & cc2f2159-e2fb-4ed9-\newline8021-7771890b37ad\\
     \hline
 \end{tabularx}
 \end{table}
@@ -325,7 +332,7 @@ As it can be seen above, these identifiers do not guarantee to uniquely identify
 
 The id string returned by a SCPI device is slightly better, but again does not guarantee uniqueness. As it is shown in the example the same device might return a different id depending on its settings. This typically done by manufacturers for compatibility reasons.
 
-The only reasonably unique id is the universal unique identifier (UUID) or globally unique identifier (GUID), as dubbed by Microsoft, used in the Labnodes. Their id can be used for networks with participant numbers going into the millions.
+The only reasonably unique id is the universal unique identifier (UUID) or globally unique identifier (GUID), as dubbed by Microsoft, used in the LabNodes. Their id can be used for networks with participant numbers going into the millions.
 
 Calculating the probability of a collision between two random UUIDs is called the birthday problem \cite{BirthdayProblem} in probability theory. A randomly generated version 4 UUID of variant 1 as defined in RFC 4122 \cite{rfc_uuid} has \qty{122}{\bit} of entropy, that is out of \qty{128}{\bit}, \qty{4}{\bit} are reserved for the UUID version and \qty{2}{\bit} for the variant. This gives the probability of at least one collision in $n$ devices out of $M = 2^{122}$ possibilities:
 \begin{align}
@@ -340,7 +347,7 @@ Using the Taylor series $e^x = 1+x \dots$, assuming $n \ll M$ and approximating 
 \end{align}
 For one million devices, this gives a probability of about \num{2e-25}, which is negligible.
 
-In the Kraken implementation, all devices, except for the Labnodes, will be mapped to UUIDs using the underlying configuration database. It is up to the user to ensure the uniqueness of the non-UUID ids reported by the devices to ensure proper mapping.
+In the Kraken implementation, all devices, except for the LabNodes, will be mapped to UUIDs using the underlying configuration database. It is up to the user to ensure the uniqueness of the non-UUID ids reported by the devices to ensure proper mapping.
 
 \subsubsection{Ethernet Bus and Synchronous Buses}
 There are inherent challenges involved with the Ethernet bus for instrumentation. The Ethernet bus is intrinsically asynchronous and multiple controllers can talk to the device at the same time. Not only that, but different processes within the same controller can talk to the same device. This makes deterministic statements about the device state challenging. A device that is not designed to work asynchronously in the first place may have trouble with multiple requests coming in from different clients. This must be kept in mind when using serial adapters like USB or GPIB to Ethernet.
@@ -355,14 +362,13 @@ While it is impossible to rule out the possibility of multiple controllers on a 
 
 \clearpage
 \section{Short Introduction to Control Theory}
-This section will give a very brief introduction into some basic concepts of control theory. Many systems require control over one or more process variables. For example, temperature control of a room or a device, or creating a programmable current from a voltage. All of this requires control over a process and is established through feedback, which allows a controller to be aware of the state of the system.
+This section will give a very brief introduction into some basic concepts of control theory. Many systems require control over one or more process variables. For example, temperature control of a room or a device, or even creating a programmable current from a voltage is one such problem. All of this requires control over a process and is established through feedback, which allows a controller to be aware of the state of the system.
 
-The focus of this section is narrowed down to the concept of feedback and control with regard to developing and understanding PID controllers for temperature control. In the following sections, first, a model for the system and its controller will be developed, then, using the model, tuning of the control parameters using different tuning algorithms will be discussed.
+The focus of this section is narrowed down to the concept of feedback and control with regard to developing and understanding PID controllers for temperature control. Simpler feedback loops like those typically used around op-amps will not be primarily considered in this ssction and are discussed in the relevant part of the documentation. In the following sections, first general properties of the Laplace transform and useful relationships are introduced, then, a model for the system and its controller will be developed, finally, using the model, tuning of the control parameters using different tuning algorithms will be discussed.
 
 \subsection{Introduction to the Transfer Function and the Laplace Domain}%
 \label{sec:transfer_function}
-There are two types of systems: open- and closed-loop systems. A system is called open loop, if the output of a system does not feed back to its input as in figure \ref{fig:open_loop}. On the other hand, if the output influences the input of the system via feedback, it is called a closed-loop system, as shown in figure \ref{fig:closed_loop}. Although feedback can be treated in static systems, it is more useful to treat it in dynamic systems, either in the time-domain or the frequency-domain. $G(s)$ is called the transfer function of the system, while $U(s)$ is the input, $Y(s)$ is the output, $\beta$ is the feedback parameter or feedback fraction as shown in figure \ref{fig:feedback_systems}. In this section, upper case letters  denote functions in the Laplace domain, while lower case letters are referring to functions in the time domain.
-
+There are two types of systems: open- and closed-loop systems. A system is called open loop, if the output of a system does not feed back to its input as in figure \ref{fig:open_loop}. On the other hand, if the output influences the input of the system via feedback, it is called a closed-loop system, as shown in figure \ref{fig:closed_loop}. Although feedback can be treated in static systems, it is more useful to treat it in dynamic systems, either in the time-domain or the frequency-domain. To discuss these system, the terminology used in the following section needs to be defined. $G(s)$ is called the transfer function of the system, while $U(s)$ is the input, $Y(s)$ is the output, $s$ is  complex frequency domain variable, $\beta$ is the feedback parameter, also called feedback fraction, as shown in figure \ref{fig:feedback_systems}. In this section, upper case letters are used to denote functions in the Laplace domain, while lower case letters are referring to functions in the time domain.
 \begin{figure}[ht]
     \centering
     \begin{subfigure}{0.4\linewidth}
@@ -381,22 +387,21 @@ There are two types of systems: open- and closed-loop systems. A system is calle
     \label{fig:feedback_systems}
 \end{figure}
 
-It is convenient to express the transfer function in its Laplace transform for a number of reasons shown below. The unilateral Laplace transform is defined as:
+It is convenient to express the transfer function in its Laplace transform for several reasons that will be explained below. The systems to be discussed are physical system and hence are causal. That means the output only depends on past and present inputs, but not future inputs. For this reason, only the one-sided or unilateral Laplace transform needs to be considered. It is defined as:
 \begin{equation}
     \mathscr{L}\left( f(t) \right) = F(s) = \int_0^\infty f(t) e^{-st}\,dt.
 \end{equation}
 
-with $f: \mathbb{R}^+ \to \mathbb{R}$, that is integrable and grows no faster than $e^{s_0t}$ for $s_0 \in \mathbb{R}$. The latter attribute is important for deriving the rules of differentiation and integration.
+with $f: \mathbb{R}^+ \to \mathbb{R}$, that is integrable and grows no faster than $c \cdot e^{s_0t}$ for $s_0, c \in \mathbb{R}$. The latter attribute is important for deriving the rules of differentiation and integration.
 
-To understand the benefits of using the Laplace representation of the transfer function, a few useful properties should be discussed. First of all, the Laplace transform is linear:
+To understand the benefits of using the Laplace representation of the transfer function, a few useful properties should be discussed with regard to the PID controller. First of all, the Laplace transform is linear:
 \begin{align}
     \mathscr{L}\left(a \cdot f(t) + b \cdot g(t) \right) &= \int_0^\infty (a \cdot f(t) + b \cdot g(t)) e^{-st}\,dt \nonumber\\
     &= a \int_0^\infty f(t) e^{-st}\,dt + b \int_0^\infty g(t) e^{-st}\,dt \nonumber\\
     &= a \mathscr{L}\left(f(t)\right) + b \mathscr{L}\left(g(t)\right)
 \end{align}
 
-Another interesting property is the derivative and integral of a function $f$:
-
+Another interesting property is the derivative and integral of a function $f$. The function $f$ must, of course, be differentiable and grow no faster than the exponential function as defined above:
 \begin{align}
     \mathscr{L}\left(\frac{df}{dt}\right) &= \int_0^\infty \underbracket{f'(t)}_{v'(t)} \underbracket{\vphantom{f'(t)}e^{-st}}_{u(t)}\,dt \nonumber\\
     &= \left[e^{-st} f(t) \right]_0^\infty - \int_0^\infty (-s)f'(t)\,dt \nonumber\\
@@ -412,8 +417,9 @@ Another interesting property is the derivative and integral of a function $f$:
     &= \frac{1}{s} F(s) \label{eqn:lapace_integration}
 \end{align}
 
-If the initial state $f(0)$ can be chosen to be $0$, the differentiation becomes a simple multiplication by $s$, while the integration becomes a division by $s$. Finally, the most important aspect is the possibility to give a simple relation between the input $u(t)$ and the output $y(t)$ of a system. The relationship between input and output of a system as shown in figure \ref{fig:open_loop} is given by the convolution, see e.g. \cite{pid_basics}. Assuming the system has an initial state of $0$ for $t<0$, hence $u(t<0) = 0$ and $g(t<0) = 0$, one can calculate:
+If the initial state $f(0)$ can be chosen to be $0$, the differentiation becomes a simple multiplication by $s$, while the integration becomes a division by $s$. These three properties greatly simplify the calculations required for studying a proportional–integral–derivative controller in section \ref{sec:pid_controller_basics}.
 
+Finally, the most important aspect is the possibility to give a simple relation between the input $u(t)$ and the output $y(t)$ of a system. This relationship between input and output of a system as shown in figure \ref{fig:open_loop} is given by the convolution, see e.g. \cite{pid_basics}. Assuming the system has an initial state of $0$ for $t<0$, hence $u(t<0) = 0$ and $g(t<0) = 0$, one can calculate:
 \begin{equation}
     y(t) = (u \ast g)(t) = \int_0^\infty u(\tau) g(t-\tau)\,d\tau
     \label{eqn:convolution}
@@ -480,7 +486,6 @@ Lastly, the Laplace transform of $e^{at}$ is given, which is commonly used in di
 
 Using these tools, it is possible calculate the transfer function of a closed-loop temperature controller, which will be done in the next section.
 
-\clearpage
 \subsection{A Model for Temperature Control}%
 \label{sec:temperature_control_model}
 \begin{figure}[ht]
@@ -505,8 +510,7 @@ Using the small-signal approach, the system response can be split into a constan
     \label{fig:first-order_model}
 \end{figure}
 
-This is the classic $RC$ circuit and exploiting the analogy of thermodynamics and electrodynamics again, using Kirchhoff's second law, following the arrow in figure \ref{fig:first-order_model} one finds:
-
+This is the classic $RC$ circuit. To calculate the transfer function, a relationship between $T_{in}$ and $T_{out}$ is required and exploiting the analogy of thermodynamics and electrodynamics again, using Kirchhoff's second law, following the arrow in figure \ref{fig:first-order_model} one finds:
 \begin{alignat}{1}
     \sum T_i &= 0 \nonumber\\
     T_{in}(t) - \dot{Q}(t) R - \frac 1 C \int \dot{Q}(t)\,dt &= 0 \label{eqn:first-order_model_kirchhoff}
@@ -524,7 +528,7 @@ This allows to calculate the transfer function of the process $P$ as
     &= \frac{1}{sRC + 1} \nonumber\\
     &= \frac{1}{1 + s\tau} = \frac{K}{1 + s\tau}\,. \label{eqn:first-order_model}
 \end{align}
-with the system gain $K$ and the time constant $\tau$. In case of the $RC$ circuit, the gain is $1$, but other systems may have a gain factor of $K \neq 1$, so it is included here for the sake of generality.
+with the system gain $K$ and the time constant $\tau$. In case of the $RC$ circuit, the gain is $1$, but other systems may have a gain factor of $K \neq 1$. This is generally the case when using any type of sensor that converts the measurand into the input signal. $K$ is there included here for the sake of generality.
 
 Equation \ref{eqn:first-order_model} is called the transfer function of a first-order model, because its origin is a differential equation of first-order. This model describes homogeneous systems like a room very well, as can be seen in section \ref{sec:pid_controller_tuning}, but in order to derive the transfer function including the controller and the sensor some more work is required to derive the sensor transfer function.
 
@@ -536,28 +540,27 @@ Expanding on figure \ref{fig:open_loop} and equation \ref{eqn:convolution} the o
 and the block diagram changes to
 \begin{figure}[ht]
     \centering
-    \scalebox{1}{%
+    %\scalebox{1}{%
         \import{figures/}{open_loop_full.tex}
-    }% scalebox
+    %}% scalebox
     \caption{Open-loop system with sensor.}
 \end{figure}
 
-The transfer function of the sensor, given an ideal linear transducer, can be modeled as a delay line with delay $\theta$ and $f(t-\theta) = H(t-\theta)$. A gain of $1$ is assumed here, because any system gain can already be included in the parameter $K$. Using equation \ref{eqn:laplace_delayed}, $S(s)$ can be written as
+The transfer function of the sensor, given an ideal linear transducer, can be modeled as a delay line with delay $\theta$ and $f(t-\theta) = H(t-\theta)$. A sensor gain of $1$ is assumed here, because any system gain is assumed be included in the parameter $K$ of the process transfer funciton. Using equation \ref{eqn:laplace_delayed}, $S(s)$ can be written as
 \begin{equation}
     S(s) = e^{-\theta s} .
 \end{equation}
 
-The full system model including the time delay will now be:
+The full system model including the time delay can now be written as:
 \begin{equation}
     G(s) = \frac{K}{1 + s\tau} e^{-\theta s} \label{eqn:first-order_plus_dead_time_model}
 \end{equation}
 
-This is called a first-order plus dead-time model (FOPDT) or first-order plus time-delay model (FOPTD). To fit experimental data to this model it is more convenient to transform the transfer function \ref{eqn:first-order_plus_dead_time_model} into the time domain. To have a meaningful result, an input $U(s)$ is required, because $G(s)$ is only a transformation. In principal any function can do, but a step function is typically used, for example by \citeauthor{ziegler_nichols} \cite{ziegler_nichols} and many others \cite{tuning_rules,pessen_integral,simc,simc_paper,pid_controllers_for_time_delay_systems,pi_stabilization_of_fopdt_systems, pid_basics}. It is both simple to calculate and to apply to a real system in form of a controller output change. Using equations \ref{eqn:laplace_delayed} and \ref{eqn:laplace_exponential}, the Heaviside $H(t)$ step function transforms into
+This is called a first-order plus dead-time model (FOPDT) or first-order plus time-delay model (FOPTD). While the Laplace representation is useful to mathematically explore the mode, in order to fit experimental data to this model it is more convenient to transform the transfer function \ref{eqn:first-order_plus_dead_time_model} into the time domain. To have a meaningful result, an input $U(s)$ is required, because $G(s)$ is only a transformation. In principal any function can be serve this purpose, but a step function is typically used, for example by \citeauthor{ziegler_nichols} \cite{ziegler_nichols} and many others \cite{tuning_rules,pessen_integral,simc,simc_paper,pid_controllers_for_time_delay_systems,pi_stabilization_of_fopdt_systems, pid_basics}. The step function is both simple to calculate and to apply to a real system in form of a controller output change. This technique is also explored in more detail in section \ref{sec:pid_controller_tuning}. Using equations \ref{eqn:laplace_delayed} and \ref{eqn:laplace_exponential}, the Heaviside $H(t)$ step function transforms into
 \begin{equation}
     \mathscr{L} \left(u(t) \right) = U(s) = \mathscr{L} \left( \Delta u H(t) \right) = \frac{\Delta u}{s}
 \end{equation}
-
-with the step size $\Delta u$. The output $Y(s)$ can then be calculated analytically.
+with the step size $\Delta u$. The output response $Y(s)$ of the system to the step can then be calculated analytically.
 \begin{align}
     Y(s) &= U(s) \cdot G(s)\nonumber\\
     &= \frac{\Delta u}{s} \frac{K}{1 + s\tau} e^{-\theta s} \nonumber\\
@@ -566,7 +569,7 @@ with the step size $\Delta u$. The output $Y(s)$ can then be calculated analytic
     &= K \Delta u \left(\frac{1}{s} - \frac{1}{s+\frac{1}{\tau}} \right) e^{-\theta s}
 \end{align}
 
-To derive $y(t)$, the inverse Laplace transform of $Y(s)$ is required. Unfortunately, this is not as simple as the Laplace transform. Fortunately though the required equations were already derived in equations \ref{eqn:lapace_integration} and \ref{eqn:laplace_exponential}. Making sure causality is guaranteed as shown in \ref{eqn:laplace_causality}, the simple first-order model can be transformed back into the time domain.
+To derive $y(t)$, the inverse Laplace transform of $Y(s)$ is required. Unfortunately, this is not as simple as the Laplace transform. Fortunately though the required equations were already derived in equations \ref{eqn:lapace_integration} and \ref{eqn:laplace_exponential}. Making sure causality is guaranteed as shown in equation \ref{eqn:laplace_causality}, the simple first-order model can be transformed back into the time domain.
 \begin{align}
      y(t) &= \mathscr{L}^{-1} \left(Y(s)\right) \nonumber\\
      &= K \Delta u \mathscr{L}^{-1} \left(\frac{1}{s} e^{-\theta s} \right)  - K \mathscr{L}^{-1} \left( \frac{1}{s+\frac{1}{\tau}} e^{-\theta s} \right) \nonumber\\
@@ -587,10 +590,9 @@ The procedure can be summarised from the above as follows. The controller must b
 
 So far, only open-loop systems were discussed. Using the FOPDT model, the system parameters can now be extracted from an existing system using a fit to the time domain reaction of such a system to a step input. Having extracted the system parameters, the next thing to do is to design a controller around the system and close the loop to realize a controlled system. This is shown in the next section.
 
-\clearpage
 \subsection{PID Controller Basics}%
 \label{sec:pid_controller_basics}
-While there are many different types of controllers, like the bang–bang controller utilized in the original stock lab temperature controller, which turns on at a certain threshold and turns off at another one producing the saw-tooth shaped room temperature curve shown in figure \ref{fig:lab_temperature_start_of_project}, a continuous control system is desired to keep fluctuations to a minimum. The most commonly used controller type for non-integrating systems is the proportional–integral–derivative (PID) controller \cite{pid_in_industry}. A non-integrating system is a system without memory that does not depend on previous inputs. Given the same input, a non-integrating system will always return to the same steady state. The advantage of applying a PID controller is that the controller does not need any special knowledge about the system model. A universal PID is simple to implement and can be tuned to control a wide range of different systems. While there are many variations of the PID algorithm \cite{pid_controller}, this section only introduces the basic, parallel, PID controller commonly used in digital implementation and deals with some of the shortcomings in practical applications.
+While there are many different types of controllers, like the bang–bang controller utilized in many temperature controller, which turns on at a certain threshold and turns off at another one producing the saw-tooth shaped room temperature curve shown in figure \ref{fig:lab_temperature_start_of_project}, a continuous control system is desired to keep fluctuations to a minimum. The most commonly used controller type for non-integrating systems is the proportional–integral–derivative (PID) controller \cite{pid_in_industry}. A non-integrating system is a system without memory whose steady state does not depend on previous inputs. The advantage of applying a PID controller is that the controller does not need any special knowledge about the system model. A universal PID is simple to implement and can be tuned to control a wide range of different systems. While there are many variations of the PID algorithm \cite{pid_controller}, this section only introduces the basic, parallel, PID controller commonly used in digital implementation and deals with some of the shortcomings in practical applications.
 
 In order to extend the FOPDT system derived in the previous section \ref{sec:temperature_control_model}, with the PID controller one has to move to a closed-loop system. Adding to figure \ref{fig:closed_loop} and inserting a new control block into the transfer function yields figure \ref{fig:closed_loop_pid}.
 \begin{figure}[ht]
@@ -608,9 +610,9 @@ The error signal $E(s)$ used by the PID controller is the difference between the
     C(s) &= k_p + k_i \frac{1}{s} + k_d s \,. \label{eqn:pid_controller_laplace}
 \end{align}
 
-The following discussion will mostly focus on equation \ref{eqn:pid_controller}, because, the time-domain equation is the one that can be implemented in software. As hinted above, there are a few shortcomings with the classic PID equation, when used in a real system which requires dynamic changes of the PID parameters, e.g. the setpoint or $k_i$.
+The following discussion will mostly focus on equation \ref{eqn:pid_controller}, because, the time-domain equation is the one that can be implemented in software. As hinted above, there are a few shortcomings with the classic PID equation, when used in a real system which requires dynamic changes of the the setpoint or $k_i$.
 
-The first problem to be addressed is occurring when changing the PID parameter $k_i$. Assuming a settled system without external disturbances, the output is fully determined by the integrator value because the error is zero. Now, when $k_i$ is changed, the output immediately changes, due to the change of the integral term. This is unintended. To fix it, the integral term must be changed to
+The first problem that needs addressing is occurring when changing the PID parameter $k_i$, because equation \ref{eqn:pid_controller} is given for a time-independent $k_i$. Assuming a settled system without external disturbances, the output is fully determined by the integrator value because the error is zero. Now, when $k_i$ is changed, the output immediately changes, due to the change of the integral term. This is unintended. To fix it, the integral term must be changed to
 \begin{equation}
     k_i \int_0^t e(\tau) \,d\tau \Rightarrow \int_0^t k_i(\tau) e(\tau) \,d\tau \,.
 \end{equation}
@@ -619,20 +621,19 @@ This way, when adjusting $k_i$, its new value is applied to future error values 
 
 The next issue is called \text{derivative kick}. When looking at the derivative part of equation \ref{eqn:pid_controller}, it can be seen that when instantly changing the setpoint, as in a step function, $\frac{\mathrm{d}e(t)}{\mathrm{d}t} \to \infty$. This behaviour is not intended and to fix this, the derivative part can be modified as follows.
 \begin{align}
-    \frac{\mathrm{d}e(t)}{\mathrm{d}t} &= \frac{\mathrm{d}\left(u(t) - y(t)\right)}{\mathrm{d}t} \nonumber\\
-    &= \underbrace{\cancel{\frac{\mathrm{d}u(t)}{\mathrm{d}t}}}_{\to \infty} - \frac{\mathrm{d}y(t)}{\mathrm{d}t} \nonumber\\
+    \frac{\mathrm{d}e(t)}{\mathrm{d}t} &= \frac{\mathrm{d}\left(u(t) - y(t)\right)}{\mathrm{d}t} = \underbrace{\cancel{\frac{\mathrm{d}u(t)}{\mathrm{d}t}}}_{\to \infty} - \frac{\mathrm{d}y(t)}{\mathrm{d}t} \nonumber\\
     &=- \frac{\mathrm{d}y(t)}{\mathrm{d}t}
 \end{align}
 
 The new derivative term is equal to the unmodified one, except in the case of setpoint changes. Removing the setpoint from the equation, the controller behaves as intended. This solution is sometimes called \textit{derivative on measurement} as opposed to \textit{derivative on error}.
-
-The derivative term is again the cause of another problem, the final problem to be discussed. Assuming a noisy input and by chance there is a very short input spike due to noise, the differential in the derivative term will again be sent to very high values, pushing the output away from the correct value and forcing the controller to slowly rebalance.
 \begin{figure}[hb]
     \centering
     \input{images/sim_pid_controller_bode.pgf}
     \caption{Magnitude plot over frequency of the PID controller transfer function. Both the ideal PID controller and the PID controller with a filtered derivative are shown.}
     \label{fig:sim_pid_controller}
 \end{figure}
+
+Another issue is caused by the derivative term with noiy inputs. Assuming there is a very short input spike due to noise, the differential of the derivative term will again be sent to very high values, pushing the output away from the correct value and forcing the controller to slowly rebalance.
 
 To further discuss the problem and its solution it is best to visit the frequency domain and visualize the transfer function of the PID controller as shown in figure \ref{fig:sim_pid_controller}. The ideal PID controller without filtering of the derivative displays a very strong response to low frequency inputs. This is due to the integral action, which removes any (constant) offset. It needs to have infinite gain at DC to push the offset to zero. In reality this is limited by input noise. Then follows a plateau with a magnitude of $k_p$ for the proportional term and finally the differential gain starts growing in magnitude and keeps steadily growing with rising frequency, just as expected.
 
@@ -655,13 +656,11 @@ Using this form allows to shift the curve up and down keeping its shape instead 
 
 This concludes the discussion of the PID controller and the introduction of the basic terms. It now begs the question how the controller interacts with the system and how to derive the optimal PID parameters from a given system or model. The next section discusses controller tuning rules and their effect on the system performance.
 
-\clearpage
 \subsection{PID Tuning Rules}%
 \label{sec:pid_tuning_rules}
 While many PID tuning rules can be found in the literature, their application depends on the underlying system and the desired system response. This section will discuss several proposed solutions and compare them to the authors use case. The sections aims to give a simple method to determine decent PI(D) parameters for the applications found in the lab. Among the methods discussed are the most classic set of tuning rules developed by \citeauthor{ziegler_nichols} \cite{ziegler_nichols}, an improved version by \citeauthor{simc_paper} \cite{simc_paper} which promises better performance for non-integrating systems. These rules all include simple instructions to extract the necessary parameters using pen and paper. Using a computer and fitting algorithms, the bar for \textit{simple} has been raised considerably, so more complex approaches can be undertaken which extract more parameters from the system. Using these additional parameters more precise control is promised by \citeauthor{pid_basics} \cite{pid_basics, advanced_pid_control} with a method called AMIGO. Finally, it is possible to shape the control loop to result in a desired transfer function. This technique is mostly used in motor control \cite{pid_controller,advanced_pid_control} and also requires the model parameters.
 
 All of these rules will be compared against a demo model of a room to explain the details. It is the first-order model with delay which was derived in equation \ref{eqn:first-order_plus_dead_time_model}. The discussion is limited to the FOPDT model, because the systems treated in this work could be modelled very well using this equation. Higher order models are discussed in more details for example in \cite{advanced_pid_control,pid_controller,simc_paper}, in case the reader encounters such a system and feels the need to extract the model parameters.
-
 \begin{equation}
     G(s) = \frac{K e^{-\theta s}}{1 + s \tau} \label{eqn:demo_process_model}
 \end{equation}
@@ -676,6 +675,8 @@ The following parameters were extracted from Lab 011, using the techniques shown
         \qty[per-mode=power]{13.07}{\K \bit\per\bit}& \qty{395}{\s}& \qty{187}{\s}\\
         \bottomrule
     \end{tabular}
+    \caption{Example paramters extracted from lab 011 using the techniques shown here and as applied in section \ref{sec:pid_controller_tuning}.}.
+    \label{tab:pid_example_model}
 \end{table}
 
 Before detailing the tuning parameters, the loop shaping method will be explained first, because it cannot only be used to derive custom rules but was also used to create the SIMC rules proposed by \citeauthor{simc_paper} \cite{simc_paper}. The aim of this method is to derive a controller, that shapes the model in such a way, that a desired system response to setpoint changes is achieved. A general closed-loop system with a controller $C$ and a system $G$ is shown in figure \ref{fig:closed_loop_controller}. This will be used as a basis to find the required controller for a desired transfer function $\frac{Y(s)}{U(s)}$.
@@ -698,19 +699,19 @@ but unfortunately life is more profane and there is no controller, that will alw
 \end{equation}
 where $\tau_c$ is the closed-loop time constant and a measure for the aggressiveness of the controller. A small $\tau_c$ results in a more aggressive controller with faster response.
 
-From figure \ref{fig:closed_loop_controller} the closed-loop transfer function is found to be
+For the system shown figure \ref{fig:closed_loop_controller} the closed-loop transfer function is found to be
 \begin{align*}
     \frac{Y(s)}{U(s)} &= \frac{C(s) G(s)}{C(s) G(s) + 1} \\
     \Rightarrow C(s) &= \frac{1}{G(s)} \frac{1}{\frac{Y(s)}{U(s)} -1}
 \end{align*}
 
-Using the desired transfer function \ref{eqn:desired_transfer_function} yields
+This loop now needs to be shaped into the desired transfer function given in equation \ref{eqn:desired_transfer_function}, so substituting $\frac{Y(s)}{U(s)}$ yields
 \begin{align}
     C(s) &= \frac{1}{G(s)} \frac{e^{-\theta s}}{s \tau_c +1 - \underbrace{e^{-\theta s}}_{\approx 1 - \theta s}}\\
     &\approx \frac{1}{G(s)} \frac{e^{-\theta s}}{s (\tau_c + \theta)} \,.
 \end{align}
 
-$e^{-\theta s}$ was approximated using a first-order Taylor expansion. Finally, substituting the system equation \ref{eqn:demo_process_model} results in
+$e^{-\theta s}$ was approximated using a first-order Taylor expansion. The desired controller response now only depends on the system (including the sensor) to be controlled. So, substituting the system equation \ref{eqn:demo_process_model} results in
 \begin{align}
     C(s) &= \frac{1}{K} \frac{s \tau + 1}{(\tau_c + \theta) s} \nonumber\\
     &= \underbrace{\frac{1}{K} \frac{\tau}{\tau_c + \theta}}_{k_p} + \underbrace{\frac{1}{K} \frac{1}{\tau_c + \theta}}_{k_i} \frac{1}{s}\,.
@@ -744,14 +745,13 @@ For reasons of brevity, in table \ref{tab:pid_tuning_parameters}, the PID parame
     k_d &= k_p T_d\,.
 \end{align*}
 
-Regarding the SIMC PI/PID algorithm, \citeauthor{simc_paper} \cite{simc_paper} and \citep[ch. 5]{simc} suggests using $\tau_c = \theta$ for “\textit{tightest possible subject to maintaining smooth control}“. Following this recommendation, the minimum can be calculated from the parameters of this example as $\min\left(\tau, 4 (\tau_c+\theta)\right) = \min\left(\tau, 8 \theta\right) = \tau$.
+Regarding the SIMC PI/PID algorithm, \citeauthor{simc_paper} \cite{simc_paper} and \citep[ch. 5]{simc} suggests using $\tau_c = \theta$ for “\textit{tightest possible subject to maintaining smooth control}“. Following this recommendation, the minimum can be calculated from the parameters given in table \ref{tab:pid_example_model} on page \pageref{tab:pid_example_model} as $\min\left(\tau, 4 (\tau_c+\theta)\right) = \min\left(\tau, 8 \theta\right) = \tau$.
 
 Using the rules above, the full system can be simulated now. This was done using Python. The simulation source code can be found in \external{data/simulations/sim\_pid\_controller.py} as part of the online supplemental material \cite{supplemental_material}. The simulation can be used to model arbitrary PI(D) controller and arbitrary models can be used as well. It allows to compare different settings before applying them to a real system. It also considerably shortens deployment times because especially for systems with long timescales, it becomes difficult to test several parameter sets on the fly, thus a simulation can reduce deployment time to a few minutes instead of hours.
 
 The simulation emulates the PID controller developed for the lab temperature controller. By default it has a sampling rate of \qty{1}{\Hz}. The simulation  will apply a setpoint change of \qty{+1}{\K} \qty{10}{\s} into the simulation. After the simulation, it will plot the time domain response of the controlled system. The setpoint change in this scenario is very similar to the load disturbances that are expected. Typically a noise source is used here instead, but in contrast to the statistical noise, which could be used to test for disturbance rejection, the situation in labs are different and cannot be modelled with stationary noise. While there is some noise coming from the sensor and the lab, the major disturbances are usually caused by the experimenters instead of the lab itself. These are events like a device being switched on or off for an extended period of time, longer than the controller needs to settle. This is equivalent to a setpoint change in terms of the error term in equation \ref{eqn:pid_controller}, since there is no difference in the error term between a setpoint and a process variable change. Do note, that this is not true for the PID controller, whose derivative term directly works on the measurement (or process variable) as this was explicitly implemented above. For PID controllers, there is a difference between the setpoint change behaviour and system noise rejection. This must be kept in mind and tested accordingly.
 
 Simulating the model above and using the PI parameters derived from table \ref{tab:pid_tuning_parameters}, gives the plot shown in figure \ref{fig:pid_controller_comparison}.
-
 \begin{figure}[ht]
     \centering
     \input{images/sim_pid_controller_comparison.pgf}
@@ -842,7 +842,6 @@ can be easily identified in the Allan deviation plot. The constant $h_\alpha$ is
 
 In order to arrive at a good understanding of the features seen in an Allan deviation plot, this section will provide the reader with examples of each type of noise and the corresponding time domain, power spectral density and Allan deviation plot. Since a complete overview is not available in current literature, all required mathematical descriptions and simulation tools will be discussed here. The simulations were done using Python and the source code is linked to in the discussions. The files are found in the online supplemental material found at \cite{supplemental_material}. Using these scripts, all the graphs shown can be recreated and explored further.
 
-\clearpage
 \subsubsection{White Noise}
 White noise is probably the most common type of noise found in measurement data. Johnson noise found in resistors, caused by the random fluctuation of the charge carriers, is one example of mostly white noise up to a bandwidth of \qty{100}{\MHz}, from where on quantum corrections are required \cite{nist_johnson_noise}. Amplifiers also tend to have a white noise spectrum at higher frequencies.
 
@@ -892,14 +891,13 @@ Figure \ref{fig:white_noise_simulated} shows a sample of white noise in its thre
 
 From this simulation, several features can be observed. First of all, the power spectral density is flat and constant with $h_0 = 2$, which is in accordance with table \ref{tab:adev_alpha} and the normalization mentioned earlier. Figure \ref{fig:white_noise_adev} shows the typical $\tau^{-\frac 1 2}$ dependence of white noise in the Allan deviation plot. This immediately explains, why filtering white noise scales with $\frac{1}{\sqrt{n}}$ with $n$ being the number of samples averaged.
 
-\clearpage
 \subsubsection{Burst Noise}%
 \label{sec:theory_burst_noise}
 Burst noise, popcorn noise, or sometimes referred to as random telegraph signal is a random bi-stable change in a signal and is caused by generation-recombination processes. This happens, for example, in semiconductors if there is a site, that can trap an electron for a prolonged period of time and then randomly release it. Impurities causing lattice defects are discussed in this context \cite{kay2012operational,burst_noise_psd,popcorn_noise_orgin,technote_ti_popcorn_noise}. Such lattice defects can also be introduced by ion implantation during doping. Fortunately, this type of noise has become less prevalent in modern manufacturing processes, because the quality of the semiconductors has improved. But if a trap site is located very close to an important structure, for example a high precision Zener diode, its effect might be so strong that it can be clearly seen.
 
 The discussion is split into two parts. First the power spectral density is calculated and then the Allan variance is calculated using that result.
 
-The spectral density of burst noise caused by a single trap site was derived in \cite{burst_noise_wiener_khinchin} by \citeauthor{burst_noise_wiener_khinchin}. The author used the autocorrelation function of the burst noise signal and applied the Wiener-Khinchin (Wiener-Хи́нчин) theorem, which connects the autocorrelation function with the power spectral density. A more detailed derivation can be found in \cite{fundamentals_of_noise_processes}, in this paper the preconditions like stationarity of the process, are also discussed. The burst noise signal consists of two energy levels, called $0$ and $1$, split by $\Delta y$. Multiple burst noise signals can be superimposed in a real device. This would then result in multiple levels, but they can be treated separately. The measurement interval over an even number of transitions, so that one ends in the same state as the measurement has started, is the time $T$. The mean lifetime of the levels is called $\bar \tau_0$ and $\bar \tau_1$:
+The spectral density of burst noise caused by a single trap site was derived in \cite{burst_noise_wiener_khinchin} by \citeauthor{burst_noise_wiener_khinchin}. \citeauthor{burst_noise_wiener_khinchin} used the autocorrelation function of the burst noise signal and applied the Wiener-Khinchin (Wiener-Хи́нчин) theorem, which connects the autocorrelation function with the power spectral density. A more detailed derivation can be found in \cite{fundamentals_of_noise_processes}, in this paper the preconditions like stationarity of the process, are also discussed. The burst noise signal consists of two energy levels, called $0$ and $1$, split by $\Delta y$. Multiple burst noise signals can be superimposed in a real device. This would then result in multiple levels, but they can be treated separately. The measurement interval over an even number of transitions, so that one ends in the same state as the measurement has started, is the time $T$. The mean lifetime of the levels is called $\bar \tau_0$ and $\bar \tau_1$:
 \begin{equation}
     \bar \tau_{0} \approx \frac 1 N \sum_{i}^N \tau_{0,i} \qquad \bar \tau_{1} \approx \frac 1 N \sum_{i}^N \tau_{1,i}
 \end{equation}
@@ -908,9 +906,9 @@ Figure \ref{fig:burst_noise} shows a burst noise signal along with the definitio
 
 \begin{figure}[hb]
     \centering
-    \scalebox{1}{%
+    %\scalebox{1}{%
         \import{figures/}{burst_noise.tex}
-    } % scalebox
+    %} % scalebox
     \caption{A random burst noise signal.}
     \label{fig:burst_noise}
 \end{figure}
@@ -1068,7 +1066,6 @@ As a last remark, a commonly used definition in combination with flicker noise i
 \end{equation}
 It can be graphically extracted from the power spectral density plot by drawing a line trough the flicker noise and the white noise and finding the intersection. This can be seen in figure \ref{fig:adev_example_psd} on page \pageref{fig:adev_example_psd}. The corner frequency can be found where the horizontal dashed blue and green line meet.
 
-\clearpage
 \subsubsection{Random Walk}%
 \label{sec:random_walk}
 Random walk noise can be attributed to environmental factors such as temperature \cite{random_walk_fm} and diffusion processes, the latter contributing to the ageing effect seen in semiconductors.
@@ -1155,7 +1152,6 @@ with slope of the drift $D$.
     \label{fig:drift_noise_simulated}
 \end{figure}
 
-\clearpage
 \subsubsection{Dead Time}%
 \label{sec:dead_time}
 The coefficients given in the previous examples were derived using the assumption, that all samples in a measurement are continuous with a dead time $\theta = 0$. Unfortunately, measurements sometimes have a dead time, that is non negligible. This problem was extensively discussed by \citeauthor{psd_to_adev} \cite{psd_to_adev}. \citeauthor{adev_frequency_counter} even developed special models to account for the algorithms of modern frequency counters \cite{adev_frequency_counter}. While some frequency counters support gapless measurements, the situation is entirely different for digitizers and digital multimeters. Several settings commonly used affect the dead time, which can be considerable. It is therefore important to discuss typical measurement settings for voltmeters to estimate the errors that arise from those settings. The focus of this discussion lies on the dead time introduced by digital multimeters, but the application is not limited to this field.
@@ -1175,7 +1171,6 @@ Consequently, if the dead time is added at a frequency high enough, so that the 
 
 Finally, \citeauthor{psd_to_adev} \cite{psd_to_adev} notes that for measurement durations or averaging times $T \gg T_0$, the Allan variance with respect to $T$ shows an asymptotic behaviour of $\sigma_A^2(T) \to \sigma_A^2(\tau)$.
 
-\clearpage
 \subsection{Example}%
 \label{sec:noise_example}
 Using the results from the previous sections, it is possible to simulate a typical measurement sample containing white noise, flicker noise and random walk behaviour. The simulation was written in Python using the \textit{AllanTools} library \cite{allantools} to generate the time domain data, which was then converted to a power spectrum using the algorithm of \citeauthor{welch} \cite{welch}. The Allan deviation was calculated using the \textit{AllanTools}. The full Python source is available at \cite{supplemental_material} and found in \external{data/simulations/sim\_allan\_variance\_example.py}. The time domain data shown here were downsampled from $2^{25}$ data points to \num{2000} points for faster plotting, using the Largest-Triangle-Three-Buckets (LTTB) algorithm created by \citeauthor{lttb} \cite{lttb}. The downsampling algorithm chosen is optimal for this application because it aims to visually keep the result the same, by favouring parts of the data where there is more dynamics. The only difference noticeable to the author is that the edges of the white noise plot are a slightly rougher. The full data set can be obtained using the source code given above if one desires. The power spectrum and the Allan deviation were always calculated from the full dataset. The data of the power spectrum were additionally binned to be evenly spaced on a logarithmic scale. This considerably reduced the high frequency noise and made the plot easier to read while not negatively impacting the shape.
@@ -1258,8 +1253,7 @@ This concludes the examples section for different noise types. The reader should
 \label{sec:autozero}
 Auto-zeroing (AZ), sometimes called zero-drift or dynamic offset compensation, is such an important concept, that it must be discussed in its own right. The need for auto-zeroing comes from the typical behaviour of amplifiers. Every amplifier has some offset, be it small or large, and especially at high gains, this offset becomes a problem for high precision measurements. To make matters worse, this offset is not stable over time and drifts with both time and temperature. It can therefore not be calibrated out once, it must be permanently adjusted during operation, depending on environmental conditions. This procedure is called auto-zeroing.
 
-There are many different ways to implement auto-zeroing and regarding operational amplifiers a good overview can be found in \cite{horowitz1989}. As an example, the auto-zero cycle for the Keithley \device{Model 2002} and the Keysight \device{3458A} Multimeter is shown in figure \ref{fig:dmm_autozero_comparison}. Keithley uses a more complex and slower algorithm, while HP implemented a simpler but faster algorithm. The most simple (digital) approach is to regularly switch the input from the signal to zero, take a reading, then subtract this reading from all subsequent readings until a new zero reading is taken. An alternative approach adds another measurement of the reference voltage to apply a gain correction as well. This is done by the Keithley \device{Model 2002} and works very well to suppress gain drift in the input amplifier due to temperature changes but increases the time between samples by another \qty{50}{\percent}. This is the reason why on the \device{Model 2002}, there is another mode to stretch the time between auto-zero cycles, but the price to pay is a non-uniform sampling rate. The Keysight/HP \device{3458A} calculates gain corrections only during the manual auto-calibration routine to maintain a higher throughput.
-
+There are many different ways to implement auto-zeroing and regarding operational amplifiers a good overview can be found in \cite{horowitz1989}. As an example, the auto-zero cycle for the Keithley \device{Model 2002} and the Keysight \device{3458A} Multimeter is shown in figure \ref{fig:dmm_autozero_comparison}. Keithley uses a more complex and slower algorithm, while HP implemented a simpler but faster algorithm. The most simple (digital) approach is to regularly switch the input from the signal to zero, take a reading, then subtract this reading from all subsequent readings until a new zero reading is taken. An alternative approach adds another measurement of the reference voltage to apply a gain correction as well. This is done by the Keithley \device{Model 2002} and works very well to suppress gain drift in the input amplifier due to temperature changes but increases the time between samples by another \qty{50}{\percent}. The Keysight/HP \device{3458A} in the other hand calculates those gain corrections only during the manual auto-calibration (ACAL) routine to maintain a higher throughput.
 \begin{figure}[hb]
     \centering
     %\resizebox {0.8\textwidth} {!} {
@@ -1332,7 +1326,7 @@ To conclude, it is expected that the variance doubles and the power spectral den
 
 These considerations can be compared to the simulated data. Applying the auto-zeroing algorithm to the simulated data set, the constant \qty{10}{\V} input signal was nulled for every odd value and then the residual noise was subtracted from the signal value. The result in the time domain is shown in figure \ref{fig:autozero_time}.
 
-\begin{figure}[Hb]
+\begin{figure}[hb]
     \centering
     \input{images/autozero_time.pgf}
     \caption{Simulated measurement with auto-zeroing applied.}
@@ -1374,10 +1368,7 @@ For the comparison of different integration times before applying auto-zeroing f
 
 It can be seen, that with increasing integration times before applying the AZ algorithm more uncertainty is accumulated due to the $f^{-1}$ content, which cannot be filtered. As a result, after removing the $f^{-1}$ content using auto-zeroing more time is required for filtering until the same Allan deviation can be reached. From these simulations it can be concluded that when there is negligible dead time $\theta$ involved when switching the inputs, it is advantageous to switch early, while white noise is still dominating the noise content.% The two lines for \qty{1}{\PLC} and \qty{2}{\PLC} are clearly the ones with the lowest uncertainty
 
-Finally, the case of a non-negligible dead time shall be treated. When the dead time has to be considered, it is clear, that the auto-zero frequency cannot be arbitrarily increased, because an increasing proportion of sampling time is lost to the dead time. This effective loss in sampling time then increases the noise spectral density due to aliasing as discussed above. To show this effect, the simulation above is modified to include a dead time of \qty{1}{\plc} as detailed in figure \ref{fig:dmm_autozer_offset_nulling}. The measurement sequence now includes a dead time after switching each input. \citeauthor{autozero_with_dead_time} proposes \cite{autozero_with_dead_time} splitting the measurement interval in two and instead of measuring HI-LO-HI-LO, to measure HI-LO-LO-HI. This scheme has both advantages and disadvantages, because the $f^{-1}$ noise is correlated and its autocorrelation function decays with $e^{-t}$, therefore constantly changing the order of subtracted samples is not as efficient in removing the noise as the normal auto-zero procedure. Only when the dead time is large in comparison to the measurement time, this method yields an advantage. Therefore only the simplest case of a HI-LO-HI-LO measurement is treated here. The Allan deviation for different integration times is evaluated in the same way as in figure \ref{fig:autozero_nplcs_adev}. The results are shown in figure \ref{fig:autozero_deadtime_nplcs_adev}.
-
-Figure \ref{fig:autozero_deadtime_nplcs_adev} demonstrates that the effectiveness of the AZ scheme no longer increases with an increasing switching frequency and there is an optimal auto-zero interval. For the parameters chosen for this simulation ($f_c = \qty{1.5}{\Hz}$ and \qty[power-half-as-sqrt, per-mode=symbol]{165}{\nV \Hz\tothe{-0.5}}), \qty{5}{\plc} at \qty{50}{\Hz} is the optimal interval. If the corner frequency is shifted to a lower frequency, the optimum shifts more towards \qty{10}{\plc}. The same goes for a higher line frequency of \qty{60}{\Hz}. This explains, why HP chose \qty{10}{\plc} as the maximum integration time. For integration times higher than that, software averaging is used delivering the performance shown in figure \ref{fig:autozero_deadtime_nplcs_adev} along the \qty{10}{\plc} line.
-
+Finally, the case of a non-negligible dead time shall be treated. When the dead time has to be considered, it is clear, that the auto-zero frequency cannot be arbitrarily increased, because an increasing proportion of sampling time is lost to the dead time. This effective loss in sampling time then increases the noise spectral density due to aliasing as discussed above. To show this effect, the simulation above is modified to include a dead time of \qty{1}{\plc} as detailed in figure \ref{fig:dmm_autozer_offset_nulling}. The dead time is added once after each measurement because the input is switched after each measurement. There are also alternative switching patterns like the one proposed by \citeauthor{autozero_with_dead_time} \cite{autozero_with_dead_time} splitting the measurement interval in two and instead of measuring HI-LO-HI-LO-HI-LO, to measure HI-LO-LO-HI-HI-LO. This scheme has both advantages and disadvantages, because the $f^{-1}$ flicker noise is correlated and its autocorrelation function decays with $e^{-t}$. Therefore constantly changing the order of subtracted samples is not as efficient in removing the noise as the normal auto-zero procedure. Only when the dead time is large in comparison to the measurement time, this method yields an advantage. Some measurements also allow for another scheme. If the measurement is differential, the HI and LO input can be inverted without incurring the noise penalty of equation \ref{eqn:autozeroing} because both measurements taken contain the desired data. This puts the auto-zeroing closer to a synchronous detection scheme, but this is outside the scope of this discussion. For the sake of simplicity, only the case of a HI-LO-HI-LO measurement mentioned first is treated here. To compare the zero dead time case with the non-negligible dead time case, the Allan deviation for different integration times is again evaluated in the same way as it was in figure \ref{fig:autozero_nplcs_adev}. The results are shown in figure \ref{fig:autozero_deadtime_nplcs_adev}.
 \begin{figure}[ht]
     \centering
     \input{images/autozero_deadtime_nplcs_adev.pgf}
@@ -1385,9 +1376,10 @@ Figure \ref{fig:autozero_deadtime_nplcs_adev} demonstrates that the effectivenes
     \label{fig:autozero_deadtime_nplcs_adev}
 \end{figure}
 
+Figure \ref{fig:autozero_deadtime_nplcs_adev} demonstrates that the effectiveness of the AZ scheme no longer keeps increasing with an ever rising switching frequency. Instead, there is an optimal auto-zero interval. Above this optimal frequency, the portion of time spent with dead time is getting too large and too little information is collected. For the parameters chosen for this simulation ($f_c = \qty{1.5}{\Hz}$ and \qty[power-half-as-sqrt, per-mode=symbol]{165}{\nV \Hz\tothe{-0.5}}), \qty{5}{\plc} at \qty{50}{\Hz} is the optimal interval. If the corner frequency is shifted to a lower frequency, the optimum shifts more towards \qty{10}{\plc}. The same goes for a higher line frequency of \qty{60}{\Hz}. This explains, why HP chose \qty{10}{\plc} as the maximum integration time. For integration times higher than that, software averaging is used delivering the performance shown in figure \ref{fig:autozero_deadtime_nplcs_adev} along the \qty{10}{\plc} line.
+
 It should be stressed here that the dead time is not the only factor to consider when choosing the auto-zero interval. For example, in case of an amplifier, switching the input also adds an error current due to the charge injection of the switching transistors. This may negatively impact the measurement of a high impedance source. These additional drawbacks are implementation specific and must considered already during the design phase.
 
-\clearpage
 \subsection{Gain Correction}%
 \label{sec:autozero_gain}
 The effect of the gain correction, where the input value $x$ is scaled by a scaling factor $y$ to adjust the gain error, can be calculated, assuming white noise, as follows:
@@ -1664,7 +1656,6 @@ which is not very convincing as a current source. The insignificant impact of $V
 %     \label{fig:current_source_jfet}
 % \end{figure}
 
-\clearpage
 \subsection{Precision Current Source}%
 \label{sec:precision_current_source}
 In the previous section \ref{sec:mosfet_current_source} it was shown in equation \ref{eqn:mosfet_id_small_signal} that the output impedance of a MOSFET depends on the channel-length modulation $\lambda$ and is too low for practical purposes. On the quest to improve the output impedance of the MOSFET circuit in figure \ref{fig:mostfet_small_signa_model_model_norton}, the most obvious solution would be to simply add a source resistor $R_S$ into the circuit as shown in in figure \ref{fig:pmos_current_source_resistor}. At first glance this may seem to only add a series resistance to $R_o$, but the attempt is more intriguing and will lead to an even better solution.
@@ -1747,7 +1738,6 @@ From these consideration, it can be seen, that the open-loop gain and the unity-
 
 The next section will focus on the MOSFET and discuss the compliance voltage of the current source, which was only briefly touched during the introduction. It will give rise to criteria for selecting a MOSFET for the precision current source.
 
-\clearpage
 \subsection{Compliance Voltage}%
 \label{sec:compliance_voltage}
 The compliance voltage of a current source is the maximum voltage it can output to maintain the requested output current. For an ideal current source, the compliance voltage is infinite, but it is obviously limited in the physical world.
@@ -1801,22 +1791,21 @@ Imagine the following modified circuit of the precision current source shown in 
 
 While at first this seems like a solution to the limited $V_{DS}$, it is not recommended for a number of reasons given here.
 
-The first reason is, MOSFET specifications are very loose, notably the threshold voltage $V_{th}$, the transconductance $g_m$ and the capacitances, but the latter is of little concern here. Paralleling MOSFETs works well under certain conditions, for example, when using the MOSFETs as a switch, not as a current source. It seems to be a common misunderstanding, that MOSFETs are immune to thermal runaway. This might be true when using them as a switch, fully turned on and in the ohmic region. In this case, there are two effects occurring, the first is, that the (absolute) value of $V_{th}$ decreases with temperature, thus increasing $I_D$ and the second effect is, $R_{DS,on}$ is rising with temperature \cite{mosfet_thermal_runaway}. But here, the MOSFET is operating in pinch-off and not the ohmic region, $R_{DS,on}$ has no influence on the current, therefore, the only effect at work is the decreasing $V_{th}$, so depending on the imbalance in $V_{th}$ of the paralleled MOSFETs is, one MOSFET will take most of the current and power. Adding source resistors can compensate for this by pushing down the source voltage as the current goes up. This will then reduce $V_{GS}$. The size of the resistor depends on the transconductance $g_m$ and the temperature coefficient of $V_{GS}$, which is around \qtyrange[range-units = single]{1.5}{2}{\mV \per \K} \cite{mosfet_vgs_tempco}. Unfortunately, \qty{1}{\ohm} or \qty{2}{\ohm}, will already use up, most of the benefits gained in compliance voltage as will be shown below. A more detailed analysis of paralleling MOSFETs can be found in \cite{paralleling_mosfets}.
+The first reason is, MOSFET specifications are very loose, notably the threshold voltage $V_{th}$, the transconductance $g_m$ and the capacitances, but the latter is of little concern here. These tolerances limit the usefulness of paralleling MOSFETs to certain conditions, for example, when using the MOSFETs as a switch ad not as a current source. The difference between its use as a switch and a current source is the thermal load, which is a lot higher when using the MOSFET as current source. In this respect it seems to be a common misunderstanding, that MOSFETs are immune to thermal runaway. This is mostly true when using them as a switch, fully turned on and in the ohmic region. In this case, there are two effects occurring, the first is, that the (absolute) value of $V_{th}$ decreases with temperature, thus increasing $I_D$ and the second effect is, $R_{DS,on}$ is rising with temperature \cite{mosfet_thermal_runaway}. The latter effect is, depending on the physical design, stronger, but it depends on the specific MOSFET. A detailed analysis of paralleling MOSFETs as switches can be found in \cite{paralleling_mosfets}. In case the MOSFET is operating in pinch-off and not the ohmic region, $R_{DS,on}$ has no influence on the current, therefore, the only effect at work is the decreasing $V_{th}$. Depending on the difference in $V_{th}$ between the paralleled MOSFETs, one MOSFET will take most of the current and power. Adding source resistors can compensate for this by pushing down the source voltage as the current goes up. This will then reduce $V_{GS}$. The size of the resistor depends on the transconductance $g_m$ and the temperature coefficient of $V_{GS}$, which is around \qtyrange[range-units = single]{1.5}{2}{\mV \per \K} \cite{mosfet_vgs_tempco}. Unfortunately, \qty{1}{\ohm} or \qty{2}{\ohm}, will already use up, most of the benefits gained in compliance voltage as will be shown below.
 
 The second reason why paralleling MOSFETs is not desirable can be seen when
-remembering equation \ref{eqn:mosfet_id_large_signal}. It is known that the transition from the undesirable ohmic region to the saturation region is
+remembering equation \ref{eqn:mosfet_id_large_signal}. It is known that the transition from the unwanted ohmic region to the saturation region is
 \begin{equation}
-    V_{DS} \geq V_{GS} − V_{th}
+    V_{DS} \geq V_{GS} − V_{th}\,.
 \end{equation}
 
-Looking at \ref{fig:precision_current_source_two_mosfets}, we see that $V_{GS}$ is set by the op-amp and is the same for both MOSFETs. However, $V_{th}$ is device specific and according to the datasheet of our example \device{IRF9610} \cite{datasheet_IRF9610} $V_{th}$ values can show a spread of as much as \qtyrange[range-units = single, range-phrase={~to~}]{-2}{-4}{\V}, although \cite{appnote_mosfet_parameter_spread} suggests that MOSFETs from the same reel show a spread of only \qty{\pm 125}{\mV} of $V_{th}$  within the same batch for consecutive devices. The \qty{125}{\mV} was found for the \device{BUK7S1R5-40H} \cite{datasheet_BUK7S1R5}, which was sampled in this report. The number given in the report is for $3\sigma$ and, assuming the datasheet values are also referring to $3\sigma$, the value found in the report is about twice as right as the datasheet value of \qtyrange[range-units = single]{2.4}{3.6}{\V}. Assuming similar numbers for \device{IRF9610} MOSFET used in our examples, this leads to \qty{\pm 208}{\mV} for the \device{IRF9610}, again applying $3\sigma$. Using this number, a Monte Carlo simulation (not quite, because the dice were biased to yield a Gaussian distribution instead of equal probabilities) was run using LTSpice, simulating the circuit shown in figure \ref{fig:precision_current_source_two_mosfets} and also the original circuit using only one MOSFET. The current source was set to \qty{250}{\mA} as per table \ref{tab:current_source_parameters}. The load voltage was set to
+Looking at \ref{fig:precision_current_source_two_mosfets}, it can be seen that $V_{GS}$ is set by the op-amp and is the same for both MOSFETs because their gates and sources are connected. However, $V_{th}$ is device specific and according to the datasheet of the example \device{IRF9610} \cite{datasheet_IRF9610} $V_{th}$ values can show a spread of as much as \qtyrange[range-units = single, range-phrase={~to~}]{-2}{-4}{\V}, although \cite{appnote_mosfet_parameter_spread} suggests that MOSFETs from the same reel show a spread of only \qty{\pm 125}{\mV} of $V_{th}$  within the same batch for consecutive devices. The \qty{125}{\mV} was found for the \device{BUK7S1R5-40H} \cite{datasheet_BUK7S1R5}, which was sampled in this report. The number given in the report is for $3\sigma$ and, assuming the datasheet values for the spread are also referring to $3\sigma$, the spread found in the report is about twice as high as the datasheet value of \qtyrange[range-units = single]{2.4}{3.6}{\V}. Assuming similar numbers for \device{IRF9610} MOSFET used in our examples, this leads to \qty{\pm 208}{\mV} for the \device{IRF9610}, again applying $3\sigma$. Using this number, a Monte Carlo simulation (not quite, because the dice were biased to yield a Gaussian distribution instead of equal probabilities) was run using LTSpice, simulating the circuit shown in figure \ref{fig:precision_current_source_two_mosfets} and also the original circuit using only one MOSFET. For this simulation the current source was set to \qty{250}{\mA} as per table \ref{tab:current_source_parameters}. The load voltage was set to
 \begin{equation*}
     V_{DS, parallel} = \sqrt{\frac{2 \frac{I_d}{2}}{\kappa}} \approx \qty{555}{\mV}\,,
     V_{DS, single} = \sqrt{\frac{2 I_d}{\kappa}} \approx \qty{784}{\mV} \,.
 \end{equation*}
 
-$\frac{I_D}{2}$ was used for the parallel configuration to show the effect assuming perfect current sharing between the MOSFETs. Additionally, a configuration with an increased safety margin of $1 \sigma = \qty{70}{\mV}$ added to $V_{DS, parallel}$ was investigated. \num{4000} samples were drawn and the spread of the output impedance was calculated for each circuit. The results are shown as a histogram in figure \ref{fig:ltpsice_mosfet_mc_output_impedance}. The counts give the number of cases for each bin of the output impedance.
-
+$\frac{I_D}{2}$ was used to calculate $V_{DS, parallel}$ for the parallel configuration to show the effect assuming perfect current sharing between the MOSFETs. Additionally, a configuration with an increased safety margin of $1 \sigma = \qty{70}{\mV}$ added to $V_{DS, parallel}$ was investigated. \num{4000} samples were drawn and the spread of the output impedance was calculated for each circuit. The results are shown as a histogram in figure \ref{fig:ltpsice_mosfet_mc_output_impedance}. The counts give the number of cases for each bin of the output impedance.
 \begin{figure}[ht]
     \centering
     \input{images/ltspice_mosfet_mc_output_impedance.pgf}
@@ -1828,7 +1817,6 @@ Unsurprisingly, there is no variance of the output impedance in the single MOSFE
 
 In case of two MOSFETs, the output impedance varies over an order of magnitude from about \qtyrange[range-units = single]{1.8}{52}{\giga \ohm}. Even when increasing the drain-source voltage by $1 \sigma = \qty{70}{\mV}$ to \qty{625}{\mV} on average, the spread is still an order of magnitude. Only when increasing $V_{DS}$ to around \qty{700}{\mV}, the situation stabilises, but then the net gain from this measure has shrunk to a meager \qty{84}{\mV}. It can be seen from this simulation, that the system-to-system spread becomes very unstable in tough situations. Such instability can also be brought into the system by temperature effects as $V_{th}$ is temperature dependent as discussed above. Additionally, it may suffer from thermal runaway unless each individual MOSFET is laid out to carry the full current.
 
-\clearpage
 \subsection{Noise Sources}%
 \label{sec:current_source_noise}
 The fundamentals of different types of noise were already introduced in section \ref{sec:allan_deviation}. Here, a subset of these noise types is treated. It is expected, that the dominant noise observed in this circuit is $\frac{1}{f}$-noise at low frequencies and white wideband-noise. All noise components will be converted to the so-called input referred notation to make the noise sources comparable. This can be easily understood, when looking at two amplifiers with different gain. If both of them add a fixed amount of noise to the output signal, the absolute amount of noise may be the same, but the signal to noise ratio shows a different picture. To compare these amplifiers it is useful to divide the noise by the transfer function (gain) of the amplifier. This is called input-referred noise, since it treats the noise in relation to the input signal. Additionally, when calculating noise figures, the noise bandwidth is always considered to be \qty{1}{\Hz}.
@@ -1946,7 +1934,6 @@ To conclude, table \ref{tab:current_source_noise_contributers} is given as a ref
 
 To summarize the findings, the most important choices regarding the noise contributions are a good quality metal-foil or wirewound sense resistor $R_s$, a low noise voltage reference and a low noise op-amp. Regarding the low-noise op-amp it is important to decide between low voltage noise or low current noise. This choice depends on the value of $R_S$. For typical values of $R_S$ below \qty{1}{\kilo\ohm} voltage noise is dominating. The reference should be chosen for low flicker noise.
 
-\clearpage
 \subsection{Component Selection}%
 \label{sec:component_selection}
 This section deals with selecting the right components for the precision current source presented in section \ref{sec:precision_current_source}. The focus lies on the requirements defined in section \ref{sec:laser_current_driver}, notably specifications \ref{lst:dgDrive_specs_environment} and \ref{lst:dgDrive_specs_electrical}. Most attention will be on the MOSFET, the operational amplifier and the voltage reference. First is the voltage reference, because this will define several parameters down the road. Then, the op-amp is discussed, for which several examples from scientific publications and other alternatives are shown and the best solution is presented. Finally, the selection parameters for the MOSFET will be elaborated. The reader must warned though, that the lineup of p-channel MOSFETs in production is decreasing, with more and more products being discontinued in favour of n-channel MOSFETs. The examples may therefore already be outdated.
@@ -2039,7 +2026,6 @@ The current range of the MOSFETs in table \ref{tab:example_mosfet_selection} is 
 
 To summarize the component selection. The ADI \device{AD797} op-amp is a highly recommended choice for being low-low noise with enormous gain, high bandwidth and a strong drive current. The MOSFET to accompany it is the Vishay \device{IRF9Z14} for medium power applications. The reference must be a buried Zener diode and the ADI \device{LM399} or \device{ADR1399} is recommended. Regarding the sense resistors, they must be able to dissipate up to $\qty{500}{\mA} \cdot \qty{7}{\V} = \qty{3.5}{\W}$ with minimal drift, making the Vishay \device{VPR221Z} a very good choice.
 
-\clearpage
 \subsection{Current Source Example Parameters}%
 \label{sec:current_source_summary}
 Throughout this section, example calculations are performed to give the reader an idea of real-life parameters that can be applied to the theoretical models. These parameters are summarised in table \ref{tab:current_source_parameters}, including their origin.
@@ -2064,7 +2050,6 @@ Throughout this section, example calculations are performed to give the reader a
     \label{tab:current_source_parameters}
 \end{table}
 
-\clearpage
 \subsection{Howland Current Pump}%
 \label{sec:howland_current_source}
 This section will discuss two versions of the popular Howland current source (HCS) \cite{howland_current_source}. Both the traditional Howland current pump and the so-called \textit{improved} Howland current pump, which is similar, but changes some properties for good and bad. They are both bidirectional current sources and can be used for high frequency current modulation or the generation of a precision floating current source. The circuit is shown in figure \ref{fig:howland_current_source}.
@@ -2090,23 +2075,22 @@ Using the formulae above it is possible to calculate the output impedance for a 
 
 $R_{out}$ is proportional to $\frac{1}{T}$, since the amplifier gain is very high and the tolerances are small, so the Taylor expansion shown above is valid. The upper limit imposed by the op-amp gain can be calculated according to equation \ref{eqn:howland_output_impedance_loop_gain}
 \begin{equation*}
-    R_{out, max} (A=10^6) \approx \qty{2.5}{\giga\ohm}\,.
+    R_{out, max} (A=\qty{10}{\V}{\uV}) \approx \qty{2.5}{\giga\ohm}\,.
 \end{equation*}
 
-Comparing these values with the requirements from specification \ref{lst:dgDrive_specs_electrical}, \qty{\geq 7.5}{\mega \ohm}, it is clear that the Howland current source can meet them, but will not without additional trimming. In order to get a better understanding of the output impedance and to show the effect of different tolerances, a Monte Carlo simulation was conducted. The parameters assumed a Gaussian distribution of the resistor values with $3 \sigma = T$. The Monte Carlo simulation was run \num{e5} times and the output impedance was extracted for each run. Finally, the absolute value was binned into \num{100} bins (\qty{500}{\kilo\ohm} width) and plotted as histogram. The LTSpice simulation file can be found at \external{source/spice/howland\_current\_source\_ideal.asc} and the result is shown in figure \ref{fig:ltpsice_howland_mc_output_impedance}.
-\begin{figure}[hb]
+Comparing these values with the requirements from specification \ref{lst:dgDrive_specs_electrical}, \qty{\geq 7.5}{\mega \ohm}, it is clear that the Howland current source can meet them, but not without extra trimming or a tighter matched resistor array (T \{qty{0.01}{\percent}) which is hard to come by and expensive. In order to get a better understanding of the output impedance and to show the effect of different tolerances, a Monte Carlo simulation was conducted. The parameters assumed a Gaussian distribution of the resistor values with $3 \sigma = T$ due to the tolerance. The Monte Carlo simulation was then run \num{e5} times and the output impedance was extracted for each run. Finally, the absolute value (there are positive and negative values, see below) was binned into \num{100} bins of \qty{500}{\kilo\ohm} width and plotted as a histogram. The LTSpice simulation file can be found at \external{source/spice/howland\_current\_source\_ideal.asc} and the result, limited to bin values $\qty{\leq 50}{\mega\ohm}$ for better readability, is shown in figure \ref{fig:ltpsice_howland_mc_output_impedance}.
+\begin{figure}[ht]
     \centering
     \input{images/ltspice_howland_mc_output_impedance.pgf}
     \caption{Histogram of Monte Carlo simulations of the output impedance for the classic Howland current source with different resistor tolerances, assuming $A = \infty$, $3 \sigma = T$, $R=\qty{1}{\kilo\ohm}$. The improved Howland current sources uses $R = \qty{10}{\kilo\ohm}$ and $R_{2b} = \qty{1}{\kilo\ohm}$. The number of simulation runs was \num{e5}.}
     \label{fig:ltpsice_howland_mc_output_impedance}
 \end{figure}
 
-Figure \ref{fig:ltpsice_howland_mc_output_impedance} gives a more complete picture of the expected output impedance distribution when implementing an (improved) Howland current source without trimming. Do note, that figure \ref{fig:ltpsice_howland_mc_output_impedance} only shows the absolute value of the output impedance. The impedance can be either positive or negative, depending on the resistor ratios. The probability is evenly distributed between negative and positive impedance, producing a left-handed negative copy of the plot in figure \ref{fig:ltpsice_howland_mc_output_impedance}. For the purpose of improving readability of the plot, only the absolute value is plotted. A negative impedance means, that with increasing load voltage, the output current increases as well. For the purpose of of driving laser diodes, this distinction is irrelevant.
+Figure \ref{fig:ltpsice_howland_mc_output_impedance} gives a more complete picture of the expected output impedance distribution when implementing an (improved) Howland current source without trimming. Do note, that figure \ref{fig:ltpsice_howland_mc_output_impedance} only shows the absolute value of the output impedance. The impedance can be either positive or negative, depending on the resistor ratios. The probability is evenly distributed between negative and positive impedance, producing a left-handed negative copy of the plot in figure \ref{fig:ltpsice_howland_mc_output_impedance}. For the purpose of improving readability of the plot, only the absolute value is plotted. A negative impedance means, that with increasing load voltage, the output current increases as well. For the purpose of of driving laser diodes, this distinction is irrelevant as the output impedance mostly determines the noise immunity.
 
-First, regarding the basic Howland current source, using \qty{0.05}{\percent} tolerance resistors the lower limit of \qty{500}{\kilo\ohm} can be easily identified as the leftmost bin of the histogram, that contains more than zero counts. The maximum probability is reached around \qty{2}{\mega\ohm}. Integrating over the probability density of all values \qty{7.5}{\mega\ohm} gives a \qty{31.5}{\percent} probability to end up with an output impedance of at least \qty{7.5}{\mega\ohm}. This is not nearly enough to meet the specif action. Going to \qty{0.01}{\percent} tolerance resistors, the lower limit of \qty{2.5}{\mega\ohm} can again be identified by the absence of counts. The maximum probability is around \qtyrange{10}{20}{\mega\ohm} and the probability of getting an output impedance of more than \qty{7.5}{\mega\ohm} is \qty{95.6}{\percent}, a number far closer to the desired $3\sigma$ (\qty{99.7}{\percent}).
+First, regarding the basic Howland current source, using \qty{0.05}{\percent} tolerance resistors the lower limit of \qty{500}{\kilo\ohm} can be easily identified as the leftmost bin of the histogram, that contains a non-zero number of counts. The maximum probability is reached with around \qty{2}{\mega\ohm}. Integrating over the probability density of the values gives a \qty{31.5}{\percent} probability to end up with an output impedance of at least \qty{7.5}{\mega\ohm}. This is not nearly enough to meet the specif action. Going to \qty{0.01}{\percent} tolerance resistors, the lower limit of \qty{2.5}{\mega\ohm} can again be identified by the absence of counts in the lower bins. The maximum probability is around \qtyrange{10}{20}{\mega\ohm} and the chance of getting an output impedance of more than targeted \qty{7.5}{\mega\ohm} is \qty{95.6}{\percent}, a number far closer to the desired $3\sigma$ value (\qty{99.7}{\percent}) and can be considered acceptable.
 
-The improved Howland current source was simulated with $R=\qty{10}{\kilo\ohm}$ and $R_{2b} = \qty{1}{\kilo\ohm}$, so it is expected, that according to equation \ref{eqn:improved_howland_output_impedance_equal_resistors} the minimum output impedance is about a factor of two higher than compared to the basic Howland current source. Looking at figure \ref{fig:ltpsice_howland_mc_output_impedance}, this assumption holds. For a resistor tolerance of $T=\qty{0.05}{\percent}$, the minimum bin is \qty{1.5}{\mega\ohm}, with the maximum probability at \qty{4.5}{\mega\ohm}. The probability of getting a more than \qty{7.5}{\mega\ohm} is \qty{79.7}{\percent}, which is quite an improvement over the \qty{31.5}{\percent} of the basic current source, but still not usable. Using $T=\qty{0.01}{\percent}$ resistors, the improved Howland current source has a minimum impedance of \qty{8.5}{\mega\ohm}, which is sufficient to meet the requirements and the maximum is between \qty{20}{\giga\ohm} and \qty{30}{\giga\ohm}. The results are summarised again in table \ref{tab:howland_current_source_summary}.
-
+The improved Howland current source was simulated with $R=\qty{10}{\kilo\ohm}$ and $R_{2b} = \qty{1}{\kilo\ohm}$. It is therefore expected that according to equation \ref{eqn:improved_howland_output_impedance_equal_resistors} the minimum output impedance is about a factor of two higher than compared to the basic Howland current source. Looking at figure \ref{fig:ltpsice_howland_mc_output_impedance}, this assumption holds. For a resistor tolerance of $T=\qty{0.05}{\percent}$, the minimum bin is \qty{1.5}{\mega\ohm}, with the maximum probability at \qty{4.5}{\mega\ohm}. The probability of getting a more than \qty{7.5}{\mega\ohm} is \qty{79.7}{\percent}, which is quite an improvement over the \qty{31.5}{\percent} of the basic current source, but still not usable. Using $T=\qty{0.01}{\percent}$ resistors, the improved Howland current source has a minimum impedance of \qty{8.5}{\mega\ohm}, which is sufficient to meet the requirements and the maximum is between \qty{20}{\giga\ohm} and \qty{30}{\giga\ohm}. The results are summarised again in table \ref{tab:howland_current_source_summary}.
 \begin{table}[hb]
     \centering
     \begin{tabular}{lccc}
@@ -2134,7 +2118,7 @@ The final aspect that needs to be discussed is the compliance voltage. The compl
     V_{c, HCS} &\leq \frac{1}{2} V_{o,max} & V_{c, iHCS} &\leq V_{o,max} - V_{in}
 \end{align*}
 
-In comparison to the basic Howland current source, the improved HCS has a compliance voltage dependency on the input voltage. This makes it unsuitable for a laser driver modulation source, because the maximum modulation input typically is roughly the same value as the maximum output of a typical op-amp, since the laser driver is modulated or steered by another box using the same power rail. The improved Howland current source can only by employed in situations, where the input is well defined and a lot lower than the power supply rail of the HCS op-amp. For the modulation current source, the basic HCS is more suitable, especially since it is independent of the input. To achieve a high output impedance, a high quality matched array is necessary or alternatively a difference amplifier like the ADI \device{LT1997} \cite{datasheet_LT1997} can be used. Those amplifiers contain both the amplifier and a resistor network that is tightly matched. In case of the \device{LT1997}, the matching is better than \qty{60}{\micro\ohm \per \ohm}. Unfortunately, the choice of resistor values in this case is even more limited than the range of resistor arrays.
+From those equations it can be seen that there is a significant difference between the the basic Howland current source and the improved HCS. The compliance voltage of the basic howland current source only depends on the maximum output voltage of the op amp and hence the supply voltage. The improved HCS depends on both the supply voltage and the input voltage. This makes it unsuitable for a laser driver modulation source, because the maximum modulation input typically is roughly the same voltage as the maximum output of a typical op-amp, since the laser driver is modulated or steered by another box using the same power rail. The improved Howland current source can only by employed in situations, where the input is well defined and a lot lower than the power supply rail of the HCS op-amp. For a laser driver modulation current source, the basic HCS is more suitable, since it is independent of the input. To achieve a high output impedance, a high quality matched array is necessary or alternatively a difference amplifier like the ADI \device{LT1997} \cite{datasheet_LT1997} can be used. Those amplifiers contain both the amplifier and a resistor network that is tightly matched. In case of the \device{LT1997}, the matching is better than \qty{60}{\micro\ohm \per \ohm}. Unfortunately, the choice of resistor values in this case is even more limited than the range of resistor arrays.
 
 The problem of a limited choice of resistor values as arrays or integrated resistors can be addressed by a circuit that combines both the basic HCS and the improved HCS. This circuit is shown in figure \ref{fig:buffered_howland_current_source}.
 \begin{figure}[hb]
