@@ -26,7 +26,7 @@
         \tikzstyle{every node}=[font=\small]
         \begin{scope}[circuitikz/bipoles/noise sources/fillcolor=dashed]
             \draw
-                (0,0) to[V,name=V,l=V, invert] ++(0,5.5) coordinate(Vdd) -- ++(3,0) to[R, i^>=$I_{S}$, l=$R_{S}$] ++(0,-2)
+                (0,0) to[V,name=V,l=V, invert] ++(0,5.5) coordinate(Vdd) -- ++(3,0) to[R, i^>=$I_{S}$, l=$R_s$] ++(0,-2)
                 node[pigfete, anchor=S](Q){Q}
                 (Q.D) to[R, l=$R_{load}$] ++(0,-2)
                 -- ++(-2,0) -| (0,0)

@@ -7,7 +7,8 @@
 %\section{Grounding and Shielding}
 %Add parts from "references\\Grounding and Shielding.pdf"
 
-\section{Laser System}
+\section{Laser System}%
+\label{sec:prep_laser_system}
 %\subsection{Requirements Laser System}
 The ARTEMIS experiment is currently in the process of commissioning. Due to the relative abundance of Argon, the ability to create highly charged ion species using an electron beam along with an interesting transition at $\lambda = \qty{441.25575(17)}{\nm}$ \cite{ar13+_wavelength} with a lifetime of \qty{9.573(6)}{\ms} \cite{ar13+_lifetime} makes \ce{Ar^{13+}} an ideal candidate for this purpose. Figure \ref{fig:bohr_ar13} shows the simplified electronic configuration of the boron-like \ce{Ar^{13+}} investigated.
 \begin{figure}[ht]
@@ -36,25 +37,27 @@ The optical transitions of highly charged \ce{Ar^{13+}} around \qty{441}{\nm} sh
 \end{equation}
 seen in the trap which is kept at a temperature of \qty{4}{\K}.
 
-The laser system shown in figure \ref{fig:laser_system_old} was characterised by \citeauthor{thesis_alex} \cite{thesis_alex} and the transfer accuracy of the the wavelength was calculated to be \qty{1.2}{\MHz} and, and considering the additional long-term drift of the system, led to an upper limit of the absolute wavelength uncertainty of \qty{2.2}{\MHz}. This is more than adequate considering the Doppler broadening of \qty{150}{\MHz}. While being sufficiently accurate, the system has a significant drawback of being fairly complicated to manage if not maintained on a daily basis. The performance and uncertainty of the system relies on the exact knowledge of the tellurium spectrum surrounding both wavelengths of the lasers.
+The laser setup shown in figure \ref{fig:laser_system_old} was characterised by \citeauthor{thesis_alex} \cite{thesis_alex} and its transfer accuracy of the the wavelength was calculated to be \qty{1.2}{\MHz}. Considering the additional long-term drift of the system led to an upper limit of the absolute wavelength uncertainty of \qty{2.2}{\MHz}. This can be considered more than adequate given the Doppler broadening of \qty{150}{\MHz} calculated in equation \ref{eqn:doppler_broadening}. While being sufficiently accurate, the system has the significant drawback of being fairly complicated to manage if not maintained on a daily basis. Its performance and uncertainty relies on the exact knowledge of the tellurium spectrum surrounding both wavelengths of the lasers.
 \begin{figure}[ht]
     \centering
     %\scalebox{1}{%
         \import{figures/}{laser_system_old.tex}
     %} % scalebox
-    \caption{Simplified setup of the laser system in use at ARTEMIS prior to this work. Blue lines are laser beams, black lines are electronic signals delivering feedback to the lasers.}
+    \caption{Simplified setup of the laser system in use at ARTEMIS prior to this work. Blue lines are laser beams, black lines are electronic signals delivering feedback.}
     \label{fig:laser_system_old}
 \end{figure}
 
-The reason can be seen in figure \ref{fig:laser_system_old} and is founded in the locking scheme. The master laser is first locked to a tellurium reference transition which has to be found manually first using the tellurium map charted by \cite{thesis_alex}. While not complicated, it requires a trained user. The transfer cavity is then locked to the master laser, a straight forward process. The spectroscopy laser now has to be locked to the correct fringe of the transfer cavity. This is done by observing the tellurium background again to adjust the laser to a frequency close to the desired fringe. This is by no means an automated process and requires a competent operator. Although the locking procedure requires training it does work reliably, but there are more issues that are not readily apparent.
+To operate the system, the master laser must first locked be to a tellurium reference transition which has to be searched manually using the tellurium spectrum charted by \cite{thesis_alex}. While not complicated, it requires a trained user nonetheless. The transfer cavity is then locked to the master laser, a straight forward process. The spectroscopy laser now has to be locked to the correct fringe of the transfer cavity. This is done by observing the tellurium background again to adjust the diode laser mode to a frequency close to the desired cavity fringe. This is by no means an automated process and requires a competent operator. Although this locking procedure requires training it does work reliably, but there are more issues that are not readily apparent.
 
-One potential problem lies with the master laser. The whole calibration is geared towards the reference transition at \qty{452.756}{\nm} catalogued by \citeauthor{te_reference_lines} \cite{te_reference_lines}. Replacing the master laser in case of failure is difficult because blue laser diodes are less flexible when tuning in comparison to their NIR cousins as discussed in \cite{thesis_baus,thesis_alex}. This limits their availability and increases their replacement value.
+One such potential problem lies with the master laser. The whole calibration is geared towards a reference transition at \qty{452.756}{\nm} catalogued by \citeauthor{te_reference_lines} \cite{te_reference_lines}. Replacing the master laser in case of a failure is challenging. Blue laser diodes are less flexible when tuning in comparison to their NIR cousins as discussed in \cite{thesis_baus,thesis_alex}. The diode used in the current laser was handpicked for this wavelength. This limits the availability of replacement parts and increases their replacement value. Using another diode and wavelength along with a different tellurium transition would require creating a new tellurium map which is a laborious process.
 
-Another challenge is created by the locking scheme which becomes even more complicated when introducing a third laser to complete the closed transition for the laser-microwave double-resonance spectroscopy. The setup in its present condition is already prepared for the second spectroscopy laser which must also be locked to the transfer cavity. Currently both lasers are sent into the transfer cavity with perpendicular polarisations to separate the beams. Since the reference laser is running at \qty{453}{\nm} and the second spectroscopy laser at \qty{441}{\nm}, it is also possible to separate those two using a dichroic mirror. This scheme requires the close overlap of three beams along with their reflection, because it is a saturated absorption spectroscopy. Such a setup strongly couples the three beam paths and makes replacement of individual lasers more complicated.
+Another challenge is created by the locking scheme which becomes more complicated when introducing a third laser to complete the closed transition for the laser-microwave double-resonance spectroscopy. The setup in its present condition was already prepared for the second spectroscopy laser which must also be locked to the transfer cavity. Currently both lasers are sent into the transfer cavity with perpendicular polarisations to separate the beams using a polarizing beam splitter. Since the reference laser is running at \qty{453}{\nm} while the spectroscopy laser is using \qty{441}{\nm}, it is also possible to separate those two via a dichroic mirror. While possible, this scheme requires the close overlap of three beams along with their reflection because it is a saturated absorption spectroscopy. Such a setup strongly couples the three beam paths and further complicates future adjustments.
 
-The final issue regarding the transfer cavity concerns the required high voltage for the transfer cavity. The cavity contains a piezoelectric actuator to adjust its length. This piezo requires up to \qty{1.25}{\kV} to reach the necessary translation required for scanning the tellurium spectrum. Not only does this pose a risk to the untrained operator, but it was also discovered during the design of the current system that high frequency noise from the voltage supply is radiated and can enter the experiment. It therefore has to be located as far away as possible from the laser setup.
+The final issue regarding the transfer cavity concerns the required high voltage for the piezoelectric actuator to adjust its length. This piezo requires up to \qty{1.25}{\kV} to reach the necessary translation required for scanning the tellurium spectrum. Not only does this pose a risk to an untrained operator, but it was also discovered during the commissioning of the current system that high frequency noise from the voltage supply is radiated and can enter the experiment. These issues were minimized by testing several power supplies, choosing the lowest noise device and keeping the supply well separated from the rest of the experiment increasing space required for the whole system.
 
-To conclude, the Achilles' heel of the system is the transfer cavity and replacing it can greatly improve the reliability and availability of the whole laser system. During commissioning and testing  of the laser system it was also found that there were problems with the laser drivers for the blue laser diodes. The driver used was in-house current source for NIR diodes based on the design of \citeauthor{libbrecht_hall} \cite{libbrecht_hall}. With these drivers an increasing instability was observed when turning up the current up to the operating point. Other drivers tested either had the same problem or were far noisier and therefore harder to work with. This is due to the modification done by the manufacturers to increase the compliance voltage for the blue laser diodes. The causes are discussed in the next section as it sparked the development of a novel laser driver.
+During the commissioning and testing of the laser system it was also found that the laser drivers had issues with blue laser diodes. Those driver used a modified in-house current source normally used for NIR diodes based on the design of \citeauthor{libbrecht_hall} \cite{libbrecht_hall}. With these drivers an increasing instability was observed when adjusting the current up to the operating point. The origin of this problem lies in the larger operating voltage of the blue laser laser of up to \qty{7}{\V} compared to the more moderate \qty{2.5}{\V} of NIR diodes. The details are discussed in section \ref{sec:compliance_voltage}. Other commercial drivers tested either had the same problem or were far noisier and therefore harder to work with, due to the modification made by the manufacturers to increase the compliance voltage.
+
+To conclude, the commissioning of the laser system has brought up two issues with the current system that impact its availability and performance. The transfer cavity can be considered the Achilles' heel of the system and replacing it with a more flexible alternative like a high performance wavemeter can greatly improve the usability and flexibility of the whole laser system as it breaks up the tight dependency on the tellurium reference laser. Additionally this opens up alternative wavelengths for the spectroscopy of other highly charges ion species. The second issue was found with the laser driver and the apparent lack of commercial solutions sparked the development of a novel laser driver for the next generation of laser diodes to gain direct access to more wavelengths. This is discussed in the next section.
 
 \clearpage
 \section{Laser Current Driver}%
@@ -74,7 +77,7 @@ and the diode current $I$ approximately follows the Shockley equation \cite{shoc
 
 $k_B$ is Boltzmann constant, $T$ the temperature, $q$ the electron charge and $V_d$ the diode voltage. The exponential dependence of the current on the supply voltage calls for a current source to drive a laser diode safely without risking thermal damage due to excessive injection currents.
 
-The primary function of a laser driver is therefore to provide a stable, but user adjustable, current. This current can typically be modulated at frequencies up to several \unit{\MHz} to shape the frequency and amplitude of the laser beam. Additional features, like current and voltage limits, aid in protecting the expensive laser diodes and it is not uncommon to have additional safeguards inside the laser head that are under control of the laser driver like a shorting relay to ensure the laser diode is shorted when the driver is disconneted or disabled.
+The primary function of a laser driver is therefore to provide a stable, but user adjustable, current. This current can typically be modulated at frequencies up to several \unit{\MHz} to shape the frequency and amplitude of the laser beam. Additional features, like current and voltage limits, aid in protecting the expensive laser diodes and it is not uncommon to have additional safeguards inside the laser head that are under control of the laser driver like a shorting relay to ensure the laser diode is shorted when the driver is disconnected or disabled.
 
 This section deals with the design challenges of such a device used for high precision laser spectroscopy. First the design requirements are established and then technical specifications are developed.
 
@@ -84,12 +87,12 @@ The design requirements are split into three parts which need to be discussed: T
 
 \subsection{Design Goals: Ambient Environment}%
 \label{sec:design_goal_environment}
-The lasers and therefore the laser driver is to be mostly used in a clean laboratory environment. In this particular use case the air is filtered using H14 HEPA filters, but less rigorously controlled environments must be considered as well, because not all fields of application are in optical labs. A mostly dustfree industrial environment is considered acceptable as well. Typical lab temperatures are in the range of \qtyrange[range-phrase=\textup{~to~}]{20}{30}{\celsius}. This temperature range was also encountered in the labs discussed in this work before improvements were implemented as part of this work. The upper end of the range must be considered when operating the devices inside a rack where the temperatures are even higher and the device should therefore be tested for its upper limit. \qty{35}{\celsius} is a typical value measured inside the racks used in the lab. Humidity is only controlled with dehumidifiers limiting the upper bound to the range of \qtyrange[range-phrase=\textup{~to~}]{15}{60}{\percent rH}.
+The lasers and therefore the laser driver is to be mostly used in a clean laboratory environment. In this particular use case the air is filtered using H14 HEPA filters, but less rigorously controlled environments must be considered as well, because not all fields of application are in optical labs. A mostly dust free industrial environment is considered acceptable as well. Typical lab temperatures are in the range of \qtyrange[range-phrase=\textup{~to~}]{20}{30}{\celsius}. This temperature range was also encountered in the labs discussed in this work before improvements were implemented as part of this work. The upper end of the range must be considered when operating the devices inside a rack where the temperatures are even higher and the device should therefore be tested for its upper limit. \qty{35}{\celsius} is a typical value measured inside the racks used in the lab. Humidity is only controlled with dehumidifiers limiting the upper bound to the range of \qtyrange[range-phrase=\textup{~to~}]{15}{60}{\percent rH}.
 
 Figure \ref{fig:lab_temperature_start_of_project} shows a typical one day span of the lab temperature as it was found at the start of this project.
 \begin{figure}[ht]
     \centering
-    \input{images/temperature_011_2016.pgf}
+    \input{images/temperature_011_2016.pgf}% data/plot_generic.py
     \caption{Temperature in Lab 011 on 2016-11-26. Recorded by the LabKraken monitor.}
     \label{fig:lab_temperature_start_of_project}
 \end{figure}
@@ -151,7 +154,7 @@ All of this leads to the following design specifications regarding the stability
 \begin{center}
     \begin{specifications}[label={lst:dgDrive_specs_environment}]{Current source, environmental}
     \begin{itemize}
-        \item Temperature range \qtyrange[text-series-to-math, reset-text-series = false, reset-math-version = false, range-phrase=\textup{ to }]{20}{35}{\celsius}
+        \item Temperature range \qtyrange[text-series-to-math, reset-text-series = false, reset-math-version = false, range-phrase=\textup{~to~}]{20}{35}{\celsius}
         \item \textbf{Temperature coefficient \qty[text-series-to-math, reset-text-series = false, reset-math-version = false]{<= 1}{\uA \per \A \per \K}}
         \item Humidity (non-condensing) \qty{<= 75}{\percent rH}
         \item Humidity coefficient not specified, but included in the long-term drift
@@ -227,46 +230,48 @@ The form factor should allow integration into standard 19-inch racks to allow si
 \label{sec:laser_temperatrure_controller}
 The external cavity diode laser (ECDL) design employed at GSI and in this group, based on \cite{ecdl_paris}, consists of two parts: The laser diode, mounted in an aluminium frame containing a collimator, which is mounted in an external resonator also made of aluminium. The aluminum used for the external resonator is AlZn4.5Mg1, also called alloy 7200 \cite{datasheet_laser_alu}. It has a moderate thermal coefficient of expansion of \qty{23.1}{\micro \meter \per \m \per \K}, which is an order of magnitude larger than that of Invar, but is significantly easier to machine.
 
-In order to derive the required stability criteria the laser diode and the external resonator must both be considered. The temperature sensitivity of a near-infrared laser at \qty{780}{\nm} was already calculated by \citeauthor{thesis_tilman} \cite{thesis_tilman} to be
+In order to derive the required stability criteria the laser diode and the external resonator must both be considered. The influence of external parameters on the laser wavelength were discussed in the work of \citeauthor{thesis_tilman} \cite{thesis_tilman}. The temperature sensitivity of a typical near-infrared laser diode at \qty{780}{\nm} along with the external resonator used in this group were calculated to be
 \begin{align*}
     K_{T,diode} &\approx \qty{-3}{\GHz \per \K}\\
     K_{T,resonator} &\approx \qty{-9}{\GHz \per \K}\,.
 \end{align*}
 
-As can be seen the external resonator marks the lower bound. Going to a blue \qty{441}{\nm} laser this criterion becomes even more sensitive, because $K_{T,resonator}$ is proportional to the laser frequency and the frequency almost doubles, this leads to a sensitivity of the resonator on the order of
+From these number it is clear that the resonator marks the lower bound. Going to a blue \qty{441}{\nm} laser this criterion is even more critical, because $K_{T,resonator}$ is proportional to the laser frequency and the frequency almost doubles, this leads to a sensitivity of the resonator on the order of
 \begin{equation}
     K_{T,resonator} \approx \qty{-16}{\GHz \per \K}\,.
 \end{equation}
 
-Those numbers imply that in order to match the stability of the laser current driver, the temperate stability should be far better than \qty{1}{\milli \K}. Temperature stability of better than \qty{100}{\micro \K} has been demonstrated before \cite{tempcontroller_10uK,tempcontroller_10uK_jw,tempcontroller_15uK,tempcontroller_30uK,tempcontroller_40uK,tempcontroller_50uK,tempcontroller_65uK}, but all of these solution have in common, that they use either use multiple layers of shielding and control or elaborate baths into which the subject is submerged. The controller itself is then typically placed inside the controlled environment to shield it from external effects. This type of setup is not feasible in this situation. The laser resonators in use in this group \cite{thesis_tilman} have been set up over the course of several years and there several dozen in use. Taking this design into consideration which does not have an airtight seal are more reasonable requirement can be found. Keeping the temperature deviation well below \qty{1}{\milli \K} brings the frequency deviation down to about \qty{10}{\MHz} or even below that for the near-infrared lasers. Considering the sensitivity of the laser to the barometric pressure which can be estimated using the formula developed by \citeauthor{ciddor} \cite{ciddor} to be
+This implies that in order to match the stability of the laser current driver, the temperate stability should be far better than \qty{1}{\milli \K}. A temperature stability of better than \qty{100}{\micro \K} has been demonstrated before \cite{tempcontroller_10uK,tempcontroller_10uK_jw,tempcontroller_15uK,tempcontroller_30uK,tempcontroller_40uK,tempcontroller_50uK,tempcontroller_65uK}, but all of these solution have in common, that they use either use multiple layers of shielding and control or elaborate baths into which the subject is submerged. The controller itself is then typically placed inside the controlled environment to shield it from external effects. This type of setup is not feasible in this situation as it would require a considerable redesign of the laser resonator. The laser resonators in use in this group \cite{thesis_tilman} have been set up over the course of several years and there are dozens of them in use. This design must therefore be taken into consideration as well. The resonator in its current state does does not have an airtight seal. The sensitivity of the laser frequency to the barometric pressure can be estimated using the formula developed by \citeauthor{ciddor} \cite{ciddor} to be
 \begin{equation}
     K_{baro} =  \qty{-75}{\MHz \per \hecto \Pa}\,.
 \end{equation}
 
-This leads to a frequency drift of several \qty{100}{\MHz} due to a typical pressure drift of around \qty{\pm 10}{\hecto \Pa} observed in the lab (\qty{< 55}{\hecto \Pa} swing over the year 2022 as recorded by LabKraken), which greatly relaxes the requirements of the temperature controller, because the long term drift is dominated by the barometric pressure affecting the unsealed external laser resonator. To guarantee a stability of \qty{<1}{\milli \K} the resolution of the driver should be at least \qty{200}{\micro \K}, preferably \qty{100}{\micro \K}.
+This leads to a frequency drift of several \qty{100}{\MHz} due to a pressure drift of around \qty{\pm 10}{\hecto \Pa} observed in the lab over a typical day. A long-term drift of \qty{55}{\hecto \Pa} over the year 2022 was also recorded by the monitoring software LabKraken. On shorter timescales the air pressure varies on the order of tens of \unit{\Pa}. This must be matched by the temperature controller. It is therefore sufficient to call for a stability of \qty{<1}{\milli \K} when using an unsealed resonator. To guarantee such a stability the resolution of the driver should be at least \qty{200}{\micro \K}, preferably \qty{100}{\micro \K}.
 
-The type of temperature transducer used in the laser design is a \qty{10}{\kilo \ohm} thermistor, so the design should work with this type of sensor.
+The type of temperature transducer used in the laser design is a \qty{10}{\kilo \ohm} thermistor, so the design must work with this type of sensor, while the support of other sensors like a PT100 is optional.
 
-Finally, a problem often encountered when temperature controlling larger bodies like optical resonators or cavities is that analog controllers have problems with the long timescales involved. This can be seen in figure \ref{fig:stability_cavity} as oscillations. These oscillations are due the long timescales involved when controlled those well isolated cavities. A digital controller allows very long integration times only limited by the numerical resolution. In addition, a digital system gives more control over the PID tuning parameters which greatly simplifies setting up new laser systems because a common set of PID parameters can be used a starting point before tuning the controller. It is possible to integrate autotuning algorithms the help the user to find a usable set of parameters. Therefore, the new controller should have a digital interface.
-
+Finally, a problem often encountered with analog proportional–integral–derivative (PID) controllers when temperature controlling large, well isolated bodies is the long time scales involved. One example found in the lab are high finesse cavities mounted in vacuum enclosures. These extremely stable cavities are extensively used to reduce the linewidth of lasers to a few \unit{\Hz}. The timescales involved necessitate very long integration times $T_i$ or a rather small gain of the integral term $k_i$ of the PID controller. See section \ref{sec:pid_controller_basics} for details on PID controllers and the terminology. An illustration of the problem encountered with an analog controller can be seen in figure \ref{fig:stability_cavity}. It shows the temperature of a Stable Laser Systems \device{VH 6020} cavity housing used for a high finesse Fabry-Pérot cavity which has a time constant of \qtyrange[range-units = single, range-phrase={~to~}]{4}{7}{\hour} \cite{datasheet_vh6020}.
 \begin{figure}[ht]
     \centering
-    \input{images/stability_cavity.pgf}
+    \input{images/stability_cavity.pgf}% data/plot_generic.py
     \caption{Temperature of a Stable Laser Systems \device{VH 6020} controlled by a Team Wavelength \device{HTC1500} temperature controller.}
     \label{fig:stability_cavity}
 \end{figure}
 
-The laser design used in this group uses two Peltier elements to cool both the resonator and the laser diode independently. The driver must therefore integrate two channels. The biggest TECs in use are Laird \device{CP14,127,06,L1,W4.5} which can draw up to \qty{6}{\A} at \qty{15.4}{\V} \cite{datasheet_tec}. As the laser resonator should not be cooled below the dew point the maximum is not going to be used. Having a driver that can output \qtyrange{4}{5}{\A} at \qty{12}{\V} is sufficient.
+The Team Wavelength \device{HTC1500} used in this example is an analog PID controller configured for the maximum specified integration time of \qty{10}{\s} using a \qty{10}{\uF} capacitor. As can be seen by the oscillatory behaviour, this time constant is far too short. Longer timescales can easily be reached by digital controllers which allow very long integration times limited only by the numerical resolution. A digital system can extend the scope of application from lasers to many other systems like those cavities to improve their stability. In addition, a digital system gives more control over the PID tuning parameters, also ensuring repeatability which greatly simplifies setting up new laser systems because a common set of PID parameters can be used a starting point before tuning the controller. Another benefit is the possibility to implement a modified algorithm and additional filters as detailed in section \ref{sec:pid_controller_basics}. This versatility to quickly adapt the programming again increases the number of applications. Integrating autotuning algorithms to help the user find a usable set of parameters reduces setup times of new systems. For all of those reasons, the new controller should be based on a digital design.
 
-The requirements for the temperature controller can now be summarised as:
+The final aspect to be considered is the output driver of the controller. The laser design used in this group uses two Peltier elements to cool both the resonator and the laser diode independently. The driver must therefore integrate two channels. While the biggest TECs currently in use are Laird \device{CP14,127,06,L1,W4.5} which can draw up to \qty{6}{\A} at \qty{15.4}{\V} \cite{datasheet_tec} their optimal coefficient of power is between \qtyrange[range-units = single]{1}{2}{\A} and \qtyrange[range-units = single]{5}{8}{\V}. Having a driver that can output \qtyrange[range-units = single]{4}{5}{\A} at \qty{12}{\V} is considered more than sufficient, even for larger TECs and future projects.
 
+Commercial temperature controllers specifying a stability of better than \qty{1}{\milli \kelvin} are hard to come by, especially with multiple channels. Two units were tested for this laser setup. The Vescent \device{SLICE-QTC} and an ILX Lightwave \device{LDT-5948}. The latter is specified for a stability of \qty{5}{\milli \kelvin}, but their application note claims a better performance \cite{appnote_ilx_millikelvin}.
+
+The requirements for the temperature controller can be summarised as:
 \begin{center}
     \begin{specifications}[label={lst:dgTemp_requirements}]{Temperature controller}
     \begin{itemize}
         \item Stability: \qty{<1}{\milli \K}
         \item Resolution: \qty{<200}{\micro \K}, \qty{<100}{\micro \K} preferred
         \item Temperature sensor: \qty{10}{\kilo \ohm} thermistor
-        \item Two channels
+        \item Two or more channels
         \item Output power: \qtyrange{4}{5}{\A} at \qty{12}{\V}
         \item Digital interface to work with long timescales and reproducible PID parameters
     \end{itemize}
@@ -277,64 +282,71 @@ The requirements for the temperature controller can now be summarised as:
 \section{LabKraken}%
 \label{sec:prep_labkraken}
 \subsection{Design Goals}
-LabKraken is a designed to be an asynchronous, resilient data acquisition suite, that scales to thousands of sensors and across different networks.
+LabKraken is a designed to be an asynchronous, resilient data acquisition suite that scales to thousands of sensors and across different networks to serve the need for monitoring and automation required for large scale experiments spanning multiple sites. It is written in Python and supports many sensors and instruments found in a scientific environment. Such sensors include Standard Commands for Programmable Instruments (SCPI) capable devices accessible via Ethernet or GPIB or sensors using a serial protocol. Many other Ethernet capable devices are also supported via a simple driver interface.
+
 \subsection{Software Architecture}
-LabKraken needs to scale to thousands of sensors which need to be served concurrently. This problem is commonly referred to as the C10K problem as dubbed by Dan Kegel back in 1999 \cite{10kProblem} and refers to serving \num{10000} concurrent connections via network sockets. While today millions of concurrent connections can be handled by servers, handling \num{10000} can still be challenging, especially if the data sources are heterogeneous as is typical for sensor networks of different sensors from different manufacturers.
+To meet the increasing demand for high quality data LabKraken needs to scale to thousands of sensors which must to be served concurrently. This problem is commonly referred to as the C10K problem as dubbed by \citeauthor{10kProblem} back in 1999 \cite{10kProblem} and refers to handling \num{10000} concurrent connections via network sockets. While today millions of concurrent connections can be handled by servers, handling \num{10000} can still be challenging, especially if the data sources are heterogeneous as is typical for sensor networks of diverse sensors from different manufacturers.
 
-In order to meet the design goals, an asynchronous architecture was chosen and several different architectures were implemented over time. All in all, four complete rewrites of the software were made to arrive at the architecture presented here. The reason for the rewrites is mostly historic and can be explained by the history of the programming language Python, which was used to write the code. The first first version was written for Python 2.6 and exclusively supported sensors made Tinkerforge. In 2015, Python 3.5 was released, which supported a new syntax for asynchronous coroutines. The software was rewritten from scratch to support this new syntax, because it made the code a lot more verbose and easier to follow. With the release of Python 3.7 in 2018 asynchronous generator expressions where mature enough to be used in productions and the program was again rewritten to use the new syntax. In 2021 a new approach was taken and the program was once more rewritten with a functional programming style. Some of those approaches will be discussed in the next sections to highlight the improvements that were made over time. Each of these sections discusses the same program, but written in different styles to show the differences.
+In order to meet the design goals, an asynchronous architecture was chosen and several different approaches were implemented over time. All in all, four complete rewrites of the software were made to arrive at the architecture introduced here. The reason for the rewrites is mostly historical and can be explained by the development of the Python programming language which was used to write the code. The first first version was written using Python 2.6 and exclusively supported sensors made Tinkerforge. With the release of Python 3.5 which supported a new syntax for asynchronous coroutines, the software was rewritten from scratch to support this new syntax, because it made the code a lot more verbose and easier to follow. When Python 3.7 was released asynchronous generator expressions where mature enough to be used in productions and the program was again rewritten to use the new syntax. In 2021 a new approach was taken and the program was once more rewritten with a functional programming style. Some of those approaches will be discussed in the next sections to highlight limits of the programming style used and the improvements made to overcome them. This development underlines important steps in the progress of asynchronous programming made by the Python language in recent years that can be applied to many other problems, for example process control. Specifically so since Python is a very popular language among scientists and used in many experiments. Each of the following sections discusses the same program, but written in different programming styles to show the differences. Especially the last example presenting a function programming style is interesting for experimental control as it gives a clean representation of the data flow from the source to the consumer.
 
-The program does a simple job of opening a network connection then it queries the other side for sensors. When the sensors are returned it looks for a certain sensor, then starts reading data from the sensor to print it.
+The example program that will be discussed does the following job. It opens a network connection to a remote (Tinkerforge) sensor platform, then queries the other side for its sensors. When the sensors are returned it looks for a specific sensor, then starts reading data from that sensor to finally print it. The example itself is designed around the Tinkerforge sensors to present a working example instead of the typically used pseudocode. It does represent a common program flow in a sensor application though and the concept is not limited to the Tinkerforge programming API.
 
 \subsubsection{Threaded Design}
-The first version of LabKraken used a threaded design approach, because the original libraries of the Tinkerforge sensors are built around threads. The following simplified example shows the code to connect to a temperature sensor over the network and read its data.
+The first version of LabKraken used a threaded design approach, because the original libraries of the Tinkerforge sensors are built around threads. Most threaded programs make extensive use of callbacks. These are functions that are passed from the main thread to the worker, typically on creation, and are then called from the worker to inform the main thread of its activity. The downside is that main thread has no knowledge about the caller, the callback might have even been passed on by the worker to another thread.
 
-\inputpython{source/lab_kraken_threads.py}{1}{27}
+\lstinputlisting[firstline=1, firstnumber=1, frame=single, breakindent=.5\textwidth, frame=single, breaklines=true, numbers=left, xleftmargin=2em, numberstyle=\tiny, style=mypython]{source/lab_kraken_threads.py}
 
-The first thing that stands out with this code, is that the program flow is hard to follow. First the connection is made to the host, then a few callback functions are registered with the connection object. From this point on the program flow looses itself in the callbacks. These functions are called by the connection object and their order can only be guessed from the documentation, but this is only the tip of the iceberg. As the program continues to run it first enter the \textit{cb\_connected} callback where it will query the host for its sensors. The answer will be returned through the \textit{cb\_enumerate} callback, but within this callback another callback is registered to read the sensor if the correct sensor was found. As the program grows more and more layers of callbacks will be added and in the end, the code will be impossible to read without intimate knowledge.
+The program starts at line \num{20} by making a connection to the host, then the first callback functions are registered with the connection object. These callbacks allow the connection thread to signal the program when the connection has been established (\textit{cb\_connected}) and when new sensors are found (\textit{cb\_enumerate}). The main program is now finished and it waits until terminated by the user. All the work is done inside the thread and the program flow unfortunately looses itself in the callbacks which get called by the connection object and their order can only be guessed from the documentation as the main program has no control over it. As the program continues it first enters the \textit{cb\_connected} callback where it will query the host for its sensors in line \num{9}. The answer will be returned through the \textit{cb\_enumerate} callback. This function filters the sensor id for a known sensor and then attaches another callback for the sensor to return data. It then configures the sensor. This program flow is typical for a callback driven design and the reader may imagine how more complex tasks are implemented. As the program grows, more and more layers of callbacks will be added and in the end, the code will be impossible to read without intimate knowledge. The effort of maintaining the callback driven code resulted in the decision to redesign the program when moving to Python 3.
 
-To untangle this problem, Python introduced so-called generators. This is a type of expression, that will produce a series of values or events which can then be processed in the same function. This is shown next.
+To untangle this problem, Python 3.7 introduced so-called generators. This is a type of expression, that will produce values from an iterator. An iterator is an (infinite) ordered series of values or events which can be processed by requesting the next value until the series is exhausted, if it is finite. The main advantage is that the logic of the program stays within the main part and only the data gathering is done outside of this scope. A generator based program is shown next.
 
 \subsubsection{Generator Design}
+In addition to a different coding style the code base is moved from a multithreaded to a asynchronous approach using Python asyncio. The difference is that asyncio uses a single thread as opposed to multithreaded code. Multiple threads can run concurrently on multiple processor cores, so different cores can process data at the same time. Asynchronous programs must pause the execution of code paths because they run within a single thread on a single core. This type of programming works best when the tasks are not computationally intensive but input/output bound by external peripherals like a network. While the processor is waiting for the slower network it can work on other tasks. The advantage is that access to shared resources is greatly simplified as these resources will never be accessed at the same time. The code is shown below.
+\lstinputlisting[firstline=4, firstnumber=1, frame=single, breakindent=.5\textwidth, frame=single, breaklines=true, numbers=left, xleftmargin=2em, numberstyle=\tiny, style=mypython]{source/lab_kraken_async.py}
 
-\inputpython{source/lab_kraken_async.py}{2}{31}
+The first impression that can be gather from the new design is that the code has become more concise. To understand it, a few Python language keywords used must be introduced. In order to yield control to the next task, the keyword \textit{await} is used which is put in front of a function call. This will pause the current execution and wait until the function has returned with a result. Another important language feature used is a so-called context. A context is created using the \textit{async with} command and it makes sure that after leaving the context certain commands are executed. This can be used to clean up after the the creation and use of certain object like the Ethernet connection. The connection context will make sure that the Ethernet connection will be properly terminated no matter whether enclosed content was shut down gracefully or not. The iterator uses the \textit{async for} keyword and works asynchronously as well. It pauses the code until a new event can be produced.
 
-This implementation uses two new language features. The generators mentioned above and a context. The context created using the \textit{async with} command makes sure that the \textit{connection} object is cleaned up as soon as the context is left, greatly simplifying a clean shutdown. Next the host queried again and then a generator is used to read the replies. It is now far easier to follow this style of code because the generator reveals what is happening next. Unfortunately, reading the sensor requires passing it to a new task because the generator should be allowed to generate more sensors in the meantime. Although the code is split into multiple tasks, each task can still be understood and the order of execution can be followed. The only problem is the error handling, because these worker tasks do not communicate with the original task that created them. Implementing this creates a myriad of events that are passed from task to task and failing to pass on a single message can break the program. This is not desirable either as it leads to hard to fix bugs.
+The code starts at line \num{12} and runs the \textit{main()} function. This function first connects to the host by creating a context in line \num{15} where the \textit{connection} variable is usable. Using this connection the sensor platform is queried in line \num{16}. In comparison to the precious example it is now far easier to follow the program flow because the context and generator reveal what is happening next. Unfortunately, reading the sensor still requires passing it to a new task because the generator will keep generating more sensors in the meantime. Although the code is split into multiple tasks, the nesting of callbacks as in the previous example is resolved and the readability of the code has improved tremendously.
 
-The final solution is using so-called streams. A stream is a chain of operators and actions, that are executed in a certain order. This is much like an assembly line where different tasks are executed as the product passes each station.
+The only problem is the error handling, because these worker tasks do not communicate with the original task that created them. This can be solved using the so-called observer pattern where an observer tasks watches the workers and handles such event. Directly implementing this pattern creates a myriad of events and event handler registrations. Missing one such event can break the whole program and leads to hard to fix bugs. To simplify this pattern a stream based approach can be applied. The observable is treated as a stream of events which is being processed by the observer using a chain of operators and actions executed in a certain order. This is much like an assembly line where different tasks are executed as the product passes each station.
 
 \subsubsection{Stream Design}
+The previously mentioned observer pattern is often implemented using data streams representing the subjects observed while the consumers are the observers. Using functional programming style these data streams can be written in a very concise form as shown in the following version of the example program.
+\lstinputlisting[firstline=5, firstnumber=1, frame=single, breakindent=.5\textwidth, frame=single, breaklines=true, numbers=left, xleftmargin=2em, numberstyle=\tiny, style=mypython]{source/lab_kraken_stream.py}
 
-\inputpython{source/lab_kraken_stream.py}{3}{31}
+The program starts in line \num{14} and enters the \textit{main()} function. Here, a context is used again to open the connection to the sensor platform. The sensors are queried next and a stream is created to read the reply, then filter for the specified sensor which is then read and the result is printed.
 
-Using this programming style the intend of the program is revealed immediately, even before starting the stream. The syntax uses was borrowed from the Python library \textit{aiostreams} \cite{aiostreams}, which is similar to ReactiveX, a library developed by Microsoft to operate on data streams using the so-called Observer pattern. This pipeline does the following: It will again connect to the host using the context manager, then enumerate the host. now the stream is created and every device coming from the connection is going through the pipeline. It will first filter out all device, but the device of interest. The \textit{switchmap} operator will apply the function \textit{read\_temperature} and then iterate. It has an interesting property. Should for some reason the same device come up again, the \textit{switchmap} operator will drop the old iterator and start anew. This automatically makes sure that only a single manager or configuration is used for a single object.
+Using this programming style the intend of the program is revealed immediately, even before starting the stream. The syntax uses was borrowed from the Python library \textit{aiostreams} \cite{aiostreams}, which is similar to ReactiveX, a library developed by Microsoft to operate on data streams. The interesting aspect of this code is the use of the pipe operator which inject the result of one function into the next function a its parameters. This way a chain of function calls is created. The \textit{lambda} keyword denotes a small anonymous function, but regular functions can also be used. In combination with operator the like \textit{filter}, \textit{switchmap} or \textit{print}, they dictate the program flow, hence the name functional programming. These operators need some introduction though. The \textit{filter} operator is simple to understand as it will only pass on the input when then function, to which the input is passed as well, returns true. The \textit{switchmap} operator is more interesting. It is a combination of a \text{map} operator and a \text{switch} operator. The former applies a function to the input and then passes on the output of the function, in this case \textit{read\_temperature} which creates an iterator. The latter operator will take its most recent input and iterate, producing temperature values. This operator will terminate the iteration when a new input is passed and then iterate the new input. This is handy as it automatically makes sure that there is only one reader per sensor and for example new sensor configurations can be injected into the data stream above the \textit{switchmap} which automatically replace the old sensor reader.
 
-This style of programming was found ideal for real-time data processing, as it allows to continuously update configurations or add and remove sensors, or even hosts, without having to worry about what happens along the pipeline.
+This style of programming was found to be ideal for real-time data processing, as it allows to continuously update configurations or add and remove sensors, or even hosts, without having to worry about what happens along the pipeline.
 
 \subsubsection{Device Identifiers}
 Every sensor network needs device identifiers. Preferably those identifiers should be unique. Typically a device has some kind of internal identifier. Here are a few examples of the sensors used in the authors network:
 
 \begin{table}[ht]
-\centering
-\begin{tabularx}{0.95\textwidth}{|l|p{6.5cm}|X|}
-    \hline
-    Device Type& Identifiers& Example\\
-    \hline
-    GPIB (SCPI)& \textit{*IDN?} returns \newline \$manufacturer,\$name,\$serial,\$revision& \\
-    \hline
-    Tinkerforge& Each sensor has a base58 encoded integer device id& QE9 (163684)\\
-    \hline
-    LabNode& Universal Unique Identifier (UUID) & cc2f2159-e2fb-4ed9-\newline8021-7771890b37ad\\
-    \hline
-\end{tabularx}
+    \centering
+    \begin{tabularx}{0.95\textwidth}{|l|p{3cm}|X|}
+        \hline
+        Device Type& Identifiers& Example\\
+        \hline
+        GPIB (SCPI)& \textit{*IDN?}& \small{Keysight Technologies,34470A,MYXXXXXXXX,A.03.03-02.40-03.03-00.52-02-01} or\newline\small{Agilent Technologies,34410A,MYXXXXXXXX,A.03.03-02.40-03.03-00.52-02-01}\\
+        \hline
+        Tinkerforge& A base58 encoded integer device id& QE9 (163684)\\
+        \hline
+        LabNode& UUID & cc2f2159-e2fb-4ed9-8021-7771890b37ad\\
+        \hline
+    \end{tabularx}
+    \caption{Device identifiers used by common devices found in the lab. The serial number of the Keysight \device{34470A} DMM was obscured.}
+    \label{tab:common_device_ids}
 \end{table}
 
-As it can be seen above, these identifiers do not guarantee to uniquely identify a device within a network. The Tinkerforge id is the weakest, as it is a \qty{32}{\bit} integer (4.294.967.295 options), which might easily collide with another id from a different manufacturer. The Tinkerforge id is presented as a base58 encoded string. An encoder/decoder example can be found in the TinkerforgeAsync library \cite{TinkerforgeAsync}.
+As it can be seen in table \ref{tab:common_device_ids}, most of these identifiers do not guarantee to uniquely identify a device within a network. The Tinkerforge id is the weakest, as it is a \qty{32}{\bit} integer (\num{4294967295} options), which might easily collide with another id from a different manufacturer. For better readability the id is typically presented as a base58 encoded string. An encoder/decoder example can be found in the TinkerforgeAsync library \cite{TinkerforgeAsync}.
 
-The id string returned by a SCPI device is slightly better, but again does not guarantee uniqueness. As it is shown in the example the same device might return a different id depending on its settings. This typically done by manufacturers for compatibility reasons.
+The id string returned by a SCPI device is slightly more useful, but again does not guarantee uniqueness. As per the SCPI specification it returns a string containing \textit{\$manufacturer,\$name,\$serial,\$revision}. Even when ignoring the software revision part which might change on update, the same device might return a different id depending on its settings. The id string shown in table \ref{tab:common_device_ids} relate to the same device, but the latter uses a compatibility flag in the settings.
 
-The only reasonably unique id is the universal unique identifier (UUID) or globally unique identifier (GUID), as dubbed by Microsoft, used in the LabNodes. Their id can be used for networks with participant numbers going into the millions.
+The only reasonably unique id is used by the LabNodes. The universal unique identifier (UUID) or globally unique identifier (GUID), as dubbed by Microsoft, can be used for networks with participant numbers going into the millions. There are several versions defined in RFC 4122 \cite{rfc_uuid} and the LabNodes use version 4, which is a random \qty{128}{\bit} identifier with \qty{122}{\bit} of entropy. Of the remaining \qty{6}{\bit}, \qty{4}{\bit} are reserved for the UUID version and \qty{2}{\bit} for the variant. This allows to prove the usefulness as a unique id as below.
 
-Calculating the probability of a collision between two random UUIDs is called the birthday problem \cite{BirthdayProblem} in probability theory. A randomly generated version 4 UUID of variant 1 as defined in RFC 4122 \cite{rfc_uuid} has \qty{122}{\bit} of entropy, that is out of \qty{128}{\bit}, \qty{4}{\bit} are reserved for the UUID version and \qty{2}{\bit} for the variant. This gives the probability of at least one collision in $n$ devices out of $M = 2^{122}$ possibilities:
+Calculating the chance of a collision between two random UUIDs is called the birthday problem \cite{BirthdayProblem} in probability theory. The probability of at least one collision in $n$ devices out of $M = 2^{122}$ possibilities can be calculated as follows:
 \begin{align}
     p(n) &= 1 - 1 \cdot \left(1 - \frac{1}{M}\right) \cdot \left(1 - \frac{2}{M}\right) \dots \left(1 - \frac{n-1}{M}\right) \nonumber\\
     &= 1 - \prod_{k=1}^{n-1} \left(1 - \frac{k}{M} \right)
@@ -345,14 +357,14 @@ Using the Taylor series $e^x = 1+x \dots$, assuming $n \ll M$ and approximating 
     &\approx 1 - \left(e^\frac{-n(n-1)/2}{M} \right) \nonumber\\
     &\approx 1 - \left(1 - \frac{n^2}{2 M} \right) = \frac{n^2}{2 M}
 \end{align}
-For one million devices, this gives a probability of about \num{2e-25}, which is negligible.
+For one million devices using random UUIDs, this gives a probability of about \num{2e-25}, which is negligible.
 
-In the Kraken implementation, all devices, except for the LabNodes, will be mapped to UUIDs using the underlying configuration database. It is up to the user to ensure the uniqueness of the non-UUID ids reported by the devices to ensure proper mapping.
+In the Kraken implementation, all devices, except for the LabNodes which already have a UUID, will be mapped to UUIDs using the underlying configuration database. It is up to the user to ensure the uniqueness of the non-UUID ids reported by the devices to ensure proper mapping. These UUIDs can then be used to address and configure each device on the sensor network.
 
-\subsubsection{Ethernet Bus and Synchronous Buses}
-There are inherent challenges involved with the Ethernet bus for instrumentation. The Ethernet bus is intrinsically asynchronous and multiple controllers can talk to the device at the same time. Not only that, but different processes within the same controller can talk to the same device. This makes deterministic statements about the device state challenging. A device that is not designed to work asynchronously in the first place may have trouble with multiple requests coming in from different clients. This must be kept in mind when using serial adapters like USB or GPIB to Ethernet.
+%\subsubsection{Ethernet Bus and Synchronous Buses}
+%There are inherent challenges involved with the Ethernet bus for instrumentation. The Ethernet bus is intrinsically asynchronous and multiple controllers can talk to the device at the same time. Not only that, but different processes within the same controller can talk to the same device. This makes deterministic statements about the device state challenging. A device that is not designed to work asynchronously in the first place may have trouble with multiple requests coming in from different clients. This must be kept in mind when using serial adapters like USB or GPIB to Ethernet.
 
-While it is impossible to rule out the possibility of multiple controllers on a network, care was taken to synchronize the workers within Kraken.
+%While it is impossible to rule out the possibility of multiple controllers on a network, care was taken to synchronize the workers within Kraken.
 %\subsection{Databases}
 %\subsubsection{Cardinality}
 %\begin{itemize}
@@ -483,7 +495,6 @@ Lastly, the Laplace transform of $e^{at}$ is given, which is commonly used in di
     \mathscr{L}\left(e^{at} \right) &= \int_0^\infty e^{(a-s)t}\,dt = \frac{1}{a-s} \left[e^{(a-s)t} \right]_0^\infty = \frac{1}{s-a} \label{eqn:laplace_exponential}
 \end{align}
 
-
 Using these tools, it is possible calculate the transfer function of a closed-loop temperature controller, which will be done in the next section.
 
 \subsection{A Model for Temperature Control}%
@@ -583,7 +594,7 @@ The procedure can be summarised from the above as follows. The controller must b
 
 \begin{figure}[ht]
     \centering
-    \input{images/FOPDT_theory.pgf}
+    \input{images/FOPDT_theory.pgf}% data/simulations/sim_laplace_fopdt.py
     \caption{Time domain plot of a first-order plus dead time model showing individual components of the model and the composite function $y(t)$. Model parameters used: $K= \Delta u = 1$, $\tau=2$, $\theta=4$.}
     \label{fig:fopdt}
 \end{figure}
@@ -628,7 +639,7 @@ The next issue is called \text{derivative kick}. When looking at the derivative 
 The new derivative term is equal to the unmodified one, except in the case of setpoint changes. Removing the setpoint from the equation, the controller behaves as intended. This solution is sometimes called \textit{derivative on measurement} as opposed to \textit{derivative on error}.
 \begin{figure}[hb]
     \centering
-    \input{images/sim_pid_controller_bode.pgf}
+    \input{images/sim_pid_controller_bode.pgf}% data/simulations/sim_pid_controller_bode.py
     \caption{Magnitude plot over frequency of the PID controller transfer function. Both the ideal PID controller and the PID controller with a filtered derivative are shown.}
     \label{fig:sim_pid_controller}
 \end{figure}
@@ -754,7 +765,7 @@ The simulation emulates the PID controller developed for the lab temperature con
 Simulating the model above and using the PI parameters derived from table \ref{tab:pid_tuning_parameters}, gives the plot shown in figure \ref{fig:pid_controller_comparison}.
 \begin{figure}[ht]
     \centering
-    \input{images/sim_pid_controller_comparison.pgf}
+    \input{images/sim_pid_controller_comparison.pgf}% data/simulations/sim_pid_controller.py
     \caption{Different PI Controllers tuned with parameter derived using the following methods: Ziegler-Nichols, SIMC and AMIGO. The system model is the FOPTD model for room 011.}
     \label{fig:pid_controller_comparison}
 \end{figure}
@@ -842,7 +853,8 @@ can be easily identified in the Allan deviation plot. The constant $h_\alpha$ is
 
 In order to arrive at a good understanding of the features seen in an Allan deviation plot, this section will provide the reader with examples of each type of noise and the corresponding time domain, power spectral density and Allan deviation plot. Since a complete overview is not available in current literature, all required mathematical descriptions and simulation tools will be discussed here. The simulations were done using Python and the source code is linked to in the discussions. The files are found in the online supplemental material found at \cite{supplemental_material}. Using these scripts, all the graphs shown can be recreated and explored further.
 
-\subsubsection{White Noise}
+\subsubsection{White Noise}%
+\label{sec:white_noise}
 White noise is probably the most common type of noise found in measurement data. Johnson noise found in resistors, caused by the random fluctuation of the charge carriers, is one example of mostly white noise up to a bandwidth of \qty{100}{\MHz}, from where on quantum corrections are required \cite{nist_johnson_noise}. Amplifiers also tend to have a white noise spectrum at higher frequencies.
 
 For the latter reason, white noise typically makes up for a considerable amount of noise in measurements, unless one works at very low frequencies. White noise is a series of uncorrelated random events and therefore characterised by a uniform power spectral density, which means there is the same power in a given bandwidth at all frequencies up to infinity. White noise therefore has infinite power (variance). In reality a measurement is always limited in bandwidth and hence the above property of a constant power spectral density only holds within that bandwidth. Those bandlimited samples of white noise thus have a finite variance.
@@ -853,16 +865,13 @@ Since white noise is so common, a few of its properties should be mentioned. One
 
 This results in simple addition rules for variances from different sources, but it must be stressed here, that this property is only valid for uncorrelated sources like white noise, although it is usually incorrectly applied to all measurements which unfortunately obscures rather than clarifies the uncertainties involved.
 
-In order to demonstrate the effect of white noise in Allan deviation plots, it was simulated using the \textit{AllanTools} library written by \citeauthor{allantools} \cite{allantools}. The noise generator is based on the work of \citeauthor{noise_generation} \cite{noise_generation}. The full Python program code is published online \cite{supplemental_material} and found in \external{data/simulations/sim\_allan\_variance.py}. To allow better comparison, all noise densities are normalized to give an Allan deviation of $\sigma_A(\tau_0)=1$, with $\tau_0$ being the smallest time interval.
-
-Figure \ref{fig:white_noise_simulated} shows a sample of white noise in its three different forms. Figure \ref{fig:white_noise_time} is the time series representation from which the power spectral density was calculated and is shown in figure \ref{fig:white_noise_psd}. The dashed line shows the expectation value of the power spectral density and the Allan deviation.
-
+In order to demonstrate the effect of white noise in Allan deviation plots, it was simulated using the \textit{AllanTools} library written by \citeauthor{allantools} \cite{allantools}. The noise generator is based on the work of \citeauthor{noise_generation} \cite{noise_generation}. The full Python program code is published online \cite{supplemental_material} and found in \external{data/simulations/sim\_allan\_variance.py}. To allow better comparison, all noise densities are normalised to give an Allan deviation of $\sigma_A(\tau_0)=1$, with $\tau_0$ being the smallest time interval.
 \begin{figure}[ht]
     \centering
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/white_noise_time.pgf}
+            \input{images/white_noise_time.pgf}% data/simulations/sim_allan_variance.py
         } % scalebox
         \caption{Time domain}
         \label{fig:white_noise_time}
@@ -871,7 +880,7 @@ Figure \ref{fig:white_noise_simulated} shows a sample of white noise in its thre
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/white_noise_psd.pgf}
+            \input{images/white_noise_psd.pgf}% data/simulations/sim_allan_variance.py
         } % scalebox
         \caption{Power spectral density}
         \label{fig:white_noise_psd}
@@ -880,7 +889,7 @@ Figure \ref{fig:white_noise_simulated} shows a sample of white noise in its thre
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/white_noise_adev.pgf}
+            \input{images/white_noise_adev.pgf}% data/simulations/sim_allan_variance.py
         } % scalebox
         \caption{Allan deviation}
         \label{fig:white_noise_adev}
@@ -889,7 +898,9 @@ Figure \ref{fig:white_noise_simulated} shows a sample of white noise in its thre
     \label{fig:white_noise_simulated}
 \end{figure}
 
-From this simulation, several features can be observed. First of all, the power spectral density is flat and constant with $h_0 = 2$, which is in accordance with table \ref{tab:adev_alpha} and the normalization mentioned earlier. Figure \ref{fig:white_noise_adev} shows the typical $\tau^{-\frac 1 2}$ dependence of white noise in the Allan deviation plot. This immediately explains, why filtering white noise scales with $\frac{1}{\sqrt{n}}$ with $n$ being the number of samples averaged.
+Figure \ref{fig:white_noise_simulated} shows a sample of white noise in its three different forms. Figure \ref{fig:white_noise_time} is the time series representation from which the power spectral density was calculated and is shown in figure \ref{fig:white_noise_psd}. The dashed line shows the expectation value of the power spectral density and the Allan deviation.
+
+From this simulation, several features can be observed. First of all, the power spectral density is flat and constant with $h_0 = 2$, which is in accordance with table \ref{tab:adev_alpha} and the normalisation mentioned earlier. Figure \ref{fig:white_noise_adev} shows the typical $\tau^{-\frac 1 2}$ dependence of white noise in the Allan deviation plot. This immediately explains, why filtering white noise scales with $\frac{1}{\sqrt{n}}$ with $n$ being the number of samples averaged.
 
 \subsubsection{Burst Noise}%
 \label{sec:theory_burst_noise}
@@ -953,7 +964,7 @@ The small deviation from the analytical solution in figure \ref{fig:burst_noise_
     \begin{subfigure}{0.8\linewidth}
         \centering
         \scalebox{1}{%
-            \input{images/burst_noise_time.pgf}
+            \input{images/burst_noise_time.pgf}% data/simulations/sim_burst_noise.py
         } % scalebox
         \caption{Time domain}
         \label{fig:burst_noise_time}
@@ -961,7 +972,7 @@ The small deviation from the analytical solution in figure \ref{fig:burst_noise_
     \begin{subfigure}{0.8\linewidth}
         \centering
         \scalebox{1}{%
-            \input{images/burst_noise_psd.pgf}
+            \input{images/burst_noise_psd.pgf}% data/simulations/sim_burst_noise.py
         } % scalebox
         \caption{Power spectral density}
         \label{fig:burst_noise_psd}
@@ -969,7 +980,7 @@ The small deviation from the analytical solution in figure \ref{fig:burst_noise_
     \begin{subfigure}{0.8\linewidth}
         \centering
         \scalebox{1}{%
-            \input{images/burst_noise_adev.pgf}
+            \input{images/burst_noise_adev.pgf}% data/simulations/sim_burst_noise.py
         } % scalebox
         \caption{Allan deviation}
         \label{fig:burst_noise_adev}
@@ -996,7 +1007,7 @@ Flicker noise is also called $\frac 1 f$-noise and it can be observed in many na
 
 \begin{figure}[hb]
     \centering
-    \input{images/flicker_noise_envelope.pgf}
+    \input{images/flicker_noise_envelope.pgf}% data/simulations/sim_flicker_noise.py
     \caption{Multiple overlapping Lorentzian noise sources forming a $\frac 1 f$-like shape.}
     \label{fig:flicker_noise_evelope}
 \end{figure}
@@ -1031,7 +1042,7 @@ Again, using the \textit{AllanTools} library \cite{allantools}, flicker noise wa
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/flicker_noise_time.pgf}
+            \input{images/flicker_noise_time.pgf}% data/simulations/sim_allan_variance.py
         } % scalebox
         \caption{Time domain}
         \label{fig:flicker_noise_time}
@@ -1039,7 +1050,7 @@ Again, using the \textit{AllanTools} library \cite{allantools}, flicker noise wa
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/flicker_noise_psd.pgf}
+            \input{images/flicker_noise_psd.pgf}% data/simulations/sim_allan_variance.py
         } % scalebox
         \caption{Power spectral density}
         \label{fig:flicker_noise_psd}
@@ -1047,7 +1058,7 @@ Again, using the \textit{AllanTools} library \cite{allantools}, flicker noise wa
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/flicker_noise_adev.pgf}
+            \input{images/flicker_noise_adev.pgf}% data/simulations/sim_allan_variance.py
         } % scalebox
         \caption{Allan deviation}
         \label{fig:flicker_noise_adev}
@@ -1096,7 +1107,7 @@ The \textit{AllanTools} library \cite{allantools} can then be used to simulate t
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/random_walk_noise_time.pgf}
+            \input{images/random_walk_noise_time.pgf}% data/simulations/sim_allan_variance.py
         } % scalebox
         \caption{Time domain}
         \label{fig:random_walk_time}
@@ -1104,7 +1115,7 @@ The \textit{AllanTools} library \cite{allantools} can then be used to simulate t
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/random_walk_noise_psd.pgf}
+            \input{images/random_walk_noise_psd.pgf}% data/simulations/sim_allan_variance.py
         } % scalebox
         \caption{Power spectral density}
         \label{fig:random_walk_psd}
@@ -1112,7 +1123,7 @@ The \textit{AllanTools} library \cite{allantools} can then be used to simulate t
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/random_walk_noise_adev.pgf}
+            \input{images/random_walk_noise_adev.pgf}% data/simulations/sim_allan_variance.py
         } % scalebox
         \caption{Allan deviation}
         \label{fig:random_walk_adev}
@@ -1135,7 +1146,7 @@ with slope of the drift $D$.
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/drift_time.pgf}
+            \input{images/drift_time.pgf}% data/simulations/sim_allan_variance.py
         } % scalebox
         \caption{Time domain}
         \label{fig:drift_time}
@@ -1143,7 +1154,7 @@ with slope of the drift $D$.
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/drift_adev.pgf}
+            \input{images/drift_adev.pgf}% data/simulations/sim_allan_variance.py
         } % scalebox
         \caption{Allan deviation}
         \label{fig:drift_adev}
@@ -1180,21 +1191,21 @@ Using the results from the previous sections, it is possible to simulate a typic
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/example_white_time.pgf}
+            \input{images/example_white_time.pgf}% data/simulations/sim_allan_variance_example.py
         } % scalebox
         \caption{White noise}
     \end{subfigure}
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/example_flicker_time.pgf}
+            \input{images/example_flicker_time.pgf}% data/simulations/sim_allan_variance_example.py
         } % scalebox
         \caption{Flicker noise}
     \end{subfigure}
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/example_rw_time.pgf}
+            \input{images/example_rw_time.pgf}% data/simulations/sim_allan_variance_example.py
         } % scalebox
         \caption{Random walk}
     \end{subfigure}
@@ -1202,11 +1213,10 @@ Using the results from the previous sections, it is possible to simulate a typic
     \label{fig:adev_example_noise_types}
 \end{figure}
 
-The three time series shown in figure \ref{fig:adev_example_noise_types} were sequentially generated using a fixed seed for the random number generator to ensure repeatability as long as the order of creation is kept the same. For generating the noise, the algorithm presented by \citeauthor{noise_generation} \cite{noise_generation}, implemented in the \textit{AllanTools} library was used. The noise strength parameters were deliberately chosen in such a way that both the white noise and the random walk part, have more noise power than the flicker noise. This allows to distinguish them in the plots at both extremes of the frequency scale. Finally, the three types of noise data were summed together to give the combined signal, which is shown in figure \ref{fig:adev_example_time}, again downsampled using LTTB. The summed series clearly shows the white noise content and it is possible to deduce some flicker or random walk noise, but it is highly obscured due to the amount of white noise. Using only the time domain plot makes it very hard to distinguish the type of noise present, let alone estimate the individual noise power of the three sources. Therefore, a different analysis tool is called for.
-
+The three time series shown in figure \ref{fig:adev_example_noise_types} were sequentially generated using a fixed seed for the random number generator to ensure repeatability as long as the order of creation is kept the same. For generating the noise, the algorithm presented by \citeauthor{noise_generation} \cite{noise_generation}, implemented in the \textit{AllanTools} library was used. The noise strength parameters were deliberately chosen in such a way that both the white noise and the random walk part, have more noise power than the flicker noise. This allows to distinguish them in the following plots at both extremes of the frequency scale and time scale. Finally, the three types of noise data were summed together to give the combined signal, which is shown in figure \ref{fig:adev_example_time}, again downsampled using LTTB. The summed series clearly shows the white noise content and it is possible to deduce some flicker or random walk noise, but it is highly obscured due to the amount of white noise. Using only the time domain plot makes it very hard to clearly distinguish the type of noise present, let alone estimate the individual noise power of the three sources. Therefore, a different analysis tool is called for.
 \begin{figure}[ht]
     \centering
-    \input{images/example_time.pgf}
+    \input{images/example_time.pgf}% data/simulations/sim_allan_variance_example.py
     \caption{A simulated time series containing white noise, flicker noise and random walk behaviour.}
     \label{fig:adev_example_time}
 \end{figure}
@@ -1219,7 +1229,7 @@ The noise corner frequency $f_c$ can either be calculated from $h_0$ and $h_{-1}
 
 \begin{figure}[hb]
     \centering
-    \input{images/example_psd.pgf}
+    \input{images/example_psd.pgf}% data/simulations/sim_allan_variance_example.py
     \caption{A simulated power spectrum containing white noise, flicker noise and random walk behaviour.}
     \label{fig:adev_example_psd}
 \end{figure}
@@ -1228,7 +1238,7 @@ To get an even better representation of the individual noise contributions, the 
 
 \begin{figure}[ht]
     \centering
-    \input{images/example_adev.pgf}
+    \input{images/example_adev.pgf}% data/simulations/sim_allan_variance_example.py
     \caption{A simulated Allan deviation containing white noise, flicker noise and random walk behaviour.}
     \label{fig:adev_example_adev}
 \end{figure}
@@ -1284,7 +1294,7 @@ The data is simulated in the following way: First, two sets of noise data are ge
 
 \begin{figure}[ht]
     \centering
-    \input{images/autozero_raw_time.pgf}
+    \input{images/autozero_raw_time.pgf}% data/simulations/sim_autozero.py
     \caption{Time series data with white noise and flicker noise.}
     \label{fig:autozero_raw_time}
 \end{figure}
@@ -1293,7 +1303,7 @@ The time domain plot of the simulation is shown in figure \ref{fig:autozero_raw_
 
 \begin{figure}[hb]
     \centering
-    \input{images/autozero_raw_psd.pgf}
+    \input{images/autozero_raw_psd.pgf}% data/simulations/sim_autozero.py
     \caption{Simulated power spectrum of a Keysight \device{3458A} containing white noise and flicker noise. The line frequency is \qty{50}{\Hz}.}
     \label{fig:autozero_raw_psd}
 \end{figure}
@@ -1304,7 +1314,7 @@ From the power spectral density is can be seen, that higher frequencies have a s
 
 \begin{figure}[ht]
     \centering
-    \input{images/autozero_raw_adev.pgf}
+    \input{images/autozero_raw_adev.pgf}% data/simulations/sim_autozero.py
     \caption{Simulated Allan deviation of the input amplifier of a Keysight \device{3458A} containing white noise and flicker noise. The line frequency is \qty{50}{\Hz}.}
     \label{fig:autozero_raw_adev}
 \end{figure}
@@ -1328,7 +1338,7 @@ These considerations can be compared to the simulated data. Applying the auto-ze
 
 \begin{figure}[hb]
     \centering
-    \input{images/autozero_time.pgf}
+    \input{images/autozero_time.pgf}% data/simulations/sim_autozero.py
     \caption{Simulated measurement with auto-zeroing applied.}
     \label{fig:autozero_time}
 \end{figure}
@@ -1339,7 +1349,7 @@ The power spectral density in figure \ref{fig:autozero_psd} confirms an increase
 
 \begin{figure}[ht]
     \centering
-    \input{images/autozero_psd.pgf}
+    \input{images/autozero_psd.pgf}% data/simulations/sim_autozero.py
     \caption{Simulated power spectrum of a Keysight \device{3458A} with auto-zeroing applied. The dashed lines denote the noise present prior to applying the auto-zero algorithm. The line frequency is \qty{50}{\Hz}.}
     \label{fig:autozero_psd}
 \end{figure}
@@ -1348,7 +1358,7 @@ Nonetheless, down to very low frequencies, $f^{-1}$ noise is effectively suppres
 
 \begin{figure}[hb]
     \centering
-    \input{images/autozero_adev.pgf}
+    \input{images/autozero_adev.pgf}% data/simulations/sim_autozero.py
     \caption{Simulated Allan deviation of a Keysight \device{3458A} with auto-zeroing applied. The dashed lines denote the deviation prior to applying the auto-zero algorithm. The line frequency is \qty{50}{\Hz}.}
     \label{fig:autozero_adev}
 \end{figure}
@@ -1357,22 +1367,22 @@ The Allan deviation plot in figure \ref{fig:autozero_adev} also confirms that wh
 
 From this plot it can be seen, that for measurement times longer than about \qty{2}{\s} or \qty{100}{\plc}, auto-zeroing has a clear benefit over a measurement without auto-zeroing. It must be noted though that, judging from this simulation, the device would reach a noise floor of \qty[per-mode = symbol]{0.01}{\uV \per \V} only at integration times of slightly more than \qty{10}{\s}, while the datasheet claims \qty{2}{\s}. Do note, that this simulation is for the \qty{10}{\V} range of the DMM and therefore \qty[per-mode = symbol]{0.01}{\uV \per \V} is \qty{0.1}{\uV_{rms}}. It is therefore likely that the noise parameters of a real device are better than the numbers used in the simulation. Additionally, the datasheet likely refers to an instrument that is synced to a \qty{60}{\Hz} power line frequency which shifts the sampling frequency up by \qty{20}{\percent} and, as discussed, reduces the noise floor because more noise content is white noise at the auto-zero interval. In this simulation the \qty{0.01}{\uV \per \V} (\qty{0.1}{\uV_{rms}}) noise level would be reached at exactly \qty{10}{\s} when using a line frequency of \qty{60}{\Hz}. For the purpose of demonstrating the auto-zeroing algorithms these subtleties are irrelevant.
 
-For the comparison of different integration times before applying auto-zeroing figure \ref{fig:autozero_nplcs_adev} can be consulted. Using the Allan deviation makes it is very simple to compare noise figures for identical measurement times $\tau$, yet different integration times, before auto-zeroing is applied. The simulation source code can be found in \external{data/simulations/sim\_optimal\_autozero.py} as part of the online supplemental material \cite{supplemental_material}.
+For the comparison of different integration times before applying auto-zeroing figure \ref{fig:autozero_nplcs_adev} can be consulted. Using the Allan deviation makes it very simple to compare noise figures for identical measurement times $\tau$, yet different integration times, before auto-zeroing is applied. The simulation source code can be found in \external{data/simulations/sim\_optimal\_autozero.py} as part of the online supplemental material \cite{supplemental_material}.
 
 \begin{figure}[ht]
     \centering
-    \input{images/autozero_nplcs_adev.pgf}
+    \input{images/autozero_nplcs_adev.pgf}% data/simulations/sim_autozero_v2.py
     \caption{Allan deviation for different integration times before applying the AZ algorithm. Dead time $\theta = \qty{0}{\s}$. The dashed line denotes the Allan variance without auto-zeroing. The line frequency is \qty{50}{\Hz}.}
     \label{fig:autozero_nplcs_adev}
 \end{figure}
 
-It can be seen, that with increasing integration times before applying the AZ algorithm more uncertainty is accumulated due to the $f^{-1}$ content, which cannot be filtered. As a result, after removing the $f^{-1}$ content using auto-zeroing more time is required for filtering until the same Allan deviation can be reached. From these simulations it can be concluded that when there is negligible dead time $\theta$ involved when switching the inputs, it is advantageous to switch early, while white noise is still dominating the noise content.% The two lines for \qty{1}{\PLC} and \qty{2}{\PLC} are clearly the ones with the lowest uncertainty
+It can be seen, that with an increasing integration time before applying the AZ algorithm more uncertainty is accumulated due to the $f^{-1}$ content which cannot be filtered. As a result, after removing the $f^{-1}$ content using auto-zeroing more time is required for filtering until the same Allan deviation can be reached. From these simulations it can be concluded that if there is only a negligible dead time $\theta$ involved when switching the inputs, it is advantageous to switch early, while white noise is still dominating the noise content.% The two lines for \qty{1}{\PLC} and \qty{2}{\PLC} are clearly the ones with the lowest uncertainty
 
-Finally, the case of a non-negligible dead time shall be treated. When the dead time has to be considered, it is clear, that the auto-zero frequency cannot be arbitrarily increased, because an increasing proportion of sampling time is lost to the dead time. This effective loss in sampling time then increases the noise spectral density due to aliasing as discussed above. To show this effect, the simulation above is modified to include a dead time of \qty{1}{\plc} as detailed in figure \ref{fig:dmm_autozer_offset_nulling}. The dead time is added once after each measurement because the input is switched after each measurement. There are also alternative switching patterns like the one proposed by \citeauthor{autozero_with_dead_time} \cite{autozero_with_dead_time} splitting the measurement interval in two and instead of measuring HI-LO-HI-LO-HI-LO, to measure HI-LO-LO-HI-HI-LO. This scheme has both advantages and disadvantages, because the $f^{-1}$ flicker noise is correlated and its autocorrelation function decays with $e^{-t}$. Therefore constantly changing the order of subtracted samples is not as efficient in removing the noise as the normal auto-zero procedure. Only when the dead time is large in comparison to the measurement time, this method yields an advantage. Some measurements also allow for another scheme. If the measurement is differential, the HI and LO input can be inverted without incurring the noise penalty of equation \ref{eqn:autozeroing} because both measurements taken contain the desired data. This puts the auto-zeroing closer to a synchronous detection scheme, but this is outside the scope of this discussion. For the sake of simplicity, only the case of a HI-LO-HI-LO measurement mentioned first is treated here. To compare the zero dead time case with the non-negligible dead time case, the Allan deviation for different integration times is again evaluated in the same way as it was in figure \ref{fig:autozero_nplcs_adev}. The results are shown in figure \ref{fig:autozero_deadtime_nplcs_adev}.
+Finally, the case of a non-negligible dead time shall be treated. When the dead time has to be considered, it is clear, that the auto-zero frequency cannot be arbitrarily increased, because an increasing proportion of sampling time is lost to the dead time. This effective loss in sampling time then increases the noise spectral density due to aliasing as discussed above. To show this effect, the simulation above is modified to include a dead time of \qty{1}{\plc} as detailed in figure \ref{fig:dmm_autozer_offset_nulling}. The dead time is added once after each measurement because the input is switched after each measurement. There are also alternative switching patterns like the one proposed by \citeauthor{autozero_with_dead_time} \cite{autozero_with_dead_time} splitting the measurement interval in two and instead of measuring HI-LO-HI-LO-HI-LO, to measure HI-LO-LO-HI-HI-LO. This scheme has both advantages and disadvantages, because $f^{-1}$ flicker noise is correlated and its autocorrelation function decays with $\text{const.} - \ln(\tau)$ \cite{flicker_noise_autocorrelation,flicker_noise_autocorrelation2}. Therefore constantly changing the order of subtracted samples is not as efficient in removing the noise as the normal auto-zero procedure because neighbouring samples are highly correlated. Only when the dead time is large in comparison to the measurement time, this method yields an advantage. Some measurements also allow for another scheme. If the measurement is differential, the HI and LO input can be inverted without incurring the noise penalty of equation \ref{eqn:autozeroing} because both measurements taken contain the desired data. This puts the auto-zeroing closer to a synchronous detection scheme, but this is outside the scope of this discussion. For the sake of simplicity, only the case of a HI-LO-HI-LO measurement mentioned first is treated here. To compare the zero dead time case with the non-negligible dead time case, the Allan deviation for different integration times is again evaluated in the same way as it was in figure \ref{fig:autozero_nplcs_adev}. The results are shown in figure \ref{fig:autozero_deadtime_nplcs_adev}.
 \begin{figure}[ht]
     \centering
-    \input{images/autozero_deadtime_nplcs_adev.pgf}
-    \caption{Allan deviation for different integration times before applying the AZ algorithm. Dead time $\theta = \qty{1}{\s}$. The dashed line denotes the Allan variance without AZ. The line frequency is \qty{50}{\Hz}.}
+    \input{images/autozero_deadtime_nplcs_adev.pgf}% data/simulations/sim_autozero_v2.py
+    \caption{Allan deviation for different integration times before applying the AZ algorithm. Dead time $\theta = \qty{1}{\plc}$. The dashed line denotes the Allan variance without AZ. The line frequency is \qty{50}{\Hz}.}
     \label{fig:autozero_deadtime_nplcs_adev}
 \end{figure}
 
@@ -1390,7 +1400,7 @@ The effect of the gain correction, where the input value $x$ is scaled by a scal
     &= \sigma_x^2 \sigma_y^2 + \sigma_x^2 \langle y \rangle^2 + \sigma_y^2 \langle x \rangle^2 \label{eqn:variance_multiplied}
 \end{align}
 
-With respect to the gain correction, equation \ref{eqn:variance_multiplied} can be further simplified. The scaling factor is derived from the reference voltage $V_{ref}$ and normalized using $\frac{V_{ref, measured}}{V_{ref}}$. The expected value, therefore is $\langle y \rangle \approx 1$, as the ADC full scale gain should not drift much. Furthermore, $\sigma_y^2$ is scaled by the constant $1/V_{ref}$ and $\sigma_x^2 \sigma_y^2 \ll \sigma_x^2$. The latter should be true for any measurement of significance.
+With respect to the gain correction, equation \ref{eqn:variance_multiplied} can be further simplified. The scaling factor is derived from the reference voltage $V_{ref}$ and normalised using $\frac{V_{ref, measured}}{V_{ref}}$. The expected value, therefore is $\langle y \rangle \approx 1$, as the ADC full scale gain should not drift much. Furthermore, $\sigma_y^2$ is scaled by the constant $1/V_{ref}$ and $\sigma_x^2 \sigma_y^2 \ll \sigma_x^2$. The latter should be true for any measurement of significance.
 \begin{equation}
     \sigma_{x \cdot y}^2 \approx \sigma_x^2 + \sigma_y^2 \langle x \rangle^2
 \end{equation}
@@ -1527,7 +1537,7 @@ As it was hinted above, if appropriately biased, a FET can be considered a volta
 
 \begin{figure}[hb]
     \centering
-    \input{images/mosfet_current_gate_bias.pgf}
+    \input{images/mosfet_current_gate_bias.pgf}% data/plot_generic.py
     \caption{Simulated drain current for different gate bias voltages of an \device{IRF9610} p-channel MOSFET.}
     \label{fig:fet_curret_gate_bias}
 \end{figure}
@@ -1658,14 +1668,14 @@ which is not very convincing as a current source. The insignificant impact of $V
 
 \subsection{Precision Current Source}%
 \label{sec:precision_current_source}
-In the previous section \ref{sec:mosfet_current_source} it was shown in equation \ref{eqn:mosfet_id_small_signal} that the output impedance of a MOSFET depends on the channel-length modulation $\lambda$ and is too low for practical purposes. On the quest to improve the output impedance of the MOSFET circuit in figure \ref{fig:mostfet_small_signa_model_model_norton}, the most obvious solution would be to simply add a source resistor $R_S$ into the circuit as shown in in figure \ref{fig:pmos_current_source_resistor}. At first glance this may seem to only add a series resistance to $R_o$, but the attempt is more intriguing and will lead to an even better solution.
+In the previous section \ref{sec:mosfet_current_source} it was shown in equation \ref{eqn:mosfet_id_small_signal} that the output impedance of a MOSFET depends on the channel-length modulation $\lambda$ and is too low for practical purposes. On the quest to improve the output impedance of the MOSFET circuit in figure \ref{fig:mostfet_small_signa_model_model_norton}, the most obvious solution would be to simply add a source resistor $R_s$ into the circuit as shown in in figure \ref{fig:pmos_current_source_resistor}. At first glance this may seem to only add a series resistance to $R_o$, but the attempt is more intriguing and will lead to an even better solution.
 
 \begin{figure}[ht]
     \centering
     \begin{subfigure}[t]{0.45\linewidth}
         \centering
         \import{figures/}{current_source_resistor.tex}
-        \caption{MOSFET with source resistor $R_S$ to improve the output impedance $R_{out}$.}
+        \caption{MOSFET with source resistor $R_s$ to improve the output impedance $R_{out}$.}
         \label{fig:pmos_current_source_resistor}
     \end{subfigure}%
     \begin{subfigure}[t]{0.45\linewidth}
@@ -1677,18 +1687,18 @@ In the previous section \ref{sec:mosfet_current_source} it was shown in equation
      \caption{Circuit of a MOSFET with source degeneration resistor and equivalent Thévenin model.}
 \end{figure}
 
-Before calculating the output impedance, we shall have a look at $v_{GS}$ and the input signal $v_i$ derived from it. With the introduction of the source resistor $R_S$, $v_i$ no longer equals $v_{GS}$, because $\frac{1}{g_m}$ now forms a voltage divider with $R_S$ and it follows
+Before calculating the output impedance, we shall have a look at $v_{GS}$ and the input signal $v_i$ derived from it. With the introduction of the source resistor $R_s$, $v_i$ no longer equals $v_{GS}$, because $\frac{1}{g_m}$ now forms a voltage divider with $R_s$ and it follows
 \begin{equation}
-    v_{GS} = v_i \frac{\frac{1}{g_m}}{R_S + \frac{1}{g_m}} = v_i \frac{1}{1 + g_m R_S} \,.
+    v_{GS} = v_i \frac{\frac{1}{g_m}}{R_s + \frac{1}{g_m}} = v_i \frac{1}{1 + g_m R_s} \,.
 \end{equation}
-This implies a reduction in gain by the factor $\frac{1}{1 + R_S g_m}$ compared to the previously discussed approach. The cause of this reduction is negative feedback. To understand this, imagine, that with a constant $v_i$ and hence a constant current $I_D$ flowing, a changing load resistance is trying to modulate $I_D$. Any increase in $I_D$ will cause the voltage across $R_S$ to rise, reducing $v_{GS}$, because $v_i$ is still constant. The decreasing $v_{GS}$ will then reduce $I_D$, thus introducing negative feedback. Having realized there is negative feedback present, it can be postulated, that the reduction in input sensitivity, or effective transconductance, will be passed on to the output impedance. This very interesting relationship will now be derived.
+This implies a reduction in gain by the factor $\frac{1}{1 + R_s g_m}$ compared to the previously discussed approach. The cause of this reduction is negative feedback. To understand this, imagine, that with a constant $v_i$ and hence a constant current $I_D$ flowing, a changing load resistance is trying to modulate $I_D$. Any increase in $I_D$ will cause the voltage across $R_s$ to rise, reducing $v_{GS}$, because $v_i$ is still constant. The decreasing $v_{GS}$ will then reduce $I_D$, thus introducing negative feedback. Having realized there is negative feedback present, it can be postulated, that the reduction in input sensitivity, or effective transconductance, will be passed on to the output impedance. This very interesting relationship will now be derived.
 
 To calculate the output impedance, figure \ref{fig:pmos_current_source_resistor_small_signal} can be simplified by grounding $v_i$, because there is no AC component as there is no current flowing through the insulated MOSFET gate and is not modulated. The load $R_{load}$ resistance must is replaced by an AC test voltage $v_{load}$ to modulate $I_D$. These changes result in the small-signal model shown in figure \ref{fig:pmos_common_gate_amplifier}. This configuration is also called a common-gate amplifier.
 
 \begin{figure}[ht]
     \centering
     \import{figures/}{mosfet_small_signal_cg.tex}
-    \caption{Small-signal model of the common-gate amplifier with source resistance $R_S$.}
+    \caption{Small-signal model of the common-gate amplifier with source resistance $R_s$.}
     \label{fig:pmos_common_gate_amplifier}
 \end{figure}
 
@@ -1696,21 +1706,21 @@ The (dynamic) output impedance is given by
 \begin{equation}
     R_{out,cg} = \frac{v_{load}}{i_D}\,, \label{eqn:mosfet_rout}
 \end{equation}
-with $i_D = i_S$, since there is no gate current. $v_{load}$ can easily be calculated by looking at figure \ref{fig:pmos_common_gate_amplifier} and equals the total voltage across $R_o$ and $R_S$. $v_{GS}$ can also be found, because the gate is grounded. With the resistance $\frac{1}{g_m}$ at one end, the voltage at the source pin must be $-v_{GS}$.
+with $i_D = i_S$, since there is no gate current. $v_{load}$ can easily be calculated by looking at figure \ref{fig:pmos_common_gate_amplifier} and equals the total voltage across $R_o$ and $R_s$. $v_{GS}$ can also be found, because the gate is grounded. With the resistance $\frac{1}{g_m}$ at one end, the voltage at the source pin must be $-v_{GS}$.
 \begin{align}
-    v_{load} &= \left(i_D - i\right) R_o + i_S R_S \nonumber\\
-    &= \left(i_D - g_m v_{gs}\right) R_o + i_D R_S \nonumber\\
-    &= \left(i_D + g_m i_D R_S\right) R_o + i_D R_S \label{eqn:mosfet_cg_vout}
+    v_{load} &= \left(i_D - i\right) R_o + i_S R_s \nonumber\\
+    &= \left(i_D - g_m v_{gs}\right) R_o + i_D R_s \nonumber\\
+    &= \left(i_D + g_m i_D R_s\right) R_o + i_D R_s \label{eqn:mosfet_cg_vout}
 \end{align}
 Using equations \ref{eqn:mosfet_rout} and \ref{eqn:mosfet_cg_vout} gives
 \begin{equation}
-    R_{out,cg} = \left(1 + g_m R_S\right) R_o + R_S \label{eqn:mosfet_cg_rout}
+    R_{out,cg} = \left(1 + g_m R_s\right) R_o + R_s \label{eqn:mosfet_cg_rout}
 \end{equation}
 for the output impedance.
 
-This result is interesting, as it can be be immediately seen, that the output impedance scales very quickly with the transconductance $g_m$ and $R_S$. As it was already speculated above, the reduction in the transconductance $\frac{1}{1 + g_m R_S}$ of the MOSFET is transferred to the output impedance, which is increasing by the inverse of the loss in transconductance.
+This result is interesting, as it can be be immediately seen, that the output impedance scales very quickly with the transconductance $g_m$ and $R_s$. As it was already speculated above, the reduction in the transconductance $\frac{1}{1 + g_m R_s}$ of the MOSFET is transferred to the output impedance, which is increasing by the inverse of the loss in transconductance.
 
-Going back to the quest for an increased output impedance, it is apparent that increasing $R_S$ quickly raises the output impedance, as it scales with $gm_m R_o$, but it would come at the cost of a significantly reduced compliance voltage. Therefore, other means need to be explored. As we have seen, the scale factor $gm_m R_o$ is explained by feedback and this leads to another solution. The amount of feedback can be increased further using an operational amplifier (op-amp) as shown in figure \ref{fig:precision_current_source}.
+Going back to the quest for an increased output impedance, it is apparent that increasing $R_s$ quickly raises the output impedance, as it scales with $gm_m R_o$, but it would come at the cost of a significantly reduced compliance voltage. Therefore, other means need to be explored. As we have seen, the scale factor $gm_m R_o$ is explained by feedback and this leads to another solution. The amount of feedback can be increased further using an operational amplifier (op-amp) as shown in figure \ref{fig:precision_current_source}.
 
 \begin{figure}[ht]
     \centering
@@ -1721,11 +1731,11 @@ Going back to the quest for an increased output impedance, it is apparent that i
 
 The output impedance of this transconductance amplifier is amplified by the open-loop gain of the op-amp as shown in appendix \ref{sec:transfer_function_transconductance}, while the transfer function greatly simplifies to
 \begin{align}
-    R_{out} &\approx A_{ol} \left(g_m R_o R_S + R_o + R_S \right) \nonumber\\
-    I_{out} &\approx \frac{V_{ref}}{R_S} \label{eqn:current_source_transfer_function}
+    R_{out} &\approx A_{ol} \left(g_m R_o R_s + R_o + R_s \right) \nonumber\\
+    I_{out} &\approx \frac{V_{ref}}{R_s} \label{eqn:current_source_transfer_function}
 \end{align}
 
-In addition to the increased output impedance, the current $I_D = I_{out}$ can now steered by adjusting $V_{ref}$ and is, given sufficient loop gain of the op-amp, no longer dependent on the MOSFET but rather only on the sense resistor $R_S$.
+In addition to the increased output impedance, the current $I_D = I_{out}$ can now steered by adjusting $V_{ref}$ and is, given sufficient loop gain of the op-amp, no longer dependent on the MOSFET but rather only on the sense resistor $R_s$.
 
 This has the added benefit that it is possible to leverage the tight accuracy and precision of a resistor over the poor specifications of a MOSFET. Resistors can be manufactured with tolerances of less than \qty{100}{\micro \ohm \per \ohm}, which is orders of magnitude better than FETs, which can be matched to low \unit{\percent} values with patience.
 
@@ -1734,7 +1744,7 @@ Using the example parameters from table \ref{tab:current_source_parameters}, the
     R_{out} \approx \qty[per-mode=power]{2}{\volt \per \uV} \left(\qty{0.64}{\siemens}\cdot \qty{1014}{\ohm} \cdot \qty{30}{\ohm} + \qty{1014}{\ohm} + \qty{30}{\ohm} \right) \approx \qty{40}{\giga\ohm} \label{eqn:current_source_output_impedance}
 \end{equation}
 
-From these consideration, it can be seen, that the open-loop gain and the unity-gain bandwidth of the op-amp essentially determine the properties of the current source, given that $R_{id} \gg R_S$ and $R_o \gg R_S$. This will be important for selecting an operational amplifier later.
+From these consideration, it can be seen, that the open-loop gain and the unity-gain bandwidth of the op-amp essentially determine the properties of the current source, given that $R_{id} \gg R_s$ and $R_o \gg R_s$. This will be important for selecting an operational amplifier later.
 
 The next section will focus on the MOSFET and discuss the compliance voltage of the current source, which was only briefly touched during the introduction. It will give rise to criteria for selecting a MOSFET for the precision current source.
 
@@ -1744,12 +1754,12 @@ The compliance voltage of a current source is the maximum voltage it can output 
 
 The precision current source discussed in section \ref{sec:precision_current_source} has several limiting factors of the compliance voltage, which shall be discussed now. The compliance voltage is taxed most at the maximum output current $I_{out,max}$. Thus for the following discussion, the output is always treated as set to maximum.
 
-Looking at figure \ref{fig:precision_current_source} of the precision current source it is immediately evident that the output voltage can be calculated by subtracting the voltage across the source resistor $V_{R_S}$ and the MOSFET $V_{DS}$ from the supply voltage $V_{sup}$
+Looking at figure \ref{fig:precision_current_source} of the precision current source it is immediately evident that the output voltage can be calculated by subtracting the voltage across the source resistor $V_{R_s}$ and the MOSFET $V_{DS}$ from the supply voltage $V_{sup}$
 \begin{equation*}
-    V_{out} = V_{sup} - V_{R_S} - V_{DS} = V_{sup} - V_{ref} - V_{DS}\,.
+    V_{out} = V_{sup} - V_{R_s} - V_{DS} = V_{sup} - V_{ref} - V_{DS}\,.
 \end{equation*}
 
-The voltage $V_{R_S}$ is given by equation \ref{eqn:current_source_transfer_function} and equal to the setpoint voltage and hence given by the system parameters. This leads to the question of the minimum working point voltage $V_{DS}$ at $I_{out,max}$. As a reminder, from equation \ref{eqn:mosfet_id_large_signal} and figure \ref{fig:fet_curret_gate_bias} one can see, that the drain current is almost constant over $V_{DS}$ in the saturation region, and in the ohmic region is proportional to $V_{DS}$. The transition point from the ohmic region to the saturation region is at $V_{DS} = V_{GS} - V_{th}$ and putting this into equation \ref{eqn:mosfet_id_large_signal} yields for the drain current
+The voltage $V_{R_s}$ is given by equation \ref{eqn:current_source_transfer_function} and equal to the setpoint voltage and hence given by the system parameters. This leads to the question of the minimum working point voltage $V_{DS}$ at $I_{out,max}$. As a reminder, from equation \ref{eqn:mosfet_id_large_signal} and figure \ref{fig:fet_curret_gate_bias} one can see, that the drain current is almost constant over $V_{DS}$ in the saturation region, and in the ohmic region is proportional to $V_{DS}$. The transition point from the ohmic region to the saturation region is at $V_{DS} = V_{GS} - V_{th}$ and putting this into equation \ref{eqn:mosfet_id_large_signal} yields for the drain current
 \begin{align}
     I_D &= \frac{1}{2} \kappa V_{DS}^2 \left(1+ \lambda V_{DS}\right) \nonumber\\
     \Rightarrow V_{DS} &\approx \sqrt{\frac{2 I_D}{\kappa}}\\
@@ -1764,7 +1774,7 @@ The simulation itself is numerically challenging and the typical approaches will
 
 \begin{figure}[ht]
     \centering
-    \input{images/ltspice_output_impedance_simulation.pgf}
+    \input{images/ltspice_output_impedance_simulation.pgf}% data/plot_generic.py
     \caption{Simulated output impedance for the precision current source from figure \ref{fig:precision_current_source} at DC and \qty{1}{\MHz} over the drain-source voltage.}
     \label{fig:ltspice_output_impedance_simulation}
 \end{figure}
@@ -1808,7 +1818,7 @@ Looking at \ref{fig:precision_current_source_two_mosfets}, it can be seen that $
 $\frac{I_D}{2}$ was used to calculate $V_{DS, parallel}$ for the parallel configuration to show the effect assuming perfect current sharing between the MOSFETs. Additionally, a configuration with an increased safety margin of $1 \sigma = \qty{70}{\mV}$ added to $V_{DS, parallel}$ was investigated. \num{4000} samples were drawn and the spread of the output impedance was calculated for each circuit. The results are shown as a histogram in figure \ref{fig:ltpsice_mosfet_mc_output_impedance}. The counts give the number of cases for each bin of the output impedance.
 \begin{figure}[ht]
     \centering
-    \input{images/ltspice_mosfet_mc_output_impedance.pgf}
+    \input{images/ltspice_mosfet_mc_output_impedance.pgf}% data/plot_ltspice_monte-carlo.py
     \caption{Results of a Monte Carlo simulation of the output impedance for different configurations of MOSFETs.}
     \label{fig:ltpsice_mosfet_mc_output_impedance}
 \end{figure}
@@ -1819,8 +1829,7 @@ In case of two MOSFETs, the output impedance varies over an order of magnitude f
 
 \subsection{Noise Sources}%
 \label{sec:current_source_noise}
-The fundamentals of different types of noise were already introduced in section \ref{sec:allan_deviation}. Here, a subset of these noise types is treated. It is expected, that the dominant noise observed in this circuit is $\frac{1}{f}$-noise at low frequencies and white wideband-noise. All noise components will be converted to the so-called input referred notation to make the noise sources comparable. This can be easily understood, when looking at two amplifiers with different gain. If both of them add a fixed amount of noise to the output signal, the absolute amount of noise may be the same, but the signal to noise ratio shows a different picture. To compare these amplifiers it is useful to divide the noise by the transfer function (gain) of the amplifier. This is called input-referred noise, since it treats the noise in relation to the input signal. Additionally, when calculating noise figures, the noise bandwidth is always considered to be \qty{1}{\Hz}.
-
+The fundamentals of different types of noise were already introduced in section \ref{sec:allan_deviation}. Here, a subset of those noise types is treated. It is expected, that the dominant noise observed in the current source circuit is $\frac{1}{f}$-noise at low frequencies and white noise towards higher frequencies. All noise components will be converted to the so-called input referred notation to make the noise sources comparable. This can be easily understood, when looking at two amplifiers with different gain. If both of them add a fixed amount of noise to the output signal, the absolute amount of noise may be the same, but the signal to noise ratio shows a different picture. To compare these amplifiers it is useful to divide the noise by the transfer function (gain) of the amplifier. This is called the input-referred noise, since it treats the noise in relation to the input signal. Additionally, when calculating noise figures, the noise bandwidth is always considered to be \qty{1}{\Hz} unless specified otherwise.
 \begin{figure}[ht]
     \centering
     \import{figures/}{precision_current_source.tex}
@@ -1828,44 +1837,44 @@ The fundamentals of different types of noise were already introduced in section 
     \label{fig:precision_current_source_noise}
 \end{figure}
 
-Noise sources are ubiquitous in the circuit in figure \ref{fig:precision_current_source} on page \pageref{fig:precision_current_source}, repeated here as figure \ref{fig:precision_current_source_noise} for clarity. The resistor $R_S$, the MOSFET, the op-amp, the setpoint voltage $V_{ref}$ and the supply voltage $V_{sup}$ can all contribute noise to the output current. Fortunately, some of those noise contributions are either very small or are well suppressed in this design, so each component must be briefly discussed to see if this is the case.
+Noise sources are ubiquitous in the circuit shown in figure \ref{fig:precision_current_source_noise}, which is repeated here from figure \ref{fig:precision_current_source} on page \pageref{fig:precision_current_source} for clarity. The resistor $R_s$, the MOSFET, the op-amp, the setpoint voltage $V_{ref}$ and the supply voltage $V_{sup}$ can all contribute noise to the output current. Fortunately, some of those noise contributions are either very small or are well suppressed in this design, so each component must be briefly discussed to see if they can be safely neglected.
 
-Starting with the supply voltage $V_{sup}$, it can be seen, that any change of this voltage affects the string $R_S$-$Q$-$R_{load}$. From equation \ref{eqn:transconductance_amplifier_transfer_function}, we know that if the op-amp gain is high (true within the bandwidth of the op-amp) all disturbances of the voltage across $R_S$ will be suppressed and the output current is only defined by the reference input and $R_S$. Looking closer, the supply noise is present at the inverting and non-inverting input of the op-amp with the same magnitude. If there is no current flowing into the op-amp pins, which is true for low frequencies, the noise is affecting both pins equally and it will be suppressed by the common-mode-rejection ratio (CMRR) of the device. Fortunately, this is a strong quality of precision op-amps and values of more than \qty[per-mode=power]{1}{\uV \per \volt} are not uncommon. The op-amp will therefore take care of the supply noise at low frequencies. At high frequencies the parasitic capacitance of the input pins and the reduced gain and CMRR come into play, reducing the CMRR and the gain also drops going to high frequencies. To take care of this, it is therefore prudent to filter the supply for high frequency noise.
+Starting with the supply voltage $V_{sup}$, it can be seen, that any change of this voltage affects the string $R_s$-$Q$-$R_{load}$. From equation \ref{eqn:transconductance_amplifier_transfer_function}, it is known that if the op-amp gain is high (true within the bandwidth of the op-amp) all disturbances of the voltage across $R_s$ will be suppressed and the output current is only defined by the reference input and $R_s$. Looking closer, the supply noise is present at the inverting and non-inverting input of the op-amp with the same magnitude. If there is no current flowing into the op-amp pins, which is true for low frequencies, the noise is affecting both pins equally and it will be suppressed by the common-mode-rejection ratio (CMRR) of the device. Fortunately, this is a strong quality of precision op-amps and values of more than \qty[per-mode=power]{1}{\uV \per \volt} are not uncommon. The op-amp will therefore take care of the supply noise at low frequencies. At high frequencies the parasitic capacitance of the input pins and the reduced gain and CMRR come into play. To take care of this, it is therefore prudent to filter the supply voltage for high frequency noise.
 
 The next noise source is the reference voltage. The reference is directly connected to the input and its noise dictates most of the circuit noise. While the high-frequency noise can again be filtered to some extend, the low frequency noise, which is mostly $\frac{1}{f}$-noise can not be filtered as was shown in section \ref{sec:flicker_noise}, so it must be kept low from the start and the reference selected for low flicker noise.
 
-The MOSFET as a noise source is considered in appendix \ref{sec:mosfet_noise} and the interested reader may find the derivation of the MOSFET noise component there. The two types of noise that need to be considered are the flicker noise of the MOSFET and its wideband thermal noise as calculated in equation \ref{eqn:current_noise_mosfet}
+The MOSFET as a noise source is considered in appendix \ref{sec:mosfet_noise} and the interested reader may find the derivation of the MOSFET noise component there. The two types of noise that need to be considered are the flicker noise of the MOSFET and its wideband thermal noise as calculated in equation \ref{eqn:current_noise_mosfet} on page \pageref{eqn:current_noise_mosfet}
 \begin{equation*}
     i_{n} = \sqrt{\underbrace{4 k_B T \frac{2}{3} g_m}_{\text{thermal}} + \underbrace{\frac{K_f I_D}{C_{ox} L^2} \frac{1}{f}}_{\text{flicker}}} \,.
 \end{equation*}
 
-To calculate the input referred noise, which shows that the MOSFET noise will be suppressed by the op-amp, the current noise needs to be divided by the open-loop gain derived as equation \ref{eqn:transconductance_amplifier_open_loop_gain}
+To calculate the input referred noise in order show that the MOSFET noise will be suppressed by the op-amp, the current noise needs to be divided by the open-loop gain derived as equation \ref{eqn:transconductance_amplifier_open_loop_gain} on page \pageref{eqn:transconductance_amplifier_open_loop_gain}
 \begin{equation}
     e_{n,FET} = \frac{i_n}{A_f} = \frac{\sqrt{4 k_B T \frac{2}{3} g_m + \frac{K_f I_D}{C_{ox} L^2} \frac{1}{f}}}{\frac{A_{op}}{R_S} \frac{g_m \left(R_o || R_S || R_{id}\right)}{g_m \left(R_o || R_S || R_{id}\right) + 1}} \,.
 \end{equation}
 
-Looking at the parameters from table \ref{tab:current_source_parameters}, we find $\left(R_o || R_S || R_{id}\right) \approx R_S$ and $e_n$ can be simplified to
+Looking at the parameters from table \ref{tab:current_source_parameters}, it is found that $\left(R_o || R_S || R_{id}\right) \approx R_S$ and $e_n$ can be simplified to
 \begin{align*}
     e_{n,FET} &\approx \frac{\sqrt{4 k_B T \frac{2}{3} g_m + \frac{K_f I_D}{C_{ox} L^2} \frac{1}{f}}}{A_1 \frac{1}{R_S + \frac{1}{g_m}}}\\
     &\approx \frac{R_S + \frac{1}{g_m}}{A_1} \sqrt{4 k_B T \frac{2}{3} g_m + \frac{K_f I_D}{C_{ox} L^2} \frac{1}{f}}\\
     \overset{A_1 \to \infty}&{=} 0
 \end{align*}
 
-Unless the MOSFET transconductance $g_m$ or the gain of the op-amp $A_1$ become very small, the noise of the MOSFET is very well suppressed. This means, that if the wideband thermal noise contribution is small (it is, see \ref{sec:mosfet_noise}) and the flicker noise corner frequency is within the bandwidth of the op-amp, the noise contribution from the MOSFET can be neglected.
+Unless the MOSFET transconductance $g_m$ or the gain of the op-amp $A_1$ become very small, the noise of the MOSFET is very well suppressed. If the wideband thermal noise contribution is small (it is, see \ref{sec:mosfet_noise}) and the flicker noise corner frequency is within the bandwidth of the op-amp, the noise contribution from the MOSFET can be neglected.
 
-The noise contribution from the sense resistor $R_S$ is the (approximated) Johnson–Nyquist noise, which when transformed to its Norton representation can be written as a current noise
+The noise contribution from the sense resistor $R_S$ is the Johnson–Nyquist noise, see section \ref{sec:white_noise}, which when transformed to its Norton representation can be written as a current noise
 \begin{equation}
     i_{n,R} = \sqrt{\frac{4 k_B T}{R_S}} \label{eqn:current_noise_resistor}\,.
 \end{equation}
 
-Additionally, it was shown, that depending on the material of the resistive element, a flicker noise component can also be present. This is especially prevalent in carbon and tick-film resistors \cite{flicker_noise_carbon_film,1_f_noise_thick_film}. While thin-film resistors are less noisy, their performance varies greatly between different models \cite{resistor_current_noise_ligo}, so their make and model must be carefully selected for the application. Foil and wirewound resistors were shown to perform best and have almost no flicker noise \cite{resistor_current_noise_ligo,flicker_noise_foil_resistor_beev}. Using a high quality resistor, the flicker noise can be neglected and only the thermal noise must be taken into account.
+Additionally, it was shown, that depending on the material of the resistive element, a flicker noise component can also be present. This is especially prevalent in carbon and tick-film resistors \cite{flicker_noise_carbon_film,1_f_noise_thick_film}. While thin-film resistors are less noisy, their performance varies greatly between different models \cite{resistor_current_noise_ligo}, so their make and model must be carefully selected for the application. Metal foil and wirewound resistors were shown to perform best and have almost no flicker noise \cite{resistor_current_noise_ligo,flicker_noise_foil_resistor_beev}. Using a high quality resistor, the flicker noise can be neglected and only the thermal noise must be taken into account.
 
-The sense resistor is part of the feedback network and therefore it contributes fully to the noise of the transimpedance amplifier. Input referred, the current noise must be divided by the closed-loop gain $A_f$ given by \ref{eqn:transfer_function_closed_loop}.
+The sense resistor is part of the feedback network and therefore it contributes fully to the noise of the transimpedance amplifier. Input referred, the current noise must be divided by the closed-loop gain $A_f$ given by \ref{eqn:transfer_function_closed_loop} on page \pageref{eqn:transfer_function_closed_loop}.
 \begin{equation}
     e_{n,R} = i_{n,R} \cdot \beta \approx i_n \cdot R_S = \sqrt{4 k_B T R_S} \label{eqn:noise_sense_resistor}
 \end{equation}
 
-The final component to be discussed is the operational amplifier. Although the op-amp is a rather complex device, its noise can be modeled by a small number of noise sources. This noise model of the op-amp is shown in figure \ref{fig:op-amp_noise_model}.
+The final component to be discussed is the operational amplifier. Although the op-amp is a rather complex device, its noise can be modeled with sufficient accuracy by a small number of noise sources. The typical noise model of an op-amp is shown in figure \ref{fig:op-amp_noise_model}.
 
 \begin{figure}[ht]
     \centering
@@ -1876,7 +1885,7 @@ The final component to be discussed is the operational amplifier. Although the o
     \label{fig:op-amp_noise_model}
 \end{figure}
 
-In figure \ref{fig:op-amp_noise_model} we can see, that there are three noise sources required to treat the op-amp. The input voltage noise $e_{n}$ and two input current noise sources $i_n$. The current noise noise sources $i_n$ are assumed to be mostly uncorrelated. This assumption will lead to an upper bound as can seen from figure \ref{fig:op-amp_input_stage}, which shows the the input differential amplifier, that is the first stage of a typical bipolar op-amp.
+In figure \ref{fig:op-amp_noise_model} one can see, that there are three noise sources required to treat the op-amp. The input voltage noise source $e_{n}$ and two input current noise sources $i_n$. The current noise noise sources $i_n$ are assumed to be mostly uncorrelated. This assumption leads to an upper bound as can seen from figure \ref{fig:op-amp_input_stage}, which shows the the input differential amplifier, that is the first stage of a typical bipolar op-amp.
 
 \begin{figure}[hb]
     \centering
@@ -1887,27 +1896,27 @@ In figure \ref{fig:op-amp_noise_model} we can see, that there are three noise so
     \label{fig:op-amp_input_stage}
 \end{figure}
 
-Of the three noise sources $i_{n,p}$ and $i_{n,n}$ are uncorrelated, because it is the input bias current of the individual transistors, and only the effect of $i_{n,EE}$ is correlated, because the current of the emitter bias current source is equally distributed between the two input transistors. Since effects of equal magnitude and sign cancel out due to the differential nature of the input stage, correlated effects are suppressed. An equal magnitude can be assumed, because the gain of the two transistors is well matched, due to their close proximity on the semiconductor die. Therefore assuming all noise is uncorrelated presents an upper bound. A more detailed analysis can be found in \cite{op-amp_noise_correlation}, if interested. Due to the matching of the transistors, the magnitude $i_{n,p}$ and $i_{n,n}$ are also closely matched, hence in our model, they are assumed equal and only called $i_n$.
+Of the three noise sources $i_{n,p}$, $i_{n,n}$ and $i_{n,EE}$ only $i_{n,p}$ and $i_{n,n}$ are uncorrelated, because it is the input bias current of the individual transistors, and only the effect of $i_{n,EE}$ is correlated, because the current of the emitter bias current source is equally distributed between the two input transistors. Since effects of equal magnitude and sign cancel out due to the differential nature of the input stage, correlated effects are suppressed. An equal magnitude can be assumed, because the gain of the two transistors is well matched, due to their close proximity on the semiconductor die. Therefore assuming all noise is uncorrelated presents an upper bound. A more detailed analysis can be found in \cite{op-amp_noise_correlation}, if interested. Due to the matching of the transistors, the magnitude $i_{n,p}$ and $i_{n,n}$ are also closely matched, hence in the model used here, they are assumed equal and referred to as $i_n$ from now on. These two current noise sources can not be combined with the voltage noise source, because they depend on the external impedance connected to the op-amp, so this final step must be done by the circuit designer as shown next.
 
-As we have done before in this section by referring all noise sources to the input, the same was done by the manufacturer and the noise figures given in the datasheet are typically input referred and combine all noise sources in the op-amp. The two current noise sources can not be combined with the input voltage noise, because they depend on the external impedance connected to the op-amp, so this final step must be done by the circuit designer. Given the complete circuit as in figure \ref{fig:precision_current_source_noise} it is possible to calculate the full noise contribution of the op-amp as
+Both the voltage noise $e_n$ and the current noise $i_n$ can be found in the datasheet of the op-amp. Typically, these values given are input-referred values. For the complete circuit as in figure \ref{fig:precision_current_source_noise} it is possible to calculate the full noise contribution of the op-amp as
 \begin{equation}
     e_{n,op} = \sqrt{e_n^2 + e_{n,+}^2 + e_{n,-}^2}\,,
 \end{equation}
-assuming the noise sources are uncorrelated. The input referred noise $e_{n,-}$ of the inverting input can be calculated in a similar fashion as $e_{n_R}$ in equation \ref{eqn:noise_sense_resistor}. It is likewise part of the feedback network and must therefore be divided by the closed-loop gain $A_f$ as before.
+assuming the noise sources are uncorrelated. The input referred voltage noise $e_{n,-}$ of the inverting input resulting from the current noise can be calculated in a similar fashion as $e_{n_R}$ in equation \ref{eqn:noise_sense_resistor}. It is likewise part of the feedback network and must therefore be divided by the closed-loop gain $A_f$ as before.
 \begin{equation}
     e_{n,-} \approx i_n \cdot R_S
 \end{equation}
 
-The current noise of the non-inverting input can be translated by looking at its input impedance. This is be determined by the filter of the reference voltage, which is required to remove the high frequency noise as discussed above. Assuming an RC-filter of first-order,
+The current noise of the non-inverting input can be translated by considering its input impedance. This is determined by the filter circuit of the reference voltage which is required to remove the high frequency noise as discussed above. Assuming an RC-filter of first-order,
 the output impedance can be calculated from the transfer function of the low-pass filter, derived in equation \ref{eqn:first-order_model}
 \begin{align}
     R_{out,filt} &= R_{filt} \cdot A = \frac{R_{filt}}{1+sR_{filt}C}  \label{eqn:output_impedance_rc_filter}\\
     \lim_{s \to 0} R_{out,filt} &= R_{filt} \nonumber\\
     \lim_{s \to \infty} R_{out,filt} &= 0 \,.\nonumber\\
-     e_{n,-} &\approx \frac{i_n R_{filt}}{1+sR_{filt}C}
+     e_{n,+} &\approx \frac{i_n R_{filt}}{1+sR_{filt}C}
 \end{align}
 
-Looking at the output impedance of the filter, it can be seen, that for high frequencies, the output impedance goes to \num{0}, while for low frequencies it is $R_{filt}$. If the filter corner frequency $\omega_0 = \frac{1}{RC}$ is close to or at the flicker noise corner frequency of the reference voltage, it means that there is almost no wideband current noise contribution as well. Only the $\frac{1}{f}$ component of the op-amp current noise multiplied with $R_{filt}$ is left. This should be lower than the reference noise to have negligible impact and must be kept in mind when selecting an op-amp.
+Looking at the output impedance of the filter, it can be seen, that for high frequencies, the output impedance approaches \num{0}, while for low frequencies it is $R_{filt}$. This has the effect that if the filter corner frequency $\omega_0 = \frac{1}{RC}$ is close to the flicker noise corner frequency of the reference voltage there is is almost no wideband current noise contribution from $e_{n,+}$ as well. Only the $\frac{1}{f}$ component of the op-amp current noise multiplied with $R_{filt}$ is left. Ideally, this is lower than the reference noise to have negligible impact and must be kept in mind when selecting an op-amp.
 This leads to the total noise of the op amp
 \begin{equation}
     e_{n,op} = \sqrt{e_n^2 + (i_n R_S)^2 + \left|\frac{i_n R_{filt}}{1+sRC}\right|^2} \,.
@@ -1932,13 +1941,19 @@ To conclude, table \ref{tab:current_source_noise_contributers} is given as a ref
     \label{tab:current_source_noise_contributers}
 \end{table}
 
-To summarize the findings, the most important choices regarding the noise contributions are a good quality metal-foil or wirewound sense resistor $R_s$, a low noise voltage reference and a low noise op-amp. Regarding the low-noise op-amp it is important to decide between low voltage noise or low current noise. This choice depends on the value of $R_S$. For typical values of $R_S$ below \qty{1}{\kilo\ohm} voltage noise is dominating. The reference should be chosen for low flicker noise.
+From those findings it is clear that the most important choices regarding the noise contributions are a good quality metal-foil or wirewound sense resistor $R_s$, a low noise voltage reference and a low noise op-amp. Regarding the low-noise op-amp it is critical to decide between low voltage noise or low current noise. This choice depends on the value of $R_s$. For typical values of $R_S$ below \qty{1}{\kilo\ohm} voltage noise is the dominating effect. The reference should be chosen for low flicker noise.
 
 \subsection{Component Selection}%
 \label{sec:component_selection}
-This section deals with selecting the right components for the precision current source presented in section \ref{sec:precision_current_source}. The focus lies on the requirements defined in section \ref{sec:laser_current_driver}, notably specifications \ref{lst:dgDrive_specs_environment} and \ref{lst:dgDrive_specs_electrical}. Most attention will be on the MOSFET, the operational amplifier and the voltage reference. First is the voltage reference, because this will define several parameters down the road. Then, the op-amp is discussed, for which several examples from scientific publications and other alternatives are shown and the best solution is presented. Finally, the selection parameters for the MOSFET will be elaborated. The reader must warned though, that the lineup of p-channel MOSFETs in production is decreasing, with more and more products being discontinued in favour of n-channel MOSFETs. The examples may therefore already be outdated.
+This section deals with selecting the right components for the precision current source presented in section \ref{sec:precision_current_source}. The focus lies on the requirements defined in section \ref{sec:laser_current_driver}, notably specifications \ref{lst:dgDrive_specs_environment} and \ref{lst:dgDrive_specs_electrical}. Most attention will be on the MOSFET, the operational amplifier and the voltage reference. For these components examples from literature are given and are compared to the requirements. Discussed first is the voltage reference, because this will define several parameters down the road. Then, the op-amp is considered, for which several examples from scientific publications and other alternatives are shown and the best solution is presented. Finally, the selection parameters for the MOSFET will be elaborated. The reader must be warned though that the lineup of p-channel MOSFETs in production is decreasing, with more and more products being discontinued in favour of n-channel MOSFETs. The examples may therefore already be outdated.
 
-Numerous laser driver designs for different applications and laser diodes can be found in literature \cite{libbrecht_hall, laser_driver_mosfet_noise, laser_driver_digital, laser_driver_digital_update, laser_driver_qcl_space, laser_driver_qcl_taubman, laser_driver_qcl_taubman_multiplexer}. While \citeauthor{libbrecht_hall} were not the first to present their circuit and a similar solution can already be found in \cite{laser_driver_old}, their design stands out for its simplicity. The designs mentioned can be divided into two groups. High power drivers for quantum cascade lasers (QCL) typically featuring a compliance voltage $V_c$ of more than \qty{10}{\V} and output currents of up to several ampere based on the work of \citeauthor{laser_driver_qcl_taubman} and medium power devices for laser diodes having a lower compliance voltage of around \qty{2}{\V} and capable of driving a few hundred \unit{\mA} based on the work of \citeauthor{libbrecht_hall}. The requirements of this work mostly fall into the latter category, except for the compliance voltage, which is targeted for blue laser diodes and $V_c \ge \qty{8}{\V}$. All these drivers share one common aspect, though, the type of voltage reference. Most laser drivers in literature and also commercial products are designed around low-noise, low-drift buried Zener diode voltage references, namely the Analog Devices (ADI) \device{LM399} \cite{datasheet_LM399} or ADI \device{LTZ1000} \cite{datasheet_LTZ1000}.
+Numerous laser driver designs for different applications and laser diodes can be found in literature \cite{libbrecht_hall, laser_driver_mosfet_noise, laser_driver_digital, laser_driver_digital_update, laser_driver_qcl_space, laser_driver_qcl_taubman, laser_driver_qcl_taubman_multiplexer}. While \citeauthor{libbrecht_hall} \cite{libbrecht_hall} were not the first to present their circuit, and a similar solution can already be found in \cite{laser_driver_old}, their design stands out for its simplicity. The designs mentioned can be divided into two groups. High power drivers for quantum cascade lasers (QCL) typically featuring a compliance voltage $V_c$ of more than \qty{10}{\V} and output currents of up to several ampere based on the work of \citeauthor{laser_driver_qcl_taubman} \cite{laser_driver_qcl_taubman} and medium power devices for laser diodes having a lower compliance voltage of around \qty{2}{\V} and capable of driving a few hundred \unit{\mA} based on the work of \citeauthor{libbrecht_hall} \cite{libbrecht_hall}. The requirements of this work mostly fall into the latter category, except for the compliance voltage, which is targeted for blue laser diodes and $V_c \ge \qty{8}{\V}$. All these design share one common aspect though, the type of voltage reference. Most laser drivers in literature and also commercial products are designed around low-noise, low-drift buried Zener diode voltage references, namely the Analog Devices (ADI) \device{LM399} \cite{datasheet_LM399} or ADI \device{LTZ1000} \cite{datasheet_LTZ1000}.
+
+The buried types of voltage references are Zener diodes, that are created within the bulk silicon using ion implantation. This reduces noise caused by surface contamination \cite{zener_diode_stability}. These diodes are not true Zener diodes though, but called Zeners nonetheless, and use a mix of Zener and avalanche breakdown to compensate the temperature coefficient.
+
+The Zener effect is the tunneling of electrons through the barrier formed between the valence band and conduction band. It has a negative temperature coefficient, because an increase in temperature reduces the size of the band gap. This effect dominates at low currents.
+
+Avalanche breakdown, on the other hand describes a mechanism that free electrons (due to temperature) are accelerated to such energies that they knock out other electrons, causing an avalanche of electrons. This effect has a positive temperature coefficient \cite{tempco_avalanche_breackdown} and occurs at higher currents. While the zero temperature coefficient point is around \qty{5}{\V}, this operating point implies a high susceptibility to changes in the reverse current. Typically, the Zener voltage is shifted slightly upwards to result in a net positive coefficient, which is then compensated by the negative temperature coefficient of a forward biased diode \cite{zener_diode_stability}. This results in the common Zener diode voltage of around $\qty{6.2}{\V} + \qty{0.7}{\V} = \qty{6.9}{\V}$. In comparison to other types of diodes, buried Zeners have the best stability and lowest noise. $V_{ref} \approx \qty{7}{\V}$ is therefore set in stone for the reasons given above. Table \ref{tab:overview_buried_zener_diodes}, lists some commercially available buried Zener diodes. All of these diodes are manufactured by ADI as they are the sole manufacturer left on the market to produce this kind of diodes.
 \begin{table}[ht]
     \centering
     \begin{tabular}{lllll}
@@ -1957,15 +1972,9 @@ Numerous laser driver designs for different applications and laser diodes can be
     \label{tab:overview_buried_zener_diodes}
 \end{table}
 
-The buried types of voltage references are so-called Zener diodes, that are created within the bulk silicon using ion implantation. This reduces noise caused by surface contamination \cite{zener_diode_stability}. These diodes are not true Zener diodes though, but called Zeners nonetheless, and use a mix of Zener and avalanche breakdown to compensate the temperature coefficient.
+Choosing a voltage reference can be done according to specification \ref{lst:dgDrive_specs_environment}. A temperature coefficient of \qty{<= 1}{\uA \per \A \per \K} rules out any non-hermetic unheated voltage reference. Using a hermetic package also improves the stability against humidity as the epoxy used for an SO-8 package is hydrophilic and swells when exposed to water vapour causing pressure on the die, resulting in a change of the output voltage. The hermetic voltage references can be divided into two groups, the \device{LM399} and the newer \device{ADR1399} in one group and the \device{LTZ1000} and its newer counterpart \device{ADR1000} in another. While the \device{LM399} requires very few external components, the external circuit for the \device{LTZ1000} is far more elaborate requiring more parts and space. Additionally, the \device{LTZ1000} is more than four times the price of the \device{LM399} in quantities of \num{10} at the time of writing. Last but not least, the stability and temperature coefficient of the \device{LTZ1000} cannot be matched by the performance of the sense resistor in the precision current source, so the sense resistor gives a lower bound of about \qty{0.5}{\uA \per \A \per \K}. Unless the better low frequency noise performance is required, the \device{LM399} and \device{ADR1399} are the more economical parts. The performance of the latter two references will be discussed in section \ref{sec:zener_diode_selection} and the sense resistor is considered next.
 
-The Zener effect is the tunneling of electrons through the barrier formed between the valence band and conduction band. It has a negative temperature coefficient, because an increase in temperature reduces the size of the band gap.
-
-Avalanche breakdown, on the other hand describes a mechanism that free electrons (due to temperature) are accelerated to such energies that they knock out other electrons, causing an avalanche of electrons. This effect has a positive temperature coefficient, because a higher temperature results in more free carriers, that cause leakage but less avalanches due to the reduced free length of path. While the zero temperature coefficient point is around \qty{5}{\V}, this operating point implies a high susceptibility to changes in the reverse current. Typically, the Zener voltage is shifted slightly upwards to result in a net positive coefficient, which is then compensated by the negative temperature coefficient of a forward biased diode \cite{zener_diode_stability}. This results in the common Zener diode voltage of around $\qty{6.2}{\V} + \qty{0.7}{\V} = \qty{6.9}{\V}$. In comparison to other types of diodes, buried Zeners have the best stability and lowest noise. In order to achieve high stability and low noise, $V_{ref} \approx \qty{7}{\V}$ is therefore pretty much set in stone for the reasons given above. Table \ref{tab:overview_buried_zener_diodes}, lists some commercially available buried Zener diodes. All of these diodes are manufactured by ADI as they are the sole manufacturer left on the market to produce this kind of diodes.
-
-Choosing a voltage reference can be done according to specification \ref{lst:dgDrive_specs_environment}. A temperature coefficient of \qty{<= 1}{\uA \per \A \per \K} rules out any non-hermetic unheated voltage reference. Using a hermetic package improves the stability against humidity as the epoxy used for an SO-8 package is hydrophilic and swells when exposed to water vapour causing pressure on the die, resulting in a change of the output voltage. The hermetic voltage references can be divided into two groups, the \device{LM399} and the newer \device{ADR1399} in one group and the \device{LTZ1000} and its newer counterpart \device{ADR1000} in another. While the \device{LM399} requires very few external components, the external circuit for the \device{LTZ1000} is far more elaborate requiring more parts and space. Additionally, the \device{LTZ1000} is more than four times the price of the \device{LM399} in quantities of \num{10} at the time of writing. Last but not least, the stability and temperature coefficient of the \device{LTZ1000} cannot be matched by the performance of the sense resistor, so the sense resistor gives a lower bound of about \qty{0.5}{\uA \per \A \per \K}. Unless the better low frequency noise performance is absolutely required, the \device{LM399} and \device{ADR1399} are the more economical parts. The performance of those two references will be discussed in section \ref{sec:zener_diode_selection}.
-
-With the maximum reference voltage of \qty{7}{\V} known, a sense resistor between \qty{14}{\ohm} (\qty{500}{\mA}) and \qty{28}{\ohm} (\qty{250}{\mA}) is required. The Vishay \device{VPR221Z} are high power low drift metal foil resistors in a TO-220 package and a solid choice here. The low value resistors, combined with the requirement for a low noise output, limits the choice of op-amps to bipolar low-noise devices or discrete implementations. Table \ref{tab:overview_bipolar_op-amps} lists some choices compiled from the literature sources, which will now be discussed.
+With the maximum reference voltage of \qty{7}{\V} known, a sense resistor between \qty{14}{\ohm} (\qty{500}{\mA}) and \qty{28}{\ohm} (\qty{250}{\mA}) is required. The Vishay \device{VPR221Z} are high power low drift metal foil resistors in a TO-220 package and a solid choice here. The low value resistors, combined with the requirement for a low current noise output of the source, limits the choice of op-amps to bipolar low-noise devices or discrete implementations. Table \ref{tab:overview_bipolar_op-amps} lists some choices compiled from the literature sources, which will now be discussed.
 \begin{table}[ht]
     \centering
     \begin{tabular}{llll}
@@ -1985,28 +1994,27 @@ With the maximum reference voltage of \qty{7}{\V} known, a sense resistor betwee
 
 The low value of the sense resistor makes a bipolar op-amp the preferred choice, because they have a very low voltage noise and their current noise and input bias current do not interfere with such a low value resistor. While a discrete solution using matched JFETs or bipolar transistors may push the input noise even lower, the temperature stability, circuit complexity and again the size speaks against this option, so the discussion will be limited to integrated solutions only.
 
-To find a reference point for the choice of op-amp, the thermal noise of the sense resistor must looked at. The \qty{28}{\ohm} sense resistor has a thermal noise of
+To find a reference point for the choice of op-amp, the thermal noise of the sense resistor must looked at. A \qty{28}{\ohm} sense resistor has a thermal noise of
 \begin{equation*}
     e_n\left(\qty{23}{\celsius}\right) = \qty[power-half-as-sqrt]{0.67}{\nV \per \Hz\tothe{0.5}} \,.
 \end{equation*}
 
-This means, that even the lowest noise op-amp from table \ref{tab:overview_bipolar_op-amps} dominates the wideband-noise. With this said, the component choices made in literate can be discussed. The \device{AD8671} chosen by \cite{laser_driver_digital} only makes sense, because they have chosen a very large filter resistor $R_{filt}$ of $2 \times \qty{3}{\kilo\ohm}$. The \device{ADA4004} was used by Moglabs in the \device{DLC-102}, again likely due to the high values of $R_{filt}$ used. The \device{ADA4898} might seem like a good choice at first sight but the very limited (in terms of precision op-amps) open-loop gain of \qty{0.14}{\V \per \uV} makes this op-amp a cheap, but poor choice. The final choice is between the \device{AD797} and the \device{LT1028}, both op-amps have very similar specifications, but there is a peculiarity in the datasheet of the \device{LT1028} \cite{datasheet_LT1028}. The \textit{High Frequency Voltage Noise
-vs Frequency} plot shows a noise bump at around \qty{400}{\kHz}. The original application of the \device{LT1x28} is for audio frequencies, which is well away from that bump, but in this case poses a problem. The publication by \citeauthor{libbrecht_hall} also blames the \device{LT1028} for the noise peak around \qty{400}{\kHz}. This peak is the reason why \citeauthor{laser_driver_mosfet_noise} found the \device{LT1028} to have a higher integrated noise than the \device{AD797}. Additionally to the superior noise performance, the \device{AD797} (B-grade) has excellent specifications overall. The open-loop gain is between \qtyrange[range-units = single]{2}{20}{\V \per \uV}, the supply rejection is greater than \qty{1}{\uV \per \V}, the bias current is almost constant between \qtyrange[range-units = single]{20}{100}{\celsius} and the unity gain bandwidth is around \qty{10}{\MHz}. Finally it does have a very high output drive capability of \qty{50}{\mA}, which allows to drive fairly large MOSFETs. These features make the \device{AD797} the ideal op-amp for those low-value sense resistors, although it puts limits on the maximum filter resistor to limit the low frequency current noise contribution.
+This means, that even the lowest noise op-amp from table \ref{tab:overview_bipolar_op-amps} dominates the wideband-noise. With this said, the component choices made in literate can be discussed. The \device{AD8671} chosen by \cite{laser_driver_digital} only makes sense, because they have chosen a very large filter resistor $R_{filt}$ of $2 \times \qty{3}{\kilo\ohm}$. The \device{ADA4004} was used by Moglabs in the \device{DLC-102}, again likely due to the high values of $R_{filt}$ used. The \device{ADA4898} might seem like a good choice at first sight but the very limited (in terms of precision op-amps) open-loop gain of \qty{0.14}{\V \per \uV} makes this op-amp a inexpensive, but poor choice. The final choice is between the \device{AD797} and the \device{LT1028}, both op-amps have very similar specifications, but there is a peculiarity in the datasheet of the \device{LT1028} \cite{datasheet_LT1028}. The \textit{High Frequency Voltage Noise
+vs Frequency} plot shows a noise bump at around \qty{400}{\kHz}. The original application of the \device{LT1x28} is for audio frequencies, which is well below that bump, but in this case poses a problem. The publication by \citeauthor{libbrecht_hall} \cite{libbrecht_hall} also blames the \device{LT1028} for the noise peak around \qty{400}{\kHz}. Moreover, this peak is the reason why \citeauthor{laser_driver_mosfet_noise} \cite{laser_driver_mosfet_noise} found the \device{LT1028} to have a higher integrated noise than the \device{AD797}. Additionally to the superior noise performance, the \device{AD797} (B-grade) has excellent specifications overall. The open-loop gain is between \qtyrange[range-units = single]{2}{20}{\V \per \uV}, the supply rejection is greater than \qty{1}{\uV \per \V}, the bias current is almost constant between \qtyrange[range-units = single]{20}{100}{\celsius} and the unity gain bandwidth is around \qty{10}{\MHz}. Finally it does have a high output drive capability of \qty{50}{\mA}, which allows to drive large MOSFETs. These features make the \device{AD797} the ideal op-amp for low-value sense resistors, although it puts limits on the maximum filter resistor to limit the low frequency current noise contribution.
 
-Finally, the choice of MOSFETs can be discussed. As it was shown in section \ref{sec:mosfet_current_source} in equation \ref{eqn:mosfet_saturation}, the channel length modulation plays an important role in increasing the channel conductance $g_{DS}$ and limiting the output impedance. To reduce the channel length modulation a longer channel is preferred. Manufacturers do not give these numbers, nor the manufacturing process. Older technologies like the planar (lateral) FET is better suited for operating in the saturation region than the modern trench (vertical) FET. Trench MOSFETs are geared towards a low on-state resistance $R_{DS,on}$, which is important for switching applications, but their lower resistance comes from a shorter channel. One of the few planar MOSFETs still available on the market is the HEXFET, which was designed for switching applications, but proves useful nonetheless as we will see. High voltage MOSFETs also have longer channels than low voltage MOSFETs, so browsing for MOSFETs, that are rated for \qtyrange[range-units = single]{60}{100}{\V} or more can narrow down the candidates. While the output impedance is a factor worth keeping in mind, the most important aspect is, whether the MOSFET can drive the load regarding the compliance voltage. To outline the problem, we can again refer to the example parameters from table \ref{tab:current_source_parameters}.
+Finally, the choice of MOSFETs can be discussed. As it was shown in section \ref{sec:mosfet_current_source} in equation \ref{eqn:mosfet_saturation}, the channel length modulation plays an important role in increasing the channel conductance $g_{DS}$ and limiting the output impedance. To reduce the channel length modulation a longer channel is preferred. Manufacturers do not give these numbers, nor the manufacturing process. Older technologies like the planar (lateral) FET are better suited for operating in the saturation region than the modern trench (vertical) FET. Trench MOSFETs are geared towards a low on-state resistance $R_{DS,on}$, which is important for switching applications, but their lower resistance comes from a shorter channel. One of the few planar MOSFETs still available on the market is the HEXFET, which was designed for switching applications, but proves useful nonetheless. High voltage MOSFETs also have longer channels than low voltage MOSFETs, so searching for MOSFETs, that are rated for \qtyrange[range-units = single]{60}{100}{\V} or more can narrow down the candidates. While the output impedance is a factor worth keeping in mind, the most important aspect is, whether the MOSFET can drive the load regarding the compliance voltage. To outline the problem, one can refer again to the example parameters from table \ref{tab:current_source_parameters}.
 
-Assuming a supply voltage of \qty{15}{\V} and the \device{AD797} op-amp, the current source supply voltage $V_{sup}$ is then limited to about \qtyrange[range-units = single]{11}{12}{\V}, because the \device{AD797} is no rail-to-rail op-amp and its output only swings to within \qty{3}{\V} of the rail (minimum) and the input is limited to within \qty{2}{\V} of the rail (minimum). Considering the maximum $V_{ref}$ at full output of \qty{7}{\V} and a load voltage of \qty{3}{\V} in case of the \device{L785H1} \cite{datasheet_thorlabs_780nm} laser diode used as an example in this section leaves only
+Assuming a supply voltage of \qty{15}{\V} and the \device{AD797} op-amp, the current source supply voltage $V_{sup}$ is limited to about \qtyrange[range-units = single]{11}{12}{\V}, because the \device{AD797} is no rail-to-rail op-amp and its output only swings to within \qty{3}{\V} of the rail (minimum) and the input is limited to within \qty{2}{\V} of the rail (minimum). Considering the maximum $V_{ref}$ at full output of \qty{7}{\V} and a load voltage of \qty{3}{\V} in case of the \device{L785H1} \cite{datasheet_thorlabs_780nm} laser diode used as an example in this section leaves only
 \begin{equation}
-    V_{DS,min} = V_{sup} - V_{ref} - V_{load} = \text{\qtyrange[range-units = bracket]{11}{12}{\V}} - \qty{7}{\V} - \qty{3}{\V} = \text{\qtyrange[range-units = bracket]{1}{2}{\V}} \label{eqn:minimum_mosfet_vds}
+    V_{DS,min} = V_{sup} - V_{ref} - V_{load} = \qty{12}{\V} - \qty{7}{\V} - \qty{3}{\V} = \qty{2}{\V} \label{eqn:minimum_mosfet_vds}
 \end{equation}
 for the MOSFET -- a serious challenge.
 
 To find a suitable MOSFET, one has to consult the \textit{Typical Output Characteristics} graph in the datasheet. Using the maximum output current specification it is possible to estimate the minimum drain-source voltage $V_{DS}$ to keep the MOSFET in saturation at the given maximum output current. This again narrows down the list of candidates.
 
-The final aspect is the capacitive nature of the MOSFET gate. This property was brushed in appendix \ref{sec:mosfet_noise} and the parasitic capacitances can be found in figure \ref{fig:mosfet_parasitic_capacitors}. The \device{AD797} can drive fairly large capacitive loads and several hundred \unit{\pF} are possible. It is best to keep the input capacitance $C_{iss}$ below \qty{500}{\pF}. Do remember the output impedance of the \device{AD797}, is about \qty{10}{\ohm} at \qty{1}{\MHz} and rising by an order of magnitude at \qty{10}{\MHz}. The \qty{500}{\pF} results in an impedance of around \qty{300}{\ohm} dropping by an order of magnitude at \qty{10}{\MHz}, so keeping capacitance low, allows for a higher bandwidth of the current source.
+The final aspect is the capacitive nature of the MOSFET gate. This property was brushed in appendix \ref{sec:mosfet_noise} and the parasitic capacitances can be found in figure \ref{fig:mosfet_parasitic_capacitors}. The \device{AD797} can drive fairly large capacitive loads and several hundred \unit{\pF} are possible. It is best to keep the input capacitance $C_{iss}$ below \qty{500}{\pF}. The output impedance of the \device{AD797}, is about \qty{10}{\ohm} at \qty{1}{\MHz} and rising by an order of magnitude at \qty{10}{\MHz}. \qty{500}{\pF} results in an impedance of around \qty{300}{\ohm} dropping by an order of magnitude at \qty{10}{\MHz}, so keeping the capacitance low, allows for a higher bandwidth of the current source.
 
 Using these guidelines, searching a MOSFET across a lot of manufactures can still be tedious, but, for example, the distributor Digikey allows filtering and sorting by voltage and input capacitance. The following MOSFETs in table are given as an example and can be chosen for their respective current ranges.
-
 \begin{table}[ht]
     \centering
     \begin{tabular}{llll}
@@ -2024,11 +2032,11 @@ Using these guidelines, searching a MOSFET across a lot of manufactures can stil
 
 The current range of the MOSFETs in table \ref{tab:example_mosfet_selection} is given based on the datasheet, making sure, that the MOSFET can be biased into saturation for the estimated minimum $V_{DS}$ according to \ref{eqn:minimum_mosfet_vds}. The \device{IRF9Z10} is a lower voltage version of the \device{IRF9Z14} and the \device{IRF9Z14} should be preferred if available. Those MOSFETs starting with \textit{IRF} are all HEXFETs formerly made by International Rectifier, whose MOSFET business was bought by Vishay in 2007.
 
-To summarize the component selection. The ADI \device{AD797} op-amp is a highly recommended choice for being low-low noise with enormous gain, high bandwidth and a strong drive current. The MOSFET to accompany it is the Vishay \device{IRF9Z14} for medium power applications. The reference must be a buried Zener diode and the ADI \device{LM399} or \device{ADR1399} is recommended. Regarding the sense resistors, they must be able to dissipate up to $\qty{500}{\mA} \cdot \qty{7}{\V} = \qty{3.5}{\W}$ with minimal drift, making the Vishay \device{VPR221Z} a very good choice.
+To summarize the component selection. The ADI \device{AD797} op-amp is a superior choice among the op-amps compared and the recommended choice for being low-low noise with enormous gain, high bandwidth and a strong drive current. A MOSFET based based on an older process, to ensure stable performance in saturation, like the Vishay \device{IRF9Z14} is a good choice for medium power applications. The reference of choice is a a buried Zener diode, because of their low noise and high stability. The ADI \device{LM399} or \device{ADR1399} is the most economical choice. Regarding the sense resistor, it must be able to dissipate up to $\qty{500}{\mA} \cdot \qty{7}{\V} = \qty{3.5}{\W}$ with minimal drift, making the Vishay \device{VPR221Z} a very good choice.
 
 \subsection{Current Source Example Parameters}%
 \label{sec:current_source_summary}
-Throughout this section, example calculations are performed to give the reader an idea of real-life parameters that can be applied to the theoretical models. These parameters are summarised in table \ref{tab:current_source_parameters}, including their origin.
+Throughout this section, example calculations are performed to give the reader an idea of real-life parameters that can be applied with the theoretical models. These parameters are summarised in table \ref{tab:current_source_parameters}, including their origin.
 
 \begin{table}[ht]
     \centering
@@ -2040,7 +2048,7 @@ Throughout this section, example calculations are performed to give the reader a
         MOSFET $\kappa$ & \qty[per-mode=power]{0.813}{\ampere \per \square\volt} & \device{IRF9610} SPICE model \cite{irf9610_spice}\\
         MOSFET channel length modulation $\lambda$ & \qty[per-mode=power]{4}{\per \milli \volt} & \device{IRF9610} SPICE model \cite{irf9610_spice}\\
         MOSFET source voltage & \qtyrange{3.5}{4}{\V} & section \ref{sec:component_selection}\\
-        Source/Sense Resistor $R_S$ & \qty{30}{\ohm} or \qty{50}{\ohm} & section \ref{sec:component_selection}\\
+        Source/Sense Resistor $R_s$ & \qty{30}{\ohm} or \qty{50}{\ohm} & section \ref{sec:component_selection}\\
         Op-amp differential input impedance $R_{id}$ & \qty{7.5}{\kilo\ohm} & \device{AD797} \cite{datasheet_AD797}\\
         Op-amp open-loop gain $A_{ol}$ & \qty[per-mode=power]{2}{\volt \per \uV} & \device{AD797} \cite{datasheet_AD797}\\
         Op-amp gain bandwidth product $GBP$ & \qty{10}{\MHz} & \device{AD797} \cite{datasheet_AD797}\\
@@ -2052,45 +2060,47 @@ Throughout this section, example calculations are performed to give the reader a
 
 \subsection{Howland Current Pump}%
 \label{sec:howland_current_source}
-This section will discuss two versions of the popular Howland current source (HCS) \cite{howland_current_source}. Both the traditional Howland current pump and the so-called \textit{improved} Howland current pump, which is similar, but changes some properties for good and bad. They are both bidirectional current sources and can be used for high frequency current modulation or the generation of a precision floating current source. The circuit is shown in figure \ref{fig:howland_current_source}.
+This section will discuss two versions of the popular Howland current source (HCS) \cite{howland_current_source}. Both the traditional Howland current pump and the so-called \textit{improved} Howland current pump which is similar, but changes some of its properties for good and bad. They are both bidirectional current sources and can be used for high frequency current modulation or the generation of a precision floating current source. The Howland current source is most useful for small currents of up to a few \unit{mA}, because its output impedance is limited and mostly depends on the resistors surrounding the op-amp as will be shown below. The design discussed here aims an output current gain of \qty{1}{\mA \per \V}, which has proven useful for diode lasers over time. The full circuit is shown in figure \ref{fig:howland_current_source}. It is shown as the improved Howland current source but can be configured as the classic Howland current source by shorting out $R_{2a}$.
 \begin{figure}[ht]
     \centering
     %\scalebox{0.5}{%
         \import{figures/}{howland_current_source.tex}
     %} % scalebox
-    \caption{The Howland current source. Using $R_{2a} = \qty{0}{\ohm}$ is the classic version, while $R_{2a} \neq \qty{0}{\ohm}$ is the \textit{improved} version. $C_c$ is a compensation capacitor to improve stability.}
+    \caption{The Howland current source. Using $R_{2a} = \qty{0}{\ohm}$ is the classic version, while $R_{2a} \neq \qty{0}{\ohm}$ is the \textit{improved} version. $C_c$ is a compensation capacitor to enhance stability.}
     \label{fig:howland_current_source}
 \end{figure}
 
-As can be seen in figure \ref{fig:howland_current_source}, this type of current source requires a set of either \num{4} or \num{5} resistors depending on the desired configuration as the classic Howland current source does not need $R_{2a}$. The output impedance of the Howland current source is derived in appendix \ref{sec:appendix_howland_current_source} and the result was equation \ref{eqn:appendix_howland_output_impedance_resistors_gain} repeated here,
+As can be seen, these two current sources designs require a set of either \num{4} or \num{5} resistors depending on the desired configuration as the classic Howland current source does not need $R_{2a}$. The output impedance of the Howland current source is derived in appendix \ref{sec:appendix_howland_current_source} and the result is equation \ref{eqn:appendix_howland_output_impedance_resistors_gain} repeated here,
 \begin{equation}
     R_{o,m,A} = \left(\frac{R^2 - R_{2a}^2}{R}\right) \frac{\left(A R + R - \epsilon + 1\right)}{A \left(R + \epsilon - 1\right) + 2 R - 2 \epsilon + 2}\,,\label{eqn:howland_output_impedance_resistors_gain}
 \end{equation}
-where $A$ is the frequency dependent gain of the op-amp as discussed in equation \ref{eqn:op-amp_gain}, $R = R_1 = R_2 = R_3 = R_4$ and $\epsilon$ is the resistor mismatch factor introduced in \ref{eqn:howland_mismatching_factor}. The mismatch factor can be used to make worst-case calculation for a given resistor tolerance $T$ using equation \ref{eqn:howland_current_source_worst_case_mismatch}.
+where $A$ is the frequency dependent gain of the op-amp as discussed in equation \ref{eqn:op-amp_gain}, $R = R_1 = R_2 = R_3 = R_4$ and $\epsilon$ is the resistor mismatch factor introduced in \ref{eqn:howland_mismatching_factor}. The mismatch factor can be applied for worst-case calculations for a given resistor tolerance $T$ using equation \ref{eqn:howland_current_source_worst_case_mismatch}.
 
-Using the formulae above it is possible to calculate the output impedance for a modulation current source for a laser driver. Since the the output impedance of the \textit{improved} Howland current source is worse than that of the classic Howland current source according to equation \ref{eqn:howland_output_impedance_resistors_gain}, the discussion will start here. The past has shown, that an input sensitivity of \qty{1}{\mA \per \V} is a reasonable choice, giving enough headroom to steer the laser and apply a modulation. The resistor value can be calculated from the input sensitivity to be \qty{1}{\kilo\ohm}. To reduce manual labor it is recommended to use an array of \num{4} matched resistors like the Vishay \device{MORN} \cite{datasheet_MORN} or the ADI \device{LT5400} \cite{datasheet_LT5400}, both quad resistor arrays offering a ratio matching between \qty{0.5}{\percent} and \qty{0.01}{\percent}. Commonly available is the \device{MORN} array with \qty{0.05}{\percent} tolerance and the \device{LT5400} with \qty{0.01}{\percent} tolerance and even \qty{0.005}{\percent} between direct neighbours. For such arrays and an amplifier with $A=\num{e7}$, the worst case output impedance can be calculated
+Using the formula above it is possible to calculate the output impedance for a modulation current source of a laser driver. Since the the output impedance of the \textit{improved} Howland current source is worse than that of the classic Howland current source according to equation \ref{eqn:howland_output_impedance_resistors_gain}, the discussion will start here. The past has shown, that an input sensitivity of \qty{1}{\mA \per \V} is a reasonable choice, giving enough headroom to steer the laser and apply a modulation as mentioned above. The resistor value can be calculated from this input sensitivity to be \qty{1}{\kilo\ohm}. To reduce manual labor it is recommended to use an array of \num{4} matched resistors like the Vishay \device{MORN} \cite{datasheet_MORN} or the ADI \device{LT5400} \cite{datasheet_LT5400}, both quad resistor arrays offering a ratio matching between \qty{0.5}{\percent} and \qty{0.01}{\percent}. Commonly available is the \device{MORN} array with \qty{0.05}{\percent} tolerance and the \device{LT5400} with \qty{0.01}{\percent} tolerance and even \qty{0.005}{\percent} between neighbouring resistor pairs. For such arrays and an amplifier with $A=\num{e7}$, the worst case output impedance can be calculated as
 \begin{align*}
-    R_{out}(R=\qty{1}{\kilo\ohm}, T=\qty{0.05}{\percent}) &\approx \qty{499}{\kilo\ohm} & R_{out}(R=\qty{1}{\kilo\ohm}, T=\qty{0.01}{\percent}) &\approx \qty{2.5}{\mega\ohm}
+    R_{out}(R=\qty{1}{\kilo\ohm}, T=\qty{0.05}{\percent}) &\approx \qty{499}{\kilo\ohm} & R_{out}(R=\qty{1}{\kilo\ohm}, T=\qty{0.01}{\percent}) &\approx \qty{2.5}{\mega\ohm} \,.
 \end{align*}
 
-$R_{out}$ is proportional to $\frac{1}{T}$, since the amplifier gain is very high and the tolerances are small, so the Taylor expansion shown above is valid. The upper limit imposed by the op-amp gain can be calculated according to equation \ref{eqn:howland_output_impedance_loop_gain}
+$R_{out}$ is proportional to $\frac{1}{T}$, since the amplifier gain is very high and the tolerances are small. The upper limit imposed by the op-amp gain can be calculated according to equation \ref{eqn:howland_output_impedance_loop_gain} as
 \begin{equation*}
-    R_{out, max} (A=\qty{10}{\V}{\uV}) \approx \qty{2.5}{\giga\ohm}\,.
+    R_{out, max} (A=\qty{10}{\V \per \uV}) \approx \qty{2.5}{\giga\ohm}\,.
 \end{equation*}
 
-Comparing these values with the requirements from specification \ref{lst:dgDrive_specs_electrical}, \qty{\geq 7.5}{\mega \ohm}, it is clear that the Howland current source can meet them, but not without extra trimming or a tighter matched resistor array (T \{qty{0.01}{\percent}) which is hard to come by and expensive. In order to get a better understanding of the output impedance and to show the effect of different tolerances, a Monte Carlo simulation was conducted. The parameters assumed a Gaussian distribution of the resistor values with $3 \sigma = T$ due to the tolerance. The Monte Carlo simulation was then run \num{e5} times and the output impedance was extracted for each run. Finally, the absolute value (there are positive and negative values, see below) was binned into \num{100} bins of \qty{500}{\kilo\ohm} width and plotted as a histogram. The LTSpice simulation file can be found at \external{source/spice/howland\_current\_source\_ideal.asc} and the result, limited to bin values $\qty{\leq 50}{\mega\ohm}$ for better readability, is shown in figure \ref{fig:ltpsice_howland_mc_output_impedance}.
+Comparing these values with the requirements from specification \ref{lst:dgDrive_specs_electrical}, $R_{out} \qty{\geq 7.5}{\mega \ohm}$, it is clear that the Howland current source can meet them, but not without extra trimming or a tighter matched resistor array (T \qty{<= 0.01}{\percent}) which is hard to come by and expensive. In order to get a better understanding of the output impedance and to show the effect of different tolerances, a Monte Carlo simulation was conducted. The parameters assumed a Gaussian distribution of the resistor values with $3 \sigma = T$ due to the tolerance. The Monte Carlo simulation was then run \num{e5} times and the output impedance was extracted for each run. Finally, the absolute value (there are positive and negative values, see below) was binned into \num{100} bins of \qty{500}{\kilo\ohm} width and plotted as a histogram.
+
+The LTSpice simulation file can be found at \external{source/spice/howland\_current\_source\_ideal.asc} and the result, limited to bin values $\qty{\leq 50}{\mega\ohm}$ for better readability, is shown in figure \ref{fig:ltpsice_howland_mc_output_impedance}.
 \begin{figure}[ht]
     \centering
-    \input{images/ltspice_howland_mc_output_impedance.pgf}
-    \caption{Histogram of Monte Carlo simulations of the output impedance for the classic Howland current source with different resistor tolerances, assuming $A = \infty$, $3 \sigma = T$, $R=\qty{1}{\kilo\ohm}$. The improved Howland current sources uses $R = \qty{10}{\kilo\ohm}$ and $R_{2b} = \qty{1}{\kilo\ohm}$. The number of simulation runs was \num{e5}.}
+    \input{images/ltspice_howland_mc_output_impedance.pgf}% data/plot_ltspice_monte-carlo.py
+    \caption{Histogram of the Monte Carlo simulations of the output impedance for the classic Howland current source with different resistor tolerances, assuming $A = \infty$, $3 \sigma = T$, $R=\qty{1}{\kilo\ohm}$. The improved Howland current sources uses $R = \qty{10}{\kilo\ohm}$ and $R_{2b} = \qty{1}{\kilo\ohm}$. The number of simulation runs was \num{e5}.}
     \label{fig:ltpsice_howland_mc_output_impedance}
 \end{figure}
 
 Figure \ref{fig:ltpsice_howland_mc_output_impedance} gives a more complete picture of the expected output impedance distribution when implementing an (improved) Howland current source without trimming. Do note, that figure \ref{fig:ltpsice_howland_mc_output_impedance} only shows the absolute value of the output impedance. The impedance can be either positive or negative, depending on the resistor ratios. The probability is evenly distributed between negative and positive impedance, producing a left-handed negative copy of the plot in figure \ref{fig:ltpsice_howland_mc_output_impedance}. For the purpose of improving readability of the plot, only the absolute value is plotted. A negative impedance means, that with increasing load voltage, the output current increases as well. For the purpose of of driving laser diodes, this distinction is irrelevant as the output impedance mostly determines the noise immunity.
 
-First, regarding the basic Howland current source, using \qty{0.05}{\percent} tolerance resistors the lower limit of \qty{500}{\kilo\ohm} can be easily identified as the leftmost bin of the histogram, that contains a non-zero number of counts. The maximum probability is reached with around \qty{2}{\mega\ohm}. Integrating over the probability density of the values gives a \qty{31.5}{\percent} probability to end up with an output impedance of at least \qty{7.5}{\mega\ohm}. This is not nearly enough to meet the specif action. Going to \qty{0.01}{\percent} tolerance resistors, the lower limit of \qty{2.5}{\mega\ohm} can again be identified by the absence of counts in the lower bins. The maximum probability is around \qtyrange{10}{20}{\mega\ohm} and the chance of getting an output impedance of more than targeted \qty{7.5}{\mega\ohm} is \qty{95.6}{\percent}, a number far closer to the desired $3\sigma$ value (\qty{99.7}{\percent}) and can be considered acceptable.
+First, the basic Howland current source is discussed. Using \qty{0.05}{\percent} tolerance resistors the lower limit of \qty{500}{\kilo\ohm} can be easily identified as the leftmost bin of the histogram, that contains a non-zero number of counts. The maximum probability is reached at around \qty{2}{\mega\ohm}. Integrating over the probability density of the values gives a \qty{31.5}{\percent} probability to end up with an output impedance of at least \qty{7.5}{\mega\ohm}. This is not nearly enough to meet the specificaction. Going to \qty{0.01}{\percent} tolerance resistors, the lower limit of \qty{2.5}{\mega\ohm} can again be identified by the absence of counts in the lower bins. The maximum probability is around \qtyrange{10}{20}{\mega\ohm} and the chance of getting an output impedance of more than the targeted \qty{7.5}{\mega\ohm} is \qty{95.6}{\percent}, a number far closer to the desired $3\sigma$ value (\qty{99.7}{\percent}) and can be considered acceptable given the high cost of acquiring a resistor array with better specifications.
 
-The improved Howland current source was simulated with $R=\qty{10}{\kilo\ohm}$ and $R_{2b} = \qty{1}{\kilo\ohm}$. It is therefore expected that according to equation \ref{eqn:improved_howland_output_impedance_equal_resistors} the minimum output impedance is about a factor of two higher than compared to the basic Howland current source. Looking at figure \ref{fig:ltpsice_howland_mc_output_impedance}, this assumption holds. For a resistor tolerance of $T=\qty{0.05}{\percent}$, the minimum bin is \qty{1.5}{\mega\ohm}, with the maximum probability at \qty{4.5}{\mega\ohm}. The probability of getting a more than \qty{7.5}{\mega\ohm} is \qty{79.7}{\percent}, which is quite an improvement over the \qty{31.5}{\percent} of the basic current source, but still not usable. Using $T=\qty{0.01}{\percent}$ resistors, the improved Howland current source has a minimum impedance of \qty{8.5}{\mega\ohm}, which is sufficient to meet the requirements and the maximum is between \qty{20}{\giga\ohm} and \qty{30}{\giga\ohm}. The results are summarised again in table \ref{tab:howland_current_source_summary}.
+The improved Howland current source was simulated with $R=\qty{10}{\kilo\ohm}$ and $R_{2b} = \qty{1}{\kilo\ohm}$. It is therefore expected that according to equation \ref{eqn:improved_howland_output_impedance_equal_resistors} the minimum output impedance is about a factor of two higher than compared to the basic Howland current source. Looking at figure \ref{fig:ltpsice_howland_mc_output_impedance}, this assumption holds. For a resistor tolerance of $T=\qty{0.05}{\percent}$, the minimum bin is \qty{1.5}{\mega\ohm}, with the maximum probability at \qty{4.5}{\mega\ohm}. The chance of having a output impedance of more than \qty{7.5}{\mega\ohm} is \qty{79.7}{\percent}, which is quite an improvement over the \qty{31.5}{\percent} of the basic current source, but still not usable. Using $T=\qty{0.01}{\percent}$ resistors, the improved Howland current source has a minimum impedance of \qty{8.5}{\mega\ohm}, which is sufficient to meet the requirements and the maximum is between \qty{20}{\giga\ohm} and \qty{30}{\giga\ohm}. The results are summarised again in table \ref{tab:howland_current_source_summary}.
 \begin{table}[hb]
     \centering
     \begin{tabular}{lccc}
@@ -2107,7 +2117,7 @@ The improved Howland current source was simulated with $R=\qty{10}{\kilo\ohm}$ a
     \label{tab:howland_current_source_summary}
 \end{table}
 
-In comparison to the FET based precision current source, for which an output impedance of \qty{40}{\giga\ohm} was calculated in equation \ref{eqn:current_source_output_impedance}, the Howland current source is the weak spot, when both are combined. To improve this situation the resistors can either to be trimmed or a JFET or MOSFET cascode can be added to improve the output impedance. Do note a cascode is not bidirectional though. Several trimming options were discussed by \citeauthor{howland_pease} \cite{howland_pease}, but trimming at this level will prove difficult. The desired trim for $R=\qty{1}{\kilo\ohm}$ can be calculated as
+In comparison to the MOSFET based precision current source, for which an output impedance of \qty{40}{\giga\ohm} was calculated in equation \ref{eqn:current_source_output_impedance}, the Howland current source is the weak link, when both are combined in a laser driver. To improve this situation the resistors can either to be trimmed or a JFET or MOSFET cascode can be added to improve the output impedance. Do note a cascode is not bidirectional though. Several trimming options were discussed by \citeauthor{howland_pease} \cite{howland_pease}, but trimming at this level will prove difficult. The desired trim for the classic Howland current source and $R=\qty{1}{\kilo\ohm}$ can be calculated as
 \begin{align*}
     R_{out} &\approx \frac{R}{\epsilon} \approx \frac{R}{4T} \geq \qty{7.5}{\mega\ohm}\\
     \Rightarrow T &\approx \qty{33}{\micro\ohm \per\ohm}\,.
@@ -2132,7 +2142,7 @@ The problem of a limited choice of resistor values as arrays or integrated resis
 
 By adding another op-amp $R_2a$ is now connected to a low impedance node, just like in case of the basic Howland current source. This leads to the same formulae regarding the output impedance and the compliance voltage as the improved HCS, but removes the matching requirement of $R_2a$ and $R_2b$. The full derivation can be found in the Python notebook at \external{data/simulations/howland\_current\_source.ipynb} as part of the online supplemental material \cite{supplemental_material}.
 
-With the buffered HCS it is now possible to use either \num{4} matched resistors or a difference amplifier with integrated resistors. The single resistor $R_5$ is used to set the output current and can be chosen independently to result in
+With the buffered HCS it is possible to use either \num{4} matched resistors or a difference amplifier with integrated resistors. The single resistor $R_5$ is used to set the output current and can be chosen independently to result in
 \begin{equation}
     I_{out} = \frac{V_{in}}{R_5}\,.
 \end{equation}

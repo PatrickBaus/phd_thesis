@@ -30,9 +30,9 @@
                 (in+) to[nI, *-, l_=$i_{n,p}$] ++(0,-2) node[ground]{}
                 (Ibias) -- ++(1.5,0) -- ++(0,0.5) node[npn, anchor=E, xscale=-1](Qinv){} (Qinv.B) -- ++(0.5,0) coordinate(in-) to[short, -o] ++(0.5,0) node[right]{In-}
                 (in-) to[nI, *-, l=$i_{n,n}$] ++(0,-2) node[ground]{}
-                (Qni.C) to[R, l=$R_C$] ++(0,2) coordinate(Rc+) to[short, *-o] ++(0.5,0) coordinate(Vout+)
+                (Qni.C) to[R, l=$R_c$] ++(0,2) coordinate(Rc+) to[short, *-o] ++(0.5,0) coordinate(Vout+)
                 (Rc+) -- ++(0,0.5) -- ++(1.5,0) to[short, *-] ++ (0,0.5) node[vcc]{$V_{CC}$}
-                (Qinv.C) to[R, l=$R_C$] ++(0,2) coordinate(Rc-) to[short, *-o] ++(-0.5,0) to[open, v<=$V_{out}$] (Vout+)
+                (Qinv.C) to[R, l=$R_c$] ++(0,2) coordinate(Rc-) to[short, *-o] ++(-0.5,0) to[open, v<=$V_{out}$] (Vout+)
                 (Rc-) -- ++(0,0.5) -- ++(-1.5,0)
             ;
         \end{scope}

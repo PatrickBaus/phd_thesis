@@ -33,9 +33,9 @@
                 -- ++(-0.5,0) to[voltage source, l_=$v_{i}$] ++(0,-5) node[ground]{}
                 (gate) to[R, *-*, l=$\frac{1}{g_m}$, v=$v_{GS}$, i>^=$i$] ++(0,-2) coordinate(drain)
                 to[short, -o] ++(0,-1) node[right]{Source}
-                to [R, l=$R_S$] ++(0,-2) node[ground]{}
+                to [R, l=$R_s$] ++(0,-2) node[ground]{}
                 (s) -- ++(2,0) coordinate(ro) to[R, l=$R_o$] (ro |- drain) -- (drain)
-                (0,0) -- ++(3.5, 0) to[R, -, l=$R_{{load}}$] ++(0,-2) node[ground]{}
+                (0,0) -- ++(3.5, 0) to[R, -, l=$R_{load}$] ++(0,-2) node[ground]{}
             ;
         \end{scope}
     \end{circuitikz}
