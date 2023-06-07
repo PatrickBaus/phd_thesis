@@ -30,7 +30,7 @@
         %\draw[help lines] (0,-8) grid (30,0);
         \begin{pgfonlayer}{foreground}
             \draw
-                (0,0) node[ground]{} to[R, a^=$R_3$, i=$I_3$] ++(3,0) coordinate(inv) to[R, *-, a^=$R_4$, i<=$I_4$] ++ (3,0) -- ++(1,0) -- ++(0,-3) coordinate(out) to[short, *-] ++(-1,0) node[op amp, anchor=out] (opamp) {U1}%
+                (0,0) node[ground]{} to[R, a^=$R_3$, i=$I_3$] ++(3,0) coordinate(inv) to[R, *-, a^=$R_4$, i<=$I_4$] ++ (3,0) -- ++(1,0) -- ++(0,-3) coordinate(out) to[short, *-] ++(-1,0) node[op amp, anchor=out] (opamp) {$U_1$}%
                 node[above]{$V_o$} (opamp.-) -| (inv)%
                 (opamp.-) node[above]{$V_-$}
                 (inv) -- ++(0,1.5) to [C, a^=$C_c$] ++(3,0) to[short, -*] ++(0,-1.5)%

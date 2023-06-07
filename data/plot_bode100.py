@@ -350,69 +350,6 @@ if __name__ == "__main__":
       ],
     },
     {
-      'title': 'Supply Filter Transfer function',
-      'title': None,
-      'show': True,
-      "output_file": {
-          "fname": "../images/dgDrive_supply_filter_bode.pgf"
-      },
-      "legend_position": "lower left",
-      'primary_axis': {
-        "axis_settings": {
-          'x_label': r"Frequency in \unit{\Hz}",
-          'y_label': r"Magnitude in \unit{\dB}",
-          "invert_x": False,
-          "invert_y": False,
-          #"fixed_order": 9,
-          #"y_scale": "lin",
-          "x_scale": "log",
-        },
-        'x-axis': "frequency",
-        'plot_type': 'absolute',  # absolute, relative, proportional
-        'columns_to_plot': {
-            "magnitude": {
-                "label": "LC Filter",
-                "color": colors[1],
-            },
-            "lc_filter": {
-                "label": "Simulation",
-                "color": colors[0],
-            },
-        },
-      },
-      'files': [
-        {
-          'filename': 'DgDrive PSRR_take2_2023-02-18T01_12_08.csv',
-          'show': True,
-          'parser': 'bode100',
-          'options': {
-            "trace": 1,
-            "columns": {
-                0: "frequency",
-                1: "magnitude",
-            },
-            "scaling": {
-              "magnitude": lambda x : x["magnitude"]-40,
-            },
-          },
-        },
-        {
-          'filename': 'input_filter_dgdrive.csv',
-          'show': True,
-          'parser': 'ltspice_fets',
-          'options': {
-            "columns": {
-                0: "frequency",
-                1: "lc_filter"
-            },
-            "scaling": {
-              'lc_filter': lambda x : x["lc_filter"][(x["frequency"] >= 100) & (x["frequency"] <= 1e6)],
-            },
-          },
-        },
-      ],
-    },
-{
       'title': 'Line injector Transfer function',
       'title': None,
       'show': True,

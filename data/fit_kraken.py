@@ -6,25 +6,43 @@ import matplotlib.legend
 import matplotlib.mlab as mlab
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 import pandas as pd
 from matplotlib.ticker import ScalarFormatter
 from scipy.optimize import curve_fit
 from scipy.stats.distributions import t
 from si_prefix import si_format
+import seaborn as sns
 
 pd.plotting.register_matplotlib_converters()
 
 from file_parser import parse_file
 
+colors = sns.color_palette("colorblind")
+
 # Use these settings for the PhD thesis
-plt.rcParams.update(
-    {
-        "font.family": "serif",  # use serif/main font for text elements
-        "text.usetex": True,  # use inline math for ticks
-        "pgf.rcfonts": False,  # don't setup fonts from rc parameters
-    }
-)
-plt.style.use("tableau-colorblind10")
+tex_fonts = {
+    "text.usetex": True,  # Use LaTeX to write all text
+    "font.family": "serif",
+    # Use 10pt font in plots, to match 10pt font in document
+    "axes.labelsize": 10,
+    "font.size": 10,
+    # Make the legend/label fonts a little smaller
+    "legend.fontsize": 8,
+    "xtick.labelsize": 8,
+    "ytick.labelsize": 8,
+    "pgf.rcfonts": False,     # don't setup fonts from rc parameters
+    "text.latex.preamble": "\n".join([ # plots will use this preamble
+        r"\usepackage{siunitx}",
+    ]),
+    #"pgf.texsystem": "lualatex",
+    "pgf.preamble": "\n".join([ # plots will use this preamble
+        r"\usepackage{siunitx}",
+    ]),
+    "savefig.directory": os.path.dirname(os.path.realpath(__file__)),
+}
+plt.rcParams.update(tex_fonts)
+plt.style.use('tableau-colorblind10')
 # end of settings
 
 
@@ -46,7 +64,7 @@ def fit_exponential_decay(x_data, y_data, initial_theta):
         t,
         y_data.values,
         p0=[initial_start, 1e3, initial_t0, initial_offset],
-        # bounds=([-np.inf, -np.inf, 0, 0, 0], np.inf),
+        bounds=([-np.inf, -np.inf, 0, 0], np.inf),
     )
 
 
@@ -118,27 +136,50 @@ def crop_data(data, zoom_date=None, crop_secondary=None):
     )
 
 
-def prepare_axis(ax, label, color_map=None, fixed_order=None):
-    if fixed_order is not None:
-        ax.yaxis.set_major_formatter(FixedOrderFormatter(fixed_order, useOffset=True))
-    else:
-        ax.yaxis.get_major_formatter().set_useOffset(False)
+def prepare_axis(ax, axis_settings):
+  if axis_settings.get("fixed_order") is not None:
+    ax.yaxis.set_major_formatter(FixedOrderFormatter(axis_settings["fixed_order"], useOffset=True))
+  else:
+    ax.yaxis.get_major_formatter().set_useOffset(False)
 
-    if color_map is not None:
-        ax.set_prop_cycle("color", color_map)
+  if axis_settings.get("y_scale") == "log":
+    ax.set_yscale('log')
+  if axis_settings.get("x_scale") == "log":
+    ax.set_xscale('log')
+  if axis_settings.get("x_scale") == "time":
+      ax.xaxis.set_major_locator(matplotlib.dates.AutoDateLocator())
+      #ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter("%m-%d %H:%M"))
+      ax.xaxis.set_major_formatter(matplotlib.dates.ConciseDateFormatter(ax.xaxis.get_major_locator()))
+  if axis_settings.get("invert_y"):
+    ax.invert_yaxis()
+  if axis_settings.get("invert_x"):
+    ax.invert_xaxis()
 
-    ax.set_ylabel(label)
+  if axis_settings.get("limits_y"):
+    ax.set_ylim(*axis_settings.get("limits_y"))
+
+  if axis_settings.get("show_grid", True):
+    ax.grid(True, which="minor", ls="-", color='0.85')
+    ax.grid(True, which="major", ls="-", color='0.45')
+  else:
+    ax.grid(False, which="both")
+
+  ax.set_ylabel(axis_settings["y_label"])
+  if axis_settings.get("x_label") is not None:
+    ax.set_xlabel(axis_settings["x_label"])
 
 
-def plot_data(ax, data, column, labels, linewidth):
-    ax.plot(
-        data.date,
-        data[column],
-        marker="",
-        label=labels[column],
-        alpha=0.7,
-        linewidth=linewidth,
-    )
+def plot_data(ax, data, x_axis, column_settings):
+    for column, settings in column_settings.items():
+      if column in data:
+          x_data, y_data = data[x_axis], data[column]
+          ax.plot(
+              x_data,
+              y_data,
+              marker="",
+              alpha=0.7,
+              **settings
+          )
 
 
 def plot_series(plot):
@@ -151,8 +192,8 @@ def plot_series(plot):
     if plot.get("secondary_axis", {}).get("show", True):
         data.dropna(
             subset=[
-                plot["primary_axis"]["columns_to_plot"][0],
-                plot["secondary_axis"]["columns_to_plot"][0],
+                list(plot["primary_axis"]["columns_to_plot"])[0],
+                list(plot["secondary_axis"]["columns_to_plot"])[0],
             ],
             inplace=True,
         )  # It is ok to drop a few values
@@ -169,57 +210,33 @@ def plot_series(plot):
         plot_settings = plot["primary_axis"]
 
         ax1 = plt.subplot(111)
-        prepare_axis(
-            ax=ax1,
-            fixed_order=plot_settings["axis_fixed_order"],
-            label=plot_settings["label"],
-            color_map=plt.cm.tab10.colors,
-        )
+        prepare_axis(ax=ax1, axis_settings=plot_settings["axis_settings"])
 
         # Reset the time axis to 0 at the unit step
         step_index = data[
-            data[plot_settings["columns_to_plot"][0]]
-            != data[plot_settings["columns_to_plot"][0]].shift()
+            data[list(plot_settings["columns_to_plot"])[0]]
+            != data[list(plot_settings["columns_to_plot"])[0]].shift()
         ].index[1]
         data.date = (data.date - data.date[step_index]).dt.total_seconds()
 
         plot_data(
             ax1,
             data,
-            plot_settings["columns_to_plot"][0],
-            plot_settings["labels"],
-            linewidth=0.5,
+            plot_settings["x-axis"],
+            plot_settings["columns_to_plot"],
         )
         lines, labels = ax1.get_legend_handles_labels()
 
         if plot.get("secondary_axis", {}).get("show", True):
             ax2 = ax1.twinx()
             plot_settings2 = plot["secondary_axis"]
-            prepare_axis(
-                ax=ax2,
-                fixed_order=plot_settings2.get("axis_fixed_order"),
-                label=plot_settings2["label"],
-                color_map=[
-                    "firebrick",
-                    "green",
-                ],
-            )
-            plot_data(
-                ax2,
-                data,
-                plot_settings2["columns_to_plot"][0],
-                plot_settings2["labels"],
-                linewidth=0.5,
-            )
-            lines2, labels2 = ax2.get_legend_handles_labels()
-            lines += lines2
-            labels += labels2
+            prepare_axis(ax=ax2, axis_settings=plot_settings2["axis_settings"])
 
             # We need a initial guess of the dead time
             # We assume it is 0
             params, pcov = fit_exponential_decay(
                 pd.to_numeric(data.date),
-                data[plot_settings2["columns_to_plot"][0]],
+                data[list(plot_settings2["columns_to_plot"])[0]],
                 initial_theta=0,
             )
             # Calculate the uncertainty (95%) of the constants
@@ -230,57 +247,69 @@ def plot_series(plot):
             # student-t value for the dof and confidence level
             tval = t.ppf(1.0 - alpha / 2.0, dof)
             sigma_squared = np.diag(pcov)
-            output_step = max(data[plot_settings["columns_to_plot"][0]]) - min(
-                data[plot_settings["columns_to_plot"][0]]
+            output_step = max(data[list(plot_settings["columns_to_plot"])[0]]) - min(
+                data[list(plot_settings["columns_to_plot"])[0]]
             )
             system_step = params[0]
             K = system_step / output_step
             T = params[1]
             tau = params[2]
             print(
-                f"Normalized step K: {system_step} K / {output_step} bit ({K} ± {sigma_squared[0]**0.5*tval/output_step}) K/bit"
+                f"    Normalized step K: {system_step} K / {output_step} bit ({K} ± {sigma_squared[0]**0.5*tval/output_step}) K/bit"
             )
-            print(f"Decay time T ({T} ± {sigma_squared[1]**0.5*tval}) s")
-            print(f"Dead time τ: ({tau} ± {sigma_squared[2]**0.5*tval}) s")
+            print(f"    Decay time T ({T} ± {sigma_squared[1]**0.5*tval}) s")
+            print(f"    Dead time τ: ({tau} ± {sigma_squared[2]**0.5*tval}) s")
             print(
-                f"PI parameters (Ziegler–Nichols): Kp={0.9*T/(K*tau)} bit/K, Ki={0.3*T/(K*tau**2)} bit/(Ks)"
-            )
-            print(
-                f"PI parameters (SIMC): Kp={T/(2*K*tau)} bit/K, Ki={T/(2*K*tau)/np.minimum(T, 8*tau)} bit/(Ks)"
+                f"    PI parameters (Ziegler–Nichols): Kp={0.9*T/(K*tau)} bit/K, Ki={0.3*T/(K*tau**2)} bit/(Ks)"
             )
             print(
-                f"PI parameters (Feedback Systems): Kp={(0.15*tau+0.35*T)/(K*tau)} bit/K, Ki={(0.46*tau+0.02*T)/(K*tau**2)} bit/(Ks)"
+                f"    PI parameters (SIMC): Kp={T/(2*K*tau)} bit/K, Ki={T/(2*K*tau)/np.minimum(T, 8*tau)} bit/(Ks)"
+            )
+            print(
+                f"    PI parameters (Feedback Systems): Kp={(0.15*tau+0.35*T)/(K*tau)} bit/K, Ki={(0.46*tau+0.02*T)/(K*tau**2)} bit/(Ks)"
             )
             k_amigo = 0.15/K + (0.35-(tau*T)/(tau+T)**2)*T/(K*tau)
             print(
-                f"PI parameters (AMIGO): Kp={k_amigo} bit/K, Ki={k_amigo/(0.35*tau+13*tau*T**2/(T**2+12*tau*T+7*tau**2))} bit/(Ks)"
+                f"    PI parameters (AMIGO): Kp={k_amigo} bit/K, Ki={k_amigo/(0.35*tau+13*tau*T**2/(T**2+12*tau*T+7*tau**2))} bit/(Ks)"
             )
             print(
-                f"PI parameters (APQ): Kp={(0.15*tau+0.35*T)/(K*tau)/6:.2f} bit/K, Ki={(0.46*tau+0.02*T)/(K*tau**2)/4:.2f} bit/(Ks)"
+                f"    PI parameters (APQ): Kp={(0.15*tau+0.35*T)/(K*tau)/6:.2f} bit/K, Ki={(0.46*tau+0.02*T)/(K*tau**2)/4:.2f} bit/(Ks)"
             )
-            print(f"PID setpoint: {system_step+params[3]:.1f} °C")
+            print(f"    PID setpoint: {system_step+params[3]:.1f} °C")
             data["fit"] = exponential_decay(pd.to_numeric(data.date.values), *params)
-            plot_data(ax2, data, "fit", plot_settings2["labels"], linewidth=2)
+
+            plot_data(
+                ax2,
+                data,
+                plot_settings["x-axis"],
+                plot_settings2["columns_to_plot"],
+            )
+            lines2, labels2 = ax2.get_legend_handles_labels()
+            lines += lines2
+            labels += labels2
 
         # ax1.set_ylabel(plot_settings['label'])
         # ax1.xaxis.set_major_formatter(matplotlib.dates.DateFormatter("%m-%d %H:%M"))
         # ax1.xaxis.set_major_formatter(matplotlib.dates.DateFormatter("%H:%M"))
-        ax1.set_xlabel("Time in seconds")
+        ax1.set_xlabel(r"Time in \unit{\second}")
 
-        plt.legend(lines, labels, loc="upper right")
+        plt.legend(lines, labels, loc="best")
 
     fig = plt.gcf()
     #  fig.set_size_inches(11.69,8.27)   # A4 in inch
     #  fig.set_size_inches(128/25.4 * 2.7 * 0.8, 96/25.4 * 1.5 * 0.8)  # Latex Beamer size 128 mm by 96 mm
-    fig.set_size_inches(
-        418.25555 / 72.27 * 0.9, 418.25555 / 72.27 * (5**0.5 - 1) / 2 * 0.9
-    )  # TU thesis
+    phi = (5**.5-1) / 2  # golden ratio
+    fig.set_size_inches(441.01773 / 72.27 * 0.9, 441.01773 / 72.27 * 0.9 * phi)  # TU thesis
     if plot.get("title") is not None:
         plt.suptitle(plot["title"], fontsize=16)
 
     plt.tight_layout()
     if plot.get("title") is not None:
         plt.subplots_adjust(top=0.88)
+
+    if plot.get("output_file"):
+        print(f"    Saving image to '{plot['output_file']['fname']}'")
+        plt.savefig(**plot["output_file"])
     plt.show()
 
 
@@ -294,10 +323,10 @@ if __name__ == "__main__":
             "zoom": [
                 "2022-09-13 03:30:00",
                 "2025-09-13 04:30:00",
-            ],  # This range start reasonably flat
+            ],  # This range starts reasonably flat
             "crop_secondary_to_primary": False,
             "primary_axis": {
-                "label": "DAC outpt in bit",
+                "label": r"DAC outpt in \unit{\bit}",
                 "axis_fixed_order": 0,
                 "columns_to_plot": [
                     "output",
@@ -313,7 +342,7 @@ if __name__ == "__main__":
             },
             "secondary_axis": {
                 "show": True,
-                "label": "Temperature in °C",
+                "label": r"Temperature in \unit{\celsius}",
                 "plot_type": "absolute",
                 "unit": "°C",
                 "columns_to_plot": ["temperature"],
@@ -343,8 +372,8 @@ if __name__ == "__main__":
         {
             "title": "011 Neon Lab (Front)",
             "title": None,
-            "show": True,
-            #'zoom': ['2022-09-13 03:30:00', '2025-09-13 04:30:00'],  # This range start reasonably flat
+            "show": False,
+            #'zoom': ['2022-09-13 03:30:00', '2025-09-13 04:30:00'],  # This range starts reasonably flat
             "crop_secondary_to_primary": False,
             "primary_axis": {
                 "label": "DAC outpt in bit",
@@ -393,36 +422,67 @@ if __name__ == "__main__":
         {
             "title": "011 Neon Lab (Back)",
             "title": None,
-            "show": False,
+            "show": True,
+            "output_file": {
+                "fname": "../images/pid_parameter_fit.pgf"
+            },
             "zoom": [
                 "2022-09-13 03:30:00",
                 "2022-09-22 07:20:00",
-            ],  # This range start reasonably flat
+            ],  # This range starts reasonably flat
             "crop_secondary_to_primary": False,
             "primary_axis": {
-                "label": "DAC outpt in bit",
+                "axis_settings": {
+                    'x_label': r"Time in \unit{\s}",
+                    'y_label': r"DAC outpt in \unit{\bit}",
+                    "invert_x": False,
+                    "invert_y": False,
+                    "x_scale": "lin",
+                    "y_scale": "lin",
+                },
+                "x-axis": "date",
+                "label": r"DAC outpt in \unit{\bit}",
                 "axis_fixed_order": 0,
-                "columns_to_plot": [
-                    "output",
-                ],
+                "columns_to_plot": {
+                    "output": {
+                        "label": "DAC output",
+                        "color": colors[4],
+                        "linewidth": 2.5,
+                    },
+                },
                 "filter": None,
                 # filter_savgol(window_length=101, polyorder=3),
-                "labels": {
-                    "output": "DAC output",
-                },
                 "options": {
                     "show_filtered_only": False,
                 },
             },
             "secondary_axis": {
                 "show": True,
-                "label": "Temperature in °C",
                 "plot_type": "absolute",
-                "unit": "°C",
-                "columns_to_plot": ["temperature_labnode"],
-                #        'filter': filter_savgol(window_length=151, polyorder=3),
+                "axis_settings": {
+                    'x_label': r"Time in \unit{\s}",
+                    'y_label': r"Temperature in \unit{\celsius}",
+                    "invert_x": False,
+                    "invert_y": False,
+                    "x_scale": "lin",
+                    "y_scale": "lin",
+                    "show_grid": False,
+                },
+                "columns_to_plot": {
+                    "temperature_labnode" : {
+                        "label": "Temperature (LabNode)",
+                        "color": colors[0],
+                        "linewidth": 0.5,
+                    },
+                    "fit" : {
+                        "label": "Fit",
+                        "color": colors[1],
+                        "linewidth": 2,
+                    },
+                },
                 "labels": {
                     "temperature_labnode": "Temperature (Labnode)",
+                    "temperature_room": "Temperature (Aircon)",
                     "fit": "Fit",
                 },
                 #        'axis_fixed_order': -6,
@@ -433,11 +493,21 @@ if __name__ == "__main__":
             "files": [
                 {
                     "filename": "data-1663917584771.csv",  # Neon back, 10k/10k resistors
+                    "filename": "data-1683380356796.csv",  # Same as above, but with the null filled using locf()
                     "show": True,
-                    "parser": "timescale_db_3",
-                    "options": {
+                    'parser': 'ltspice_fets',
+                    'options': {
+                        "columns": {
+                            0: "date",
+                            1: "output",
+                            2: "temperature_room",
+                            3: "temperature_labnode",
+                        },
                         "scaling": {
+                            "date": lambda x: pd.to_datetime(x.date, utc=True),
                             "temperature_labnode": lambda x: x["temperature_labnode"]
+                            - 273.15,
+                            "temperature_room": lambda x: x["temperature_room"]
                             - 273.15,
                         },
                     },
@@ -449,7 +519,7 @@ if __name__ == "__main__":
             "title": None,
             "show": False,
             #'zoom': ['2022-09-22 18:30:00', '2022-09-22 20:00:00'],  # Failed attempt
-            #'zoom': ['2022-09-22 18:30:00', '2022-09-22 20:00:00'],  # This range start reasonably flat
+            #'zoom': ['2022-09-22 18:30:00', '2022-09-22 20:00:00'],  # This range starts reasonably flat
             "crop_secondary_to_primary": False,
             "primary_axis": {
                 "label": "DAC outpt in bit",
@@ -515,7 +585,7 @@ if __name__ == "__main__":
             "zoom": [
                 "2022-09-21 02:30:00",
                 "2022-09-21 04:20:00",
-            ],  # This range start reasonably flat
+            ],  # This range starts reasonably flat
             "crop_secondary_to_primary": False,
             "primary_axis": {
                 "label": "DAC outpt in bit",
@@ -569,7 +639,7 @@ if __name__ == "__main__":
             "zoom": [
                 "2021-09-13 03:30:00",
                 "2022-09-21 02:40:00",
-            ],  # This range start reasonably flat
+            ],  # This range starts reasonably flat
             "crop_secondary_to_primary": False,
             "primary_axis": {
                 "label": "DAC outpt in bit",
@@ -623,7 +693,7 @@ if __name__ == "__main__":
             "zoom": [
                 "2021-09-13 03:30:00",
                 "2022-09-22 21:10:00",
-            ],  # This range start reasonably flat
+            ],  # This range starts reasonably flat
             "crop_secondary_to_primary": False,
             "primary_axis": {
                 "label": "DAC outpt in bit",
@@ -711,8 +781,14 @@ if __name__ == "__main__":
                 {
                     "filename": "data-1664095658934.csv",  # ATOMICS back, 10k/10k resistors
                     "show": True,
-                    "parser": "timescale_db_3",
-                    "options": {
+                    'parser': 'ltspice_fets',
+                    'options': {
+                        "columns": {
+                            0: "date",
+                            1: "output",
+                            2: "temperature_room",
+                            3: "temperature_labnode",
+                        },
                         "scaling": {
                             "temperature_labnode": lambda x: x["temperature_labnode"]
                             - 273.15,

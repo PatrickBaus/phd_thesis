@@ -40,7 +40,7 @@ tex_fonts = {
     "pgf.preamble": "\n".join([ # plots will use this preamble
         r"\usepackage{siunitx}",
     ]),
-    "savefig.directory": os.chdir(os.path.dirname(__file__)),
+    "savefig.directory": os.path.dirname(os.path.realpath(__file__)),
 }
 plt.rcParams.update(tex_fonts)
 plt.style.use('tableau-colorblind10')
@@ -180,13 +180,13 @@ def downsample_data(x_data, y_data):
     dtype = None
     if pd.api.types.is_datetime64_any_dtype(x_data):
         x_is_time = True
-        dtype =  x_data.dtype
         x_data = pd.to_datetime(x_data).astype(np.int64)
 
-    x_data, y_data = lttb.downsample(np.array([x_data, y_data]).T, n_out=1000, validators=[]).T
+    if len(x_data) > 1000:
+        x_data, y_data = lttb.downsample(np.array([x_data, y_data]).T, n_out=1000, validators=[]).T
 
     if x_is_time:
-        x_data = pd.to_datetime(x_data).astype(dtype)
+        x_data = pd.to_datetime(x_data, utc=True)
 
     return x_data, y_data
 
@@ -194,7 +194,7 @@ def plot_data(ax, data, x_axis, column_settings):
   for column, settings in column_settings.items():
       if column in data:
           if "cmap" in settings:
-            data_points = max(len(data)//2000,1)
+            data_points = max(len(data)//1000,1)
             downsampled_data = data.iloc[::data_points]
             print(f"Scatter data downsampled to {len(downsampled_data)} points.")
             ax.scatter(
@@ -221,11 +221,13 @@ def plot_series(plot):
     (load_data(plot_file)[0] for plot_file in plot_files),
     sort=True
   )
+  data.reset_index(drop=True, inplace=True)
 
   # If we have something to plot, proceed
   if not data.empty:
     crop_data(data, crop_index="date", crop=plot.get('crop'))
 
+    #data=data.resample('30S',on='date').mean()
     plot_settings = plot['primary_axis']
     process_data(data=data, columns=plot_settings['columns_to_plot'], plot_type=plot_settings.get('plot_type','absolute'))
 
@@ -278,19 +280,25 @@ def plot_series(plot):
       lines2, labels2 = ax3.get_legend_handles_labels()
 
       ax3.legend(lines2, labels2, loc=plot_settings.get("legend_position", "upper left"))
-      ax3.annotate(
-          f"Tempco: ({fit['slope']:.3e} ± {fit['uncertainty']:.2e}) A/K",
-          xy=(0.9,0.1),
-          xycoords='axes fraction',
-          xytext=(-5, 0), textcoords='offset points', ha='right',
-          bbox=dict(boxstyle='round', facecolor='white', alpha=0.5),
-      )
+      if plot_settings.get("annotation"):
+        ax3.annotate(
+            plot_settings["annotation"]["label"].format(slope=fit["slope"], uncertainty=fit["uncertainty"]),
+            plot_settings["annotation"]["xy"],
+            #f"Tempco: ({fit['slope']:.3e} ± {fit['uncertainty']:.2e}) \\unit[per-mode=symbol]{{\\ohm \\per \\kelvin}}",
+            #xy=(0.9,0.1),
+            xycoords='axes fraction',
+            xytext=(-5, 0), textcoords='offset points', ha='right',
+            bbox=dict(boxstyle='round', facecolor='white', alpha=0.8, edgecolor="0.8"),  # use the same values as the legend
+        )
 
   fig = plt.gcf()
 #  fig.set_size_inches(11.69,8.27)   # A4 in inch
 #  fig.set_size_inches(128/25.4 * 2.7 * 0.8, 96/25.4 * 1.5 * 0.8)  # Latex Beamer size 128 mm by 96 mm
-  phi = (5**.5-1) / 2  # golden ratio
-  fig.set_size_inches(441.01773 / 72.27 * 0.9, 441.01773 / 72.27 * 0.9 * phi * 2)  # y * 2 for 2 plots
+  if plot.get("plot_size"):
+      fig.set_size_inches(*plot["plot_size"])
+  else:
+      phi = (5**.5-1) / 2  # golden ratio
+      fig.set_size_inches(441.01773 / 72.27 * 0.9, 441.01773 / 72.27 * 0.9 * phi * 2)  # y * 2 for 2 plots
   if plot.get('title') is not None:
     plt.suptitle(plot['title'], fontsize=16)
 
@@ -309,9 +317,9 @@ if __name__ == "__main__":
       'title': None,
       'show': False,
       'crop': ['2019-12-28 02:00:00', '2019-12-28 18:00:00'],
-      "output_file": {
-          "fname": "../images/leakage_current_ukl.pgf",
-      },
+      #"output_file": {
+      #    "fname": "../images/leakage_current_ukl.pgf",
+      #},
       "legend_position": "best",
       'primary_axis': {
         "axis_settings": {
@@ -493,7 +501,7 @@ if __name__ == "__main__":
     {
       'title': r"DgDrive-500-LN v2.3.1 (\#14, \qty{50}{\mA}) Tempco test",
       'title': None,
-      'show': True,
+      'show': False,
       'crop': ['2021-03-15 6:00:00', '2022-03-03 17:00:00'],
       "output_file": {
           "fname": "../images/dgDrive_tempco_50mA.pgf",
@@ -513,7 +521,7 @@ if __name__ == "__main__":
         'plot_type': 'absolute',  # absolute, relative, proportional
         'columns_to_plot': {
             "value": {
-                "label": "Leakage current",
+                "label": "Current deviation",
                 "color": colors[0],
             },
         },
@@ -584,10 +592,10 @@ if __name__ == "__main__":
         },
       ],
     },
-{
+    {
       'title': r"DgDrive-500-LN v2.3.1 (\#14, \qty{510}{\mA}) Tempco test",
       'title': None,
-      'show': True,
+      'show': False,
       'crop': ['2021-03-27 01:00:00', '2022-03-03 17:00:00'],
       "output_file": {
           "fname": "../images/dgDrive_tempco_510mA.pgf",
@@ -607,7 +615,7 @@ if __name__ == "__main__":
         'plot_type': 'absolute',  # absolute, relative, proportional
         'columns_to_plot': {
             "value": {
-                "label": "Leakage current",
+                "label": "Current deviation",
                 "color": colors[0],
             },
         },
@@ -672,6 +680,226 @@ if __name__ == "__main__":
             },
             "scaling": {
                 "value": lambda x : (x["value"] - x["value"].mean()) / 10,  # in A and relative coordinates
+                "date": lambda data: pd.to_datetime(data.date, utc=True),
+            },
+          },
+        },
+      ],
+    },
+    {
+      'title': r"DgTemp Tempco Test",
+      'title': None,
+      'show': False,  # Set the dimensions to 0.8 before enabling
+      'crop': ['2019-07-02 19:00:00', '2019-07-03 01:00:00'],
+      #"output_file": {
+      #    "fname": "../images/dgTemp_tempco.pgf",
+      #},
+      "legend_position": "upper left",
+      'primary_axis': {
+        "axis_settings": {
+          'x_label': r"Time (UTC)",
+          'y_label': r"Resistance deviation in \unit{\ohm}",
+          "invert_x": False,
+          "invert_y": False,
+          "fixed_order": -3,
+          #"y_scale": "lin",
+          "x_scale": "time",
+        },
+        'x-axis': "date",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "value_ext": {
+                "label": "Resistance deviation",
+                "color": colors[0],
+            },
+        },
+      },
+      'secondary_axis': {
+        "show": True,
+        "axis_settings": {
+          "show_grid": False,
+          'y_label': r"Temperature in \unit{\celsius}",
+          "invert_x": False,
+          "invert_y": True,
+          #"fixed_order": 9,
+          #"y_scale": "lin",
+          "x_scale": "lin",
+        },
+        'x-axis': "date",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "temperature": {
+                "label": "Temperature",
+                "color": colors[3],
+            },
+        },
+      },
+      "xy_plot": {
+          "legend_position": "upper right",
+          'x-axis': "temperature",
+          "y-axis": "value_ext",
+          'columns_to_plot': {
+              "value_ext": {
+                  "label": "Resistance deviation",
+                  "s": 1,  # point size
+                  "cmap": cmap,
+              },
+              "fit": {
+                  "label": "Regression",
+                  "color": colors[3],
+              },
+          },
+          "axis_settings": {
+              'x_label': r"Temperature in \unit{\celsius}",
+              'y_label': r"Resistance deviation in \unit{\ohm}",
+              "invert_x": False,
+              "invert_y": False,
+              "fixed_order": -3,
+              #"y_scale": "lin",
+              "x_scale": "lin",
+        },
+
+      },
+      'files': [
+        {
+          'filename': "Rev2_INL_2019-07-02_08:08:20+00:00.csv",
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+                1: "date",
+                2: "value_ext",
+                4: "value_int",
+            },
+            "scaling": {
+                "value_ext": lambda x : (x["value_ext"] - x["value_ext"].mean()) / (2**31-1) * 4.096 / (50*10**-6) + 220e-3,
+                "value_int": lambda x : (x["value_int"] - x["value_int"].mean()) / (2**31-1) * 4.096 / (50*10**-6) - 25e-3,
+                #"value": lambda x : x["value"] / (2**31-1) * 4.096,# / (50*10**-6) - 25e-3,
+                "date": lambda data: pd.to_datetime(data.date, utc=True),
+            },
+          },
+        },
+        {
+          'filename': "fluke1524_2019-07-01_12:59:50+00:00.csv",   # Fixed direction. Going up now
+          'show': True,
+          'parser': 'fluke1524',
+          'options': {
+            "sensor_id": 2,  # Fluke Sensor 1 = Board Temp, Sensor 2 = Ambient
+            "scaling": {
+                "temperature": lambda x : x["temperature"] -273.15,
+            },
+          },
+        },
+      ],
+    },
+    {
+      'title': r"ATOMICS Master laser",
+      'title': None,
+      'show': False,
+      'crop': ['2022-06-20 04:00:00', '2022-06-20 14:00:00'],
+      "output_file": {
+          "fname": "../images/atomics_master_barometer.pgf",
+      },
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * ((5**.5-1) / 2)),
+      "legend_position": "upper left",
+      'primary_axis': {
+        "axis_settings": {
+          'x_label': r"Time (UTC)",
+          'y_label': r"Pressue in \unit{\hecto\pascal}",
+          "invert_x": False,
+          "invert_y": False,
+          #"fixed_order": -3,
+          #"y_scale": "lin",
+          "x_scale": "time",
+        },
+        'x-axis': "date",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "air_pressure": {
+                "label": "Air pressue",
+                "color": colors[0],
+            },
+        },
+      },
+      'secondary_axis': {
+        "show": True,
+        "axis_settings": {
+          "show_grid": False,
+          'y_label': r"Voltage in \unit{\V}",
+          "invert_x": False,
+          "invert_y": True,
+          #"fixed_order": 9,
+          #"y_scale": "lin",
+          "x_scale": "lin",
+        },
+        'x-axis': "date",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "piezo_voltage": {
+                "label": "Piezo voltage",
+                "color": colors[3],
+            },
+        },
+      },
+      "xy_plot": {
+          "legend_position": "upper right",
+          'x-axis': "air_pressure",
+          "y-axis": "piezo_voltage",
+          "annotation": {
+              "label": r"({slope:.3e} ± {uncertainty:.2e}) \unit{{\V \per \hecto\pascal}}",
+              "xy": (0.55,0.1),
+          },
+          'columns_to_plot': {
+              "piezo_voltage": {
+                  "label": "Piezo voltage",
+                  "s": 1,  # point size
+                  "cmap": cmap,
+              },
+              "fit": {
+                  "label": "Regression",
+                  "color": colors[3],
+              },
+          },
+          "axis_settings": {
+              'x_label': r"Pressure in \unit{\hecto\pascal}",
+              'y_label': r"Voltage in \unit{\V}",
+              "invert_x": False,
+              "invert_y": False,
+              #"fixed_order": -3,
+              #"y_scale": "lin",
+              "x_scale": "lin",
+        },
+
+      },
+      'files': [
+        {
+          'filename': "laser_drift.csv",
+          'show': False,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+                0: "date",
+                4: "air_pressure",
+                6: "piezo_voltage",
+            },
+            "scaling": {
+                "air_pressure": lambda x : x['air_pressure'] / 100,
+                "date": lambda data: pd.to_datetime(data.date, utc=True),
+            },
+          },
+        },
+        {
+          'filename': "laser_drift_015.csv",
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+                0: "date",
+                3: "air_pressure",
+                5: "piezo_voltage",
+            },
+            "scaling": {
+                "air_pressure": lambda x : x['air_pressure'] / 100,
                 "date": lambda data: pd.to_datetime(data.date, utc=True),
             },
           },

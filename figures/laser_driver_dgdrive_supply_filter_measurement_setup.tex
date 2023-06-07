@@ -29,7 +29,7 @@
         \tikzstyle{every node}=[font=\small]
         \tikzstyle{every node}=[font=\small]
         \begin{pgfonlayer}{foreground}
-            \node [block, minimum height=20mm, align=center](hmp4040) {Power Supply\\R\&S HMP4040};
+            \node [block, minimum height=20mm, align=center](hmp4040) {Power supply\\R\&S HMP4040};
             \node [block, minimum width=60mm] (bode100) at (-15,3) {Bode 100};
             \draw
                 ($(hmp4040.east) + (0,0.5)$) node[inputarrow, rotate=180] {} -- ++(1,0)
@@ -43,7 +43,7 @@
                 ($(T1box.east)+(0,-0.5)$) -- ++(11,0) -- ++(0,2) to[amp, boxed, name=J2123A, a=J2123A] ++(0,2) coordinate(neg out)
                 (neg out) -- (pos out)
                 ($(neg out)!0.5!(pos out)$) to[short, *-] ++(0,1) node[inputarrow, rotate=90] {}
-                node[block, above](dgdrive){Current Driver}
+                node[block, minimum width=25mm, above](dgdrive){Input filter}
                 ($(dgdrive.east) + (0,0.75)$) -- ++(2,0) to[R, a=$R_{load}$, resistors/scale=0.5,  i>^=\qty{500}{\mA}] ++(0,-1.5) -- ++(-2,0)
                 (dgdrive.west) to[amp, boxed, name=SR560, a=SR560, t=\tiny{x100}] ++ (-2.5,0)
                 -- ++(0,-3) coordinate(vout)

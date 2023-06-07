@@ -1,6 +1,7 @@
 import asyncio
 from aiostream import stream, pipe
 
+
 async def main() -> None:
     """Define a stream, then execute it."""
     async with IPConnectionAsync(HOST, PORT) as connection:

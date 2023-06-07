@@ -37,7 +37,7 @@ tex_fonts = {
     "pgf.preamble": "\n".join([ # plots will use this preamble
         r"\usepackage{siunitx}",
     ]),
-    "savefig.directory": os.chdir(os.path.dirname(__file__)),
+    "savefig.directory": os.path.dirname(os.path.realpath(__file__)),
 }
 plt.rcParams.update(tex_fonts)
 plt.style.use('tableau-colorblind10')
@@ -84,6 +84,7 @@ def load_data(plot_file):
     return data
 
 def crop_data(data, crop_index="date", crop=None):
+    #data.sort_values(by=crop_index, inplace=True)
     if crop is not None:
         index_to_drop = data[(data[crop_index] < crop[0]) | (data[crop_index] > crop[1])].index if len(crop) > 1 else data[data[crop_index] < crop[0]].index
         data.drop(index_to_drop , inplace=True)
@@ -135,13 +136,23 @@ def downsample_data(x_data, y_data):
 
     return x_data, y_data
 
+def convertResistanceToTemperature(values):
+    # Constants for Amphenol DC95 (Material Type 10kY)
+    a = 3.3540153*10**-3
+    b = 2.7867185*10**-4
+    c = 4.0006637*10**-6
+    d = 1.5575628*10**-7
+    rt25 = 10*10**3
+
+    return 1 / (a + b * np.log(values / rt25) + c * np.log(values / rt25)**2 + d * np.log(values / rt25)**3) - 273.15
+
 def process_data(data, columns, plot_type):
     if plot_type=='relative':
         data[columns] = data[columns] - data[columns].mean().tolist()
     elif plot_type=='proportional':
         data[columns] = data[columns] / data[columns].iloc[:30].mean().tolist() - 1
 
-def prepare_axis(ax, axis_settings, color_map=None):
+def prepare_axis(ax, axis_settings):
   if axis_settings.get("fixed_order") is not None:
     ax.yaxis.set_major_formatter(FixedOrderFormatter(axis_settings["fixed_order"], useOffset=True))
   else:
@@ -173,22 +184,22 @@ def prepare_axis(ax, axis_settings, color_map=None):
   if axis_settings.get("x_label") is not None:
     ax.set_xlabel(axis_settings["x_label"])
 
-  if color_map is not None:
-    ax.set_prop_cycle('color', color_map)
-
 def plot_data(ax, data, x_axis, column_settings):
-  for column, settings in column_settings.items():
-      if column in data:
-          #x_data, y_data = downsample_data(data[x_axis], data[column])
-          x_data, y_data = data[x_axis], data[column]
-          ax.plot(
-              x_data,
-              y_data,
-              marker="",
-              alpha=0.7,
-              **settings
-          )
-          #ax.plot(data[x_axis], data[column], color=settings["color"], marker="", label=settings["label"], alpha=0.7, linewidth=settings.get("linewidth", 1))
+    for column, settings in column_settings.items():
+        if column in data:
+            if len(data) > 1000:
+                x_data, y_data = downsample_data(data[x_axis], data[column])
+            else:
+                x_data, y_data = data[x_axis], data[column]
+            print(f"  Plotting {len(x_data)} values.")
+            #x_data, y_data = data[x_axis], data[column]
+            ax.plot(
+                x_data,
+                y_data,
+                marker="",
+                alpha=0.7,
+                **settings
+            )
 
 def plot_series(plot):
   # Load the data to be plotted
@@ -197,21 +208,18 @@ def plot_series(plot):
     (load_data(plot_file)[0] for plot_file in plot_files),
     sort=True
   )
+  data.reset_index(inplace=True)
 
   # If we have something to plot, proceed
   if not data.empty:
-    crop_data(data, crop_index="date", crop=plot.get('crop'))
+    crop_data(data, **plot.get('crop', {}))
 
     plot_settings = plot['primary_axis']
     process_data(data=data, columns=plot_settings['columns_to_plot'], plot_type=plot_settings.get('plot_type','absolute'))
 
     ax1 = plt.subplot(111)
     #plt.tick_params('x', labelbottom=False)
-    prepare_axis(
-        ax=ax1,
-        axis_settings=plot_settings["axis_settings"],
-        color_map=plt.cm.tab10.colors
-      )
+    prepare_axis(ax=ax1, axis_settings=plot_settings["axis_settings"])
 
     plot_data(ax1, data,  plot_settings["x-axis"], plot_settings['columns_to_plot'])
 
@@ -223,7 +231,6 @@ def plot_series(plot):
       prepare_axis(
         ax=ax2,
         axis_settings=plot_settings["axis_settings"],
-        color_map=plt.cm.tab10.colors
       )
       ax2.format_coord = make_format(ax2, ax1)
       plot_data(ax2, data, plot_settings["x-axis"], plot_settings['columns_to_plot'])
@@ -231,13 +238,17 @@ def plot_series(plot):
       lines2, labels2 = ax2.get_legend_handles_labels()
       lines += lines2
       labels += labels2
-    plt.legend(lines, labels, loc=plot.get("legend_position", "upper left"))
+    if labels:
+      plt.legend(lines, labels, loc=plot.get("legend_position", "upper left"))
 
   fig = plt.gcf()
 #  fig.set_size_inches(11.69,8.27)   # A4 in inch
 #  fig.set_size_inches(128/25.4 * 2.7 * 0.8, 96/25.4 * 1.5 * 0.8)  # Latex Beamer size 128 mm by 96 mm
-  phi = (5**.5-1) / 2  # golden ratio
-  fig.set_size_inches(441.01773 / 72.27 * 0.9, 441.01773 / 72.27 * 0.9 * phi)
+  if plot.get("plot_size"):
+      fig.set_size_inches(*plot["plot_size"])
+  else:
+      phi = (5**.5-1) / 2  # golden ratio
+      fig.set_size_inches(441.01773 / 72.27 * 0.9, 441.01773 / 72.27 * 0.9 * phi)
   if plot.get('title') is not None:
     plt.suptitle(plot['title'], fontsize=16)
 
@@ -248,6 +259,10 @@ def plot_series(plot):
     print(f"  Saving image to '{plot['output_file']['fname']}'")
     plt.savefig(**plot["output_file"])
   plt.show()
+
+
+phi = (5**.5-1) / 2  # golden ratio
+
 
 if __name__ == "__main__":
   plots = [
@@ -350,6 +365,7 @@ if __name__ == "__main__":
       'crop': ['2019-12-01 00:00:00', '2019-12-02 00:00:00'],
       #"legend_position": "lower center",
       'crop_secondary_to_primary': True,
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
       'primary_axis': {
         "axis_settings": {
           'x_label': r"Time (UTC)",
@@ -359,6 +375,7 @@ if __name__ == "__main__":
           "fixed_order": -6,
           "x_scale": "time",
           "y_scale": "lin",
+          "limits_y": [-3e-6,3e-6],
         },
         'x-axis': "date",
         'plot_type': 'absolute',
@@ -380,7 +397,6 @@ if __name__ == "__main__":
           "x_scale": "lin",
           "y_scale": "lin",
           "show_grid": False,
-          #"limits_y": [22.4,23.4],
         },
         'x-axis': "date",
         'plot_type': 'absolute',  # absolute, relative, proportional
@@ -415,6 +431,7 @@ if __name__ == "__main__":
       'crop': ['2017-12-03 00:00:00', '2017-12-04 00:00:00'],
       #"legend_position": "lower center",
       'crop_secondary_to_primary': True,
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
       'primary_axis': {
         "axis_settings": {
           'x_label': r"Time (UTC)",
@@ -424,6 +441,7 @@ if __name__ == "__main__":
           "fixed_order": -6,
           "x_scale": "time",
           "y_scale": "lin",
+          "limits_y": [-3e-6,3e-6],
         },
         'x-axis': "date",
         'plot_type': 'absolute',
@@ -471,7 +489,7 @@ if __name__ == "__main__":
       ],
     },
     {
-      'title': r'DgDrive stability over \qty{60}{\hour}',
+      'title': r' Stable Laser Systems VH 6020-4 (\qty{840}{\nm}) temperature over \qty{24}{\h}',
       'title': None,
       'show': False,
       "output_file": {
@@ -480,6 +498,7 @@ if __name__ == "__main__":
       #'crop': ['2017-12-03 00:00:00', '2017-12-04 00:00:00'],
       #"legend_position": "lower center",
       'crop_secondary_to_primary': True,
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
       'primary_axis': {
         "axis_settings": {
           'x_label': r"Time (UTC)",
@@ -501,7 +520,7 @@ if __name__ == "__main__":
       },
       'files': [
         {
-          'filename': "Temperature Cavity-data-2023-05-05 20_15_08.csv",
+          'filename': "Temperature Cavity-data-2023-05-04.csv",
           'show': True,
           'parser': 'ltspice_fets',
           'options': {
@@ -511,7 +530,7 @@ if __name__ == "__main__":
             },
             'scaling': {
                 "date": lambda data: pd.to_datetime(data.date, utc=True),
-                "temperature": lambda data: data["temperature"].str.removesuffix(" °C").astype(float)
+                "temperature": lambda data: data["temperature"] - 273.15
             },
           },
         },
@@ -520,7 +539,7 @@ if __name__ == "__main__":
     {
       'title': r'Labkraken',
       'title': None,
-      'show': True,
+      'show': False,
       "output_file": {
         "fname": "../images/kraken_inserts.pgf"
       },
@@ -558,6 +577,994 @@ if __name__ == "__main__":
             },
             'scaling': {
                 "date": lambda data: pd.to_datetime(data.date, utc=True),
+            },
+          },
+        },
+      ],
+    },
+    {
+      'title': r'LabNode controller',
+      'title': None,
+      'show': False,
+      "output_file": {
+        "fname": "../images/labnode_performance.pgf"
+      },
+      #'crop': ['2017-12-03 00:00:00', '2017-12-04 00:00:00'],
+      #"legend_position": "lower center",
+      'crop_secondary_to_primary': True,
+      'primary_axis': {
+        "axis_settings": {
+          'x_label': r"Time (UTC)",
+          'y_label': r"Temperature in \unit{\celsius}",
+          "invert_x": False,
+          "invert_y": False,
+          "fixed_order": None,
+          "x_scale": "time",
+          "y_scale": "lin",
+          "limits_y": [22.75, 23.25],
+        },
+        'x-axis': "date",
+        'plot_type': 'absolute',
+        'columns_to_plot': {
+            "temperature_in_loop": {
+                "label": r"Temperature (in loop)",
+                "color": colors[0],
+            },
+        },
+      },
+      'secondary_axis': {
+        'show': True,
+        "axis_settings": {
+          'x_label': r"Time (UTC)",
+          'y_label': r"Temperature in \unit{\celsius}",
+          "invert_x": False,
+          "invert_y": False,
+          #"fixed_order": -6,
+          "x_scale": "lin",
+          "y_scale": "lin",
+          "show_grid": False,
+          #"limits_y": [30.08,30.15],
+        },
+        'x-axis': "date",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "temperature_out_of_loop": {
+                "label": r"Temperature (rack)",
+                "color": colors[1],
+            },
+        },
+        'filter': None,#filter_savgol(window_length=101, polyorder=3),
+      },
+      'files': [
+        {
+          'filename': "Neon Lab - 011-data-as-joinbyfield-2023-05-06 20_14_00.csv",
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+                0: "date",
+                1: "temperature_in_loop",
+                7: "temperature_out_of_loop",
+            },
+            'scaling': {
+                "date": lambda data: pd.to_datetime(data.date, utc=True),
+                "temperature_in_loop": lambda data: data["temperature_in_loop"].str.removesuffix(" °C").astype(float),
+                "temperature_out_of_loop": lambda data: data["temperature_out_of_loop"].str.removesuffix(" °C").astype(float),
+            },
+          },
+        },
+      ],
+    },
+    {
+      'title': "DgTemp Longterm",
+      'title': None,
+      'show': False,
+      "output_file": {
+        "fname": "../images/dgTemp_longterm.pgf"
+      },
+      'crop': ['2019-07-06 00:00:00', '2019-07-12 16:00:00'], # Drift, Humidity? -> Yes
+      "legend_position": "lower left",
+      'crop_secondary_to_primary': True,
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
+      'primary_axis': {
+        "axis_settings": {
+          'x_label': r"Time (UTC)",
+          'y_label': r"Resistance deviation in \unit{\ohm}",
+          "invert_x": False,
+          "invert_y": False,
+          "fixed_order": -3,
+          "x_scale": "time",
+          "y_scale": "lin",
+          #"limits_y": [22.75, 23.25],
+        },
+        'x-axis': "date",
+        'plot_type': 'absolute',
+        'columns_to_plot': {
+            "value_ext": {
+                "label": r"CH1 (ab-precision RS2-10k)",
+                "color": colors[5],
+            },
+            "value_int": {
+                "label": r"CH2 (Internal reference)",
+                "color": colors[3],
+            },
+        },
+      },
+      'secondary_axis': {
+        'show': True,
+        "axis_settings": {
+          'x_label': r"Time (UTC)",
+          'y_label': r"Humidity in \unit{\percent RH}",
+          "invert_x": False,
+          "invert_y": True,
+          #"fixed_order": -6,
+          "x_scale": "lin",
+          "y_scale": "lin",
+          "show_grid": False,
+          #"limits_y": [30.08,30.15],
+        },
+        'x-axis': "date",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "humidity": {
+                "label": r"Humdity",
+                "color": colors[9],
+            },
+        },
+        'filter': None,#filter_savgol(window_length=101, polyorder=3),
+      },
+      'files': [
+        {
+          'filename': "Rev2_INL_2019-07-02_08:08:20+00:00.csv",
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+                1: "date",
+                2: "value_ext",
+                4: "value_int",
+            },
+            "scaling": {
+                "value_ext": lambda x : (x["value_ext"] - x["value_ext"].mean()) / (2**31-1) * 4.096 / (50*10**-6) -14e-3,
+                "value_int": lambda x : (x["value_int"] - x["value_int"].mean()) / (2**31-1) * 4.096 / (50*10**-6) +2e-3,
+                #"value": lambda x : x["value"] / (2**31-1) * 4.096,# / (50*10**-6) - 25e-3,
+                "date": lambda data: pd.to_datetime(data.date, utc=True),
+            },
+          },
+        },
+        {
+          'filename': "sensorData_2019-06-30 22_00_00_2019-07-18 06_34_00.csv",
+          'show': True,
+          'parser': 'smi',
+          'options': {
+            "sensor_id": 9,
+            "label": "humidity",
+            "scaling": {
+            },
+          },
+        },
+      ],
+    },
+    {
+      'title': "DgTemp Performance",
+      'title': None,
+      'show': False,
+      "output_file": {
+        "fname": "../images/dgTemp_laser_resonator.pgf"
+      },
+      #'crop': ['2018-10-17 10:00:00', '2020-10-16 06:00:00'],   # Air drafts (outer silicone)
+      'crop': ['2018-10-15 12:00:00', '2020-10-16 06:00:00'],   # Air drafts (outer silicone)
+      "legend_position": "upper right",
+      'crop_secondary_to_primary': True,
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
+      'primary_axis': {
+        "axis_settings": {
+          'x_label': r"Time (UTC)",
+          'y_label': r"Temperature deviation in \unit{\K}",
+          "invert_x": False,
+          "invert_y": False,
+          "fixed_order": -3,
+          "x_scale": "time",
+          "y_scale": "lin",
+          #"limits_y": [22.75, 23.25],
+        },
+        'x-axis': "date",
+        'plot_type': 'absolute',
+        'columns_to_plot': {
+            "temperature": {
+                "label": r"Laser resonator temperature",
+                "color": colors[0],
+            },
+            "setpoint": {
+                "label": r"Setpoint \qty{21.6893}{\celsius}",
+                "color": colors[1],
+                "linestyle": "dashed",
+            },
+        },
+      },
+      'files': [
+        {
+          'filename': "ADC_Serial_Read_2018-10-17_07:54:38+00:00.csv",
+          'filename': "ADC_Serial_Read_2018-10-15_10:25:38+00:00.csv",
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "skiprows": 7,
+            "columns": {
+                1: "date",
+                2: "adc_code",
+            },
+            "scaling": {
+                "resistance": lambda x : x["adc_code"] / (2**31-1) * 4.096 / (50*10**-6),
+                "temperature": lambda x : convertResistanceToTemperature(x["resistance"]) - convertResistanceToTemperature(300000000 * 4.096 / (2**31 - 1) / (50 * 10**-6)),
+                "setpoint": lambda x : np.zeros(len(x)),
+                #"value": lambda x : x["value"] / (2**31-1) * 4.096,# / (50*10**-6) - 25e-3,
+                "date": lambda data: pd.to_datetime(data.date, utc=True),
+            },
+          },
+        },
+        {
+          'filename': "sensorData_2019-06-30 22_00_00_2019-07-18 06_34_00.csv",
+          'show': False,
+          'parser': 'smi',
+          'options': {
+            "sensor_id": 9,
+            "label": "humidity",
+            "scaling": {
+            },
+          },
+        },
+      ],
+    },
+    {
+      'title': "DgTemp Testmass",
+      'title': None,
+      'show': False,
+      "output_file": {
+        "fname": "../images/dgTemp_testmass.pgf"
+      },
+      'crop': ['2018-10-24 16:00:00', '2018-10-25 04:00:00'],
+      "legend_position": "upper right",
+      'crop_secondary_to_primary': True,
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
+      'primary_axis': {
+        "axis_settings": {
+          'x_label': r"Time (UTC)",
+          'y_label': r"Temperature deviation in \unit{\K}",
+          "invert_x": False,
+          "invert_y": False,
+          "fixed_order": -6,
+          "x_scale": "time",
+          "y_scale": "lin",
+          #"limits_y": [22.75, 23.25],
+        },
+        'x-axis': "date",
+        'plot_type': 'absolute',
+        'columns_to_plot': {
+            "temperature_mean": {
+                "label": r"Temperature (Fluke 5611T-P)",
+                "color": colors[0],
+            },
+        },
+      },
+      'secondary_axis': {
+        'show': True,
+        "axis_settings": {
+          'x_label': r"Time (UTC)",
+          'y_label': r"Ambient temperature in  \unit{\celsius}",
+          "invert_x": False,
+          "invert_y": False,
+          #"fixed_order": -6,
+          "x_scale": "lin",
+          "y_scale": "lin",
+          "show_grid": False,
+          #"limits_y": [30.08,30.15],
+        },
+        'x-axis': "date",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "temperature": {
+                "label": r"Ambient temperature",
+                "color": colors[1],
+            },
+        },
+        'filter': None,#filter_savgol(window_length=101, polyorder=3),
+      },
+      'files': [
+        {
+          'filename': "HP3458A_GPIB_Read_2018-10-24_14:16:24+00:00.csv",
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+                0: "date",
+                1: "voltage",
+            },
+            "scaling": {
+                "temperature_mass": lambda x : convertResistanceToTemperature(x["voltage"] / (50*10**-6)),
+                "temperature_mean": lambda x : x["temperature_mass"] - x["temperature_mass"].mean() - 40e-6,
+                "date": lambda data: pd.to_datetime(data.date, utc=True),
+            },
+          },
+        },
+        {
+          'filename': "fluke1524_2018-10-23_16:38:38+00:00.csv",   # Fixed direction. Going up now
+          'show': True,
+          'parser': 'fluke1524',
+          'options': {
+            "sensor_id": 2,  # Fluke Sensor 1 = Board Temp, Sensor 2 = Ambient
+            "scaling": {
+                "temperature": lambda x : x["temperature"] -273.15,
+            },
+          },
+        },
+      ],
+    },
+    {
+      'title': "Vescent SliceQTC",
+      'title': None,
+      'show': False,
+      #"output_file": {
+      #  "fname": "../images/vescent_sliceqt.pgf"
+      #},
+      #'crop': ['2018-10-24 16:00:00', '2018-10-25 04:00:00'],
+      "legend_position": "upper right",
+      'crop_secondary_to_primary': True,
+      'primary_axis': {
+        "axis_settings": {
+          'x_label': r"Time (UTC)",
+          'y_label': r"Temperature deviation in \unit{\K}",
+          "invert_x": False,
+          "invert_y": False,
+          "fixed_order": -3,
+          "x_scale": "time",
+          "y_scale": "lin",
+          #"limits_y": [22.75, 23.25],
+        },
+        'x-axis': "date",
+        'plot_type': 'absolute',
+        'columns_to_plot': {
+            "reference_temperature": {
+                "label": r"Temperature (SliceQTC)",
+                "color": colors[0],
+            },
+        },
+      },
+      'secondary_axis': {
+        'show': False,
+        "axis_settings": {
+          'x_label': r"Time (UTC)",
+          'y_label': r"Ambient temperature in  \unit{\celsius}",
+          "invert_x": False,
+          "invert_y": False,
+          #"fixed_order": -6,
+          "x_scale": "lin",
+          "y_scale": "lin",
+          "show_grid": False,
+          #"limits_y": [30.08,30.15],
+        },
+        'x-axis': "date",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "temperature": {
+                "label": r"Ambient temperature",
+                "color": colors[1],
+            },
+        },
+        'filter': None,#filter_savgol(window_length=101, polyorder=3),
+      },
+      'files': [
+        {
+          'filename': "SliceQTC_stability_2021-03-25_14:14:07+00:00.csv",
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+                0: "date",
+                1: "reference_temperature",
+            },
+            "scaling": {
+                "date": lambda data: pd.to_datetime(data.date, utc=True),
+            },
+          },
+        },
+        {
+          'filename': "fluke1524_2018-10-23_16:38:38+00:00.csv",   # Fixed direction. Going up now
+          'show': True,
+          'parser': 'fluke1524',
+          'options': {
+            "sensor_id": 2,  # Fluke Sensor 1 = Board Temp, Sensor 2 = Ambient
+            "scaling": {
+                "temperature": lambda x : x["temperature"] -273.15,
+            },
+          },
+        },
+      ],
+    },
+    {
+      'title': "Room temperature Neon",
+      'title': None,
+      'show': False,
+      "output_file": {
+        "fname": "../images/temperature_011_2016.pgf"
+      },
+      #'crop': ['2018-10-24 16:00:00', '2018-10-25 04:00:00'],
+      "legend_position": "upper right",
+      'crop_secondary_to_primary': True,
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
+      'primary_axis': {
+        "axis_settings": {
+          'x_label': r"Time (UTC)",
+          'y_label': r"Temperature in \unit{\celsius}",
+          "invert_x": False,
+          "invert_y": False,
+          "fixed_order": 0,
+          "x_scale": "time",
+          "y_scale": "lin",
+          #"limits_y": [22.75, 23.25],
+        },
+        'x-axis': "date",
+        'plot_type': 'absolute',
+        'columns_to_plot': {
+            "temperature": {
+                "label": r"Room temperature",
+                "color": colors[0],
+            },
+        },
+      },
+      'files': [
+        {
+          'filename': "011_neon_temperature_2016-11 00-00-00-26_2016-11-27 00-00-00.csv",
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+                0: "date",
+                1: "temperature",
+            },
+            "scaling": {
+                "date": lambda data: pd.to_datetime(data.date, utc=True),
+                "temperature": lambda data: data["temperature"] - 273.15,
+            },
+          },
+        },
+      ],
+    },
+    {
+      'title': 'IRF9610 MOSFET simulation',
+      'title': None,
+      'show': False,
+      "output_file": {
+        "fname": "../images/mosfet_current_gate_bias.pgf"
+      },
+      'crop_secondary_to_primary': True,
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
+      'primary_axis': {
+        "axis_settings": {
+          'x_label': r"Drain-Source Voltage $V_{DS}$ in \unit{\V}",
+          'y_label': r"Drain Current $I_D$ in \unit{\A}",
+          "invert_x": True,
+          "invert_y": True,
+          "fixed_order": -3,
+          "y_scale": "linear",
+        },
+        'x-axis': "vds",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "Vgs3.5": {
+                "label": "$V_{GS} = \qty{-3.5}{\V}$",
+                "color": colors[0],
+            },
+            "Vgs4.0": {
+                "label": "$V_{GS} = \qty{-4}{\V}$",
+                "color": colors[1],
+            },
+            "Vgs4.5": {
+                "label": "$V_{GS} = \qty{-4.5}{\V}$",
+                "color": colors[2],
+            },
+            "Vgs5": {
+                "label": "$V_{GS} = \qty{-5}{\V}$",
+                "color": colors[3],
+            },
+            "isat": {
+                "label": "$I_{sat}$",
+                "color": colors[4],
+                "linestyle": "--",
+            },
+        },
+        'filter': None,#filter_savgol(window_length=101, polyorder=3),
+      },
+      'files': [
+        {
+          'filename': 'mosfet_current_source.csv',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+              0: "vsd",
+              1: "Vgs3.5",
+              2: "Vgs4.0",
+              3: "Vgs4.5",
+              4: "Vgs5"
+            },
+            "scaling": {
+              'vds': lambda x : -x["vsd"],
+              #'isat': lambda x : calculate_saturation_current(x["vds"][x["vds"]>=-0.81], -0.813, -4/1000),
+            },
+          },
+        },
+      ],
+    },
+    {
+      'title': 'Output impedance simulation',
+      'title': None,
+      'show': False,
+      "output_file": {
+          "fname": "../images/ltspice_output_impedance_simulation.pgf"
+      },
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
+      'primary_axis': {
+        "axis_settings": {
+          'x_label': r"Drain-source voltage $V_{DS}$ in \unit{\V}",
+          'y_label': r"Ouput Impedance $R_{out}$ in \unit{\ohm}",
+          "invert_x": False,
+          "invert_y": False,
+          "fixed_order": 9,
+          "y_scale": "log",
+          #"x_scale": "log",  # Turn this on to show, that R_out is a power law
+        },
+        'x-axis': "vds",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "rout": {
+                "label": r"DC",
+                "color": colors[0],
+            },
+            "rout10MegHz": {
+                "label": r"\qty{1}{\MHz}",
+                "color": colors[1],
+            },
+        },
+        'filter': None,#filter_savgol(window_length=101, polyorder=3),
+      },
+      'files': [
+        {
+          'filename': 'mosfet_current_source_output_impedance.csv',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+              0: "vload",
+              1: "rout",
+              2: "rout10MegHz"
+            },
+            "scaling": {
+              "vds": lambda x : 3.5-x["vload"],
+              "rout": lambda x : 10**(x["rout"]/20),
+              "rout10MegHz": lambda x : 10**(x["rout10MegHz"]/20),
+            },
+          },
+        },
+      ],
+    },
+    {
+      'title': r'DgDrive input filter simulation',
+      'title': None,
+      'show': False,
+      "output_file": {
+        "fname": "../images/input_filter_dgdrive.pgf"
+      },
+      "legend_position": "upper right",
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
+      'primary_axis': {
+        "axis_settings": {
+          'x_label': r"Frequency in \unit{\Hz}",
+          'y_label': r"Magnitude in \unit{\V \per \V}",
+          "invert_x": False,
+          "invert_y": False,
+          "fixed_order": -3,
+          "x_scale": "log",
+          "y_scale": "log",
+        },
+        'x-axis': "freq",
+        'plot_type': 'absolute',
+        'columns_to_plot': {
+            "lc_filter": {
+                "label": "Mag. LC only",
+                "color": colors[0],
+            },
+            "cap_mult": {
+                "label": "Mag. LC + C Mult.",
+                "color": colors[1],
+            },
+        },
+      },
+      'secondary_axis': {
+        'show': True,
+        "axis_settings": {
+          #'x_label': r"Time (UTC)",
+          'y_label':  r"Impedance in \unit{\ohm}",
+          "invert_x": False,
+          "invert_y": False,
+          #"fixed_order": -6,
+          "x_scale": "log",
+          "y_scale": "lin",
+          "show_grid": False,
+          #"limits_y": [22.4,23.4],
+        },
+        'x-axis': "freq",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "z_lc": {
+                "label": r"$Z_{out}$ LC filter",
+                "color": colors[2],
+                "linestyle": "--",
+            },
+            "z_cap_mult": {
+                "label": r"$Z_{out}$ C Mult.",
+                "color": colors[4],
+                "linestyle": "--",
+            },
+        },
+        'filter': None,#filter_savgol(window_length=101, polyorder=3),
+      },
+      'files': [
+        {
+          'filename': 'input_filter_dgdrive.csv',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+              0: "freq",
+              1: "lc_filter",
+              2: "cap_mult",
+              3: "z_lc",
+              4: "z_cap_mult"
+            },
+            "scaling": {
+              'lc_filter': lambda x : 10**(x["lc_filter"]/20),
+              'cap_mult': lambda x : 10**(x["cap_mult"]/20),
+              'z_lc': lambda x : 10**(x["z_lc"]/20),
+              'z_cap_mult': lambda x : 10**(x["z_cap_mult"]/20),
+            },
+          },
+        },
+      ],
+    },
+    {
+      'title': 'Supply Filter Transfer function',
+      'title': None,
+      'show': False,
+      "output_file": {
+          "fname": "../images/dgDrive_supply_filter_bode.pgf"
+      },
+      "legend_position": "lower left",
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
+      'primary_axis': {
+        "axis_settings": {
+          'x_label': r"Frequency in \unit{\Hz}",
+          'y_label': r"Magnitude in \unit{\dB}",
+          "invert_x": False,
+          "invert_y": False,
+          #"fixed_order": 9,
+          #"y_scale": "lin",
+          "x_scale": "log",
+        },
+        'x-axis': "frequency",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "magnitude": {
+                "label": "LC Filter",
+                "color": colors[1],
+            },
+            "lc_filter": {
+                "label": "Simulation",
+                "color": colors[0],
+            },
+        },
+      },
+      'files': [
+        {
+          'filename': 'DgDrive PSRR_take2_2023-02-18T01_12_08.csv',
+          'show': True,
+          'parser': 'bode100',
+          'options': {
+            "trace": 1,
+            "columns": {
+                0: "frequency",
+                1: "magnitude",
+            },
+            "scaling": {
+              "magnitude": lambda x : x["magnitude"]-40,
+            },
+          },
+        },
+        {
+          'filename': 'input_filter_dgdrive.csv',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+                0: "frequency",
+                1: "lc_filter"
+            },
+            "scaling": {
+              'lc_filter': lambda x : x["lc_filter"][(x["frequency"] >= 100) & (x["frequency"] <= 1e6)],
+            },
+          },
+        },
+      ],
+    },
+    {
+      'title': 'Current Source noise (different R_filt)',
+      'title': None,
+      'show': False,
+      "output_file": {
+        "fname": "../images/current_source_noise_filter_resistors.pgf"
+      },
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
+      'crop_secondary_to_primary': True,
+      "legend_position": "best",
+      'primary_axis': {
+        "axis_settings": {
+          'x_label': r"Frequency in \unit{\Hz}",
+          'y_label': r"Noise density in \unit[power-half-as-sqrt,per-mode=symbol]{\A \Hz\tothe{-0.5}}",
+          "invert_x": False,
+          "invert_y": False,
+          "fixed_order": -9,
+          "x_scale": "log",
+          "y_scale": "lin",
+        },
+        'x-axis': "frequency",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "249ohm": {
+                "label": r"$R_{filt} = \qty{249}{\ohm}$",
+                "color": colors[0],
+            },
+            "510ohm": {
+                "label": r"$R_{filt} = \qty{510}{\ohm}$",
+                "color": colors[1],
+            },
+            "1000ohm": {
+                "label": r"$R_{filt} = \qty{1}{\kilo\ohm}$",
+                "color": colors[2],
+            },
+            "1500ohm": {
+                "label": r"$R_{filt} = \qty{1.5}{\kilo\ohm}$",
+                "color": colors[3],
+            },
+        },
+        'filter': None,#filter_savgol(window_length=101, polyorder=3),
+      },
+      'files': [
+        {
+          'filename': 'current_regulator_v3_AD797_noise.csv',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+              0: "frequency",
+              1: "249ohm",
+              2: "510ohm",
+              3: "1000ohm",
+              4: "1500ohm",
+            },
+            "scaling": {
+            },
+          },
+        },
+      ],
+    },
+    {
+      'title': 'Output impedance Libbrecht & Hall current source',
+      'title': None,
+      'show': False,
+      "output_file": {
+        "fname": "../images/output_impedance_libbrecht_hall.pgf"
+      },
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
+      'crop_secondary_to_primary': True,
+      "legend_position": "best",
+      'primary_axis': {
+        "axis_settings": {
+          'x_label': r"Frequency in \unit{\Hz}",
+          'y_label': r"Output impedance in \unit{\ohm}",
+          "invert_x": False,
+          "invert_y": False,
+          "fixed_order": 6,
+          "x_scale": "log",
+          "y_scale": "log",
+        },
+        'x-axis': "frequency",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "noC": {
+                "label": r"no $C_1$",
+                "color": colors[0],
+            },
+            "1u": {
+                "label": r"$C_1 = \qty{1}{\uF}$",
+                "color": colors[1],
+            },
+        },
+        'filter': None,#filter_savgol(window_length=101, polyorder=3),
+      },
+      'files': [
+        {
+          'filename': 'modulation_input_LibrechtHall.txt',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+              0: "frequency",
+              1: "noC"
+            },
+            "scaling": {
+                'noC': lambda x : 10**(x["noC"]/20),
+            },
+          },
+        },
+        {
+          'filename': 'modulation_input_LibrechtHall_1u.txt',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+              0: "frequency",
+              1: "1u"
+            },
+            "scaling": {
+                '1u': lambda x : 10**(x["1u"]/20),
+            },
+          },
+        },
+      ],
+    },
+    {
+      'title': 'DgDrive Modulation Input',
+      'title': None,
+      'show': False,
+      "output_file": {
+        "fname": "../images/dgDrive_modulation_input.pgf"
+      },
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
+      'crop': {
+          "crop_index": "frequency",
+          "crop": [1e2, 5e6],
+      },
+      "legend_position": "best",
+      'primary_axis': {
+        "axis_settings": {
+          'x_label': r"Frequency in \unit{\Hz}",
+          'y_label': r"Amplitude in \unit{\decibel}",
+          "invert_x": False,
+          "invert_y": False,
+          "fixed_order": None,
+          "x_scale": "log",
+          "y_scale": "lin",
+        },
+        'x-axis': "frequency",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "amplitude_normalized": {
+                "label": r"Normalized amplitude",
+                "color": colors[0],
+            },
+            "3dB": {
+                "label": r"\qty{\pm 3}{\decibel}",
+                "color": colors[1],
+                "linestyle": (0, (5, 10)),  # loosely dashed
+            },
+            "-3dB": {
+                "label": None,
+                "color": colors[1],
+                "linestyle": (0, (5, 10)),  # loosely dashed
+            },
+        },
+        'filter': None,#filter_savgol(window_length=101, polyorder=3),
+      },
+      'secondary_axis': {
+        "show": True,
+        "axis_settings": {
+          'y_label': r"Phase in \unit{\degree}",
+          "invert_x": False,
+          "invert_y": False,
+          "fixed_order": None,
+          "x_scale": "log",
+          "y_scale": "lin",
+          "show_grid": False,
+        },
+        'x-axis': "frequency",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "phase_corrected": {
+                "label": r"Phase",
+                "color": colors[2],
+            },
+        },
+      },
+      'files': [
+        {
+          'filename': 'DgDrive_modulation_input.csv',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+              1: "frequency",
+              3: "amplitude",
+              4: "phase",
+              5: "reference",
+              6: "reference_phase",
+            },
+            "scaling": {
+                "amplitude_corrected": lambda x : x["amplitude"] - x["reference"],
+                "amplitude_normalized": lambda x : x["amplitude_corrected"] - np.mean(x["amplitude_corrected"][(x["frequency"] >= 1e3) & (x["frequency"] <= 1e5)]),
+                "3dB": lambda x : np.repeat(np.mean(x["amplitude_normalized"][(x["frequency"] >= 1e3) & (x["frequency"] <= 1e5)]+3), len(x)),
+                "-3dB": lambda x : np.repeat(np.mean(x["amplitude_normalized"][(x["frequency"] >= 1e3) & (x["frequency"] <= 1e5)]-3), len(x)),
+                "phase_corrected": lambda x : x["phase"] - x["reference_phase"],
+            },
+          },
+        },
+      ],
+    },
+    {
+      'title': 'DgDrive Output Impedance',
+      'title': None,
+      'show': True,
+      "output_file": {
+        "fname": "../images/dgDrive_output_impedance_dc.pgf"
+      },
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
+      #'crop': {
+      #    "crop_index": "frequency",
+      #    "crop": [1e2, 5e6],
+      #},
+      "legend_position": "best",
+      'primary_axis': {
+        "axis_settings": {
+          'x_label': r"Time in \unit{\s}",
+          'y_label': r"Output current deviation in \unit{\A}",
+          "invert_x": False,
+          "invert_y": False,
+          "fixed_order": -9,
+          "x_scale": "lin",
+          "y_scale": "lin",
+        },
+        'x-axis': "time",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "value": {
+                "label": None,
+                "color": colors[0],
+            },
+            "lower": {
+                "label": None,
+                "color": colors[1],
+            },
+            "upper": {
+                "label": None,
+                "color": colors[1],
+            },
+        },
+        'filter': None,#filter_savgol(window_length=101, polyorder=3),
+      },
+      'files': [
+        {
+          'filename': 'DgDrive_output_impedance_3M3_10PLC_AZ.csv',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+              0: "time",
+              1: "value",
+            },
+            "skiprows": 2,
+            "scaling": {
+                "time": lambda x : x["time"] / 2.5,#  NPLC=10 + autozero
+                "lower": lambda x :np.where(x["time"] <= 30.5, np.mean(x["value"][x["time"] <= 30.5]), np.nan),
+                "upper": lambda x : np.where(x["time"] > 30.5, np.mean(x["value"][x["time"] > 30.5]), np.nan),
             },
           },
         },

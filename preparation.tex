@@ -197,7 +197,7 @@ This leads to the following requirements regarding the current source of the las
     \begin{itemize}
         \item Maximum output current \qty{300}{\mA}, optionally \qty{500}{\mA}
         \item \textbf{Compliance voltage \qty[text-series-to-math, reset-text-series = false, reset-math-version = false]{\geq 8}{\V}}
-        \item Output impedance \qty{\geq 7.5}{\mega \ohm} at low frequencies (close to DC)
+        \item Output impedance \qty{\geq 7.5}{\mega\ohm} at low frequencies (close to DC)
         \item \textbf{Current noise \qty[text-series-to-math, reset-text-series = false, reset-math-version = false]{\leq 30}{\nA_{rms}} from DC to \qty[text-series-to-math, reset-text-series = false, reset-math-version = false]{100}{\kHz}}
         \item \qty{3}{\dB}-bandwidth of the modulation source \qty{\geq 1}{\MHz}
     \end{itemize}
@@ -380,7 +380,7 @@ The focus of this section is narrowed down to the concept of feedback and contro
 
 \subsection{Introduction to the Transfer Function and the Laplace Domain}%
 \label{sec:transfer_function}
-There are two types of systems: open- and closed-loop systems. A system is called open loop, if the output of a system does not feed back to its input as in figure \ref{fig:open_loop}. On the other hand, if the output influences the input of the system via feedback, it is called a closed-loop system, as shown in figure \ref{fig:closed_loop}. Although feedback can be treated in static systems, it is more useful to treat it in dynamic systems, either in the time-domain or the frequency-domain. To discuss these system, the terminology used in the following section needs to be defined. $G(s)$ is called the transfer function of the system, while $U(s)$ is the input, $Y(s)$ is the output, $s$ is  complex frequency domain variable, $\beta$ is the feedback parameter, also called feedback fraction, as shown in figure \ref{fig:feedback_systems}. In this section, upper case letters are used to denote functions in the Laplace domain, while lower case letters are referring to functions in the time domain.
+There are two types of systems: open- and closed-loop systems. A system is called open loop, if the output of a system does not feed back to its input as in figure \ref{fig:open_loop}. On the other hand, if the output influences the input of the system via feedback, it is called a closed-loop system, as shown in figure \ref{fig:closed_loop}. Although feedback can be treated in static systems, it is more useful to treat it in dynamic systems, either in the time-domain or the frequency-domain. To discuss these system, the terminology used in the following section needs to be defined. $G(s)$ is called the transfer function of the system, while $U(s)$ is the input, $Y(s)$ is the output, $s$ is a complex frequency domain variable, $\beta$ is the feedback parameter, also called feedback fraction, as shown in figure \ref{fig:feedback_systems}. In this section, upper case letters are used to denote functions in the Laplace domain, while lower case letters are referring to functions in the time domain. Normally, the transfer function is denoted $H(s)$ but to prevent confusion with the Heaviside function $H(t)$, the letter $G$ is used here for the transfer function. In later chapters the common form $H(s)$ is used.
 \begin{figure}[ht]
     \centering
     \begin{subfigure}{0.4\linewidth}
@@ -508,7 +508,7 @@ Using these tools, it is possible calculate the transfer function of a closed-lo
     \label{fig:first-order_model_room}
 \end{figure}
 
-In order to describe a closed-loop system using a transfer function $G(s)$, one has to first create a model for the process and the controller involved. This section will derive the simple, but very useful first-order model with dead-time. This model can be derived from the idea, that the system at temperature $T_{system}$ has a thermal capacitance $C_{system}$, an influx of heat $\dot Q_{load}$ from a thermal load and a controller removing heat from the system through a heat exchanger with a resistance of $R_{force}$. Additionally, there is some leakage through the walls of the system to the ambient environment via $R_{leakage}$. This analogy of thermodynamics with electrodynamics allows to create the model shown in figure \ref{fig:first-order_model_room}. Since this model is to be used for a temperature controller, more simplifications can be made and a so-called small-signal model can be developed as opposed to the large-signal model shown above. The small-signal model is an approximation around a working point that is valid for small deviations around it, similar to a Taylor approximation. The small-signal model can be used to calculate the system response to small changes of the controller output in order to estimate the control parameters.
+In order to describe a closed-loop system using a transfer function $G(s)$, one has to first create a model for the process and the controller involved. This section will derive the simple, but very useful first order model with dead-time. This model can be derived from the idea, that the system at temperature $T_{system}$ has a thermal capacitance $C_{system}$, an influx of heat $\dot Q_{load}$ from a thermal load and a controller removing heat from the system through a heat exchanger with a resistance of $R_{force}$. Additionally, there is some leakage through the walls of the system to the ambient environment via $R_{leakage}$. This analogy of thermodynamics with electrodynamics allows to create the model shown in figure \ref{fig:first-order_model_room}. Since this model is to be used for a temperature controller, more simplifications can be made and a so-called small-signal model can be developed as opposed to the large-signal model shown above. The small-signal model is an approximation around a working point that is valid for small deviations around it, similar to a Taylor approximation. The small-signal model can be used to calculate the system response to small changes of the controller output in order to estimate the control parameters.
 
 Using the small-signal approach, the system response can be split into a constant and a dynamic par: the 0\textsuperscript{th} and 1\textsuperscript{st} order of the Taylor approximation. In order to simplify the system shown in figure \ref{fig:first-order_model_room} the assumption can be made that the system load $\dot Q_{load}$ and the flux through $R_{leakage}$ is \textit{reasonably stable}. \textit{Reasonably stable} means that it can be treated as small deviations and additionally any changes are within the bandwidth of the controller and well suppressed. This allows to treat them as (almost) constant effects, which result in an offset applied to the output of the controller. This leaves only the room with its heat capacity and the heat exchanger as dominant factors in the dynamic model shown in figure \ref{fig:first-order_model}. Here $T_{force}$ and $T_{system}$ were replaced by $T_{in}$ and $T_{out}$ for better readability:
 
@@ -517,7 +517,7 @@ Using the small-signal approach, the system response can be split into a constan
     \scalebox{1}{%
         \import{figures/}{first-order_model_kirchhoff.tex}
     } % scalebox
-    \caption{Simplifications of the temperature model of a room lead to this first-order model.}
+    \caption{Simplifications of the temperature model of a room lead to this first order model.}
     \label{fig:first-order_model}
 \end{figure}
 
@@ -541,7 +541,7 @@ This allows to calculate the transfer function of the process $P$ as
 \end{align}
 with the system gain $K$ and the time constant $\tau$. In case of the $RC$ circuit, the gain is $1$, but other systems may have a gain factor of $K \neq 1$. This is generally the case when using any type of sensor that converts the measurand into the input signal. $K$ is there included here for the sake of generality.
 
-Equation \ref{eqn:first-order_model} is called the transfer function of a first-order model, because its origin is a differential equation of first-order. This model describes homogeneous systems like a room very well, as can be seen in section \ref{sec:pid_controller_tuning}, but in order to derive the transfer function including the controller and the sensor some more work is required to derive the sensor transfer function.
+Equation \ref{eqn:first-order_model} is called the transfer function of a first order model, because its origin is a differential equation of first order. This model describes homogeneous systems like a room very well, as can be seen in section \ref{sec:pid_controller_tuning}, but in order to derive the transfer function including the controller and the sensor some more work is required to derive the sensor transfer function.
 
 Expanding on figure \ref{fig:open_loop} and equation \ref{eqn:convolution} the open-loop transfer function of the process and its sensor becomes:
 \begin{equation}
@@ -567,7 +567,7 @@ The full system model including the time delay can now be written as:
     G(s) = \frac{K}{1 + s\tau} e^{-\theta s} \label{eqn:first-order_plus_dead_time_model}
 \end{equation}
 
-This is called a first-order plus dead-time model (FOPDT) or first-order plus time-delay model (FOPTD). While the Laplace representation is useful to mathematically explore the mode, in order to fit experimental data to this model it is more convenient to transform the transfer function \ref{eqn:first-order_plus_dead_time_model} into the time domain. To have a meaningful result, an input $U(s)$ is required, because $G(s)$ is only a transformation. In principal any function can be serve this purpose, but a step function is typically used, for example by \citeauthor{ziegler_nichols} \cite{ziegler_nichols} and many others \cite{tuning_rules,pessen_integral,simc,simc_paper,pid_controllers_for_time_delay_systems,pi_stabilization_of_fopdt_systems, pid_basics}. The step function is both simple to calculate and to apply to a real system in form of a controller output change. This technique is also explored in more detail in section \ref{sec:pid_controller_tuning}. Using equations \ref{eqn:laplace_delayed} and \ref{eqn:laplace_exponential}, the Heaviside $H(t)$ step function transforms into
+This is called a first order plus dead-time model (FOPDT) or first order plus time-delay model (FOPTD). While the Laplace representation is useful to mathematically explore the mode, in order to fit experimental data to this model it is more convenient to transform the transfer function \ref{eqn:first-order_plus_dead_time_model} into the time domain. To have a meaningful result, an input $U(s)$ is required, because $G(s)$ is only a transformation. In principal any function can be serve this purpose, but a step function is typically used, for example by \citeauthor{ziegler_nichols} \cite{ziegler_nichols} and many others \cite{tuning_rules,pessen_integral,simc,simc_paper,pid_controllers_for_time_delay_systems,pi_stabilization_of_fopdt_systems, pid_basics}. The step function is both simple to calculate and to apply to a real system in form of a controller output change. This technique is also explored in more detail in section \ref{sec:pid_controller_tuning}. Using equations \ref{eqn:laplace_delayed} and \ref{eqn:laplace_exponential}, the Heaviside $H(t)$ step function transforms into
 \begin{equation}
     \mathscr{L} \left(u(t) \right) = U(s) = \mathscr{L} \left( \Delta u H(t) \right) = \frac{\Delta u}{s}
 \end{equation}
@@ -580,7 +580,7 @@ with the step size $\Delta u$. The output response $Y(s)$ of the system to the s
     &= K \Delta u \left(\frac{1}{s} - \frac{1}{s+\frac{1}{\tau}} \right) e^{-\theta s}
 \end{align}
 
-To derive $y(t)$, the inverse Laplace transform of $Y(s)$ is required. Unfortunately, this is not as simple as the Laplace transform. Fortunately though the required equations were already derived in equations \ref{eqn:lapace_integration} and \ref{eqn:laplace_exponential}. Making sure causality is guaranteed as shown in equation \ref{eqn:laplace_causality}, the simple first-order model can be transformed back into the time domain.
+To derive $y(t)$, the inverse Laplace transform of $Y(s)$ is required. Unfortunately, this is not as simple as the Laplace transform. Fortunately though the required equations were already derived in equations \ref{eqn:lapace_integration} and \ref{eqn:laplace_exponential}. Making sure causality is guaranteed as shown in equation \ref{eqn:laplace_causality}, the simple first order model can be transformed back into the time domain.
 \begin{align}
      y(t) &= \mathscr{L}^{-1} \left(Y(s)\right) \nonumber\\
      &= K \Delta u \mathscr{L}^{-1} \left(\frac{1}{s} e^{-\theta s} \right)  - K \mathscr{L}^{-1} \left( \frac{1}{s+\frac{1}{\tau}} e^{-\theta s} \right) \nonumber\\
@@ -590,12 +590,12 @@ To derive $y(t)$, the inverse Laplace transform of $Y(s)$ is required. Unfortuna
 
 The time domain solution of the FOPDT model can now be used to extract the parameters $\tau$, $\theta$ and $K$ from a real physical system.
 
-The procedure can be summarised from the above as follows. The controller must be set to a constant output and the room must be given time to reach equilibrium. Once the temperature has settled, an output step of $\Delta u$ is applied. The system will respond after a time delay and then follow an exponential function. A simulation of the step response applied to a first-order model with time delay is shown in figure \ref{fig:fopdt}. The gain is $K=1$. The solid black line shows the response of the transfer function, including the system and the sensor. The dashed lines show the individual components, the Heaviside function governing the delay and the exponential term of the system. The controller output step $\Delta u = 1$ is applied at $t=0$ and not shown explicitly. From figure \ref{fig:fopdt} it can be clearly seen, that the sensor does not register a change until the time delay $\theta$ has passed and the Heaviside function changes from $0$ to $1$. Then the system responds with an exponential decay towards \num{1}.
+The procedure can be summarised from the above as follows. The controller must be set to a constant output and the room must be given time to reach equilibrium. Once the temperature has settled, an output step of $\Delta u$ is applied. The system will respond after a time delay and then follow an exponential function. A simulation of the step response applied to a first order model with time delay is shown in figure \ref{fig:fopdt}. The gain is $K=1$. The solid black line shows the response of the transfer function, including the system and the sensor. The dashed lines show the individual components, the Heaviside function governing the delay and the exponential term of the system. The controller output step $\Delta u = 1$ is applied at $t=0$ and not shown explicitly. From figure \ref{fig:fopdt} it can be clearly seen, that the sensor does not register a change until the time delay $\theta$ has passed and the Heaviside function changes from $0$ to $1$. Then the system responds with an exponential decay towards \num{1}.
 
 \begin{figure}[ht]
     \centering
     \input{images/FOPDT_theory.pgf}% data/simulations/sim_laplace_fopdt.py
-    \caption{Time domain plot of a first-order plus dead time model showing individual components of the model and the composite function $y(t)$. Model parameters used: $K= \Delta u = 1$, $\tau=2$, $\theta=4$.}
+    \caption{Time domain plot of a first order plus dead time model showing individual components of the model and the composite function $y(t)$. Model parameters used: $K= \Delta u = 1$, $\tau=2$, $\theta=4$.}
     \label{fig:fopdt}
 \end{figure}
 
@@ -648,7 +648,7 @@ Another issue is caused by the derivative term with noiy inputs. Assuming there 
 
 To further discuss the problem and its solution it is best to visit the frequency domain and visualize the transfer function of the PID controller as shown in figure \ref{fig:sim_pid_controller}. The ideal PID controller without filtering of the derivative displays a very strong response to low frequency inputs. This is due to the integral action, which removes any (constant) offset. It needs to have infinite gain at DC to push the offset to zero. In reality this is limited by input noise. Then follows a plateau with a magnitude of $k_p$ for the proportional term and finally the differential gain starts growing in magnitude and keeps steadily growing with rising frequency, just as expected.
 
-With some knowledge about the process or the sensor it is possible to define an upper frequency, above which inputs become unrealistic and must therefore be unwanted noise. By filtering the derivative term with a first-order filter causes it to roll off and its gain becomes constant as shown in figure \ref{fig:sim_pid_controller}. By adding the filter the PID controller transfer function changes to
+With some knowledge about the process or the sensor it is possible to define an upper frequency, above which inputs become unrealistic and must therefore be unwanted noise. By filtering the derivative term with a first order filter causes it to roll off and its gain becomes constant as shown in figure \ref{fig:sim_pid_controller}. By adding the filter the PID controller transfer function changes to
 
 \begin{equation}
     C(s) = k_p + k_i \frac{1}{s} + \frac{k_d s}{1 + s \alpha k_d} \,. \label{eqn:pid_controller_filtered}
@@ -671,7 +671,7 @@ This concludes the discussion of the PID controller and the introduction of the 
 \label{sec:pid_tuning_rules}
 While many PID tuning rules can be found in the literature, their application depends on the underlying system and the desired system response. This section will discuss several proposed solutions and compare them to the authors use case. The sections aims to give a simple method to determine decent PI(D) parameters for the applications found in the lab. Among the methods discussed are the most classic set of tuning rules developed by \citeauthor{ziegler_nichols} \cite{ziegler_nichols}, an improved version by \citeauthor{simc_paper} \cite{simc_paper} which promises better performance for non-integrating systems. These rules all include simple instructions to extract the necessary parameters using pen and paper. Using a computer and fitting algorithms, the bar for \textit{simple} has been raised considerably, so more complex approaches can be undertaken which extract more parameters from the system. Using these additional parameters more precise control is promised by \citeauthor{pid_basics} \cite{pid_basics, advanced_pid_control} with a method called AMIGO. Finally, it is possible to shape the control loop to result in a desired transfer function. This technique is mostly used in motor control \cite{pid_controller,advanced_pid_control} and also requires the model parameters.
 
-All of these rules will be compared against a demo model of a room to explain the details. It is the first-order model with delay which was derived in equation \ref{eqn:first-order_plus_dead_time_model}. The discussion is limited to the FOPDT model, because the systems treated in this work could be modelled very well using this equation. Higher order models are discussed in more details for example in \cite{advanced_pid_control,pid_controller,simc_paper}, in case the reader encounters such a system and feels the need to extract the model parameters.
+All of these rules will be compared against a demo model of a room to explain the details. It is the first order model with delay which was derived in equation \ref{eqn:first-order_plus_dead_time_model}. The discussion is limited to the FOPDT model, because the systems treated in this work could be modelled very well using this equation. Higher order models are discussed in more details for example in \cite{advanced_pid_control,pid_controller,simc_paper}, in case the reader encounters such a system and feels the need to extract the model parameters.
 \begin{equation}
     G(s) = \frac{K e^{-\theta s}}{1 + s \tau} \label{eqn:demo_process_model}
 \end{equation}
@@ -704,7 +704,7 @@ Starting with the transfer function of the controlled system, made up of the con
 \begin{equation*}
     \frac{Y(s)}{U(s)} = 1 \,,
 \end{equation*}
-but unfortunately life is more profane and there is no controller, that will always (and with warp speed) force a system to a certain setpoint. One may therefore settle for the second-best choice, a first-order low pass with a slow roll-off and a small delay, which must be added to ensure causality. One therefore arrives at
+but unfortunately life is more profane and there is no controller, that will always (and with warp speed) force a system to a certain setpoint. One may therefore settle for the second-best choice, a first order low pass with a slow roll-off and a small delay, which must be added to ensure causality. One therefore arrives at
 \begin{equation}
     \frac{Y(s)}{U(s)} = \frac{e^{-\theta s}}{1 + s \tau_c}\,, \label{eqn:desired_transfer_function}
 \end{equation}
@@ -722,13 +722,13 @@ This loop now needs to be shaped into the desired transfer function given in equ
     &\approx \frac{1}{G(s)} \frac{e^{-\theta s}}{s (\tau_c + \theta)} \,.
 \end{align}
 
-$e^{-\theta s}$ was approximated using a first-order Taylor expansion. The desired controller response now only depends on the system (including the sensor) to be controlled. So, substituting the system equation \ref{eqn:demo_process_model} results in
+$e^{-\theta s}$ was approximated using a first order Taylor expansion. The desired controller response now only depends on the system (including the sensor) to be controlled. So, substituting the system equation \ref{eqn:demo_process_model} results in
 \begin{align}
     C(s) &= \frac{1}{K} \frac{s \tau + 1}{(\tau_c + \theta) s} \nonumber\\
     &= \underbrace{\frac{1}{K} \frac{\tau}{\tau_c + \theta}}_{k_p} + \underbrace{\frac{1}{K} \frac{1}{\tau_c + \theta}}_{k_i} \frac{1}{s}\,.
 \end{align}
 
-This is a PI controller with $k_p = \frac{1}{K} \frac{\tau}{\tau_c + \theta}$ and $k_i = \frac{1}{K} \frac{1}{\tau_c + \theta}$. From these calculations, it can be seen that a first-order model can be fully treated using a PI controller. Second-order (and higher order) models typically necessitate a PID or more sophisticated controller for optimal control. The problems discussed in this work mainly focus temperature control of (mostly) homogeneous objects, so the focus lies on the PI controller for most of the remaining section but the ideas and simulations can similarly be applied to the PID controller as well. Any caveats to be expected when treating a PID instead of a PI controller will be discussed.
+This is a PI controller with $k_p = \frac{1}{K} \frac{\tau}{\tau_c + \theta}$ and $k_i = \frac{1}{K} \frac{1}{\tau_c + \theta}$. From these calculations, it can be seen that a first order model can be fully treated using a PI controller. Second order (and higher order) models typically necessitate a PID or more sophisticated controller for optimal control. The problems discussed in this work mainly focus temperature control of (mostly) homogeneous objects, so the focus lies on the PI controller for most of the remaining section but the ideas and simulations can similarly be applied to the PID controller as well. Any caveats to be expected when treating a PID instead of a PI controller will be discussed.
 
 Using the loop shaping technique, it is fairly easy to derive custom rules in case the model parameters can be extracted. As mentioned above, one such loop-shaped tuning rule is the SIMC rule set and the authors of those rules give advice for an ample variety of different models and also investigate the parameter choice regarding stability, load, and setpoint disturbances. Before attempting a custom approach, it is therefore recommended to check \cite{simc_paper} for an appropriate set of rules for more complex models in order to save time and effort.
 
@@ -746,7 +746,7 @@ Using the loop shaping technique, it is fairly easy to derive custom rules in ca
         AMIGO PID & $\frac{1}{K} \left(0.2 + 0.45 \frac{\tau}{\theta}\right)$ & $\frac{0.4 \theta + 0.8 \tau}{\theta + 0.1 \tau} \theta$ & $\frac{0.5 \tau \theta}{0.3 \theta + \tau}$ & \citep[p. 233]{advanced_pid_control}\\
         \bottomrule
     \end{tabular}
-    \caption{PI/PID parameters for different tuning rules. The PI controllers assume a first-order model, the PID rules are required when dealing with a second-order model.}
+    \caption{PI/PID parameters for different tuning rules. The PI controllers assume a first order model, the PID rules are required when dealing with a second order model.}
     \label{tab:pid_tuning_parameters}
 \end{table}
 
@@ -827,6 +827,7 @@ and therefore all processes, that can be observed in the power spectral density 
 
 Distinguishing different noise processes using the Allan deviation will be elaborated in the next section.
 
+%TODO: Add Shot noise
 \subsection{Identifying Noise in Allan Deviation Plots}
 It was already mentioned by \citeauthor{adev} in \cite{adev}, that types of noise, whose spectral density follows a power law
 \begin{equation}
@@ -1565,7 +1566,7 @@ Once the voltage $V_{DS}$ has reached $V_{GS} - V_{th}$, the channel is fully pi
     I_{D,sat} = \underbrace{\frac 1 2 \kappa \left(V_{GS} - V_{th} \right)^2}_{\text{ideal FET}} (1 + \lambda V_{DS}) \, . \label{eqn:mosfet_saturation}
 \end{equation}
 
-The parameter $\lambda$ is the first-order Taylor expansion of the length dependence of $\kappa$ and typically is small and on the order of \qtyrange[range-units = single, per-mode=power]{0.01}{0.05}{\per \volt} for p-channel MOSFETs \citep[p. 23]{mosfet_flicker_noise}. It mainly depends on the length of the channel to which it is inversely proportional, since the channel length defines the slope of the tapered channel. Sometimes the value $\frac{1}{\lambda}$ is also referred to as the Early voltage $V_A$. It is noteworthy, that more modern processes choose a smaller channel length to reduce the on-state resistance of the MOSFET because the main application of a MOSFET nowadays is as a switch. The reduced channel length makes the MOSFET more susceptible to the channel length modulation effect. This will be discussed in more detail in section \ref{sec:component_selection}, when choosing a suitable MOSFET.
+The parameter $\lambda$ is the first order Taylor expansion of the length dependence of $\kappa$ and typically is small and on the order of \qtyrange[range-units = single, per-mode=power]{0.01}{0.05}{\per \volt} for p-channel MOSFETs \citep[p. 23]{mosfet_flicker_noise}. It mainly depends on the length of the channel to which it is inversely proportional, since the channel length defines the slope of the tapered channel. Sometimes the value $\frac{1}{\lambda}$ is also referred to as the Early voltage $V_A$. It is noteworthy, that more modern processes choose a smaller channel length to reduce the on-state resistance of the MOSFET because the main application of a MOSFET nowadays is as a switch. The reduced channel length makes the MOSFET more susceptible to the channel length modulation effect. This will be discussed in more detail in section \ref{sec:component_selection}, when choosing a suitable MOSFET.
 
 Going back to figure \ref{fig:fet_curret_gate_bias} the effect of the channel-length modulation can be seen as a small slope of $I_D$ in the saturation region.
 
@@ -1590,7 +1591,7 @@ Before proceeding to the precision current source in section \ref{sec:precision_
 \end{align}
 The transconductance $g_m$, as a measure of the current gain with respect to the gate-source voltage of the MOSFET, is proportional to the square root of the drain current $I_D$. The inverse of the channel conductance $g_{DS}$ is called output resistance $R_o$ and discussed below. Typically the $V_{DS}$ term in the denominator of the output resistance in equation \ref{eqn:mosfet_gds} can be neglected.
 
-The meaning of $g_{m}$ and $g_{GS}$ can be best understood when looking at a mathematical model of the MOSFET. These models come in varying complexity and either as a large-signal or small-signal model. Only the latter is used here. The small-signal model, is a first-order Taylor approximation around the working point, for a constant gate-source voltage $V_{GS}$ and constant drain-source $V_{DS}$, hence both $g_{m}$ and $g_{GS}$ are constants.
+The meaning of $g_{m}$ and $g_{GS}$ can be best understood when looking at a mathematical model of the MOSFET. These models come in varying complexity and either as a large-signal or small-signal model. Only the latter is used here. The small-signal model, is a first order Taylor approximation around the working point, for a constant gate-source voltage $V_{GS}$ and constant drain-source $V_{DS}$, hence both $g_{m}$ and $g_{GS}$ are constants.
 \begin{align}
     I_D &\approx \frac{\partial I_D}{\partial V_{GS}} \Delta V_{GS} + \frac{\partial I_D}{\partial V_{DS}} \Delta V_{DS}\\
     &= g_{m} \Delta V_{GS} + g_{DS} \Delta V_{DS}\\
@@ -1779,7 +1780,7 @@ The simulation itself is numerically challenging and the typical approaches will
     \label{fig:ltspice_output_impedance_simulation}
 \end{figure}
 
-Looking at figure \ref{fig:ltspice_output_impedance_simulation} clearly shows the effect of entering the ohmic region of the MOSFET. Over a range of about \qty{100}{\mV} below the \qty{0.78}{\V} calculated above, the output impedance drops by two orders of magnitude and then keeps dropping at an exponential rate with decreasing $V_{DS}$. The same effect applies to the output impedance at \qty{1}{\MHz}, although the starting value is around \qty{200}{\kilo\ohm} due to the reduced gain from the op-amp at \qty{1}{\MHz}. It can also be seen, that $R_{out}$ levels off at \qty{30}{\ohm}, the value of the sense resistor.
+Looking at figure \ref{fig:ltspice_output_impedance_simulation} clearly shows the effect of entering the ohmic region of the MOSFET. Over a range of \qty{100}{\mV} starting at the \qty{0.78}{\V} calculated above, the output impedance drops by two orders of magnitude and then keeps dropping at an exponential rate with decreasing $V_{DS}$. The same effect applies to the output impedance at \qty{1}{\MHz}, although the starting value of the output impedance is around \qty{200}{\kilo\ohm} due to the reduced gain from the op-amp at \qty{1}{\MHz}. It can also be seen, that $R_{out}$ levels off at \qty{30}{\ohm}, the value of the sense resistor.
 
 This overall effect of leaving the saturation region is so drastic, that the compliance voltage must be defined in such a way that the MOSFET remains in saturation and this leads to
 \begin{equation}
@@ -1907,7 +1908,7 @@ assuming the noise sources are uncorrelated. The input referred voltage noise $e
     e_{n,-} \approx i_n \cdot R_S
 \end{equation}
 
-The current noise of the non-inverting input can be translated by considering its input impedance. This is determined by the filter circuit of the reference voltage which is required to remove the high frequency noise as discussed above. Assuming an RC-filter of first-order,
+The current noise of the non-inverting input can be translated by considering its input impedance. This is determined by the filter circuit of the reference voltage which is required to remove the high frequency noise as discussed above. Assuming an RC-filter of first order,
 the output impedance can be calculated from the transfer function of the low-pass filter, derived in equation \ref{eqn:first-order_model}
 \begin{align}
     R_{out,filt} &= R_{filt} \cdot A = \frac{R_{filt}}{1+sR_{filt}C}  \label{eqn:output_impedance_rc_filter}\\
@@ -1996,7 +1997,7 @@ The low value of the sense resistor makes a bipolar op-amp the preferred choice,
 
 To find a reference point for the choice of op-amp, the thermal noise of the sense resistor must looked at. A \qty{28}{\ohm} sense resistor has a thermal noise of
 \begin{equation*}
-    e_n\left(\qty{23}{\celsius}\right) = \qty[power-half-as-sqrt]{0.67}{\nV \per \Hz\tothe{0.5}} \,.
+    e_n\left(R = \qty{28}{\ohm} T = \qty{23}{\celsius}\right) = \qty[power-half-as-sqrt]{0.67}{\nV \per \Hz\tothe{0.5}} \,.
 \end{equation*}
 
 This means, that even the lowest noise op-amp from table \ref{tab:overview_bipolar_op-amps} dominates the wideband-noise. With this said, the component choices made in literate can be discussed. The \device{AD8671} chosen by \cite{laser_driver_digital} only makes sense, because they have chosen a very large filter resistor $R_{filt}$ of $2 \times \qty{3}{\kilo\ohm}$. The \device{ADA4004} was used by Moglabs in the \device{DLC-102}, again likely due to the high values of $R_{filt}$ used. The \device{ADA4898} might seem like a good choice at first sight but the very limited (in terms of precision op-amps) open-loop gain of \qty{0.14}{\V \per \uV} makes this op-amp a inexpensive, but poor choice. The final choice is between the \device{AD797} and the \device{LT1028}, both op-amps have very similar specifications, but there is a peculiarity in the datasheet of the \device{LT1028} \cite{datasheet_LT1028}. The \textit{High Frequency Voltage Noise
@@ -2048,7 +2049,7 @@ Throughout this section, example calculations are performed to give the reader a
         MOSFET $\kappa$ & \qty[per-mode=power]{0.813}{\ampere \per \square\volt} & \device{IRF9610} SPICE model \cite{irf9610_spice}\\
         MOSFET channel length modulation $\lambda$ & \qty[per-mode=power]{4}{\per \milli \volt} & \device{IRF9610} SPICE model \cite{irf9610_spice}\\
         MOSFET source voltage & \qtyrange{3.5}{4}{\V} & section \ref{sec:component_selection}\\
-        Source/Sense Resistor $R_s$ & \qty{30}{\ohm} or \qty{50}{\ohm} & section \ref{sec:component_selection}\\
+        Source/Sense Resistor $R_s$ & \qty{14}{\ohm} or \qty{28}{\ohm} & section \ref{sec:component_selection}\\
         Op-amp differential input impedance $R_{id}$ & \qty{7.5}{\kilo\ohm} & \device{AD797} \cite{datasheet_AD797}\\
         Op-amp open-loop gain $A_{ol}$ & \qty[per-mode=power]{2}{\volt \per \uV} & \device{AD797} \cite{datasheet_AD797}\\
         Op-amp gain bandwidth product $GBP$ & \qty{10}{\MHz} & \device{AD797} \cite{datasheet_AD797}\\

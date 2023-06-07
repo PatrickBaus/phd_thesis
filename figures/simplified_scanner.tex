@@ -43,7 +43,7 @@
         % Box
         % See the Circuitikz manual https://texdoc.org/serve/circuitikz/0#subsection.5.7
         % for details on the node anchors
-        \node [draw=red!80!black, rectangle, dashed, fit=(dmm) (rin) (LOconlabel) (HIconlabel)] (BoxDMM){};
+        \node [draw=red!80!black, dashed, thick, rounded corners=2pt, fit=(dmm) (rin) (LOconlabel) (HIconlabel)] (BoxDMM){};
         \node [above, align=center] at (BoxDMM.north) {DMM};
     \end{scope}
     % Scanner
@@ -65,7 +65,7 @@
         \draw[densely dashed] ([yshift=0.7cm]CH2hi.center) -- ++(0,1) node[above] (CH3-CH10) {CH3 - CH9};
         \draw[densely dashed] ([yshift=-0.7cm]CH2lo.center) -- ++(0,-1) node[below] (CH3 LO-CH10 LO) {CH3 - CH9};
         % Box
-        \node [draw=red!80!black, rectangle, dashed, fit=(HI) (LO) (CH3-CH10) (CH3 LO-CH10 LO) (CH2 HI)] (BoxScanner){};
+        \node [draw=red!80!black, dashed, thick, rounded corners=2pt, fit=(HI) (LO) (CH3-CH10) (CH3 LO-CH10 LO) (CH2 HI)] (BoxScanner){};
         \node [above, align=center] at (BoxScanner.north) {Scanner};
     \end{scope}
 \end{circuitikz}

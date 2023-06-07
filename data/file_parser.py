@@ -205,6 +205,10 @@ def parse_fluke1524_file(filename, options, **kwargs):
         data["date"] = data["date"].dt.tz_localize("utc")
     else:
         data["date"] = data["date"].dt.tz_localize("Europe/Berlin").dt.tz_convert("utc")
+
+    for key, scaling_function in options.get("scaling", {}).items():
+        data[key] = scaling_function(data)
+
     return data, 0
 
 

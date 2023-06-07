@@ -159,12 +159,19 @@ def plot_data(ax, data, x_axis, column_settings):
   shared_bins = np.histogram_bin_edges(data[column_settings.keys()], bins="sturges")
   for column, settings in column_settings.items():
       if column in data:
-          n, bins, _ = ax.hist(
-            data[column],
-            alpha=0.7,
-            #bins=shared_bins,
-            **settings
-          )
+          if "bins" in settings:
+              n, bins, _ = ax.hist(
+                  data[column],
+                  alpha=0.7,
+                  **settings
+              )
+          else:
+              n, bins, _ = ax.hist(
+                  data[column],
+                  alpha=0.7,
+                  bins=shared_bins,
+                  **settings
+              )
           # To calculate the probability, calculate the one we do want and subtract it from 1, because the very high
           # impedances are ignored (see range option) for readability
           print(f"Smallest bin with more than zero counts: {bins[:-1][n > 0][0]/1e6} MΩ")
@@ -215,7 +222,10 @@ def plot_series(plot):
 #  fig.set_size_inches(11.69,8.27)   # A4 in inch
 #  fig.set_size_inches(128/25.4 * 2.7 * 0.8, 96/25.4 * 1.5 * 0.8)  # Latex Beamer size 128 mm by 96 mm
   phi = (5**.5-1) / 2  # golden ratio
-  fig.set_size_inches(441.01773 / 72.27 * 0.9, 441.01773 / 72.27 * 0.9 * phi)
+  if plot.get("plot_size"):
+      fig.set_size_inches(*plot["plot_size"])
+  else:
+      fig.set_size_inches(441.01773 / 72.27 * 0.9, 441.01773 / 72.27 * 0.9 * phi)
   if plot.get('title') is not None:
     plt.suptitle(plot['title'], fontsize=16)
 
@@ -229,6 +239,8 @@ def plot_series(plot):
 
   plt.show()
 
+phi = (5**.5-1) / 2  # golden ratio
+
 if __name__ == "__main__":
   plots = [
     {
@@ -239,6 +251,7 @@ if __name__ == "__main__":
           "fname": "../images/ltspice_mosfet_mc_output_impedance.pgf"
       },
       'crop_secondary_to_primary': True,
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
       'primary_axis': {
         "axis_settings": {
           'x_label': r"Output impedance in \unit{\ohm}",
@@ -262,7 +275,7 @@ if __name__ == "__main__":
                 #"bins": auto,
             },
             "Rout_p_sigma": {
-                "label": r"Parallel MOSFET $V_{th}-1\sigma$",
+                "label": r"Parallel MOSFET $V_{DS}+1\sigma$",
                 "color": colors[0],
                 #"bins": auto,
             },
@@ -308,15 +321,16 @@ if __name__ == "__main__":
     {
       'title': 'Howland Current Source Output Impedance',
       'title': None,
-      'show': True,
+      'show': False,
       "output_file": {
           "fname": "../images/ltspice_howland_mc_output_impedance.pgf"
       },
       'crop_secondary_to_primary': True,
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
       'primary_axis': {
         "axis_settings": {
           'x_label': r"Resistance in \unit{\ohm}",
-          'y_label': r"Normalized resistance density in \unit{\per \ohm}",
+          'y_label': r"Normalised resistance density in \unit{\per \ohm}",
           "invert_x": False,
           "invert_y": False,
           "x_fixed_order": 6,
@@ -341,14 +355,14 @@ if __name__ == "__main__":
                 "range": (0, 5e7),
             },
             "Routi005": {
-                "label": r"improved HCS, \qty{0.05}{\percent} tolerance",
+                "label": r"Improved HCS, \qty{0.05}{\percent} tolerance",
                 "color": colors[3],
                 "density": True,
                 "bins": 100,
                 "range": (0, 5e7),
             },
             "Routi001": {
-                "label": r"improved HCS, \qty{0.01}{\percent} tolerance",
+                "label": r"Improved HCS, \qty{0.01}{\percent} tolerance",
                 "color": colors[2],
                 "density": True,
                 "bins": 100,
