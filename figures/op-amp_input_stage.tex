@@ -25,13 +25,13 @@
             circuitikz/bipoles/noise sources/fillcolor=dashed,
         ]
             \draw
-                (0,0) node[vee](VEE){$V_{EE}$}  to[nI, -*, invert, l=$i_{n,EE}$] ++(0,2) coordinate (Ibias)
+                (0,0) node[vee](VEE){$V_{EE}$}  to[nI, -*, invert, l=$i_{n,EE}$] ++(0,1.5) coordinate (Ibias)
                 (Ibias) -- ++(-1.5,0) -- ++(0,0.5) node[npn, anchor=E](Qni){} (Qni.B) -- ++(-0.5,0) coordinate(in+) to[short, -o] ++(-0.5,0) node[left]{In+}
-                (in+) to[nI, *-, l_=$i_{n,p}$] ++(0,-2) node[ground]{}
+                (in+) to[nI, *-, l_=$i_{n,p}$] ++(0,-1.5) node[ground]{}
                 (Ibias) -- ++(1.5,0) -- ++(0,0.5) node[npn, anchor=E, xscale=-1](Qinv){} (Qinv.B) -- ++(0.5,0) coordinate(in-) to[short, -o] ++(0.5,0) node[right]{In-}
-                (in-) to[nI, *-, l=$i_{n,n}$] ++(0,-2) node[ground]{}
+                (in-) to[nI, *-, l=$i_{n,n}$] ++(0,-1.5) node[ground]{}
                 (Qni.C) to[R, l=$R_c$] ++(0,2) coordinate(Rc+) to[short, *-o] ++(0.5,0) coordinate(Vout+)
-                (Rc+) -- ++(0,0.5) -- ++(1.5,0) to[short, *-] ++ (0,0.5) node[vcc]{$V_{CC}$}
+                (Rc+) -- ++(0,0.5) -- ++(1.5,0) to[short, *-] ++ (0,0.25) node[vcc]{$V_{CC}$}
                 (Qinv.C) to[R, l=$R_c$] ++(0,2) coordinate(Rc-) to[short, *-o] ++(-0.5,0) to[open, v<=$V_{out}$] (Vout+)
                 (Rc-) -- ++(0,0.5) -- ++(-1.5,0)
             ;
