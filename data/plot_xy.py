@@ -287,7 +287,7 @@ def plot_series(plot):
             #f"Tempco: ({fit['slope']:.3e} ± {fit['uncertainty']:.2e}) \\unit[per-mode=symbol]{{\\ohm \\per \\kelvin}}",
             #xy=(0.9,0.1),
             xycoords='axes fraction',
-            xytext=(-5, 0), textcoords='offset points', ha='right',
+            xytext=(-5, 0), textcoords='offset points', horizontalalignment='right',
             bbox=dict(boxstyle='round', facecolor='white', alpha=0.8, edgecolor="0.8"),  # use the same values as the legend
         )
 
@@ -317,9 +317,9 @@ if __name__ == "__main__":
       'title': None,
       'show': False,
       'crop': ['2019-12-28 02:00:00', '2019-12-28 18:00:00'],
-      #"output_file": {
-      #    "fname": "../images/leakage_current_ukl.pgf",
-      #},
+      "output_file": {
+          "fname": "../images/leakage_current_ukl.pgf",
+      },
       "legend_position": "best",
       'primary_axis': {
         "axis_settings": {
@@ -364,6 +364,10 @@ if __name__ == "__main__":
           "legend_position": "upper left",
           'x-axis': "temperature",
           "y-axis": "value",
+          "annotation": {
+              "label": r"({slope:.3e} ± {uncertainty:.1e}) \unit{{\A \per \kelvin}}",
+              "xy": (0.95,0.2),
+          },
           'columns_to_plot': {
               "value": {
                   "label": "Leakage current",
@@ -457,6 +461,10 @@ if __name__ == "__main__":
           "legend_position": "upper left",
           'x-axis': "temperature",
           "y-axis": "value",
+          "annotation": {
+              "label": r"({slope:.3e} ± {uncertainty:.1e}) \unit{{\A \per \kelvin}}",
+              "xy": (0.675,0.4),
+          },
           'columns_to_plot': {
               "value": {
                   "label": "Leakage current",
@@ -550,6 +558,10 @@ if __name__ == "__main__":
           "legend_position": "upper left",
           'x-axis': "temperature",
           "y-axis": "value",
+          "annotation": {
+              "label": r"({slope:.3e} ± {uncertainty:.0e}) \unit{{\A \per \kelvin}}",
+              "xy": (0.95,0.2),
+          },
           'columns_to_plot': {
               "value": {
                   "label": "Current deviation",
@@ -585,7 +597,7 @@ if __name__ == "__main__":
                 3: "temperature",
             },
             "scaling": {
-                "value": lambda x : (x["value"] - x["value"].mean()) / 100,  # in A and relative coordinates
+                "value": lambda x : (x["value"] - x["value"][x.date >= '2021-03-15 6:00:00'].min()) / 100,  # in A and relative coordinates
                 "date": lambda data: pd.to_datetime(data.date, utc=True),
             },
           },
@@ -615,7 +627,7 @@ if __name__ == "__main__":
         'plot_type': 'absolute',  # absolute, relative, proportional
         'columns_to_plot': {
             "value": {
-                "label": "Current deviation",
+                "label": "Current  deviation",
                 "color": colors[0],
             },
         },
@@ -644,6 +656,10 @@ if __name__ == "__main__":
           "legend_position": "upper left",
           'x-axis': "temperature",
           "y-axis": "value",
+          "annotation": {
+              "label": r"({slope:.3e} ± {uncertainty:.1e}) \unit{{\A \per \kelvin}}",
+              "xy": (0.95,0.2),
+          },
           'columns_to_plot': {
               "value": {
                   "label": "Current deviation",
@@ -679,8 +695,8 @@ if __name__ == "__main__":
                 6: "temperature",
             },
             "scaling": {
-                "value": lambda x : (x["value"] - x["value"].mean()) / 10,  # in A and relative coordinates
-                "date": lambda data: pd.to_datetime(data.date, utc=True),
+                "date": lambda data: pd.to_datetime(data.date, utc=True, format="ISO8601"),
+                "value": lambda x : (x["value"] - x["value"][x.date >= '2021-03-27 01:00:00'].min()) / 10,  # in A and relative coordinates
             },
           },
         },
@@ -775,7 +791,7 @@ if __name__ == "__main__":
                 "value_ext": lambda x : (x["value_ext"] - x["value_ext"].mean()) / (2**31-1) * 4.096 / (50*10**-6) + 220e-3,
                 "value_int": lambda x : (x["value_int"] - x["value_int"].mean()) / (2**31-1) * 4.096 / (50*10**-6) - 25e-3,
                 #"value": lambda x : x["value"] / (2**31-1) * 4.096,# / (50*10**-6) - 25e-3,
-                "date": lambda data: pd.to_datetime(data.date, utc=True),
+                "date": lambda data: pd.to_datetime(data.date, utc=True, format="ISO8601"),
             },
           },
         },
@@ -846,7 +862,7 @@ if __name__ == "__main__":
           'x-axis': "air_pressure",
           "y-axis": "piezo_voltage",
           "annotation": {
-              "label": r"({slope:.3e} ± {uncertainty:.2e}) \unit{{\V \per \hecto\pascal}}",
+              "label": r"({slope:.3e} ± {uncertainty:.0e}) \unit{{\V \per \hecto\pascal}}",
               "xy": (0.55,0.1),
           },
           'columns_to_plot': {
