@@ -31,7 +31,7 @@
 \usepackage[]{siunitx}
 %\usepackage[T1]{fontenc}
 \usepackage[siunitx, europeanresistors, nooldvoltagedirection]{circuitikz}
-\usepackage{subcaption}
+\usepackage[labelformat=simple]{subcaption}
 \usepackage{tabularx}  % for 'tabularx' environment and 'X' column type
 \usepackage{booktabs}  % for \toprule, \midrule, and \bottomrule macros
 \usepackage{multirow}
@@ -95,6 +95,7 @@
 }
 
 \captionsetup[subfigure]{width=0.9\textwidth}
+\renewcommand\thesubfigure{\,(\alph{subfigure})}
 
 \hbadness=100 % Use the same settings as in the lua script below
 \vbadness=100

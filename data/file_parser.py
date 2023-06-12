@@ -169,18 +169,13 @@ def parse_smi_file(filename, options, **kwargs):
 
 
 def parse_fluke1524_file(filename, options, **kwargs):
-    date_parser = lambda times, dates: [
-        pd.datetime.strptime(d, "%Y-%m-%d %H:%M:%S.%f") for d in (dates + " " + times)
-    ]
-
     data = pd.read_csv(
         filename,
         delimiter=",",
         header=None,
         usecols=[1, 2, 3, 4, 5],
         names=["sensor_id", "temperature", "unit", "time", "date"],
-        parse_dates={"datetime": ["time", "date"]},
-        date_parser=date_parser,
+        parse_dates={"datetime": ["date", "time"]},
     )
 
     # Convert to SI units

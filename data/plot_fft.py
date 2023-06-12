@@ -36,7 +36,7 @@ tex_fonts = {
     "pgf.preamble": "\n".join([ # plots will use this preamble
         r"\usepackage{siunitx}",
     ]),
-    "savefig.directory": os.chdir(os.path.dirname(__file__)),
+    "savefig.directory": os.path.dirname(os.path.realpath(__file__)),
 }
 plt.rcParams.update(tex_fonts)
 plt.style.use('tableau-colorblind10')
@@ -228,9 +228,12 @@ def plot_series(plot):
   fig = plt.gcf()
 #  fig.set_size_inches(11.69,8.27)   # A4 in inch
 #  fig.set_size_inches(128/25.4 * 2.7 * 0.8, 96/25.4 * 1.5 * 0.8)  # Latex Beamer size 128 mm by 96 mm
-  phi = (5**.5-1) / 2  # golden ratio
-  fig.set_size_inches(441.01773 / 72.27 * 0.8 / phi, 441.01773 / 72.27 * 0.8)  # landscape
-  #fig.set_size_inches(441.01773 / 72.27 * 0.9, 441.01773 / 72.27 * 0.9 * phi)  # thesis
+  if plot.get("plot_size"):
+    fig.set_size_inches(*plot["plot_size"])
+  else:
+    #fig.set_size_inches(441.01773 / 72.27 * 0.8 / phi, 441.01773 / 72.27 * 0.8)  # landscape
+    phi = (5**.5-1) / 2  # golden ratio
+    fig.set_size_inches(441.01773 / 72.27 * 0.9, 441.01773 / 72.27 * 0.9 * phi)  # thesis
   if plot.get('title') is not None:
     plt.suptitle(plot['title'], fontsize=16)
 
@@ -241,6 +244,10 @@ def plot_series(plot):
     print(f"  Saving image to '{plot['output_file']['fname']}'")
     plt.savefig(**plot["output_file"])
   plt.show()
+
+
+phi = (5**.5-1) / 2  # golden ratio
+
 
 if __name__ == "__main__":
   plots = [
@@ -256,6 +263,7 @@ if __name__ == "__main__":
       #    "crop": [1e2, 5e6],
       #},
       "legend_position": "upper right",
+      "plot_size": (441.01773 / 72.27 * 0.8 / phi, 441.01773 / 72.27 * 0.8),
       'primary_axis': {
         "axis_settings": {
           'x_label': r"Frequency in \unit{\Hz}",
@@ -279,15 +287,19 @@ if __name__ == "__main__":
                 "color": colors[7],
             },
             "dgDrive": {
-                "label": "DgDrive-500 v2.3.0",
+                "label": "DgDrive-500-LN v2.3.0",
                 "color": colors[5],
+            },
+            "dgDrive_simulation": {
+                "label": "LTSpice simulation (DgDrive)",
+                "color": colors[8],
             },
             "dgDrive_hmp4040": {
                 "label": "DgDrive-500 v2.1.0 (HMP4040)",
                 "color": colors[6],
             },
             "lqo": {
-                "label": "LQprO-140",
+                "label": "LQO LQprO-140",
                 "color": colors[1],
             },
             "moglabs": {
@@ -295,7 +307,7 @@ if __name__ == "__main__":
                 "color": colors[2],
             },
             "smc11": {
-                "label": "SMC11 (\qty{470}{\mA})",
+                "label": "Sisyph SMC11 (\qty{470}{\mA})",
                 "color": colors[4],
             },
             "toptica_dcc": {
@@ -416,6 +428,20 @@ if __name__ == "__main__":
             },
           },
         },
+        {
+          'filename': 'current_regulator_v3_AD797+TIA_simple.txt',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "delimiter": "\t",
+            "columns": {
+              0: "freq",
+              1: "dgDrive_simulation"
+            },
+            "scaling": {
+            },
+          },
+        },
       ],
     },
     {
@@ -452,6 +478,10 @@ if __name__ == "__main__":
                 "label": "DgDrive-500 v2.1.0 (HMP4040)",
                 "color": colors[6],
             },
+            "dgDrive_simulation": {
+                "label": "LTSpice simulation (DgDrive)",
+                "color": colors[8],
+            },
         },
         'filter': None,#filter_savgol(window_length=101, polyorder=3),
       },
@@ -481,6 +511,20 @@ if __name__ == "__main__":
             },
             "scaling": {
               #"dgDrive": lambda x: 20*np.log10(x["dgDrive"])
+            },
+          },
+        },
+        {
+          'filename': 'current_regulator_v3_AD797+TIA_simple.txt',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "delimiter": "\t",
+            "columns": {
+              0: "freq",
+              1: "dgDrive_simulation"
+            },
+            "scaling": {
             },
           },
         },
@@ -579,6 +623,55 @@ if __name__ == "__main__":
             "columns": {
               0: "freq",
               1: "vescent_450mA",
+            },
+            "scaling": {
+            },
+          },
+        },
+      ],
+    },
+{
+      'title': 'DgTemp 1.0.0, noise floor',
+      'title': None,
+      'show': False,
+      "output_file": {
+        "fname": "../images/dgTemp_244sps_shorted_input.pgf"
+      },
+      #'crop': {
+      #    "crop_index": "frequency",
+      #    "crop": [1e2, 5e6],
+      #},
+      "legend_position": "upper right",
+      'primary_axis': {
+        "axis_settings": {
+          'x_label': r"Frequency in \unit{\Hz}",
+          'y_label': r"Noise density in \unit[power-half-as-sqrt,per-mode=symbol]{\V \Hz\tothe{-0.5}}",
+          "invert_x": False,
+          "invert_y": False,
+          #"fixed_order": -9,
+          "x_scale": "log",
+          "y_scale": "log",
+          #"y_scale": "lin",
+        },
+        'x-axis': "freq",
+        'plot_type': 'absolute',  # absolute, relative, proportional
+        'columns_to_plot': {
+            "dgTemp": {
+                "label": "DgTemp v1.0.0, 244 Hz",
+                "color": colors[0],
+            },
+        },
+        'filter': None,#filter_savgol(window_length=101, polyorder=3),
+      },
+      'files': [
+        {
+          'filename': './dgTemp_noise/dgTemp_244sps_shorted_input.csv',
+          'show': True,
+          'parser': 'ltspice_fets',
+          'options': {
+            "columns": {
+              0: "freq",
+              1: "dgTemp",
             },
             "scaling": {
             },
