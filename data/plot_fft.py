@@ -9,13 +9,14 @@ import os
 import pandas as pd
 from matplotlib.ticker import ScalarFormatter
 from scipy.constants import elementary_charge, k as kB
+from scipy import integrate
 import seaborn as sns
 
 pd.plotting.register_matplotlib_converters()
 
 from file_parser import parse_file
 
-colors = sns.color_palette("colorblind")
+colors = sns.color_palette("colorblind", 11)
 
 # Use these settings for the PhD thesis
 tex_fonts = {
@@ -164,15 +165,27 @@ def plot_data(ax, data, x_axis, column_settings):
   for column, settings in column_settings.items():
       if column in data:
           ax.plot(
-            data[x_axis],
-            data[column],
+            data[x_axis][~np.isnan(data[column])],
+            data[column][~np.isnan(data[column])],
             color=settings["color"],
             marker="",
             label=settings["label"],
             alpha=0.7,
             linewidth=settings.get("linewidth", 1),
             linestyle=settings.get("linestyle", "-"),
+            zorder=settings.get("zorder", None),
           )
+
+def integrate_data(data, x_axis, column_settings):
+    print("  Integrated current noise:")
+    for column, settings in column_settings.items():
+        if column in data:
+            current_data = data.dropna(subset=column)
+            current_data_100khz = data.dropna(subset=column)[(current_data[x_axis] >= 10**1) & (current_data[x_axis] <= 10**5)]
+            current_data = current_data[(current_data[x_axis] >= 10**1) & (current_data[x_axis] <= 10**6)]
+            rms_100khz = integrate.trapezoid(current_data_100khz[column]**2, current_data_100khz[x_axis])
+            rms = integrate.trapezoid(current_data[column]**2, current_data[x_axis])
+            print(f"    {column}: {np.min(current_data_100khz[x_axis])} Hz - {np.max(current_data_100khz[x_axis])} kHz, {np.sqrt(rms_100khz):.2e} A_rms; {np.min(current_data[x_axis])} Hz - {np.max(current_data[x_axis])} kHz, {np.sqrt(rms):.2e} A_rms")
 
 def plot_series(plot):
   # Load the data to be plotted
@@ -198,6 +211,7 @@ def plot_series(plot):
       )
 
     x_axis = plot_settings["x-axis"]
+    integrate_data(data, x_axis=x_axis, column_settings=plot_settings['columns_to_plot'])
     plot_data(ax1, data, x_axis=x_axis, column_settings=plot_settings['columns_to_plot'])
 
     #plotShotNoise(ax1, 0.5)
@@ -254,10 +268,10 @@ if __name__ == "__main__":
     {
       'title': 'DgDrive Noise comparison',
       'title': None,
-      'show': True,
-      "output_file": {
-        "fname": "../images/laser_driver_noise_measurement.pgf"
-      },
+      'show': False,
+      #"output_file": {
+      #  "fname": "../images/laser_driver_noise_measurement.pgf"
+      #},
       #'crop': {
       #    "crop_index": "frequency",
       #    "crop": [1e2, 5e6],
@@ -278,25 +292,9 @@ if __name__ == "__main__":
         'x-axis': "freq",
         'plot_type': 'absolute',  # absolute, relative, proportional
         'columns_to_plot': {
-            "lna_background": {
-                "label": r"LNA background (\qty{10}{\ohm})",
-                "color": colors[0],
-            },
-            "tia_background": {
-                "label": r"SR560 background (\qty{1}{\kilo\ohm})",
-                "color": colors[7],
-            },
-            "dgDrive": {
-                "label": "DgDrive-500-LN v2.3.0",
-                "color": colors[5],
-            },
-            "dgDrive_simulation": {
-                "label": "LTSpice simulation (DgDrive)",
-                "color": colors[8],
-            },
-            "dgDrive_hmp4040": {
-                "label": "DgDrive-500 v2.1.0 (HMP4040)",
-                "color": colors[6],
+            "toptica_dcc": {
+                "label": "Toptica DCC 110",
+                "color": colors[9],
             },
             "lqo": {
                 "label": "LQO LQprO-140",
@@ -306,17 +304,32 @@ if __name__ == "__main__":
                 "label": "Moglabs DLC-202",
                 "color": colors[2],
             },
-            "smc11": {
-                "label": "Sisyph SMC11 (\qty{470}{\mA})",
-                "color": colors[4],
-            },
-            "toptica_dcc": {
-                "label": "Toptica DCC 110",
-                "color": colors[9],
-            },
             "vescent": {
                 "label": "Vescent D2-105-500 (no display)",
                 "color": colors[3],
+            },
+            "dgDrive": {
+                "label": "DgDrive-500-LN v2.3.0",
+                "color": colors[5],
+                "zorder": 2.02,
+            },
+            "dgDrive_simulation": {
+                "label": "LTSpice simulation (DgDrive)",
+                "color": "black",
+                "zorder": 2.03,
+            },
+            "lna_background": {
+                "label": r"LNA background (\qty{10}{\ohm})",
+                "color": colors[0],
+            },
+            "smc11": {
+                "label": "Sisyph SMC11 (\qty{470}{\mA})",
+                "color": colors[4],
+                "zorder": 2.01,
+            },
+            "tia_background": {
+                "label": r"SR560 background (\qty{1}{\kilo\ohm})",
+                "color": colors[7],
             },
         },
         'filter': None,#filter_savgol(window_length=101, polyorder=3),
@@ -456,6 +469,7 @@ if __name__ == "__main__":
       #    "crop": [1e2, 5e6],
       #},
       "legend_position": "upper right",
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
       'primary_axis': {
         "axis_settings": {
           'x_label': r"Frequency in \unit{\Hz}",
@@ -471,16 +485,34 @@ if __name__ == "__main__":
         'plot_type': 'absolute',  # absolute, relative, proportional
         'columns_to_plot': {
             "dgDrive": {
-                "label": "DgDrive-500 v2.3.0",
+                "label": "DgDrive-500-LN v2.3.0",
                 "color": colors[5],
             },
             "dgDrive_hmp4040": {
-                "label": "DgDrive-500 v2.1.0 (HMP4040)",
-                "color": colors[6],
+                "label": "DgDrive-500-LN v2.1.0 (HMP4040)",
+                "color": colors[10],
             },
             "dgDrive_simulation": {
                 "label": "LTSpice simulation (DgDrive)",
-                "color": colors[8],
+                "color": "black",
+            },
+            "shot_noise_200mA": {
+                "label": r"Shot noise, \qty{200}{\mA}",
+                "color": "red",
+                "linestyle": "dotted",
+                "linewidth": 1.5,
+            },
+            "shot_noise_100mA": {
+                "label": r"Shot noise, \qty{100}{\mA}",
+                "color": "red",
+                "linestyle": "dashed",
+                "linewidth": 1.5,
+            },
+            "shot_noise_20mA": {
+                "label": r"Shot noise, \qty{20}{\mA}",
+                "color": "red",
+                "linestyle": "dashdot",
+                "linewidth": 1.5,
             },
         },
         'filter': None,#filter_savgol(window_length=101, polyorder=3),
@@ -525,6 +557,9 @@ if __name__ == "__main__":
               1: "dgDrive_simulation"
             },
             "scaling": {
+                "shot_noise_100mA": lambda data: np.ones_like(data["freq"]) * np.sqrt(2 * elementary_charge * 0.1),
+                "shot_noise_200mA": lambda data: np.ones_like(data["freq"]) * np.sqrt(2 * elementary_charge * 0.18),
+                "shot_noise_20mA": lambda data: np.ones_like(data["freq"]) * np.sqrt(2 * elementary_charge * 0.02),
             },
           },
         },
@@ -541,7 +576,8 @@ if __name__ == "__main__":
       #    "crop_index": "frequency",
       #    "crop": [1e2, 5e6],
       #},
-      "legend_position": "upper right",
+      "legend_position": "lower left",
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
       'primary_axis': {
         "axis_settings": {
           'x_label': r"Frequency in \unit{\Hz}",
@@ -557,19 +593,19 @@ if __name__ == "__main__":
         'plot_type': 'absolute',  # absolute, relative, proportional
         'columns_to_plot': {
             "vescent": {
-                "label": "Vescent D2-105-500 (\qty{50}{\mA}, $V_{DS} = \qty{9.9}{\V} V$)",
+                "label": "Vescent D2-105-500 (\qty{50}{\mA}, $V_{DS} = \qty{9.8}{\V}$)",
                 "color": colors[3],
             },
             "vescent_300mA": {
-                "label": "Vescent D2-105-500 (\qty{300}{\mA}, $V_{DS} = \qty{4.4}{\V} V$)",
+                "label": "Vescent D2-105-500 (\qty{300}{\mA}, $V_{DS} = \qty{4.0}{\V}$)",
                 "color": colors[0],
             },
             "vescent_400mA": {
-                "label": r"Vescent D2-105-500 (\qty{400}{\mA}, $V_{DS} = \qty{2.2}{\V} V$)",
+                "label": r"Vescent D2-105-500 (\qty{400}{\mA}, $V_{DS} = \qty{1.7}{\V}$)",
                 "color": colors[4],
             },
             "vescent_450mA": {
-                "label": "Vescent D2-105-500 (\qty{450}{\mA}, $V_{DS} = \qty{1.1}{\V} V$)",
+                "label": "Vescent D2-105-500 (\qty{450}{\mA}, $V_{DS} = \qty{0.5}{\V}$)",
                 "color": colors[2],
             },
         },
@@ -577,7 +613,7 @@ if __name__ == "__main__":
       },
       'files': [
         {
-          'filename': './current_source_noise/vescent_d2-105-500_no_display.csv',
+          'filename': './current_source_noise/vescent_d2-105-500_no_display_2kHz.csv',
           'show': True,
           'parser': 'ltspice_fets',
           'options': {
