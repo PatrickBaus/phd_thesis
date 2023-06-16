@@ -1,14 +1,27 @@
-\section*{Abstract}
-Recent years have seen an ever increasing range of laser diodes covering the spectral range from ultraviolet to infrared. The classic \qty{780}{\nm} and \qty{830}{\nm} NIR laser diodes have been well established and many laser designs were developed with design parameters for such diodes. Over the years the disparity in development efforts between laser diodes and supporting electronic systems has led to a subpar performance of such systems compared to NIR diode lasers.
+\documentclass[12pt]{book}
+\usepackage{docmute}
+\usepackage{caption}  % used in the appendix
+\usepackage{amsmath}  % \overset and align environment
+\usepackage{aligned-overset}  % align overset in align environment
+\usepackage{import}
+\usepackage{siunitx}
+\usepackage[siunitx, europeanresistors, nooldvoltagedirection]{circuitikz}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usepackage{subcaption}
+\usepackage{xcolor}
 
-The desire for high resolution spectroscopy of highly charged ions having optically accessible transitions in the ultraviolet and blue regime sparked an interest in high precision and compact diode lasers systems adressing these needs. At the same time, other applications like quantum computing, using arrays of neutral atoms, have seen an increasing demand for customized, compact diode laser systems for the addressing and coherent manipulation of hundreds of indivdual quantum systems on the way to even larger systems scaling to thousands of qubits. All of these use cases require state-of-the-art diode laser systems designed for modern laser diodes with unprecedented stability and noise performance surpassing many of the solutions currently available.
+\DeclareCaptionFont{white}{\color{white}}
+\DeclareCaptionFormat{listing}{\colorbox{gray}{\parbox{0.95\textwidth}{#1#2#3}}}
+\captionsetup[lstlisting]{format=listing,labelfont=white,textfont=white}
 
-This work compares several commercial products and devices developed in academia used as building blocks for diode laser system like laser drivers and temperature controllers. The laser current driver performance is tested in terms of compliance voltage, output noise, stability with respect to both temperature and time and their output impedance, which is a measure for their noise suppression capability. The limitations found with the tested devices are identified and their causes are explained analytically and with simuations. The laser temperature controllers which are inherently closed-loop instruments whose performance is determined by their front end were tested in terms of noise and stability using reference resistors against a reference thermometer.
+\providecommand{\device}[1]{\texttt{\small #1}}
+\providecommand{\external}[1]{\textsf{#1}}
 
-These results led to the development of a novel fully digital laser diode driver and temperature controller surpassing other solutions in terms of performance by at least one order of magnitude while being open-source and highly customisable to allow adapting to the needs of both high-resolution spectroscopy and coherent control of quantum systems. The laser current driver implements a unique architecture that isolates the current source from the load to combine the high compliance voltage, demanded by modern high performance laser diode, with ultra-low current noise and stability, providing sub-shot noise performance between \qty{20}{\mA} and \qty{500}{\mA}, delivering a performance close to the limits allowed by physics. This is combined with an outstanding noise immunity allowing the use of compact switch-mode supplies to power those laser drivers without impacting their performance.
+\begin{document}
+    \subimport{}{abstract_english.tex}
+    \clearpage
+    \subimport{}{abstract_german.tex}
+\end{document}
 
-The digital temperature controller, again an open-source design, provides definitive sub-\unit{\milli\kelvin} performance with \unit{\micro\kelvin} resolution. The stability of this system is defined by the performance of the thermistor used, shifting the focus towards the mechanical resonator design as the ultimate performance limit.
-
-Finally, a data logging system is presented that accompanies these high precision instruments to monitor the environment of the laboratory, the experiment and instrument parameters to give the experimenter real-time information on the state of the system along with user-definable alerts to protect those assets.
-
-All of these developments are in extensive use at several state-of-the-art experiments and are considered essential for their progress.
