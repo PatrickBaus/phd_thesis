@@ -57,7 +57,7 @@ The LQO \device{LQprO} is a solution that comes closest to the requirements, apa
 The Newport \device{TLB-6800-LN} is the only driver, that has a digital interface and supports Standard Commands for Programmable Instruments (SCPI). It also incorporates a TEC controller and a piezo controller. As mentioned before this driver only works with the Newport \device{Vantage} laser it was sold with.
 
 \subsection{Laser Driver: Design Concept}
-It was outlined in the previous section that none of the low noise laser drivers commercially available or in scientific literature can properly drive new, and higher voltage, generations of laser diodes currently entering the market. These diodes include, for example, blue laser diodes or high power laser diodes like the \qty{780}{\nm} Thorlabs \device{L785H1}, which requires \qty{250}{\mA} at \qty{3}{\V} maximum. Since the ARTEMIS experiment requires a laser at \qty{441}{\nm} and novel quantum computing experiments need more laser power at \qty{780}{\nm}  a new laser driver design is presented in this work to cope with the high supply voltage demands without degrading other performance aspects, additionally fulfilling the requirements outlined in tables \ref{lst:dgDrive_specs_environment} and \ref{lst:dgDrive_specs_electrical}. The concept is, nonetheless, similar to the laser driver design presented by \citeauthor{libbrecht_hall} \cite{libbrecht_hall} because the application is related. To get a better understanding of the advances implemented, the previous state-of-the-art proposed by \citeauthor{libbrecht_hall} will now be compared to the new system. The simplified version of the original design shown in figure \ref{fig:laser_driver_libbrecht_hall_concept} can be split into four building blocks. A supply voltage input filter, a reference voltage to create the setpoint, a unidirectional current source and some form of bidirectional current source used for modulating the laser current at high frequency. Each of these sections will be discussed in more detail. The chapters also list problems discovered and the solution proposed in the design presented here.
+It was outlined in the previous section that none of the low noise laser drivers commercially available or in scientific literature can properly drive new, and higher voltage, generations of laser diodes currently entering the market. These diodes include, for example, blue laser diodes or high power laser diodes like the \qty{780}{\nm} Thorlabs \device{L785H1}, which requires \qty{250}{\mA} at \qty{3}{\V} maximum. Since the ARTEMIS experiment requires a laser at \qty{441}{\nm} and novel quantum computing experiments need more laser power at \qty{780}{\nm}  a new laser driver design is presented in this work to cope with the high supply voltage demands without degrading other performance aspects, additionally fulfilling the requirements outlined in tables \ref{lst:dgDrive_specs_environment} and \ref{lst:dgDrive_specs_electrical}. The concept is, nonetheless, similar to the laser driver design presented by \citeauthor{libbrecht_hall} \cite{libbrecht_hall} because the application is related. To get a better understanding of the advances implemented, the previous state of the art proposed by \citeauthor{libbrecht_hall} will now be compared to the new system. The simplified version of the original design shown in figure \ref{fig:laser_driver_libbrecht_hall_concept} can be split into four building blocks. A supply voltage input filter, a reference voltage to create the setpoint, a unidirectional current source and some form of bidirectional current source used for modulating the laser current at high frequency. Each of these sections will be discussed in more detail. The chapters also list problems discovered and the solution proposed in the design presented here.
 \begin{figure}[ht]
     \centering
     %\resizebox {0.8\textwidth} {!} {
@@ -1017,13 +1017,13 @@ The results of the measurements are shown in figure \ref{fig:laser_driver_noise_
     \rotatebox{90}{
         \input{images/laser_driver_noise_measurement.pgf}
     } % rotatebox
-    \caption{Noise spectra of several current drivers tested. The \device{DgDrive-500-LN} and the \device{SMC11} were measured to \qty{1}{\Hz} using the \device{SR560} and a \qty{1}{\kilo\ohm} shunt resistor to improve the SNR. The amplifier noise floor was not subtracted form the measurements. The legend is ordered by the noise density at \qty{10}{\kHz} in descending order.}
+    \caption{Noise spectra of several current drivers tested. The \device{DgDrive-500-LN} and the \device{SMC11} were measured to \qty{1}{\Hz} using the \device{SR560} and a \qty{1}{\kilo\ohm} shunt resistor to improve the SNR. The amplifier noise floor was not subtracted form the measurements. The legend is ordered by the noise density in descending order.}
     \label{fig:laser_driver_noise_measurement}
 \end{figure}
 
 The next device evaluated was the LQO LQprO-140 developed at the neighbouring group \textit{Laser und Quantenoptik} \cite{ThorstenFuehrer}. The author would like to thank the group for providing a demo device for testing. The unit came in small rack with an integrated power supply. The author was pleasantly surprise of the little mains hum or harmonics present from this supply. Apart from the few mains harmonics up to \qty{350}{\Hz} there no other noise present. The noise floor itself was lower than the one presented by Toptica, but unfortunately the \qty{<300}{\pA \per \Hz\tothe{0.5}} claimed in the datasheet \cite{datasheet_LQprO} cannot be confirmed. A feature of this driver might be a boon and a bane at the same time and be responsible for the high noise floor. The driver has a full-scale modulation input with a bandwidth of \qty{200}{\kHz} \cite{datasheet_LQprO}, so aggressive filtering of the current source setpoint with a low cutoff is not possible and therefore quite some noise is present up to \qty{200}{\kHz}. Some of this noise is introduced by its linear regulators and with this feedback considerable improvements were made by \citeauthor{thesis_holger} \cite{thesis_holger}, bringing the driver closer to the performance of the Moglabs \device{DLC-102} discussed next.
 
-The Moglabs \device{DLC-102} has a flat noise floor of \qty{500}{\pA \per \Hz\tothe{0.5}}, which is more than the \qty{250}{\pA \per \Hz\tothe{0.5}} claimed by Moglabs. The former is owed to the fact that the \device{DLC-102} has a high compliance voltage of \qty{6}{\V}, which is the highest of all drivers tested. With a circuit architecture like the precision current source discussed in \ref{sec:precision_current_source}, a low value sense resistor must be employed. This in turn results in less transconductance gain, which increases the current noise as discussed in section \ref{sec:current_source_noise} and shown in table \ref{tab:current_source_noise_contributers} on page \pageref{tab:current_source_noise_contributers}. The \qty{50}{\Hz} noise and harmonics are likely due to the unshielded transformer integrated into the unit as part of the power supply. The large, solitary peak at \qty{250}{\kHz} is due to the local oscillator of the integrated lock-in amplifier. The oscillator can be disabled completely by adjusting internal trimpots. This was not done for the noise measurement because the origin of the peak is known, deliberately placed there and had no bearing on the measurement.
+The Moglabs \device{DLC-102} displays a flat noise floor of \qty{500}{\pA \per \Hz\tothe{0.5}}. Moglabs gives several numbers for the output noise of their between \qty{100}{\pA \per \Hz\tothe{0.5}} and \qty{250}{\pA \per \Hz\tothe{0.5}}, but it is not clear to which version of the driver these numbers refer. This number is likely owned to the fact that the \device{DLC-102} has a high compliance voltage of \qty{6}{\V}, which is the highest of all drivers tested. With a circuit architecture like the precision current source discussed in \ref{sec:precision_current_source}, a low value sense resistor must be employed. This in turn results in less transconductance gain, which increases the current noise as discussed in section \ref{sec:current_source_noise} and shown in table \ref{tab:current_source_noise_contributers} on page \pageref{tab:current_source_noise_contributers}. The \qty{50}{\Hz} noise and harmonics are likely due to the unshielded transformer integrated into the unit as part of the power supply. The large, solitary peak at \qty{250}{\kHz} is due to the local oscillator of the integrated lock-in amplifier. The oscillator can be disabled completely by adjusting internal trimpots. This was not done for the noise measurement because the origin of the peak is known, deliberately placed there and had no bearing on the measurement.
 
 The Vescent \device{D2-105-500} delivered a performance close the LNA noise limit discussed above. With a measured noise of \qty{120}{\pA \per \Hz\tothe{0.5}}, the actual noise floor is closer to \qty{100}{\pA \per \Hz\tothe{0.5}} when subtracting the amplifier noise, which is well below the conservatively specified \qty{<200}{\pA \per \Hz\tothe{0.5}} \cite{datasheet_vescent_laser_driver}. The driver is susceptible to mains hum though, most likely coupled magnetically. The power supply that came with driver, a Vescent \device{D2-005}, had a fairly short lead and used an E-core transformer inside, responsible for some magnetic leakage. The close proximity of the power supply in combination with the limited output impedance discussed in the previous section on page \pageref{fig:dgDrive_output_impedance_comparison} leads to a strong coupling. Due to the \qty{50}{\Hz} noise, the driver is not capable of meeting the required \qty{30}{\nA_{rms}} noise figure (see specification \ref{lst:dgDrive_specs_electrical}). At frequencies below \qty{10}{\Hz} no measurement was possible because the cutoff frequency of the LNA is \qty{10}{\Hz}. Using a larger resistor and the \device{SR560} was not feasible because the compliance voltage of the driver is limited to around \qty{2.5}{\V} and going above that, severe noise peaking was seen. Nonetheless, the noise corner frequency of the device at \qty{80}{\Hz} can be seen. This is due to the input current noise of the \device{AD797} op-amp used in the current source in combination with the setpoint filter as discussed in section \ref{sec:voltage_reference}. The flicker noise part is expected to start below this frequency. As a final note, all noise tests were conducted with the display board disconnected, as there was strong interference at \qty{22.5}{\kHz} and harmonics coming from this board. The issue was disclosed to Vescent in 2018-02 and reported fixed as of 2018-08 \cite{vescent_email}, but no retesting was done.
 
@@ -1101,17 +1101,117 @@ Figure \ref{fig:laser_driver_noise_measurement} on page \pageref{fig:laser_drive
     \end{deviceProperties}
 \end{center}
 
+\subsection{Test Results: Temperature Stability}%
+\label{sec:results_temperature_stability}
+As it was shown in section \ref{sec:design_goal_environment}, the ambient temperature can vary by as much as \qty{2}{\kelvin} in a typical temperature stabilized environment. The laser driver must therefore be tested in a representative temperature range. The racks typically have a temperature of around \qty{26}{\celsius} when actively cooled. The laser driver was tested in a custom thermal chamber and the ambient temperature was swept several time from \qtyrange[range-units = single, range-phrase={~to~}]{20}{30}{\celsius}. At the same time, the voltage over a \qty{10}{\ohm} or \qty{100}{\ohm} Vishay \device{VPR221Z} shunt was measured using a Keysight \device{3458A}, depending on the output current of \qty{50}{\mA} and \qty{510}{\mA}. The shunt was mounted in an aluminium housing and its temperature was monitored using a Keithley \device{DMM6500} and a PT100 glued to the shunt.
 
-In order to test a large amount of Zener diodes, and considering the duration of the burn-in process, which can take anything between \qtyrange{100}{1000}{\hour}, it is necessary to have an automated setup. This consists of a digital multimeter (DMM) a scanner and test board, that holds the Zener diodes and provides the necessary infrastructure for the diodes.
+Repeating the test for a low current output and additionally for the maximum output allows to discriminate between the temperature coefficient (tempco) resulting from offset drifts and voltage reference drifts because at low output values the effect of the reference voltage is scaled down. In case of the \device{DgDrive-500-LN} at \qty{50}{\mA} by factor of $50/510$ making it almost negligible. In this case op-amp offset drifts and other drifts from effects like thermal EMF dominate the temperature coefficient while effects that are proportional to the output are suppressed. At full output the voltage reference drift is fully added and also the drift of the sense resistor is more pronounced.
 
+Another effect that can only be seen at full output is burst noise coming from the Zener diode used as a reference. This manifest a sudden jumps in the output current. The \device{DgDrive-500-LN} \#14 tested is one of the earlier versions and contains an affected reference, which was discovered during those tests. This issue and its solution is discussed in more detail in the next section.
 
+As it was discussed in section \ref{sec:voltage_reference}, great care was taken to reduce the offset related drift, which can be seen in figure \ref{fig:dgDrive_tempco_50mA}. These efforts were rewarded with a very low temperature coefficient of $\qty{97}{\nA \per \K} \equiv \qty{0.19}{\uA \per \A \per \K}$ when running at \qty{10}{\percent} output current. At a maximum current of \qty{510}{\mA} the drift of the sense resistor and the Zener diode add to the result and the temperature coefficient increases to $\qty{348}{\nA \per \K} \equiv \qty{0.68}{\uA \per \A \per \K}$. These results are typical number for this batch as all sense resistors are from the same batch, ordered directly from Vishay. In addition, the summing and averaging of the two current sources reduces the spread between resistor samples even further.
 
-To conclude, we need a high performance DMM, a scanner, and a test fixture. The choices will detailed in the following sections.
+Other laser driver were tested in a similar fashion if it was possible to fit them into the thermal chamber. Not all drivers were tested, because as can be seen on the timescale of figure \ref{fig:dgDrive_tempco_50mA}, these tests very slow temperature ramps to suppress hysteresis effects. Larger devices like the Moglabs \device{DLC-102} or the Vescent \device{D2-105} were placed in a cooling cabinet and once the current had stabilised, the door was opened to apply a step change of about \qty{10}{\K}. The results are summarised in table \ref{tab:temperature_coefficient_overview}.
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{lll}
+        \toprule
+        Device& Tempco at \qty{50}{\mA}& Tempco at full current \\
+        \midrule
+        LQO \device{LQprO} & \qty{8.6}{\uA \per \A \per \K}& --\\
+        Moglabs \device{D2-105} & \qty{1.3}{\uA \per \A \per \K}& --\\
+        Vescent \device{DLC-102} & \qty{3.5}{\uA \per \A \per \K}& --\\
+        \device{DgDrive-500-LN} & \qty{0.19}{\uA \per \A \per \K}& \qty{0.68}{\uA \per \A \per \K}\\
+        \bottomrule
+    \end{tabular}
+    \caption{Tempco of several laser drivers tested. Scaled to full scale output.}
+    \label{tab:temperature_coefficient_overview}
+\end{table}
 
+The \device{SMC11} was also tested, but not found stable enough over time to make out a temperature coefficient against the drift and low frequency noise of the device. It is therefore not included in table \ref{tab:temperature_coefficient_overview}. The low frequency noise encountered is shown in figure \ref{fig:stability_smc11} and discussed in section \ref{sec:results_stability}.
 
+\begin{figure}[hp]
+    \centering
+    \input{images/dgDrive_tempco_50mA.pgf}
+    \caption{Output current drift of a \device{DgDrive-500-LN} running at \qty{50}{\mA} over an ambient temperature range of \qtyrange[range-units = single, range-phrase={~to~}]{20}{30}{\celsius}.}
+    \label{fig:dgDrive_tempco_50mA}
+\end{figure}
+\begin{figure}[hp]
+    \centering
+    \input{images/dgDrive_tempco_510mA.pgf}
+    \caption{Output current drift of a \device{DgDrive-500-LN} running at \qty{510}{\mA} over an ambient temperature range of \qtyrange[range-units = single, range-phrase={~to~}]{20}{30}{\celsius}.}
+    \label{fig:dgDrive_tempco_510mA}
+\end{figure}
+\clearpage
 
-\subsection{A Scanner System for Testing Zener Diodes}
-As discussed before the diodes need to be tested for \qty{1000}{\hour} and it is not be feasible to test them individually. So a minimum of 10 diodes must be tested at the same time. To keep the system compact, the test setup a scanner to multiplex a single multimeter input. Several commercial options currently available were considered for this project and are shown in table \ref{tab:list_of_daqs}.
+To conclude, the temperature coefficient of the {DgDrive-500-LN} was tested to be better than
+\begin{equation}
+    \qty{0.1}{\uA \per \K} + \qty{0.5}{\uA \per \A \per \K} \cdot I_{out}\,.
+\end{equation}
+
+This is well below the required target of \qty{<= 1}{\uA \per \A \per \K} set in table \ref{lst:dgDrive_specs_environment}. Since the tests typically take a week or more, only the most promising commercial drivers were tested. Unfortunately, no other driver was able to meet the target, although the Vescent \device{D2-105} came close with \qty{1.3}{\uA \per \A \per \K}. The SISYPH \device{SMC11} could not be tested because it was not stable enough to allow any distinction between a temporal drift and a temperature coefficient. This topic will be discussed in the next section.
+\begin{center}
+    \begin{deviceProperties}[label={lst:dgDrive_temperature_stability}]{DgDrive temperature stability}
+    \begin{itemize}
+        \item \device{DgDrive-500-LN}, \qty{50}{\mA}: $\qty{97}{\nA \per \K} \equiv \qty{0.19}{\uA \per \A \per \K}$
+        \item \device{DgDrive-500-LN}, \qty{510}{\mA}: $\qty{348}{\nA \per \K} \equiv \qty{0.68}{\uA \per \A \per \K}$
+        \item Combined temperature coefficient: $\qty{0.1}{\uA \per \K} + \qty{0.5}{\uA \per \A \per \K} \cdot I_{out}$
+    \end{itemize}
+    \end{deviceProperties}
+\end{center}
+
+\subsection{Test Results: Stability over Time}%
+\label{sec:results_stability}
+The stability measurements were conducted for \qty{24}{\hour} and the output current was recorded using a Keysight \device{34470A} DMM and a Vishay \device{VPR221Z} \qty{10}{\ohm} shunt resistor, which proved more stable than the internal shunt resistor of the \device{34470A}. The shunt voltage was recorded at the \qty{1}{\V} range with \qty{10}{\plc} and autozeroing enabled. Both the DMM and the laser driver were warmed up for \qty{8}{\hour} prior to the measurement. Ambient data of the lab, like temperature and humidity, was recorded using the LabKraken software (see section \ref{sec:res_labkraken} for details of the software). The devices themselves were not placed in a thermal chamber to reflect a typical use case. The lab temperature was kept within \qty{0.5}{\K} though. All measurements were done at \qty{50}{\mA} to align with the noise measurements. Do note, at such low currents the reference noise is strongly attenuated and therefore the burst noise of the commercial drivers can not be judged from those measurements. This issue with the \device{LM399} was only discovered later and retesting of the commercial drivers was no longer possible. The burst noise issue is discussed in more detail in section \ref{sec:zener_diode_selection}.
+
+All devices but one showed no obvious issues regarding the short term stability. For reasons of brevity these measurements are not shown in detail here. The only device found unsuitable for the use in high precision spectroscopy was the Sisyph \device{SMC11} as it exhibited large drifts, which were in part due to the trimmer resistor used to set the output current. This was already seen in section \ref{sec:results_current_noise} where it manifested itself as a large low frequency noise contribution. The effect in the time domain can be seen in figure \ref{fig:stability_smc11}, where the \device{SMC11} shows these severe short-term drift issues with a varying output current of up to \qty{1}{\uA} over the course of minutes. The drift after a setpoint change is not shown because the driver was warmed at the operating current before the measurement as mentioned above, but drifts of up to \qty{10}{\uA} were observed. This makes adjusting the driver difficult, especially if a lock to an atomic reference or a high finesse resonator is desired. Regarding the blue spectroscopy laser system for the ARTEMIS experiment with a stability margin of only few tens of \unit{\uA} as discussed in section \ref{sec:design_goal_environment}, this behaviour renders the driver incompatible with the ARTEMIS experiment. For comparison the output of the output of \device{DgDrive-500-LN} over the same time frame and transposed by \qty{-2}{\uA} is also shown in figure \ref{fig:stability_smc11}. This highlights the enormous low frequency noise component present in the Sisyph \device{SMC11}.
+\begin{figure}[ht]
+    \centering
+    \input{images/stability_smc11.pgf}% data/plot_generic.py
+    \caption{Output current stability of the \device{SMC11} at \qty{50}{\mA} over the course of \qty{24}{\hour}. For reference the output of the \device{DgDrive-500-LN} is also shown.}
+    \label{fig:stability_smc11}
+\end{figure}
+
+The performance of the \device{DgDrive-500-LN} is again shown in figure \ref{fig:stability_dgDrive} in full. No discernible drift over the \qty{24}{\hour} period can made out from figure \ref{fig:stability_dgDrive} as the data is entirely obscured by the measurement uncertainty and noise of the \device{34470A}.
+\begin{figure}[h!]
+    \centering
+    \input{images/stability_dgDrive.pgf}% data/plot_generic.py
+    \caption{Output current stability of the \device{DgDrive-500-LN} at \qty{50}{\mA} over the course of \qty{24}{\hour}.}
+    \label{fig:stability_dgDrive}
+\end{figure}
+
+The 2-$\sigma$ uncertainty of the DMM \cite{datasheet_keysight34470A} with these measurement settings is $\qty{10}{\uA \per \A} + \qty{0.4}{\uA} = \qty{0.9}{\uA}$, not including the shunt resistor, which renders a discussion about the apparent drift of \qty{30}{\nA} seen in figure \ref{fig:stability_dgDrive} questionable.
+
+To get a more definitive answer on the actual drift, the measurement should be repeated with a lower noise and more stable multimeter like the \device{3458A} or alternatively a differential measurement between the shunt voltage and the Fluke \device{5440B} calibrator can be carried out. Nonetheless, an upper bound of less than \qty{50}{\nA \per \day} can be given. Regarding the long-term drift, the annual calibration of the laser drivers currently in use can be evaluated. The first batch of laser drivers, which has been in use for more than one year was measured against a freshly calibrated \device{3458A} and a drift of \qty{< 1 \pm 2}{\uA \per \A \per a} was found. This surpasses the requirements put up by the specification of \qty{240}{\uA \per \A \per 30 \day} given in table \ref{lst:dgDrive_specs_environment} on page \pageref{lst:dgDrive_specs_environment} by a far margin.
+%To get an even better understanding of the long-term drift of the \device{DgDrive} more data needs to be collected on the drivers currently in use, but requires more calibration cycles and therefore time.
+\begin{center}
+    \begin{deviceProperties}[label={lst:dgDrive_temporal_stability}]{DgDrive stability over time}
+    \begin{itemize}
+        \item Short term drift: \qty[per-mode = symbol]{<0.1 \pm 2}{\uA \per \A \per \day}
+        \item Long term drift: \qty[per-mode = symbol]{< 1 \pm 2}{\uA \per \A \per a}
+    \end{itemize}
+    \end{deviceProperties}
+\end{center}
+
+\subsection{Zener Diode Selection}%
+\label{sec:zener_diode_selection}
+As hinted in section \ref{sec:results_temperature_stability}, early temperature stability tests of the laser driver with an ADI \device{LM399} Zener diode as a voltage reference confirmed what the data sheet of the Zener diode \cite{datasheet_LM399} already suggest in the \textit{Low Frequency Noise Voltage} plot. There are random bi-stable voltage step changes. This phenomenon is called burst noise or popcorn noise. The theoretical model to describe it is discussed in more detail in section \ref{sec:theory_burst_noise} on page \pageref{sec:theory_burst_noise}.
+\begin{figure}[ht]
+    \centering
+    \input{images/lm399_popcorn_noise.pgf}
+    \caption{Popcorn noise in different samples of the \device{LM399} over a \qty{24}{\hour} period as recorded by the scanner system discussed in this section.}
+    \label{fig:popcorn_noise_lm399}
+\end{figure}
+
+Figure \ref{fig:popcorn_noise_lm399} shows two samples of the \device{LM399} that exhibit popcorn noise, while the last one does not.
+
+The sources of popcorn noise in semiconductor devices are not yet fully understood, but some sources have been identified. Defects in the semiconductor crystal lattice and contamination of the semiconductor material have been linked to popcorn noise \cite{technote_ti_popcorn_noise}. This problem has improved over the years as manufacturing processes and wafer quality has evolved. Unfortunately the \device{LM399} is built around a process from 1991, as can be seen etched into the silicon die \cite{lm399_richi}.
+
+The popcorn noise caused by defects and contamination can be reduced by lowering the strain on the lattice and removing surface contaminants on the die. This can be achieved using a high-temperature burn-in process. Manufacturers like Fluke and Keysight use similar techniques in their products. Fluke, for example, uses a period of \qty{60}{\day} burn-in for their references \cite{zener_popcorn_noise}.
+
+Fortunately, the \device{LM399} is a heated reference, which heats itself to \qty{90}{\celsius} when turned on, so it is only required put the Zener diodes in a simple test circuit to apply a burn-in procedure. The use of a separate test setup instead of the final circuit has both advantages and disadvantages. The disadvantage is that the Zener diode will subjected to mechanical stress after burn-in when soldered in the final PCB. This stress will, of course, not be removed by the burn-in process as, but this mainly affects the voltage drift properties of the Zener diode and not the popcorn noise. The drift of the diode is only of secondary concern for the laser current driver as the output drift is mainly caused by the drift of the reference resistors, which is typically at least an order of magnitude worse than the drift of the Zener diode judging by the data sheet \cite{datasheet_LM399,datasheet_VPR}.
+
+The advantage of testing the Zener diodes separately, on the other hand, is that more diodes can be tested at the same time using a compact test fixture. It is also simpler to remove unsuitable diodes from such a test fixture, because sockets instead of solder joints can be used. Building such a test setup is detailed in the next sections.
 
 \begin{table}[h]
     \centering

@@ -206,15 +206,15 @@
 	\examdate{\today}
 	\maketitle
 
-	\include{abstract}
-	\tableofcontents
-	\include{changelog}
+    \subimport{}{abstract.tex}
+    \tableofcontents
+    \include{changelog}
     \include{introduction}
 
     \include{preparation}
     %\showthe\textwidth
     \include{results}
-    %\include{outlook}
+    \include{outlook}
 
     \printbibliography[heading=bibintoc, title={References}]
     \subimport{appendix/}{appendix.tex}
