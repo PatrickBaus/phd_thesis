@@ -45,24 +45,17 @@ def parse_Keysight34470A_file(filename, options, **kwargs):
     )
     start_date_ts = start_date.replace(tzinfo=datetime.timezone.utc).timestamp()
 
-    # The date parser function (Timezone will be parsed as UTC)
-    dateparser = lambda dates: [
-        datetime.datetime.utcfromtimestamp((int(d) * sample_interval + start_date_ts))
-        for d in dates
-    ]
-
     data = pd.read_csv(
         filename,
         skiprows=3,
         header=None,
         delimiter=options.get("delimiter", ","),
         usecols=(0, 1,),
-        names=("date", "value",),
-        parse_dates=["date"],
-        date_parser=dateparser,
+        names=("date", options.get("value_name", "value"),),
     )
 
-    data = data[abs(data.value) < 9.90000000e37]  # Drop out out bounds
+    data["date"] = pd.to_datetime(data["date"] * sample_interval + start_date_ts, unit="s")
+    data = data[abs(data[options.get("value_name", "value")]) < 9.90000000e37]  # Drop out out bounds
     data["date"] = data["date"].dt.tz_localize("utc")
 
     for key, scaling_function in options.get("scaling", {}).items():

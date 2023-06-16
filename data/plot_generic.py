@@ -132,7 +132,7 @@ def downsample_data(x_data, y_data):
     x_data, y_data = lttb.downsample(np.array([x_data, y_data]).T, n_out=1000, validators=[]).T
 
     if x_is_time:
-        x_data = pd.to_datetime(x_data).astype(dtype)
+        x_data = pd.to_datetime(x_data, utc=True)
 
     return x_data, y_data
 
@@ -166,6 +166,9 @@ def prepare_axis(ax, axis_settings):
       ax.xaxis.set_major_locator(matplotlib.dates.AutoDateLocator())
       #ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter("%m-%d %H:%M"))
       ax.xaxis.set_major_formatter(matplotlib.dates.ConciseDateFormatter(ax.xaxis.get_major_locator()))
+  if axis_settings.get("x_scale") == "timedelta":
+      ax.xaxis.set_major_locator(matplotlib.ticker.FixedLocator(range(0,48,3)))
+      #ax.xaxis.set_major_formatter(matplotlib.dates.DateFormatter("%H"))
   if axis_settings.get("invert_y"):
     ax.invert_yaxis()
   if axis_settings.get("invert_x"):
@@ -356,33 +359,41 @@ if __name__ == "__main__":
       ],
     },
     {
-      'title': r'SMC11 stability over \qty{60}{\hour}',
+      'title': r'SMC11 stability over \qty{24}{\hour}',
       'title': None,
       'show': False,
       "output_file": {
         "fname": "../images/stability_smc11.pgf"
       },
-      'crop': ['2019-12-01 00:00:00', '2019-12-02 00:00:00'],
-      #"legend_position": "lower center",
+      'crop': {
+        "crop_index": "date",
+        "crop": ['2019-12-01 00:00:00', '2019-12-02 00:00:00'],
+        "crop": [0, 24],
+      },
+      "legend_position": "upper right",
       'crop_secondary_to_primary': True,
       "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
       'primary_axis': {
         "axis_settings": {
-          'x_label': r"Time (UTC)",
+          'x_label': r"Time in \unit{\hour}",
           'y_label': r"Current deviation in \unit{\A}",
           "invert_x": False,
           "invert_y": False,
           "fixed_order": -6,
-          "x_scale": "time",
+          "x_scale": "timedelta",
           "y_scale": "lin",
           "limits_y": [-3e-6,3e-6],
         },
         'x-axis': "date",
         'plot_type': 'absolute',
         'columns_to_plot': {
-            "value": {
+            "smc11": {
                 "label": r"SMC11",
                 "color": colors[0],
+            },
+            "dgDrive": {
+                "label": r"DgDrive-500-LN",
+                "color": colors[5],
             },
         },
       },
@@ -414,41 +425,59 @@ if __name__ == "__main__":
           'show': True,
           'parser': '34470A',
           'options': {
+            "value_name": "smc11",
             'scaling': {
-                "value": lambda data: (data["value"] - data["value"].mean())/10,
+                "date": lambda data: (data["date"] - pd.Timestamp("2019-12-01 00:00:00", tz="UTC")).dt.total_seconds() / 3600,
+                "smc11": lambda data: (data["smc11"] - data["smc11"].mean())/10,
+            },
+          },
+        },
+        {
+          'filename': "DgDrive-1-2-1_50mA_FilmCap+RefNo3_10R_34470A_60h_8.csv",
+          'show': True,
+          'parser': '34470A',
+          'options': {
+            "value_name": "dgDrive",
+            'scaling': {
+                "date": lambda data: (data["date"] - pd.Timestamp("2019-11-23 12:00:00", tz="UTC")).dt.total_seconds() / 3600,
+                "dgDrive": lambda data: (data["dgDrive"] - data["dgDrive"][(data["date"]>=0) & (data["date"]<=24)].mean())/10 -2e-6,
             },
           },
         },
       ],
     },
     {
-      'title': r'DgDrive stability over \qty{60}{\hour}',
+      'title': r'DgDrive stability over \qty{24}{\hour}',
       'title': None,
       'show': False,
       "output_file": {
         "fname": "../images/stability_dgDrive.pgf"
       },
-      'crop': ['2017-12-03 00:00:00', '2017-12-04 00:00:00'],
+      'crop': {
+        "crop_index": "date",
+      #  "crop": ['2017-12-03 00:00:00', '2017-12-04 00:00:00'],
+        "crop": [0, 24],
+      },
       #"legend_position": "lower center",
       'crop_secondary_to_primary': True,
       "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
       'primary_axis': {
         "axis_settings": {
-          'x_label': r"Time (UTC)",
+          'x_label': r"Time in \unit{\hour}",
           'y_label': r"Current deviation in \unit{\A}",
           "invert_x": False,
           "invert_y": False,
-          "fixed_order": -6,
-          "x_scale": "time",
+          "fixed_order": -9,
+          "x_scale": "timedelta",
           "y_scale": "lin",
-          "limits_y": [-3e-6,3e-6],
+          #"limits_y": [-3e-6,3e-6],
         },
         'x-axis': "date",
         'plot_type': 'absolute',
         'columns_to_plot': {
             "value": {
                 "label": r"DgDrive-500-LN",
-                "color": colors[0],
+                "color": colors[5],
             },
         },
       },
@@ -477,12 +506,13 @@ if __name__ == "__main__":
       },
       'files': [
         {
-          'filename': "DgDrive_390uLP_caseGND_50mA_100h.csv",
+          'filename': "DgDrive-1-2-1_50mA_FilmCap+RefNo3_10R_34470A_60h_8.csv",
           'show': True,
           'parser': '34470A',
           'options': {
             'scaling': {
-                "value": lambda data: (data["value"] - data["value"].mean())/10 +0.02*10**-6,
+                "date": lambda data: (data["date"] - pd.Timestamp("2019-11-23 12:00:00", tz="UTC")).dt.total_seconds() / 3600,
+                "value": lambda data: (data["value"] - data["value"][(data["date"]>=0) & (data["date"]<=24)].mean())/10,
             },
           },
         },
@@ -1512,7 +1542,7 @@ if __name__ == "__main__":
     {
       'title': 'DgDrive Output Impedance',
       'title': None,
-      'show': True,
+      'show': False,
       "output_file": {
         "fname": "../images/dgDrive_output_impedance_dc.pgf"
       },
