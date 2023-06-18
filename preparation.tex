@@ -778,7 +778,7 @@ The Allan variance \cite{adev} $\sigma_A^2(\tau)$ is a two-sample variance and u
 \begin{equation}
     \bar y_k(t) = \frac{1}{\tau} \int_{t_{k}}^{t_{k}+\tau} y(t)\,dt . \label{eqn:allan_variance_measurement}
 \end{equation}
-This is the $k$-th measurement with a measurement time or integration time $\tau$. The latter term is frequently used for DMMs. $t_k$ is the start of the $k$-th sampling interval including the dead time $\theta$
+This is the $k$-th measurement with a measurement time or integration time $\tau$. The latter term is frequently used for digital multimeters (DMM). $t_k$ is the start of the $k$-th sampling interval including the dead time $\theta$
 \begin{equation}
     t_{k+1} = t_k + T
 \end{equation}
@@ -845,7 +845,7 @@ can be easily identified in the Allan deviation plot. The constant $h_\alpha$ is
             Drift & --& $\frac 1 2 D^2 \tau^2$ \cite{adev_drift}\\
         \bottomrule
     \end{tabular}
-    \caption{Power law representations using the Allan variance.}
+    \caption{Power law representations of different noise types using the Allan variance.}
     \label{tab:adev_alpha}
 \end{table}
 
@@ -1365,12 +1365,12 @@ The Allan deviation plot in figure \ref{fig:autozero_adev} also confirms that wh
 
 From this plot it can be seen, that for measurement times longer than about \qty{2}{\s} or \qty{100}{\plc}, auto-zeroing has a clear benefit over a measurement without auto-zeroing. It must be noted though that, judging from this simulation, the device would reach a noise floor of \qty[per-mode = symbol]{0.01}{\uV \per \V} only at integration times of slightly more than \qty{10}{\s}, while the datasheet claims \qty{2}{\s}. Do note, that this simulation is for the \qty{10}{\V} range of the DMM and therefore \qty[per-mode = symbol]{0.01}{\uV \per \V} is \qty{0.1}{\uV_{rms}}. It is therefore likely that the noise parameters of a real device are better than the numbers used in the simulation. Additionally, the datasheet likely refers to an instrument that is synced to a \qty{60}{\Hz} power line frequency which shifts the sampling frequency up by \qty{20}{\percent} and, as discussed, reduces the noise floor because more noise content is white noise at the auto-zero interval. In this simulation the \qty{0.01}{\uV \per \V} (\qty{0.1}{\uV_{rms}}) noise level would be reached at exactly \qty{10}{\s} when using a line frequency of \qty{60}{\Hz}. For the purpose of demonstrating the auto-zeroing algorithms these subtleties are irrelevant.
 
-For the comparison of different integration times before applying auto-zeroing figure \ref{fig:autozero_nplcs_adev} can be consulted. Using the Allan deviation makes it very simple to compare noise figures for identical measurement times $\tau$, yet different integration times, before auto-zeroing is applied. The simulation source code can be found in \external{data/simulations/sim\_optimal\_autozero.py} as part of the online supplemental material \cite{supplemental_material}.
+For the comparison of different ADC integration intervals before applying auto-zeroing figure \ref{fig:autozero_nplcs_adev} can be consulted. Using the Allan deviation makes it very simple to compare noise figures for identical measurement times $\tau$, yet different integration times, before auto-zeroing is applied. The simulation source code can be found in \external{data/simulations/sim\_optimal\_autozero.py} as part of the online supplemental material \cite{supplemental_material}.
 
 \begin{figure}[ht]
     \centering
     \input{images/autozero_nplcs_adev.pgf}% data/simulations/sim_autozero_v2.py
-    \caption{Allan deviation for different integration times before applying the AZ algorithm. Dead time $\theta = \qty{0}{\s}$. The dashed line denotes the Allan variance without auto-zeroing. The line frequency is \qty{50}{\Hz}.}
+    \caption{Allan deviation for different ADC integration intervals before applying the AZ algorithm. Dead time $\theta = \qty{0}{\s}$. The dashed line denotes the Allan variance without auto-zeroing. The line frequency is \qty{50}{\Hz}.}
     \label{fig:autozero_nplcs_adev}
 \end{figure}
 
@@ -1380,7 +1380,7 @@ Finally, the case of a non-negligible dead time shall be treated. When the dead 
 \begin{figure}[ht]
     \centering
     \input{images/autozero_deadtime_nplcs_adev.pgf}% data/simulations/sim_autozero_v2.py
-    \caption{Allan deviation for different integration times before applying the AZ algorithm. Dead time $\theta = \qty{1}{\plc}$. The dashed line denotes the Allan variance without AZ. The line frequency is \qty{50}{\Hz}.}
+    \caption{Allan deviation for different ADC integration intervals before applying the AZ algorithm. Dead time $\theta = \qty{1}{\plc}$. The dashed line denotes the Allan variance without AZ. The line frequency is \qty{50}{\Hz}.}
     \label{fig:autozero_deadtime_nplcs_adev}
 \end{figure}
 
@@ -1448,7 +1448,7 @@ The question whether to use a current source or a current sink is elemental for 
     \label{fig:current_sink_source}
 \end{figure}
 
-The optimal configuration depends on the laser diode and safety aspects in terms of protecting the laser diode. The protection of the laser diode is discussed first. The laser resonator is assumed grounded in the setup. This is not the design case, but incorrect assembly can facilitate this condition. While not intended, there are numerous ways to also accidentally short the diode to ground and since there are no immediate consequences arising from it, when the controller is disconnected, it might easily be overlooked. This blunder should not bear the risk of destroying an expensive laser diode. To ensure this, a configuration where the laser diode is shorted out, instead of the current source or sink, must be chosen. That way, the laser diode is automatically removed from the circuit in case of an error condition.
+The optimal configuration depends on the laser diode and safety aspects in terms of protecting the laser diode. The protection of the laser diode is discussed first. The laser resonator is assumed grounded in the setup. This is not the design case, but incorrect assembly can facilitate this condition. While not intended, there are numerous ways to also accidentally short-the diode to ground and since there are no immediate consequences arising from it, when the controller is disconnected, it might easily be overlooked. This blunder should not bear the risk of destroying an expensive laser diode. To ensure this, a configuration where the laser diode is shorted out, instead of the current source or sink, must be chosen. That way, the laser diode is automatically removed from the circuit in case of an error condition.
 Choosing between a current sink and a current source is more subtle. If the other shell of the laser diode is connected to the anode, a current sink can be considered to keep the diode can at ground potential. This is not an issue with the laser design in this group though, because the laser diode mount is floating. Another aspect is the electronics. A current source is typically implemented using p-channel field-effect transistors, while current sinks are using n-channel transistors and additionally the input of a current source is referenced to the positive supply, while the sink is referenced to the negative supply. Using the negative supply as a reference for control signals brings more challenges than vice versa, because typically integrated components like digital-to-analog converters prefer working with positive voltages and would need additional support to be floated to a negative reference. This makes a current source simpler to implement in this scenario and this work focuses on the current source. In principle all methods that will be discussed can be applied to a current sink as well.
 
 \subsection{Ideal Current Source}
@@ -1599,13 +1599,13 @@ The lower case letters denote the variables of the small-signal model as they on
 From \ref{eqn:mosfet_id_small_signal} it can be seen, that the $g_{DS}$ term adds to the output current and is proportional to $v_{DS}$. Comparing this with figure \ref{fig:ideal_current_source_norton}, the proportionality constant can be identified as $\frac{1}{R_o}$ like proposed above. Just like the ideal current source in figure \ref{fig:ideal_current_source}, the model can be given in the Norton or Thévenin representation, both shown in figure \ref{fig:mostfet_small_signa_model}.
 \begin{figure}[hb]
     \centering
-    \begin{subfigure}{0.4\linewidth}
+    \begin{subfigure}{0.43\linewidth}
         \centering
         \import{figures/}{mosfet_small_signal.tex}
         \caption{Small-signal model of a saturated MOSFET including the output resistance. The output resistance models the channel-length modulation as given by equation \ref{eqn:mosfet_id_small_signal}.}
         \label{fig:mostfet_small_signa_model_model_norton}
     \end{subfigure}
-    \begin{subfigure}{0.4\linewidth}
+    \begin{subfigure}{0.43\linewidth}
         \centering
         \import{figures/}{mosfet_small_signal_t-model.tex}
         \caption{MOSFET model in Thévenin representation.}

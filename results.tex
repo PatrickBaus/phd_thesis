@@ -434,7 +434,7 @@ In order to asses the magnitude of the problem, the leakage current current over
     \label{fig:capacitor_leakage_measurement}
 \end{figure}
 
-The simple measurement setup shown in figure \ref{fig:capacitor_leakage_measurement} was placed in a thermal chamber. A Vishay \device{MRS25} \qty{2.2}{\mega\ohm} resistor was placed in series with the capacitor and a \qty{12.8}{\V} test voltage from a low noise DC supply was applied. -- in this case a stack of \num{8} alkaline batteries. Batteries were used to ensure, that no AC line noise is mistakenly recorded as leakage. The voltage drop across the resistor was measured using an HP \device{3458A} DMM. The input bias current of the \device{3458A} is on the order of a few \unit{\pA} \cite{article_3458A_input_impedance, article_3458A_input_impedance_2}, which is small compared to the leakage current measured in this setup and henceforth neglected. The capacitor was first allowed to settle for \qty{24}{\hour} so that dielectric absorption can subside. The initial temperature was set to \qty{24}{\celsius} and then stepped to \qty{45}{\celsius} and left until the reading had settled again, then stepped down to \qty{24}{\celsius}. This was done to observe the settling behaviour, which would cause a low frequency random walk in a filter arrangement as outlined in section \ref{sec:random_walk}. This setup forms a low- pass filter with a settling time of several minutes due to the large value resistor and capacitor. This means, that any fast settling dielectric absorption like that of a film capacitor cannot be observed.
+The simple measurement setup shown in figure \ref{fig:capacitor_leakage_measurement} was placed in a thermal chamber. A Vishay \device{MRS25} \qty{2.2}{\mega\ohm} resistor was placed in series with the capacitor and a \qty{12.8}{\V} test voltage from a low noise DC supply was applied. -- in this case a stack of \num{8} alkaline batteries. Batteries were used to ensure, that no AC line noise is mistakenly recorded as leakage. The voltage drop across the resistor was measured using an HP \device{3458A} digital multimeter (DMM). The input bias current of the \device{3458A} is on the order of a few \unit{\pA} \cite{article_3458A_input_impedance, article_3458A_input_impedance_2}, which is small compared to the leakage current measured in this setup and henceforth neglected. The capacitor was first allowed to settle for \qty{24}{\hour} so that dielectric absorption can subside. The initial temperature was set to \qty{24}{\celsius} and then stepped to \qty{45}{\celsius} and left until the reading had settled again, then stepped down to \qty{24}{\celsius}. This was done to observe the settling behaviour, which would cause a low frequency random walk in a filter arrangement as outlined in section \ref{sec:random_walk}. This setup forms a low- pass filter with a settling time of several minutes due to the large value resistor and capacitor. This means, that any fast settling dielectric absorption like that of a film capacitor cannot be observed.
 
 Three samples each from the same batch of the following capacitors where compared:
 \begin{itemize}
@@ -507,7 +507,7 @@ which is independent of $V_{sup}$, just as desired. $R_{bias}$ is a \qty{0.1}{\p
     \frac{\qty{-1}{\mA} \cdot \qty{1.5}{\ohm}}{\qty{7}{\V}} \frac{\mathrm{d} R_{bias}}{R_{bias}} \approx \num{215e-6} \cdot \frac{\mathrm{d} R_{bias}}{R_{bias}}\,.
 \end{equation}
 
-Using a \qty{100}{\micro\ohm \per \ohm \per \K} resistor instead, would cause a temperature coefficient of \qty{-20}{\nV \per \V \per \K}, which is small compared to the \qty{0.3}{\uV \per \V \per \K} of the \device{LM399}. The higher quality resistor was chosen to limit long term drift. The feedback network is far more critical in this regard, hence the use of the Vishay \device{300144Z} high-precision network. All capacitors used in this circuit are NP0 capacitors, which are very stable over the whole temperature range.
+Using a \qty{100}{\micro\ohm \per \ohm \per \K} resistor instead, would cause a temperature coefficient of \qty{-20}{\nV \per \V \per \K}, which is small compared to the \qty{0.3}{\uV \per \V \per \K} of the \device{LM399}. The higher quality resistor was chosen to limit long-term drift. The feedback network is far more critical in this regard, hence the use of the Vishay \device{300144Z} high-precision network. All capacitors used in this circuit are NP0 capacitors, which are very stable over the whole temperature range.
 
 There is one last issue to address. Unfortunately, the bootstrapped reference circuit is not guaranteed to start up correctly. The self-biased circuit has two stable points of operation. The desired one is at $V_{sup} - V_z$ and the other is $V_{sup} + V_f$, when the Zener diode is forward biased. The cause of this is the positive feedback to the \device{LT1001}. At startup, the Zener diode has a very high impedance (see the typical Zener diode I-V curve, e.g. \cite{fet_equations}) and can be considered open, while $R_{bias}$ is small compared to the feedback network. The op-amp inputs are slightly capacitive and the non-inverting input then pulls high faster, delivering positive feedback. This unwanted operating point can be reached if the op-amp supply comes up before $V_{sup}$. The Zener diode will then be forward biased by the op-amp. Of course, this can only happen if the op-amp supply voltage is higher, than $V_{sup}$, which in this case is true. This situation is critical, because the output would then go above \qty{0}{\V}. This output is connected to the negative reference input of the DAC, which must not be positively biased. To prevent this case and damage to the DAC, the second diode at the output of the op-amp is used. It ensures that the output cannot go above ground and the gain of the positive feedback is drastically reduced and the negative feedback takes over quickly.
 
@@ -758,7 +758,7 @@ As it was mentioned above, using a shielded cable brings more capacitance to the
     \label{tab:dvi_cable_capacitance}
 \end{table}
 
-All DVI cables tested fared well regarding the capacitance and gave a similar performance of the mutual capacitance when compared to the ePTFE Category 6a Gore \device{RCN9034}. Given the measurement uncertainties of the \device{LCR Pro 1 Plus} no distinction can be made. Due to the smaller outer diameter of the Gore cable the shield capacitance unfortunately doubles.% In addition, to the low capacitance, the DVI cables are available off-the-shelf in good quality if some care is exercised. The connector itself is relatively rugged and cables in various lengths are available. Unfortunately, availability has declined over the years with the move towards HDMI, DisplayPort and USB-C connections. For example, the DVIGear \device{SHR} cables, which were tested, are mostly discontinued by now. This issue might need addressing in the long term.
+All DVI cables tested fared well regarding the capacitance and gave a similar performance of the mutual capacitance when compared to the ePTFE Category 6a Gore \device{RCN9034}. Given the measurement uncertainties of the \device{LCR Pro 1 Plus} no distinction can be made. Due to the smaller outer diameter of the Gore cable the shield capacitance unfortunately doubles.% In addition, to the low capacitance, the DVI cables are available off-the-shelf in good quality if some care is exercised. The connector itself is relatively rugged and cables in various lengths are available. Unfortunately, availability has declined over the years with the move towards HDMI, DisplayPort and USB-C connections. For example, the DVIGear \device{SHR} cables, which were tested, are mostly discontinued by now. This issue might need addressing in the long-term.
 
 To give a figure for the capacitance seen by the current source, it must be determined, whether the circuit is balanced or unbalanced. Remembering section \ref{sec:results_precision_current_source} and especially figure \ref{fig:dgDrive_current_source} on page \pageref{fig:dgDrive_current_source} where the current source schematic was shown, it is clear, that the circuit is not balanced. The virtual ground has very little impedance, while the other conductor presents a high impedance current source via the MOSFET of the current sink. The virtual ground is the most sensitive node. Any noise current injected into it cannot be distinguished from the drive current. Noise current is injected via capacitive coupling, so the capacitance seen by the virtual ground node is the most important. This is analogous to transimpedance amplifier input node. This capacitance seen is $C_{tot}$ measured above. Looking at the number it can be seen that a DVI cable is indeed a good choice for this use case as it has the least capacitance when compared to the Gore Cat6a cable or a typical coaxial cable, which has about \qty{100}{\pF \per \m}.
 
@@ -1107,7 +1107,7 @@ As it was shown in section \ref{sec:design_goal_environment}, the ambient temper
 
 Repeating the test for a low current output and additionally for the maximum output allows to discriminate between the temperature coefficient (tempco) resulting from offset drifts and voltage reference drifts because at low output values the effect of the reference voltage is scaled down. In case of the \device{DgDrive-500-LN} at \qty{50}{\mA} by factor of $50/510$ making it almost negligible. In this case op-amp offset drifts and other drifts from effects like thermal EMF dominate the temperature coefficient while effects that are proportional to the output are suppressed. At full output the voltage reference drift is fully added and also the drift of the sense resistor is more pronounced.
 
-Another effect that can only be seen at full output is burst noise coming from the Zener diode used as a reference. This manifest a sudden jumps in the output current. The \device{DgDrive-500-LN} \#14 tested is one of the earlier versions and contains an affected reference, which was discovered during those tests. This issue and its solution is discussed in more detail in the next section.
+Another effect that can only be seen at full output is burst noise coming from the Zener diode used as a reference. This manifest a sudden jumps in the output current. The \device{DgDrive-500-LN} \#14 tested uses one of the earlier revisions of the reference board that contains an affected Zener diode, which was discovered during those tests. This issue and its solution is discussed in more detail in the next section.
 
 As it was discussed in section \ref{sec:voltage_reference}, great care was taken to reduce the offset related drift, which can be seen in figure \ref{fig:dgDrive_tempco_50mA}. These efforts were rewarded with a very low temperature coefficient of $\qty{97}{\nA \per \K} \equiv \qty{0.19}{\uA \per \A \per \K}$ when running at \qty{10}{\percent} output current. At a maximum current of \qty{510}{\mA} the drift of the sense resistor and the Zener diode add to the result and the temperature coefficient increases to $\qty{348}{\nA \per \K} \equiv \qty{0.68}{\uA \per \A \per \K}$. These results are typical number for this batch as all sense resistors are from the same batch, ordered directly from Vishay. In addition, the summing and averaging of the two current sources reduces the spread between resistor samples even further.
 
@@ -1164,7 +1164,7 @@ This is well below the required target of \qty{<= 1}{\uA \per \A \per \K} set in
 \label{sec:results_stability}
 The stability measurements were conducted for \qty{24}{\hour} and the output current was recorded using a Keysight \device{34470A} DMM and a Vishay \device{VPR221Z} \qty{10}{\ohm} shunt resistor, which proved more stable than the internal shunt resistor of the \device{34470A}. The shunt voltage was recorded at the \qty{1}{\V} range with \qty{10}{\plc} and autozeroing enabled. Both the DMM and the laser driver were warmed up for \qty{8}{\hour} prior to the measurement. Ambient data of the lab, like temperature and humidity, was recorded using the LabKraken software (see section \ref{sec:res_labkraken} for details of the software). The devices themselves were not placed in a thermal chamber to reflect a typical use case. The lab temperature was kept within \qty{0.5}{\K} though. All measurements were done at \qty{50}{\mA} to align with the noise measurements. Do note, at such low currents the reference noise is strongly attenuated and therefore the burst noise of the commercial drivers can not be judged from those measurements. This issue with the \device{LM399} was only discovered later and retesting of the commercial drivers was no longer possible. The burst noise issue is discussed in more detail in section \ref{sec:zener_diode_selection}.
 
-All devices but one showed no obvious issues regarding the short term stability. For reasons of brevity these measurements are not shown in detail here. The only device found unsuitable for the use in high precision spectroscopy was the Sisyph \device{SMC11} as it exhibited large drifts, which were in part due to the trimmer resistor used to set the output current. This was already seen in section \ref{sec:results_current_noise} where it manifested itself as a large low frequency noise contribution. The effect in the time domain can be seen in figure \ref{fig:stability_smc11}, where the \device{SMC11} shows these severe short-term drift issues with a varying output current of up to \qty{1}{\uA} over the course of minutes. The drift after a setpoint change is not shown because the driver was warmed at the operating current before the measurement as mentioned above, but drifts of up to \qty{10}{\uA} were observed. This makes adjusting the driver difficult, especially if a lock to an atomic reference or a high finesse resonator is desired. Regarding the blue spectroscopy laser system for the ARTEMIS experiment with a stability margin of only few tens of \unit{\uA} as discussed in section \ref{sec:design_goal_environment}, this behaviour renders the driver incompatible with the ARTEMIS experiment. For comparison the output of the output of \device{DgDrive-500-LN} over the same time frame and transposed by \qty{-2}{\uA} is also shown in figure \ref{fig:stability_smc11}. This highlights the enormous low frequency noise component present in the Sisyph \device{SMC11}.
+All devices but one showed no obvious issues regarding the short-term stability. For reasons of brevity these measurements are not shown in detail here. The only device found unsuitable for the use in high precision spectroscopy was the Sisyph \device{SMC11} as it exhibited large drifts, which were in part due to the trimmer resistor used to set the output current. This was already seen in section \ref{sec:results_current_noise} where it manifested itself as a large low frequency noise contribution. The effect in the time domain can be seen in figure \ref{fig:stability_smc11}, where the \device{SMC11} shows these severe short-term drift issues with a varying output current of up to \qty{1}{\uA} over the course of minutes. The drift after a setpoint change is not shown because the driver was warmed at the operating current before the measurement as mentioned above, but drifts of up to \qty{10}{\uA} were observed. This makes adjusting the driver difficult, especially if a lock to an atomic reference or a high finesse resonator is desired. Regarding the blue spectroscopy laser system for the ARTEMIS experiment with a stability margin of only few tens of \unit{\uA} as discussed in section \ref{sec:design_goal_environment}, this behaviour renders the driver incompatible with the ARTEMIS experiment. For comparison the output of the output of \device{DgDrive-500-LN} over the same time frame and transposed by \qty{-2}{\uA} is also shown in figure \ref{fig:stability_smc11}. This highlights the enormous low frequency noise component present in the Sisyph \device{SMC11}.
 \begin{figure}[ht]
     \centering
     \input{images/stability_smc11.pgf}% data/plot_generic.py
@@ -1187,8 +1187,8 @@ To get a more definitive answer on the actual drift, the measurement should be r
 \begin{center}
     \begin{deviceProperties}[label={lst:dgDrive_temporal_stability}]{DgDrive stability over time}
     \begin{itemize}
-        \item Short term drift: \qty[per-mode = symbol]{<0.1 \pm 2}{\uA \per \A \per \day}
-        \item Long term drift: \qty[per-mode = symbol]{< 1 \pm 2}{\uA \per \A \per a}
+        \item Short-term drift: \qty[per-mode = symbol]{<0.1 \pm 2}{\uA \per \A \per \day}
+        \item Long-term drift: \qty[per-mode = symbol]{< 1 \pm 2}{\uA \per \A \per a}
     \end{itemize}
     \end{deviceProperties}
 \end{center}
@@ -1198,8 +1198,8 @@ To get a more definitive answer on the actual drift, the measurement should be r
 As hinted in section \ref{sec:results_temperature_stability}, early temperature stability tests of the laser driver with an ADI \device{LM399} Zener diode as a voltage reference confirmed what the data sheet of the Zener diode \cite{datasheet_LM399} already suggest in the \textit{Low Frequency Noise Voltage} plot. There are random bi-stable voltage step changes. This phenomenon is called burst noise or popcorn noise. The theoretical model to describe it is discussed in more detail in section \ref{sec:theory_burst_noise} on page \pageref{sec:theory_burst_noise}.
 \begin{figure}[ht]
     \centering
-    \input{images/lm399_popcorn_noise.pgf}
-    \caption{Popcorn noise in different samples of the \device{LM399} over a \qty{24}{\hour} period as recorded by the scanner system discussed in this section.}
+    \input{images/lm399_popcorn_noise.pgf}% data/plot_popcorn_noise.py
+    \caption{Popcorn noise in different samples of the \device{LM399} over a \qty{24}{\hour} period as recorded by the scanner system using a Keithley \device{Model 2002} as discussed in this section.}
     \label{fig:popcorn_noise_lm399}
 \end{figure}
 
@@ -1213,135 +1213,324 @@ Fortunately, the \device{LM399} is a heated reference, which heats itself to \qt
 
 The advantage of testing the Zener diodes separately, on the other hand, is that more diodes can be tested at the same time using a compact test fixture. It is also simpler to remove unsuitable diodes from such a test fixture, because sockets instead of solder joints can be used. Building such a test setup is detailed in the next sections.
 
+\subsection{Building a Test Setup for Zener Diodes}
+There are several ways to measure the popcorn noise of semiconductor devices. The most trivial one is to directly monitor the device in the time-domain. In this case, the Zener voltage can be measured with a long-scale multimeter. This requires a low noise DMM that can reliably distinguish between both voltage levels, which are about \qty{4}{\micro \volt} apart.
+
+A related option is to use a second reference, whose voltage is close in value to the device under test (DUT). Measuring only the voltage difference between the two references, a lower resolution is required. Comparing the difference of two references using a millivolt meter is, for example, commonly applied for intercomparing primary voltage references. This method, however, increases the measurement noise by a factor of $\sqrt{2}$ assuming both references produce the same amount of uncorrelated noise. The noise of the \device{LM399} measured with a \qty{100}{\plc} integration time (\qty{2}{\second}) is about \qty{1.5}{\micro \volt_{pp}} as can be determined from the data in figure \ref{fig:popcorn_noise_lm399}. Measuring the voltage difference between two references would then result in around \qty{2.1}{\micro \volt} of noise. This makes distinguishing the two voltage levels possible, but challenging.
+
+%TODO: Measure reference noise with the SR560 and compare a diode with
+A third option is to use a high-pass filter and an amplifier. Additionally, the signal can be low-pass filtered to remove any excess high frequency noise. This approach also requires a lower resolution than directly measuring the Zener voltage because the signal-to-noise-ratio is improved due to the amplifier. It is therefore possible to use an off-the-shelf analog-to-digital converter (ADC). One such circuit, along with some examples, is demonstrated in \cite{technote_ti_popcorn_noise,kay2012operational}. It must be noted, that due to the high-pass filtering, it not possible to evaluate voltage drifts of the Zener diode using this method.
+
+The fourth and final option discussed here, is to approach the problem in the frequency domain and requires a low-noise amplifier with a low frequency cutoff. As discussed in section \ref{sec:theory_burst_noise}, popcorn noise is found to have a frequency dependence of $1/f^2$. This property can be used to distinguish it from other random noise processes that show a frequency dependence of $1/f$. A good example of an op-amp that has excessive burst noise in comparison to a good sample is given in \textit{The Art of Electronics} \citep[p. 478]{horowitz1989}. Evaluating the frequency spectrum below \qty{10}{\Hz} allows to sort the references by their noise spectrum.
+
+Considering these four options, one can see that going from the first to the last option, the test setup becomes simpler and the requirements for the data acquisition front end are more relaxed because either the common mode voltage is reduced or more filtering is applied. On the other hand, the interpretation of the measurement results becomes more challenging and requires more a priori knowledge. For example, comparing the voltage difference between two references, a known good sample is required to reliably determine the presence of burst noise in the DUT. The other two options also require a baseline to compare samples to. At the start of the evaluation, most of the data available about the \device{LM399} came from the data sheet. Compiling a reference dataset with the performance of dozens of \device{LM399} was considered too expensive and time consuming. The only measurement schemes explored further are therefore the first two options. The focus of the next sections lies on the selection of a scanner system and a digital long-scale multimeter to satisfy the requirements for testing multiple \device{LM399} Zener diodes at once.
+
+\subsection{Choosing a Multimeter for Testing Zener Diodes}
+The DMM used plays an important role for the test setup as it mostly defines the signal to noise ratio and the measurement speed. In this section, some of the challenges that can be encountered when selecting a multimeter will be discussed. The expected amplitude of the popcorn noise produced by the \device{LM399} Zener diode is around \qty[per-mode=symbol]{0.5}{\micro\volt \per \volt} or \qty{3.5}{\micro\volt} of the output voltage when considering the \qty{7}{\volt} Zener voltage of the \device{LM399}. Those \qty{7}{\volt} will typically be measured on the \qty{10}{\volt} range of a DMM, which is not a trivial task, because a signal-to-noise-ratio of \qty[per-mode=symbol]{0.35}{\micro\volt \per \volt} or more than \qty{130}{\decibel} is required. This calls for an instrument, that not only has the required resolution, but also the stability over time and temperature to ensure the measurement will not be distorted by the DMM. A voltmeter with lower noise and a more stable reference than the DUT is therefore mandatory. This only leaves the class of very low noise \num{7.5} or \num{8.5} digit multimeters. These multimeters come with a different type of voltage reference, because the \device{LM399} is not suitable for such instruments due to its noise. The only Zener diodes that meet those requirements are the ADI \device{LTZ1000} \cite{datasheet_LTZ1000}, the Motorola \device{SZA263} (out of production) and the Linear Technology (LT) \device{LTFLU-1}, a proprietary design by Fluke and LT. The \device{LTZ1000}, for example, is specified for a typical noise of \qty{1.2}{\micro\volt_{pp}} in a frequency range of \qtyrange{0.1}{10}{\Hz} \cite{datasheet_LTZ1000} as opposed to \qty{4}{\uV_{pp}} of the \device{LM399}. Additionally, in comparison to the \device{LM399} those high performance Zener diodes do not suffer from popcorn noise issues to this extend.
+
+Comparing only \num{7.5} and \num{8.5} digit voltmeters narrows down the choice of multimeters considerably. The market for high-end \num{8.5} digit DMMs is limited and every device on the market caters for a certain niche. It is therefore prudent to look at the individual specifications to choose the correct instrument for this purpose. Table \ref{tab:list_of_dmms} contains a list of popular \num{8.5} DMMs that were considered for this application. Several models included in the table are already discontinued but these DMMs can still be acquired on the second-hand market. While the author has not tested every multimeter in table \ref{tab:list_of_dmms}, it is possible to judge most of them a priori by their specifications. A quick overview will be given next to limit the options presented in table \ref{tab:list_of_dmms} to the most promising devices. In order to reach a high throughput of tested \device{LM399} the DMM must deliver fast reading speeds, ideally multiple samples per second including autozeroing, combined with a low input noise to distinguish the burst noise voltage levels. This already rules out many DMMs in table \ref{tab:list_of_dmms}.
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{lll}
+        \toprule
+        Manufacturer& Model& Remarks\\
+        \midrule
+        Advantest& \device{R6581}& Discontinued. Scanner cards available.\\
+        ADCMT& \device{7481}& In production.\\
+        Datron/Wavetek& \device{1812}& Discontinued. Wavetek was bought by Fluke.\\
+        Fluke& \device{8508A}& Discontinued. \qty{20}{\volt} range. Slow\\
+        Fluke& \device{8588A}& In production. \\
+        Keithley/Tektronix& \device{2002} &In production. Scanner card available. \qty{20}{\volt} range.\\
+        Keysight& \device{3458A}& In Production.\\
+        Solartron& \device{7081}& Discontinued. Slow.\\
+        Transmille& \device{8104}& In Production. External scanner available. Slow.\\
+        \bottomrule
+    \end{tabular}
+    \caption{Overview of \num{8.5} digit multimeters. The discontinued models listed were still available on the secondhand market at the time of writing.}
+    \label{tab:list_of_dmms}
+\end{table}
+
+The instruments considered unsuitable due to their conversion speed are the Solartron \device{7081} (also sold as a Guildline \device{9578}), the Fluke \device{8508A}, the Wavetek \device{1812} and the Transmille \device{8104}. The Solartron \device{7081} takes \qty{52}{\s} for a measurement with \num{8.5} digits of resolution. Both the Fluke \device{8508A} and the Wavetek \device{1812}, which are very similar devices because Fluke bought Wavetek in 2000, are fairly slow, taking \qty{25}{\second} for a conversion at \num{8.5} digits. The \device{8104} takes \qty{4}{\s} for each conversion using its fastest setting \cite{datasheet_transmille8104}, not including autozeroing. The ADCMT \device{7481} is made by the Japanese company ADC Corporation, which split off from Advantest in 2003. Both the Advantest \device{R6581} and ADCMT \device{7481} are hard to come by in Europe as there are no official distributors available. These instruments were therefore not considered for this setup.
+
+Having removed slow and unavailable instruments from the list, this leaves only a few devices for the test setup. The Fluke \device{8588A}, the Keysight \device{3458A}, and the Keithley \device{Model 2002}. The Fluke \device{8588A} excels at stability and features a modern user interface whereas the Keysight \device{3458A} is unbeaten in linearity and noise. A detailed comparison of those two meters can be found in the work of \citeauthor{article_fluke_8588A_noise} \cite{article_fluke_8588A_noise}. The Keithley \device{Model 2002} focuses on its scanning capability. To narrow it down even further, several \num{7.5} and \num{8.5} digit multimeters were tested. The results of those tests will be discussed here to give an impression of the performance of these devices. The tested multimeters are the Keysight \device{3458A}, the Keithley \device{Model 2002}, a Keysight \device{34470A} and a Keithley \device{DMM6500}. The \device{3458A} was selected because of its low noise and the \device{Model 2002} was chosen for its internal scanning unit. The \device{34470A} was picked as a lower-end and cheaper alternative to see if such an instrument could be used as well. Finally the \device{DMM6500} is on the list to give an impression of an instrument that uses an \device{LM399} voltage reference instead of the superior \device{LTZ1000} used in the other multimeters.
+
+Two tests were carried out to asses both the ADC noise and the stability of the DMM. The noise is mostly determined by the front end amplifier and the ADC including the autozeroing algorithm as discussed in section \ref{sec:autozero}. The stability is determined by the reference voltage and the stability front end amplifier gain. The first test is implemented by taking measurements with a shorted input. The stability of the DMM can only be evaluated with a known stable test signal. The second test was therefore run against a Fluke \device{5440B} calibrator that supplied \qty{10}{\volt} to all multimeters and readings were taken over the course of a week. This data was used to estimate the stability of the multimeters and also reveals any burst noise coming from the multimeter reference. The noise of a DMM at \qty{10}{\volt} is typically not found in the datasheet because the performance is usually quoted for shorted inputs, which does not include the internal reference noise, in order to benchmark the ADC. The test was done at \qty{10}{\V} instead of the expected \qty{7}{\V} of the \device{LM399}, because \qty{10}{\V} is a more common value for such tests as primary voltage references use this value. Using this voltage allows better intercomparison and promotes a broader application of the results. The calibrator has a specified output noise of \qty{< 1.5}{\micro \volt} within a bandwidth of \qtyrange{0.1}{10}{\Hz} at \qty{1}{\volt} and is stable to within \qty{5}{\micro \volt_{rms}} over \qty{30}{\day}, a specification far superior to the \device{LM399}.
+
+The test was conducted in a stable and monitored lab environment, with a temperature deviation of at most $\Delta T = \qty{\pm 0.5}{\kelvin}$. All multimeters were connected to same calibrator output. Although this might potentially cause interference between the multimeters due to the pump out current spikes caused by the switching intervals, no ill effects, like voltage offsets or increased noise, were observed during the tests. A more detailed discussion of the pump out current with a focus on the \device{3458A} can be found in \cite{article_3458A_input_impedance}. All instruments under test were connected using shielded cables, either Pomona \device{1167-60} or self-made cables with gold-plated copper spades crimped to twisted and shielded \device{M27500A 18WJ4T24} PTFE insulated cables. The GUARD terminal of the calibrator was connected to chassis GROUND at the calibrator and then connected to the cable shields. On the \device{3458A}, the shield was connected to the GUARD terminal and the GUARD switch was set to open according to the manual \cite{manual_keysight3458a}. For the other multimeters that do not have a GUARD terminal, the shield was left floating at the DMM side. Finally, the autocalibration routine of the Fluke \device{5440B} calibrator, the \device{3458A} and the \device{34470A} was run prior to the measurement. The detailed settings used for the DMMs can be found in the appendix \ref{appendix:dmm_test} on page \pageref{appendix:dmm_test}, a summary is given in table \ref{tab:dmm_settings_concise} to show the important differences.
+\begin{table}[ht]
+    \centering
+    \begin{tabular}{lc}
+        \toprule
+        DMM& Integration time in \unit{\plc}\\
+        \midrule
+        \device{HP 3458A}& 100\\
+        \device{Keithley Model 2002} & 40\\
+        \device{Keysight 34470A}& 100\\
+        \device{Keithley DMM6500}& 90\\
+        \bottomrule
+    \end{tabular}
+    \caption{ADC conversion speeds of the tested DMMs configured to give a total measurement time of \qty{2}{\s}. More details on the configuration can be found in appendix \ref{appendix:dmm_test} on page \pageref{appendix:dmm_test}.}
+    \label{tab:dmm_settings_concise}
+\end{table}
+
+All DMMs were configured for the same total measurement time of \qty{2}{\s}. Depending on the ADC conversion speed, this leads to different integration times that are given in power line cycles (PLC) at \qty{50}{\Hz}. The \device{Model 2002} takes considerable longer for a measurement than the Keysight multimeters. The reason is the auto-zero function, which is shown in figure \ref{fig:dmm_autozero_comparison} on page \pageref{fig:dmm_autozero_comparison} . Recounting section \ref{sec:autozero}, the \device{Model 2002} does three steps when doing auto-zeroing. It measures the signal, the zero point for an offset compensation and also the reference voltage for a gain correction. In comparison, the \device{3458A} only corrects for the offset drift. The gain correction is only applied once by using the autocalibration routine as was done at the start of the test. The auto-zero routine of the \device{Model 2002} therefore takes longer but proves more stable for long-term measurements.
+
+A short \qty{28}{\hour} excerpt of the measurement is shown in figure \ref{fig:dmm_comparison_fluke5440B} because it captures the distinct properties of each multimeter very well and be used for a qualitative discussion. A more precise conclusion can only be drawn from the Allan deviation introduced in section \ref{sec:allan_deviation}.
+\begin{figure}[ht]
+    \centering
+    \input{images/dmm_comparison_fluke5440B.pgf}% data/plot_generic.py
+    \caption{Comparison of several DMMs measuring the \qty{10}{\V} output of a Fluke \device{5400B} for \qty{28}{\hour}. The traces are spaced \qty{10}{\uV} apart.}
+    \label{fig:dmm_comparison_fluke5440B}
+\end{figure}
+
+From the data shown in figure \ref{fig:dmm_comparison_fluke5440B} several conclusion can already be drawn. Looking at the \device{DMM6500}, the \num{6.5} digit multimeter, two things that are immediately apparent are the limited resolution and towards the end of the measurement series there is an indisputable burst noise event. The latter aspect alone disqualifies the instrument for this task but nicely demonstrates the intricate matter of selecting the correct multimeter for the task. The magnitude of the burst noise event depends on the internal scaling of the reference voltage and in this case is very pronounced in comparison to the samples shown in figure \ref{fig:popcorn_noise_lm399} on page \pageref{fig:popcorn_noise_lm399}. The \device{34470A} fared better in terms of resolution but there is either a temperature coefficient or drift visible. Its short-term noise is slightly lower than the noise seen from the \device{Model 2002}. The Keithley \device{Model 2002} demonstrates the most stable behaviour of all DMMs tested due to the more robust auto-zeroing. These first impressions can be quantified in numbers using the Allan deviation. The Allan deviation of the measurement series was calculated using the \textit{AllanTools} Python library \cite{allantools}. The algorithm chosen to estimate the Allan deviation was the Total deviation. This is a modified version of the Allan deviation estimator and extends the idea by appending the same dataset to the original record and thereby extracting more useful information from otherwise unused samples \cite{totdev,totdev_2}. This better suppresses end-of-data errors which are discussed in section \ref{sec:allan_deviation}. The \qty{10}{\V} dataset of the measurement against the calibrator is discussed first and shown in figure \ref{fig:dmm_comparison_fluke5440B_adev}. This test can be used to estimate the long-term stability of the DMM, mostly affected by the ADC gain and the internal reference. The former is greatly affected by ambient temperature changes. Do note, that the measurement at \qty{10}{\V} instead of \qty{7}{V}, which is the actual Zener voltage of the \device{LM399} to be measured by the scanner system, overestimates the noise figure of the \device{Model 2002} due to the gain correction part of the auto-zero algorithm. The gain correction adds an additional scaled part of the ADC noise to the measurement as shown in section \ref{sec:autozero_gain} on page \pageref{sec:autozero_gain}. This noise contribution is only relevant at small values of $\tau$, because the ADC noise contribution, which is mostly white after applying the auto-zeroing, quickly drops due to the averaging at longer ADC integration times as demonstrated in section \ref{sec:autozero_offset_nulling}.
+\begin{figure}[ht]
+    \centering
+    \input{images/dmm_comparison_fluke5440B_adev.pgf}% data/allan_variance.py
+    \caption{Allan deviation of several DMMs measuring the \qty{10}{\V} output of a Fluke \device{5440B} calibrator. The Allan deviation was estimated using the Total deviation.}
+    \label{fig:dmm_comparison_fluke5440B_adev}
+\end{figure}
+
+The Allan deviation shown in figure \ref{fig:dmm_comparison_fluke5440B_adev} confirms what has already been found from figure \ref{fig:dmm_comparison_fluke5440B}. To put the numbers of figure \ref{fig:dmm_comparison_fluke5440B_adev} into perspective, the burst noise of the \device{LM399} to be measured is expected to be around \qty{3.5}{\uV}. The uncertainty of the measurement should be at least one order of magnitude lower to guarantee a good signal to noise ratio. Both the Keysight \device{34470A} and the \device{3458A} can deliver this performance at short integration times $\tau$. The Allan deviation of all DMMs but the \device{Model 2002} is similar in shape. Comparing with table \ref{tab:adev_alpha} on page \pageref{tab:adev_alpha}, the flat $\tau^0$ part of the Allan deviation can be attributed to the flicker noise content caused by the DMM reference circuit and the front end gain as the offset drift is removed by the auto-zeroing. The \device{Model 2002} starts at a higher noise floor with an Allan deviation of \qty{5.5}{\uV} and needs an integration time of \qty{200}{\second} to reach the desired \qty{3.5}{\uV} uncertainty. At longer integration times the superior stability of the \device{Model 2002}, due to the automatic gain correction, shows. At \qty{2000}{\s} (\qty{0.5}{\hour}) the noise performance is on par with the \device{3458A}, which is renowned for its low noise ADC. At this time scale temperature effects play a dominant role which can be seen from the data of all other multimeters because the Allan deviation starts increasing at around $\tau = \qty{2000}{\second}$. Above \qty{e5}{\second} (\qty{24}{\hour}) the plot shows the typical oscillations from the end-of-data errors as explained in section \ref{sec:allan_deviation}. The decreasing Allan deviation observed for some multimeters is a clear indicator.
+
+Overall, the measurement shows that all DMMs but the \num{6.5} digit multimeter can be used for the scanner system although the higher noise of the \device{Model 2002} makes detecting the burst noise more difficult on short time scales. Going to longer time scales the superior stability of the \device{Model 2002} allows to clearly observe the initial drift of the Zener diodes with happens on timescales of a few days. The Allan deviation of the DMMs with shorted input reveals the performance of the ADC without the internal reference gives even more insight into the instruments. This is shown in figure \ref{fig:dmm_comparison_shorted_adev}.
+\begin{figure}[ht]
+    \centering
+    \input{images/dmm_comparison_shorted_adev.pgf}% data/allan_variance.py
+    \caption{Allan deviation of several DMMs with shorted inputs. The Allan deviation was estimated using the Total deviation.}
+    \label{fig:dmm_comparison_shorted_adev}
+\end{figure}
+
+Without the internal reference and the ADC front end drift the performance of the ADC can be evaluated and different noise types according to table \ref{tab:adev_alpha} on page \pageref{tab:adev_alpha} can be identified. The Allan deviation of the Keysight \device{3458A} is in good agreement with the simulated Allan deviation shown in figure \ref{fig:autozero_raw_psd} on page \pageref{fig:autozero_raw_psd}. Up to $\tau = \qty{e4}{\second}$ a $\tau^{-\frac{1}{2}}$ dependence can be seen, indicating only white noise. The noise is around \qty{2}{\nV_{rms}} or \qty{0.2}{\nV_{rms} \per \V} which is the resolution limit of the ADC. The  curve progression matches the theoretical limit and represents the high performance of the ADC implemented in the \device{3458A}.
+
+The behaviour of the \device{Model 2002} is similar although there a notable plateau between $\tau = \qty{e3}{\second}$ and $\tau = \qty{e4}{\second}$. This can be seen with all Keithley multimeters and is also present in the noise of the \device{DMM6500} albeit at a different integration time. The cause of this is likely to be found in the software of the multimeter. Keithley is using more parameters than just the offset voltage for the auto-zeroing algorithm. Due to the proprietary nature of the firmware an exact cause for the issue cannot be given. At longer intervals the curve seems to keep following a $\tau^{-\frac{1}{2}}$ dependency but due to end-of-data error this cannot be configure good uncertainty. A longer measurement would be required.
+
+For the \device{34470A}, Keysight seems to also deviate from the classic auto-zeroing procedure. Although the ADC delivers very good noise performance at high frequencies and low $\tau$. Going to higher $\tau$, the instrument seem to follow a $\tau^{-\frac{1}{2}}$ dependency indicating some correlation between the samples, which should not be present after auto-zeroing. The nature of this effect is again hidden in the proprietary firmware. At long intervals this behaviour becomes a serious problem and therefore limits the use of the instrument to monitor long-term drifts over days like the initial drift of the \device{LM399} Zener diodes.
+
+The Allan deviation shows that for a Zener diode test setup an \num{8.5} digit multimeter is recommended, yet a low noise DMM like the \device{34470A} can be used, but only limited statements about the stability of the Zener diode can be made in this case due to the increased drift of the observed. If cost is the driving factor of the setup such a multimeter can be considered, but an \num{8.5} digit instrument is recommended. A \num{6.5} digit multimeter was shown to be inadequate both from the perspective of the ADC performance and the burst noise of the internal voltage reference. The next section discusses the second part of the scanner system, namely the multiplexer used to test several Zener diodes at once to increase the throughput of the DMM.
+%
+%These measurements were done by measuring the output voltage of a pre-production version of the reference PCB for the digital current driver. The reference board was kept at \qty{23}{\celsius} in a custom thermal chamber. The chamber is detailed in section \ref{}. Additionally, a \qty{500}{\g}  bag of Bentonite desiccant was added to keep the references at a low humidity of around \qty{20}{\percent} relative humidity. The reference board inserted into a motherboard holding up to 4 reference modules. The motherboard, also called LM399 breakout board, provides the voltage regulators and the operational amplifier for the kelvin sensed pins of the reference. The multimeter was directly connected to the reference via a DB9 connector, without an other components in between the reference and the DMM like buffers, multiplexers or filters. The DMM itself was exposed to the ambient temperature of the lab. The setup is shown in figure \ref{fig:lm399_vs_34470a_setup}.
+
+%\begin{figure}[ht]
+%    \centering
+%    \resizebox {0.8\textwidth} {!} {
+%        \import{figures/}{34470A_vs_LM399.tex}
+%    } % resizebox
+%    \caption{Measurement setup for tesing an LM399 reference board with the \device{Keysight 34470A}}
+%    \label{fig:lm399_vs_34470a_setup}
+%\end{figure}
+
+%The reference boards amplify the Zener voltage to \qty{10}{\volt}, which improves the signal to noise ratio, because it makes use of the full DMM range. The \qty{10}{\volt} range is typically the lowest (relative) noise and lowest drift range those multimeter because no internal preamplifiers of attenuators are required. It is important to keep the temperature drift of the DMM low or at least predictable, because the device is exposed to the ambient laboratory and not in a temperature controlled environment like the references.
+
+%\newpage
+%The reference is a negative \qty{10}{\volt} reference that uses a self-biasing technique to derive its \qty{1}{\mA} Zener current from its own \qty{-10}{\volt} output. The details of this circuit are discussed in section \ref{sec:voltage_reference}.
+
+% \begin{figure}[h]
+%     \centering
+%     \scalebox{0.7}{%
+%         \import{figures/}{lm399_reference_circuit.tex}
+%     } % scalebox
+%     \caption{Self-biased LM399 negative voltage reference.}
+%     \label{fig:lm399_negative_10V}
+% \end{figure}
+
+%With the amplified output the expected burst noise step size of about \qty[per-mode=symbol]{0.5}{\micro\volt \per \volt}, becomes \qty{5}{\micro\volt}. The resolution of the \qty{10}{\volt} range of the \device{34470A} is \qty{100}{\nano \volt}, but the measurement is not limited by quantization. See section \ref{} of this work for a detailed characterisation.
+
+%\begin{figure}[ht]
+%    \centering
+%    \input{images/LM399_vs_34470A.pgf}
+%    \caption{Voltage deviation from the mean voltage of an LM399 negative \qty{-10}{\volt} reference measured with a Keysight 34470A at \qty{100}{\plc}.}
+%    \label{fig:lm399_vs_34470a}
+%\end{figure}
+
+%Figure \ref{fig:lm399_vs_34470a} shows an example of such measurement. This measurement highlights one the problems encountered during those measurements. From this measurement it is unclear whether the features seen in the graph are only a result of ambient temperature changes due to the cycling of the air conditioning or popcorn noise on top of that. These results hightlight the fact, that sub-\unit{ppm} measurements not only requires high-end gear, but also a very stable environment. From the data it follows, that the temperature coefficient of the DMM in linear approximation is:
+%\begin{equation}
+%    \alpha_\device{34470A} \approx \frac{\qty{6.08}{\micro\volt}-(-\qty{9.30}{\micro\volt})}{(\qty{21.85}{\celsius}-\qty{19.96}{\celsius})\qty{10}{\volt}} = \qty[per-mode=symbol]{0.86}{\micro\volt \per \volt \per \kelvin}
+%\end{equation}
+
+%While the temperature coeeficient is vastly better than the specified \qty[per-mode=symbol]{2}{\micro\volt \per \volt \per \kelvin} \cite{datasheet_keysight34470A}, it is not low enough for this type of measurement. The multimeter must therefore be kept in a temperature controlled environment. This issue was resolved by replacing the stock air conditioning controller with a custom PID controller as discussed in section \ref{}. Lastly, the noise floor of the measurement is \qty{1.5}{\micro\volt_{rms}}, resulting in an estimated signal-to-noise ratio (SNR) of about \qty{10}{\decibel}, which is suffient to detect the popcorn noise.
+
+%While the temperature issue was being worked on, testing of the Zener diodes continued. To work around the temperature drift of the DMM, the amplification of the reference voltage was increased to \qty{15}{\volt}, the same voltage required by the digital current driver, and a differential measurement was realized. This measurement was done against a primary \qty{15}{\volt} reference board. To ensure, that any popcorn noise found originates only in the DUT and not the primary reference used, several reference boards where tested against a \device{Fluke 5440B}. The \device{5440B} does not exhibit popcorn noise as it uses a different voltage reference ic, namely two Motorola SZA263 in series \cite{service_manual_fluke_5440b}. Finally, a board that did not show popcorn noise in a period of three days was selected. The serial number of this primary or golden reference is \textit{\#1}.
+
+%Using this differential technique, the results greatly improved
+%
+
+\subsection{A Scanner System for Testing Zener Diodes}%
+\label{sec:diode_scanner_system}
+In order to test large amounts of Zener diodes, and considering the duration of the burn-in process, which can take anything between \qtyrange{100}{1000}{\hour}, it is necessary to have an automated setup that can observe multiple Zener diodes at once. A minimum of at least 10 diodes should be tested at the same time. Such a setup consists of a digital multimeter as discussed in the last section, a scanner and test board that holds the Zener diodes and provides the necessary infrastructure for the diodes. Several commercial scanner options currently available were considered for this project and are shown in table \ref{tab:list_of_daqs}.
 \begin{table}[h]
     \centering
     \small
-    \begin{tabular}{ |l|l|l|l|l|l|l|l| }
-        \hline
-        \multirow{2}{*}{} & \multicolumn{2}{l|}{Keysight} & \multicolumn{3}{l|}{Keithley} & Fluke & Rigol \\
-        \cline{2-8}
+    \begin{tabular}{llllllll}
+        \toprule
+        \multirow{2}{*}{} & \multicolumn{2}{l}{Keysight} & \multicolumn{3}{l}{Keithley} & Fluke & Rigol \\
+        \cmidrule{2-8}
         & DAQ973A & 34980A & DAQ6510 & 2750 & 3706 & 2680 & M300 \\
-        \hline
+        \midrule
         DMM & \num{6.5} & \num{6.5} & \num{6.5} & \num{6.5} & \num{7.5} & \qty{18}{\bit} & \num{6.5} \\
-        \hline
+        \midrule
         Channels & 3x20 & 8x40 & 2x10 & 5x20 & 6x60 & 6x20 & 5x32 \\
-        \hline
-        FET & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{red!80!black}{\ding{55}} & \textcolor{red!80!black}{\ding{55}} \\
-        \hline
+        \midrule
+        Solid-state & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{red!80!black}{\ding{55}} & \textcolor{red!80!black}{\ding{55}} \\
+        \midrule
         Voltage & \qty{120}{\volt} & \qty{80}{\volt} & \qty{60}{\volt} & \qty{60}{\volt} & \qty{200}{\volt} & \qty{75}{\volt} & \qty{300}{\volt} \\
-        \hline
-        Card & DAQM900A & 34925A & 7710 & 7710 & 3724 & 2680A-PAI & MC3132 \\
-        \hline
+        \midrule
+        Scanner card & DAQM900A & 34925A & 7710 & 7710 & 3724 & 2680A-PAI & MC3132 \\
+        \midrule
         USB & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{red!80!black}{\ding{55}} & \textcolor{green!60!black}{\checkmark} & \textcolor{red!80!black}{\ding{55}} & \textcolor{green!60!black}{\checkmark} \\
-        \hline
+        \midrule
         Ethernet & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{red!80!black}{\ding{55}} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} \\
-        \hline
+        \midrule
         GPIB & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{green!60!black}{\checkmark} & \textcolor{red!80!black}{\ding{55}} & \textcolor{green!60!black}{\checkmark} \\
-        %DMM & & & & & & & \\
-        \hline
+        \bottomrule
     \end{tabular}
-    \caption{Overview of scanner mainframes}
+    \caption{Overview of scanner mainframes commercially available in \num{2023}. Features like integrated DMMs, the number of channels, the maximum voltage, solid-state relays and connectivity options are shown.}
     \label{tab:list_of_daqs}
 \end{table}
 
-A recent trend to more compact devices has led major manufacturers to include multimeters in the scanner mainframe creating so called data acquisition units. Legacy devices, that only have switching capabilities are no available. For example Keithley replaced the small desktop switch mainframe \device{Model 7001} with the \device{DAQ6510} and Keysight is offering the \device{DAQ973A}, a scanning \num{6.5} digit DMM, that accepts extension cards. Unfortunately, for this project, as discussed above, the integrated \num{6.5} digit multimeter does not add any value.
+A recent trend to more compact devices has led major manufacturers to include multimeters in the scanner mainframe creating so called data acquisition units. Legacy devices, that only have switching capabilities are no longer available. For example Keithley replaced the small desktop switch mainframe \device{Model 7001} with the \device{DAQ6510} and Keysight is offering the \device{DAQ973A}, a scanning \num{6.5} digit DMM that accepts extension cards. Unfortunately, for this project, as discussed above, an integrated \num{6.5} digit multimeter does not add any value.
 
-The simplest option is to go with an \num{8.5} digit multimeter that already included a scanner option or buy a used \device{Keithley 7001} from a second-hand dealer. The author has tested both options and the simplicity of only having a single device to connect and program makes the integrated scanner card of the \device{Model 2002} very attractive.
+The scanner card used to multiplex the DMM does have to meet several specifications. The most important aspects are the number of channels and the lifetime of the relays. Other factors, such as channel to channel isolation, the contact potential, resistance and maximum voltage are not the limiting factors for this setup, because the voltage is low, there is no ac component involved and the the typical input impedance of high-end multimeters is far more than \qty{100}{\giga\ohm} \cite{datasheet_fluke8588A,article_3458A_input_impedance_2,datasheet_keithley2002,article_3458A_input_impedance}. The lifetime of the scanner card can be greatly increased by using solid-state relays instead of mechanical relays. The number of actuations required for testing the expected \num{100} Zener diodes will be discussed in more detail below using a commercial scanner card as an example.
+
+Given the prospect that all scanner mainframes contain currently on the market include a multimeter that is not going to be used, but has to be paid for nonetheless, additional options were explored. The simplest solution found was to go with an \num{8.5} digit multimeter that already includes a scanner option like the Keithley \device{Model 20020} or buy a used \device{Keithley 7001} from a second-hand dealer to use with the \device{3458A}. The author tested both options and the simplicity and space saving of only having a single device to connect and program makes the integrated scanner card of the \device{Model 2002} very attractive.
+
+For this work the Keithley (now Tektronix) \device{Model 2002} was chosen for three reasons. It is a very compact system requiring only a half-sized 2U rack in comparison to other \num{8.5} digit DMMs that are typically full-sized 2U rack devices. The other two advantages are the integrated scanner card slot that allows to fit a 10 channel scanner card and finally the \qty{20}{\volt} measurement range. The latter is interesting for testing the final voltage reference boards, as these have a \qty{15}{\volt} output.
 
 \begin{figure}[ht]
     \centering
-    \scalebox{0.7}{%
+    %\scalebox{0.7}{%
         \import{figures/}{simplified_scanner.tex}
-    } % scalebox
-    \caption{Simplified schematic of the scanner front-end with parasitic elements}
+    %} % scalebox
+    \caption{Simplified schematic of the scanner front-end with parasitic elements.}
+    \label{fig:simplified_scanner}
 \end{figure}
 
-The scanner card used to multiplex the DMM does have to meet several specifications. The most important aspects are the number channels and the lifetime of the relays. Other factors, such as channel to channel isolation, the contact potential, resistance and maximum voltage is not the limiting factor.
-
-The reason is, that in this case, the voltage is low, there is no ac component involved and the the typical input impedance of high-end multimeters is far more than \qty{100}{\giga\ohm} \cite{datasheet_fluke8588A,article_3458A_input_mpedance_2,datasheet_keithley2002,article_3458A_input_mpedance}.
-
-In this work the Keithley (now Tektronix) \device{Model 2002} was chosen for three reasons. It is a very compact system requiring only a half-sized 2U rack in comparison to the other DMMs, that are typically full-sized 2U rack devices. The other two advantages are the integrated scanner card slot, that allows to to fit a 10 channel scanner card and finally the \qty{20}{\volt} range. The latter is interesting for testing the final voltage reference boards, as these have a \qty{15}{\volt} output, which is too much for the \qty{10}{\volt} range of most DMMs, so that testing the voltage reference Printed circuit boards
-(PCBs) one would have to switch to the \qty{100}{\volt} range and forgo an extra digit of resolution and add more noise.
-
-The test setup consists of a mounting PCB, that holds up to 20 Zener diode. It provides power regulation and a minimal circuit required to support each diode. This circuit is given here:
-
-\begin{figure}[ht]
-    \centering
-    \scalebox{0.7}{%
-        \import{figures/}{zener_burnin.tex}
-    } % scalebox
-    \caption{Circuit used for burning in the Zener diodes}
-\end{figure}
-
-The compensation network is required when using the ADR1399, because of its very low dynamic impedance as recommended in the data sheet \cite{datasheet_ADR1399}. It is not strictly required for the LM399, but fitted nonetheless, because there are no downsides to it. This makes the board compatible with both types of references. Each Zener output is protected using an output buffer, which provides isolation and short circuit protection. Finally there is a common mode filter at the output to suppress high frequency noise via ground loops.
-
-The two key metrics of concern, that need to measured are popcorn noise and drift.
-
-digital multimeter and a scanner card
-
-
+The standard scanner card that comes with the \device{Model 2002} is the \device{Model 2000-SCAN} card. These cards have a number of 2-pole relays mounted to them as shown in figure \ref{fig:simplified_scanner} which have an expected lifetime of \numrange[range-phrase={~to~}]{e5}{e8} actuations. Considering \num{3} actuations per minute and a measurement interval \qty{1000}{\hour} per batch and \num{10} batches for a total of \num{100} Zener diodes, results in \num{e6} actuations. This could lead to premature failure of the test setup and unfortunately, there is no alternative scanner card available that has solid-state relays. To solve this issue, a solid-state scanner card replacement was developed. This card fits into the standard slot and uses the same connector as the original card which shown in figure \ref{fig:connector_scan200}. It is recognized as a \device{Model 2000-SCAN} card and can be used as a direct replacement.
 \begin{figure}[ht]
     \centering
     \import{figures/}{DIN_41612.tex}
-    \caption{The extension connector used in several Keithley multimeters}
+    \caption{The DIN 41612 \num{32} pin extension connector used in several Keithley multimeters.}
+    \label{fig:connector_scan200}
 \end{figure}
-
 \begin{table}[ht]
     \centering
-    \begin{tabular}{llllll}
+    \begin{tabular}{llll}
         \toprule
-        Pin    & Function    & Cable Colour    & Pin    & Function    &  Cable Colour\\
+        Pin& Function& Pin& Function\\
         \midrule
-        a1, b1    & \SIrange[print-implicit-plus=true]{6}{20}{\volt}    & brown    & \num{6}    & GND    & green/white\\
-        a2, b2    & PD cathode    & red    & \num{7}    & LD Cathode    & blue/white\\
-        a3, b3    & LD case (GND)    & red/white    & \num{8}    & LD Anode    & blue\\
-        a4    & PD anode (GND)    & red/white    & \num{9}    & LD current    & green\\
-        a5    & \SIrange{-6}{-20}{\volt}    & brown/white\\
+        a1, b1& GND& a9, b9& $\overline{\text{NRST}}$\\
+        a2, b2& GND& a10, b10& GND\\
+        a3, b3& GND& a11, b11& STROBE/LATCH\\
+        a4    & GND& a12, b12& GND\\
+        b4    & ID, connect to \qty{5}{\V} or DATA& a13, b13& CLOCK\\
+        a5, b5& \qty{5}{\V} supply& a14, b14& GND\\
+        a6, b6& \qty{5}{\V} supply& a15, b15& DATA\\
+        a7, b7& \qty{5}{\V} supply& a16, b16& GND\\
+        a8, b8& \qty{5}{\V} supply&&\\
         \bottomrule
     \end{tabular}
+    \caption{Pin layout of the backplane connector used for scanner cards by the Keithley \device{Model 2002}.}
+    \label{tab:connector_scan200}
 \end{table}
 
-As a sidenote, for the pure entertainment of the author, several batches of LM399 Zener diodes were purchased from non-authorized dealers. Some were marked as refurbished, the others were not marked as such, but clearly were. These so-called refurbished diodes are not to be used in production devices. To entertain and warn the reader a small selection of examples are shown here in figure \ref{fig:fake_lm399}. All but one diode, which is shown for comparison, are refurbished.
-
+The scanner card is based on an \device{ICE40HX1K} FPGA and its design files are available open-source at \cite{git_scan2000}. This scanner card can either be equipped with \num{10} channels or \num{20} channels. The \device{Model 2002} only supports \num{10} channels, while newer Tektronix multimeters like the \device{DMM6500} support up to \num{20} channels. The multimeter backplane connector is the same for both versions of the card, yet the communication protocol has changed. Both protocols were implemented on the FPGA and are selectable by the user via a solder bridge during assembly of the PCB, but this solder bridge can also be changed later to convert a \num{20} channel card into a \num{10} channel card if the need arises. This is one of the reasons for using an FPGA instead of the simpler shift registers used by the original \device{Model 2000-SCAN}. An attempt was also made using a microcontroller, but the legacy protocol used by the \device{Model 2002} does not work well with an \qty{8}{\bit} aligned microcontroller. There are other devices apart from the scanner controller talking on the bus as well and both controllers have different packet sizes (and clock rates). The scanner card expects a \qty{24}{\bit} command from the DMM clocked in via the CLOCK and DATA lines. Once the command is done, the STROBE pin is used to push the command to the relays via a shift register. The shift register makes sure that only the final \qty{24}{\bit} before the STROBE pin is triggered are registered as a command. Any data sent before those \qty{24}{\bit} gets dropped. As said above the other device on bus has a different, slower, clock rate and sometimes one or two \unit{\bit} are sent in between the \qty{24}{\bit} commands of the scanner card. This poses a problem for a typical microcontroller. Most microcontroller are byte aligned and any number of bits, that is not a multiple of \num{8}, which is sent before the \qty{24}{\bit} command breaks the alignment. In addition, the high data rate of the scanner controller clocking at \qty{2}{\MHz} made sampling the signal in software impossible. An FPGA can easily mimic the shift register and also decode the more modern protocol of the \device{DMM6500}. More details on both protocols can be found with the design files of the scanner card at \cite{git_scan2000}. A picture of the finished board is shown in figure \ref{fig:scan200_pcb}.
 \begin{figure}[h]
     \centering
-    %\includegraphics[width=0.75\textwidth]{images/foo.png}
-    \caption{Refurbished LM399 Zener diodes. From left to right: }
-    \label{fig:fake_lm399}
+    \includegraphics[width=0.75\textwidth]{images/BM1A2145_SCAN2000_lowres.JPG}
+    \caption{A \num{10} channel solid-state scanner module developed for the Keithley \device{Model 2002} including the connector for the reference PCB.}
+    \label{fig:scan200_pcb}
 \end{figure}
 
-As it can be clearly seen, the sellers have gone to some effort to hide the fact, that these diodes have been used before. When a through-hole is soldered to the PCB, its legs will be trimmed to match the PCB thickness. In order to conceal this, the legs need to be extended to their original length. The legs of the LM399 are Kovar, because the LM399 is hermetically sealed with a glass seal and Kovar has the same coefficient of expansion as borosilicate glass. The forgers typically weld steel legs to the Kovar legs and then either gold-plate or tin them, as can be seen in fig. \ref{fig:fake_lm399_legs}.
+With a scanner and multimeter selected, the focus now lies on the test fixture for the Zener diode. This test setup consists of a mounting PCB, that holds up to 20 Zener diodes \cite{git_lm399_burnin_board}. It provides power regulation and a minimal circuit required to support each diode. This circuit is shown in figure \ref{fig:zener_burnin}.
+\begin{figure}[ht]
+    \centering
+    %\scalebox{0.7}{%
+        \import{figures/}{zener_burnin.tex}
+    %} % scalebox
+    \caption{Circuit used for the burn-in of \device{LM399} and \device{ADR1399} Zener diodes.}
+    \label{fig:zener_burnin}
+\end{figure}
 
+The compensation network is required when using the \device{ADR1399}, because of its very low dynamic impedance as recommended in the data sheet \cite{datasheet_ADR1399}. It is not strictly required for the \device{LM399}, but fitted nonetheless, because there are no downsides to it. This makes the board compatible with both types of references. Each Zener diode output is protected using a buffer, which provides isolation and short circuit protection. Finally there is a common mode filter at the output to suppress high frequency noise via ground loops.
+
+Using this test setup, \num{102} \device{LM399} Zener diodes were tested up to this date (2023-04). Of those \num{39} were found suitable for the \device{DgDrive}. This low yield of only \qty{40}{\percent} is a matter of concern and has significantly delayed the development and production of the drivers. Using the automated test setup, the latter issue is manageable, but still slows down the production. Tests are currently conducted to replace the \device{LM399} with the newer \device{ADR1399} Zener diode, but unfortunately, it is still not available in quantities surpassing individual samples. Two of those samples were thoroughly tested and showed significantly better performance in terms of both lower white noise and reduced burst noise. Although these results are promising, more samples need to be tested to give a final verdict. Using the screened Zener diodes a first batch of \num{15} laser drivers was built.
+
+\subsection{Summary}%
+\label{sec_dgDrive_summary}
 \begin{figure}[h]
     \centering
-    %\includegraphics[width=0.75\textwidth]{images/foo.png}
-    \caption{Fake steel legs of a refurbished LM399.}
-    \label{fig:fake_lm399_legs}
+    \includegraphics[width=0.75\textwidth]{images/BM1A6451_dgDrive_lowres.JPG}
+    \caption{Picture of the digital current driver \device{DgDrive}.}
 \end{figure}
 
-Much to the delight of the author the refurbished diodes prove valuable for educational purposes. As the origin and method of extraction from the original circuit is unknown, but can be imagined to be rather savage, the diodes are typically faulty. They can therefore be used to validate the test setup and demonstrate the popcorn noise found in the LM399. A very good example in shown in fig. \ref{fig:fake_lm399_popcorn_noise}.
+This section saw the evaluation of several commercial current driver representing the state of the art at the time of writing. These drivers were all found to be unsuitable to drive modern blue laser diodes like the Osram \device{PL 450B} \cite{datasheet_osram_pl450b} used in the ARTEMIS experiment for the \qty{453}{\nm} master laser. The most common problem identified was the limited compliance voltage especially with low-noise drivers like the Vescent \device{D2-105}, which can barely drive modern high power laser diodes like the Thorlabs \device{L785H1} \cite{datasheet_thorlabs_780nm} that require a compliance voltage of more than \qty{2.5}{\V} at high currents. The only solution with such driver is to use a higher output current model and run it at a reduced current. This strategy negatively impact the noise figure as higher current model have a higher output noise. Additionally, node of the low noise drivers have a digital interface to allow remote control.
 
-\begin{figure}[h]
-    \centering
-    \input{images/refurb_lm399_popcorn_noise.pgf}
-    \caption{Popcorn noise of a refurbished LM399 (\#15) over a period of \qty{15}{\minute}.}
-    \label{fig:fake_lm399_popcorn_noise}
-\end{figure}
+To address these problems, a new laser driver design is presented that not only surpasses all commercial alternatives, both in performance and price, but also delivers the much needed digital interface to integrate into modern experimental setups. To address the compliance voltage issue which is an inherent problem in the original design by \citeauthor{libbrecht_hall} \cite{libbrecht_hall} upon which all of the driver tested rely one, a novel current source configuration was developed that separates the current source from the load. This ensures low noise, a high compliance voltage and strong noise immunity.
 
-TODO: Chinese/Ebay Zeners. Welded legs. Photots. Decap one of those.
+The current driver performance was demonstrated in several of the previous sections and a summary of those finding can be found in the following table.
+\begin{center}
+    \begin{deviceProperties}[label={lst:dgDrive_summary}]{DgDrive device properties}
+    \begin{itemize}
+        \item Maximum output current: \qty{500}{\mA} (p. \pageref{tab:dgDrive_configurations})
+        \item Temperature coefficient: $\qty{0.1}{\uA \per \K} + \qty{0.5}{\uA \per \A \per \K} \cdot I_{out}$ (p. \pageref{fig:dgDrive_tempco_50mA})
+        \item Stability: \qty{< 1 \pm 2}{\uA \per \A \per a} (p. \pageref{fig:stability_dgDrive})
+        \item Noise: \qty{< 70}{\pA \per \Hz\tothe{0.5}} above \qty{100}{\Hz} (\pageref{fig:laser_driver_noise_measurement})
+        \item Below shot noise above \qty{20}{\mA} for the \qty{500}{\mA} version. (p. \pageref{fig:laser_driver_noise_hmp4040})
+        \item Modulation bandwidth: \qty{1}{\MHz} (p. \pageref{fig:dgDrive_modulation_amplitude})
+        \item Output impedance: \qty{>1}{\giga\ohm} resulting in excellent noise immunity (p. \pageref{fig:dgDrive_output_impedance_comparison})
+        \item Digital control
+        \item Python API for remote control
+    \end{itemize}
+    \end{deviceProperties}
+\end{center}
 
 %\begin{figure}[h]
 %    \centering
     %\import{figures/}{dgDrive_protocol.tex}
 %\end{figure}
 
-%\subsection{Current Sources}
-%Discuss Op amp choice (AD797)
+%Custom made cables with PTFE insulator, silver plated AWG18 copper wires with a braided shield, M27500
 
-%\subsection{Temperature Coeeficient}
-%Discuss each section (Reference, DAC, Buffer/Divider, Filter, CC)
-%\subsubsection{Voltage Reference}
-%\subsubsection{DAC}
-%\subsubsection{Divider}
-%\subsubsection{Filter}
-%Choice of components. Leakage current, size of resistor (input bias current of AD797), size of capacitor
+\clearpage
+
+
+
+
+
+
+
+
+\begin{figure}[ht]
+    \centering
+\end{figure}
+
+
+
+
+
+\begin{figure}[ht]
+    \centering
+\end{figure}
+
+    \centering
+        \toprule
+        \midrule
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+
+    \centering
+\end{figure}
+
+
+    \centering
+\end{figure}
+
+
+    \centering
+\end{figure}
+
+
+
+

@@ -195,7 +195,6 @@ def plot_data(ax, data, x_axis, column_settings):
             else:
                 x_data, y_data = data[x_axis], data[column]
             print(f"  Plotting {len(x_data)} values.")
-            #x_data, y_data = data[x_axis], data[column]
             ax.plot(
                 x_data,
                 y_data,
@@ -279,6 +278,7 @@ if __name__ == "__main__":
       #'crop': [0,31e-3],
       "legend_position": "lower center",
       'crop_secondary_to_primary': True,
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
       'primary_axis': {
         "axis_settings": {
           'x_label': r"Time (UTC)",

@@ -9,11 +9,14 @@ import numpy as np
 import os
 import pandas as pd
 from matplotlib.ticker import ScalarFormatter
-from si_prefix import si_format
+import seaborn as sns
+import lttb
 
 pd.plotting.register_matplotlib_converters()
 
 from file_parser import parse_file
+
+colors = sns.color_palette("colorblind")
 
 # Use these settings for the PhD thesis
 tex_fonts = {
@@ -34,7 +37,7 @@ tex_fonts = {
     "pgf.preamble": "\n".join([ # plots will use this preamble
         r"\usepackage{siunitx}",
     ]),
-    "savefig.directory": os.chdir(os.path.dirname(__file__)),
+    "savefig.directory": os.path.dirname(os.path.realpath(__file__)),
 }
 plt.rcParams.update(tex_fonts)
 plt.style.use("tableau-colorblind10")
@@ -157,14 +160,37 @@ def prepare_axis(ax, label, color_map=None, fixed_order=None):
         ax.set_prop_cycle("color", color_map)
 
 
+def downsample_data(x_data, y_data):
+    # This is hacky
+    x_is_time = False
+    dtype = None
+    if pd.api.types.is_datetime64_any_dtype(x_data):
+        x_is_time = True
+        dtype =  x_data.dtype
+        x_data = pd.to_datetime(x_data).astype(np.int64)
+
+    x_data, y_data = lttb.downsample(np.array([x_data, y_data]).T, n_out=1000, validators=[]).T
+
+    if x_is_time:
+        x_data = pd.to_datetime(x_data, utc=True)
+
+    return x_data, y_data
+
+
 def plot_data(ax, data, column, labels, linewidth):
+    if len(data) > 1000:
+        x_data, y_data = downsample_data(data.date, data[column])
+    else:
+        x_data, y_data = data.date, data[column]
+    print(f"  Plotting {len(x_data)} values.")
     ax.plot(
-        data.date,
-        data[column],
+        x_data,
+        y_data,
         marker="",
         label=labels[column],
         alpha=0.7,
         linewidth=linewidth,
+        color=colors[0]
     )
 
 
@@ -236,7 +262,7 @@ def plot_series(plot):
     #  fig.set_size_inches(11.69,8.27)   # A4 in inch
     #  fig.set_size_inches(128/25.4 * 2.7 * 0.8, 96/25.4 * 1.5 * 0.8)  # Latex Beamer size 128 mm by 96 mm
     fig.set_size_inches(
-        418.25555 / 72.27 * 0.9, 418.25555 / 72.27 * (5**0.5 - 1) / 2 * 0.9
+        418.25555 / 72.27 * 0.89, 418.25555 / 72.27 * (5**0.5 - 1) / 2 * 0.89
     )
     if plot.get("title") is not None:
         plt.suptitle(plot["title"], fontsize=16)
@@ -258,9 +284,9 @@ if __name__ == "__main__":
             "title": "LM399 Burnin",
             "title": None,
             "show": True,
-            #"output_file": {
-            #    "fname": "../images/lm399_popcorn_noise.pgf"
-            #},
+            "output_file": {
+                "fname": "../images/lm399_popcorn_noise.pgf"
+            },
             #'zoom': ['2021-12-03 12:30:00', '2022-04-01 08:00:00'],
             "zoom": [
                 "2022-08-31 06:00:00",
