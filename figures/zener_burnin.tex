@@ -2,7 +2,7 @@
 \documentclass[]{standalone}
 \usepackage[]{siunitx}
 \usepackage[siunitx, europeanresistors]{circuitikz}
-\usetikzlibrary{backgrounds,fit}
+\usetikzlibrary{backgrounds,calc,fit}
 
 \ctikzset{
   amplifiers/fill=cyan!25,
@@ -38,7 +38,7 @@
         % boxes
         \node [draw=red!80!black, rectangle, dashed, thick, fit=(RSnubber) (RSnubberlabel) (CSnubber) (CSnubberlabel)] (BoxSnubber){};
         \node [anchor=south west, align=left] at (BoxSnubber.south east) {Compensation network};
-        \node [draw=red!80!black, rectangle, thick, dashed, fit=(OA) (Rout) (Rfb)] (BoxBuffer){};
+        \node [draw=red!80!black, rectangle, thick, dashed, fit={(OA) (Rout) (Rfb) ($(Rout) + (0.75,0)$)}] (BoxBuffer){};
         \node [anchor=south, align=center] at (BoxBuffer.north) {Output protection buffer};
         \node [draw=red!80!black, rectangle, dashed, thick, fit=(Cfilt1) (Cfilt2) (Cfilt2label) (Choke) (Chokelabel)] (BoxFilter){};
         \node [anchor=south, align=center] at (BoxFilter.north) {Common mode filter};

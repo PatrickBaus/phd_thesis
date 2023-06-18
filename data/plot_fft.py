@@ -306,11 +306,11 @@ if __name__ == "__main__":
             },
             "vescent": {
                 "label": "Vescent D2-105-500 (no display)",
-                "color": colors[3],
+                "color": colors[5],
             },
             "dgDrive": {
                 "label": "DgDrive-500-LN v2.3.0",
-                "color": colors[5],
+                "color": colors[3],
                 "zorder": 2.02,
             },
             "dgDrive_simulation": {
@@ -486,7 +486,7 @@ if __name__ == "__main__":
         'columns_to_plot': {
             "dgDrive": {
                 "label": "DgDrive-500-LN v2.3.0",
-                "color": colors[5],
+                "color": colors[3],
             },
             "dgDrive_hmp4040": {
                 "label": "DgDrive-500-LN v2.1.0 (HMP4040)",
