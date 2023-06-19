@@ -11,8 +11,9 @@ import pandas as pd
 from matplotlib.ticker import ScalarFormatter
 from scipy.optimize import curve_fit
 from scipy.stats.distributions import t
-from si_prefix import si_format
 import seaborn as sns
+
+import lttb
 
 pd.plotting.register_matplotlib_converters()
 
@@ -115,6 +116,23 @@ def make_format(current, other):
     return format_coord
 
 
+def downsample_data(x_data, y_data):
+    # This is hacky
+    x_is_time = False
+    dtype = None
+    if pd.api.types.is_datetime64_any_dtype(x_data):
+        x_is_time = True
+        dtype =  x_data.dtype
+        x_data = pd.to_datetime(x_data).astype(np.int64)
+
+    x_data, y_data = lttb.downsample(np.array([x_data, y_data]).T, n_out=1000, validators=[]).T
+
+    if x_is_time:
+        x_data = pd.to_datetime(x_data, utc=True)
+
+    return x_data, y_data
+
+
 def load_data(plot_file):
     print(f"  Parsing: '{plot_file['filename']}'...")
     data = parse_file(**plot_file)
@@ -171,15 +189,20 @@ def prepare_axis(ax, axis_settings):
 
 def plot_data(ax, data, x_axis, column_settings):
     for column, settings in column_settings.items():
-      if column in data:
-          x_data, y_data = data[x_axis], data[column]
-          ax.plot(
-              x_data,
-              y_data,
-              marker="",
-              alpha=0.7,
-              **settings
-          )
+        if column in data:
+            data_to_plot = data[[x_axis, column]].dropna()
+            if len(data_to_plot) > 1000:
+                x_data, y_data = downsample_data(*(data_to_plot[idx] for idx in data_to_plot))
+            else:
+                x_data, y_data = (data_to_plot[idx] for idx in data_to_plot)
+            print(f"  Plotting {len(x_data)} values.")
+            ax.plot(
+                x_data,
+                y_data,
+                marker="",
+                alpha=0.7,
+                **settings
+            )
 
 
 def plot_series(plot):
@@ -299,7 +322,7 @@ def plot_series(plot):
     #  fig.set_size_inches(11.69,8.27)   # A4 in inch
     #  fig.set_size_inches(128/25.4 * 2.7 * 0.8, 96/25.4 * 1.5 * 0.8)  # Latex Beamer size 128 mm by 96 mm
     phi = (5**.5-1) / 2  # golden ratio
-    fig.set_size_inches(441.01773 / 72.27 * 0.9, 441.01773 / 72.27 * 0.9 * phi)  # TU thesis
+    fig.set_size_inches(441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi)  # TU thesis
     if plot.get("title") is not None:
         plt.suptitle(plot["title"], fontsize=16)
 

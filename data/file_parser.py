@@ -1474,7 +1474,9 @@ def parse_data_logger_short_dmm(filename, options, delimiter=",", **kwargs):
         names=["date", options.get("label", "dmm")],
     )
     data.date = pd.to_datetime(
-        data.date, utc=True
+        data.date,
+        utc=True,
+        format="ISO8601",
     )  # It is faster to parse the dates *after* parsing the csv file
 
     for key, scaling_function in options.get("scaling", {}).items():
