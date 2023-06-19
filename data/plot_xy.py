@@ -310,6 +310,10 @@ def plot_series(plot):
     plt.savefig(**plot["output_file"])
   plt.show()
 
+
+phi = (5**.5-1) / 2
+
+
 if __name__ == "__main__":
   plots = [
     {
@@ -705,11 +709,12 @@ if __name__ == "__main__":
     {
       'title': r"DgTemp Tempco Test",
       'title': None,
-      'show': False,  # Set the dimensions to 0.8 before enabling
+      'show': False,
       'crop': ['2019-07-02 19:00:00', '2019-07-03 01:00:00'],
-      #"output_file": {
-      #    "fname": "../images/dgTemp_tempco.pgf",
-      #},
+      "output_file": {
+          "fname": "../images/dgTemp_tempco.pgf",
+      },
+      "plot_size": (441.01773 / 72.27 * 0.8, 441.01773 / 72.27 * 0.8 * phi * 2),
       "legend_position": "upper left",
       'primary_axis': {
         "axis_settings": {
@@ -754,6 +759,10 @@ if __name__ == "__main__":
           "legend_position": "upper right",
           'x-axis': "temperature",
           "y-axis": "value_ext",
+          "annotation": {
+              "label": r"({slope:.3e} ± {uncertainty:.1e}) \unit[per-mode=symbol]{{\ohm \per \kelvin}}",
+              "xy": (0.7,0.2),
+          },
           'columns_to_plot': {
               "value_ext": {
                   "label": "Resistance deviation",

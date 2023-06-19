@@ -269,9 +269,9 @@ if __name__ == "__main__":
       'title': 'DgDrive Noise comparison',
       'title': None,
       'show': False,
-      #"output_file": {
-      #  "fname": "../images/laser_driver_noise_measurement.pgf"
-      #},
+      "output_file": {
+        "fname": "../images/laser_driver_noise_measurement.pgf"
+      },
       #'crop': {
       #    "crop_index": "frequency",
       #    "crop": [1e2, 5e6],
@@ -669,15 +669,16 @@ if __name__ == "__main__":
 {
       'title': 'DgTemp 1.0.0, noise floor',
       'title': None,
-      'show': False,
-      "output_file": {
-        "fname": "../images/dgTemp_244sps_shorted_input.pgf"
-      },
+      'show': True,
+      #"output_file": {
+      #  "fname": "../images/dgTemp_244sps_shorted_input.pgf"
+      #},
       #'crop': {
       #    "crop_index": "frequency",
       #    "crop": [1e2, 5e6],
       #},
       "legend_position": "upper right",
+      "plot_size": (441.01773 / 72.27 * 0.89, 441.01773 / 72.27 * 0.89 * phi),
       'primary_axis': {
         "axis_settings": {
           'x_label': r"Frequency in \unit{\Hz}",
