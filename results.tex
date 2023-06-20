@@ -1573,41 +1573,273 @@ A data aggregation daemon was presented that serves the need for a laboratory en
 \end{center}
 
 \clearpage
+\section{Lab Temperature Controller}%
+\label{sec:lab_temp_control}
 
+\subsection{Controller Hardware}
+The lab temperature controller also called LabNode is an Ethernet connected PID controller, which is shown in figure \ref{fig:labnode_picture}.
 
-
-
-
-
-\begin{figure}[ht]
+\begin{figure}[h]
     \centering
+    \includegraphics[width=0.75\textwidth]{images/BM1A1831_labnode_lowres.JPG}
+    \caption{Picture of a LabNode, an Ethernet connected PID controller using a \device{Teensy LC} microcontroller.}
+    \label{fig:labnode_picture}
 \end{figure}
 
+It was developed during the Bachelor’s thesis of \citeauthor{thesis_liebmann} \cite{thesis_liebmann} and is mainly used to connect to actuators like the Heimeier \device{EMO T} \cite{datasheet_heimeier_emo_t} which uses a \qty{24}{\V_{AC}} supply and accepts a \qty{10}{\V} input for the setpoint. The LabNode is far more versatile though and can be used for many other tasks as well.
 
+The controller is based on the \device{Teensy LC} microcontroller, which has a \qty{32}{\bit} Cortex M0+ \qty{48}{\MHz} MCU. It can be controlled and configured via Ethernet using CBOR \cite{rfc_cbor} encoded commands. The CBOR encoder is similar to a binary form of the poplar JSON \cite{rfc_json} text format for data transfer. The CBOR encoder is available for many programming languages. Additionally, a Python implementation of the LabNode API is provided by the author \cite{git_labnode}, which can be easily installed via the PyPI repository using a single command. The LabNode features a highly optimized PID library \cite{git_pid}, written, by the author, in C++ and assembly. The library was optimized for the Cortex M4 and performs even better on that platform. It makes use of the so called saturated math instructions, which is available as part of the DSP (Digital Signal Processing) extension of the M4. For implementation details see \cite{git_pid} and consult the source code documentation. Using the \device{Teensy LC}, a PID update rate of more than \qty{100}{\kHz} was achieved, allowing the LabNode to be customized for more demanding tasks that require PID control. An external connection to the I²C bus of the MCU can be used to integrate custom sensors. Additional features can be implemented via the Arduino integrated development environment (IDE) which is geared toward beginners, which results in a lower barrier to entry for students to adapt the system to their needs.
 
+The controller is capable to work with a broad range of actuators as is has a switchable gain block at the output to accommodate the two most common input ranges of linear actuators of \qtyrange[range-units = single, range-phrase={~to~}]{0}{5}{\V} and \qtyrange[range-units = single, range-phrase={~to~}]{0}{10}{\V}. The \qty{12}{\bit} DAC is an ADI \device{AD5681R} \cite{datasheet_AD5681R} but for more demanding tasks a \qty{16}{\bit} version \device{AD5683R} can be installed as well with minimal software changes required. The full design files can be found at \cite{git_labnode_kicad}.
 
-
+\subsection{Controller Implementation}
+The lab temperature swings were already introduced in figure \ref{fig:lab_temperature_start_of_project} on page \pageref{fig:lab_temperature_start_of_project} and it became obvious that given a \qty{2}{\kelvin} temperature swing precision measurement requiring stability below \qty{1}{\ppm} are not possible. An example of a measurement within such an adverse environment is shown in figure \ref{fig:laser_driver_aircon}.
 \begin{figure}[ht]
     \centering
+    \input{images/laser_driver_aircon.pgf}% data/plot_generic.py
+    \caption{Measuring a current of \qty{50}{\mA} using a Keysight \device{34470A} with changing ambient temperature. The current source is based on the design of \citeauthor{laser_driver_digital} \cite{laser_driver_digital}.}
+    \label{fig:laser_driver_aircon}
 \end{figure}
 
+The device under test (DUT) for the measurement shown above was placed in a temperature controlled chamber and the Keysight \device{34470A}\footnote{\qty{100}{\mA} range, \qty{10}{\plc}, AZERO ON, $f_s = \qty{0.5}{\Hz}$} was exposed to the lab environment. Admittedly, the example in figure \ref{fig:laser_driver_aircon} does not reflect the correct way to conduct a measurement with high stability requirements but serves as an excellent example to highlight the problem.
+
+In order to resolve the situation, a LabNode was used to replace the commercial temperature controller of the air conditioner box. These boxes use an active radiator and are connected to the cooling water system of the building. The water flow can be regulated via an actuator to control the air temperature blown into the room. The lab, which is used as an example below has two such boxes and both are controlled by individual temperature controllers. To reduce the coupling between the two boxes it is desirable to keep the sensors close to the air conditioner unit. This also decreases the response time of the sensors and thereby increases the regulation bandwidth. On the other hand, only regulating the output temperature of the air conditioner unit will result in a temperature offset measured on the optical tables depending on the local heat load. This problem can be addressed using multiple sensors. One sensor that is close to output of the air conditioner and the other one at the location where the temperature is to be stabilized. This idea is hardly new and commonly used in industry \cite{multi_sensor_pid}. Another intriguingly simple solution using two interleaved PID controllers was also presented by \citeauthor{split_pid} \cite{split_pid}.
+
+The bandwidth of the PID control loop required is not not very high and it was found that a controller update rate of \qty{1}{\Hz} was more than sufficient, even for sensors placed just below the air conditioner unit. This allows to connect the sensors via Ethernet instead of directly wiring them to the PID controller. Using Ethernet greatly simplifies the setup, because the infrastructure is already there. Additionally, when routing these sensor signals through a small computer, more elaborate control schemes like those presented by \citeauthor{split_pid} \cite{split_pid} can be implemented on the fly in software without modifying the LabNode controller firmware. This also simplifies testing and opens up more options regarding the sensor choice.
+
+Such a control scheme is currently implemented and several sensors produced by Tinkerforge are distributed throughout the lab to give the desired feedback. A Docker container running on a server is processing these sensors and then hands a computed value to the LabNode controller. Should the server stop sending updates, a fail-safe engages and the controller will use a backup sensor to control the room temperature, albeit with a reduced bandwidth, because the sensor is located inside the controller box and not directed attached to the air conditioner.
+
+To adjust the PID controller a model of the room was used as described in section \ref{sec:temperature_control_model} on page \pageref{sec:temperature_control_model}. The extraction of the model parameters is shown in the next section.
+
+\subsection{Controller Tuning}%
+\label{sec:pid_controller_tuning}
+The FOPDT model was found to sufficiently describe the room under most circumstances and gave usable results for a PI controller. An exception to the rule is the case were the sensor is very close to the air conditioner. As an example this procedure is explained using the air conditioner of lab 011 that contains two such units. The model is created for the second air conditioner, located in back of lab. This is also the lab were the measurement shown in figure \ref{fig:laser_driver_aircon} was conducted. To fit the model to the data, timestamped values of the controller output and the room temperature are required. The LabKraken software shown in section \ref{sec:res_labkraken} greatly simplifies this task as these values are routinely logged by LabKraken, so there is no special setup required. To extract the data later, either an SQL query can be used to have the Timescale database prepare a usable dataset or the Grafana web interface can be used to select the appropriate time frame. Appendix \ref{sec:appendix_query_kraken} explains the required SQL queries and such a query was used to procure the data for the following example.
+
+The procedure to extract the PID parameters is as follows
+\begin{enumerate}
+    \itemsep0em
+    \item Place the sensors and log their output along with a timestamp.
+    \itemsep0em
+    \item Make sure the room temperature is stable.
+    \itemsep0em
+    \item Set the controller to manual mode, which freezes the output at the current output value.
+    \itemsep0em
+    \item Wait a few minutes to collect some data. This gives the fit a better starting point.
+    \itemsep0em
+    \item Apply a step pulse by increasing the output by 500 counts. Do make sure that this gives a reasonable (small-signal) response. Some rooms may require a smaller step like 100 counts.
+    \itemsep0em
+    \item Wait again until the temperature has settled to ensure a good fit to the measurement data.
+    \itemsep0em
+    \item Return the controller to automatic mode.
+\end{enumerate}
+
+With the timestamped temperature and output values in hand, a fit to the model can be attempted. The type of model depends on the location of the sensor. Sensors located a few meters away from the air conditioner can be modeled, to a good degree, using a first order plus dead-time model. The result will then be a set of parameters for a PI controller as discussed in sections \ref{sec:temperature_control_model} and \ref{sec:pid_controller_basics}. Sensors located very close to the air conditioner or placed directly in the airflow require a different approach and can best be simulated with a second order model. The result will then be a set of PID controller parameters.
+
+Figure \ref{fig:pid_parameter_fit} shows the fit to the internal backup sensor of the LabNode controller in the back of the lab. The controller is located about \qty{1.5}{\m} from the air conditioner and not directly placed in the airflow. Both the time delay until the cold air reaches the controller and the long decay time can be seen. The latter is due to the placement of the sensor inside the controller and is also the reason for the seemingly high temperature of more than \qty{35}{\celsius}. The measurement typically takes about \qtyrange[range-units = single]{3}{4}{\hour} and the lab should best be undisturbed during this time. Fortunately, the controller is remote-controllable and can be programmed using the Python API introduced above to run the measurement sequence at night, for example. A documented Python example to set the controller output can be found with the source code of the library \cite{git_labnode}.
+\begin{figure}[ht]
     \centering
+    \input{images/pid_parameter_fit.pgf}% data/fit_kraken.py
+    \caption{Fitting a FOPDT model to the response of an output step of \qty{500}{\bit}.}
+    \label{fig:pid_parameter_fit}
+\end{figure}
+
+The fitting algorithm is implemented in Python and can be found along with the supplemental material \cite{supplemental_material} at \external{data/fit\_kraken.py}. The fitting program tries to fit a FOPDT model to the data, then produces a plot like the one shown in figure \ref{fig:pid_parameter_fit} and returns the model parameters and finally calculates the PID parameters using several different tuning rules. The fit to the data presented above produced the following values for the FOPDT parameters:
+\begin{align*}
+    K = \qty{2.137(5)}{\milli \kelvin \per \bit}& & \tau = \qty{2264(17)}{\second}& &\theta = \qty{113(8)}{\second}
+\end{align*}
+$K$ is the normalised gain, $\tau$ the decay time, and $\theta$ the dead time or lag.
+
+As it was shown in section \ref{sec:pid_tuning_rules}, the tuning rules that result in the smoothest response with very little overshoot in this application are the SIMC and the AMIGO rules. The results calculated using those rules are given below. They were derived according to table \ref{tab:pid_tuning_parameters} on page \pageref{tab:pid_tuning_parameters}.
+\begin{table}
+    \centering
+    \begin{tabular}{lcc}
         \toprule
+        Tuning Rule& $k_p$& $k_i$\\
         \midrule
+        SIMC PI & \qty{4688.57}{\bit \per \K} & \qty{5.186}{\bit \per \K\s}\\
+        AMIGO PI & \qty{2927.71}{\bit \per \K} & \qty{3.087}{\bit \per \K\s}\\
         \bottomrule
     \end{tabular}
+    \caption{PI tuning rules for lab 011 extracted from a fit to a FOPDT model.}
+    \label{tab:extracted_pid_parameters}
 \end{table}
 
+For the backup sensor, the more conservative result is chosen as a starting point for tuning the controller. The reason is that the backup mode is supposed to 'just work' even under adverse conditions. The results obtained will likely need some more tuning to achieve optimal results. Retuning of the controller becomes necessary if extensive changes were made either to the heat load in the room or the air conditioning system. A well tuned system is shown in the next section.
 
+\subsection{Test Results: Temperature Stability}
+Having tuned the PID controllers the system was found to be stable even for fast changing loads, like high power devices being turned on, or sudden changes of the cooling water temperature. To demonstrate the performance, a typical week was chosen and the room temperature is shown in figure \ref{fig:labnode_performance}.
+
+\begin{figure}[ht]
     \centering
+    \input{images/labnode_performance.pgf}% data/plot_generic.py
+    \caption{Temperature measured by two sensors in the lab. The in-loop sensor is shown in blue. A second sensor located inside a rack nearby is shown in brown.}
+    \label{fig:labnode_performance}
 \end{figure}
 
+Figure \ref{fig:labnode_performance} shows the temperature as measured by a sensor attached to the air conditioner and a Fluke \device{5615-12-P} PT100 sensor, which is placed inside the rack that monitors the Zener diode scanner setup described in section \ref{sec:diode_scanner_system}. The only deviations seen are caused by people working on the table right next to this rack. Typically the temperature is stable within \qty{\pm 0.5}{\K} over weeks, a significant improvement over the system previously installed.
 
+It must also be mentioned that over the course of the last \num{6} years none of the \num{14} units currently in use has failed or shown issues. This highlights the build quality and reliability of the system. One of the key parameters for such an important aspect of the infrastructure.
+
+\subsection{Summary}
+An Ethernet connected PID controller called LabNode was presented. This controller can be programmed using the user-friendly Arduino IDE to make customisation available to a wide group of users. Additionally, the software provided can be controlled using a Python API via Ethernet. The PID controller software presented is a high performance solution handling an update rate of up to \qty{100}{\kHz}.
+\begin{center}
+    \begin{deviceProperties}[label={lst:labnode_summary}]{LabNode properties}
+    \begin{itemize}
+        \item Rugged, industrial PID controller
+        \item Controllable via Ethernet and USB
+        \item Sampling rate of up to \qty{100}{\kHz}
+        \item Programmable via the Arduino IDE
+        \item Python API
+        \item Application in temperature control. A room temperature stability of $\Delta T = \qty{\pm 0.5}{\kelvin}$ was demonstrated.
+    \end{itemize}
+    \end{deviceProperties}
+\end{center}
+
+% TODO: Add all lab settings, incl. fan settings
+
+\clearpage
+\section{Digital Temperature Controller}%
+% TODO: Add connector layout
+\label{sec:temperature_controller}
+A diode laser as implemented by the APQ group requires two temperature controllers. One is used to stabilise the external resonator and the other is used to control the temperature of the laser diode. For this purpose, a two-channel controller was conceived in this work and a prototype was tested. This section is split into two parts, just like temperature controller hardware. There is the analog front end that does the data acquisition and there is a power driver board that is responsible for driving two thermoelectric coolers (TEC). The analog front end was developed during the Master's thesis of \citeauthor{thesis_sattelmaier} \cite{thesis_sattelmaier}. An in-depth characterisation can be found there. The most imported findings will also be reproduced here.
+
+The second part deals with driver board. The driver board features two \qty{12}{\V}, \qty{5}{\A} output drivers and also contains the microcontroller.
+
+\subsection{Analog Board}
+The analog front end is isolated on a separate board to reduce noise coming from the power supply which drives the TECs running several ampere. The front end consists of two channels that are identical. Each channel has a current source, a multiplexer (MUX) and an ADC, including a buffer. A simplified overview is given in figure \ref{fig:dgTemp_overview}.
+\begin{figure}[ht]
     \centering
+    %\scalebox{0.8}{%
+        \import{figures/}{dgTemp_overview.tex}
+    %} % scalebox
+    \caption{Simplified schematic of the temperature controller front end. Shown is a single channel. Not included is an internal reference resistor that is accessible through the MUX for calibration purposes.}
+    \label{fig:dgTemp_overview}
 \end{figure}
 
+As can be seen in figure \ref{fig:dgTemp_overview}, the same reference voltage is used to create the thermistor sense current and the ADC reference. This has the advantage of cancelling out first order effects of the low frequency noise and drift of the reference, which allows a simpler reference circuit than the one shown in section \ref{fig:dgDrive_setpoint_generation} and used in the \device{DgDrive} laser current driver. The reference is an ADI \device{LTC6655-4.096} \cite{datasheet_LTC6655}, a \qty{4.096}{\V} bandgap reference as opposed to the Zener diode used in the laser current driver design. These voltage references can operate with a lower supply voltage, but are less stable and nosier. The latter two properties are of little concern as drift and noise mostly cancels out in this arrangement. The former property has the advantage of reducing the number of supply rails required for this design.
 
+The voltage reference is buffered and split into two paths, one feeds into the ADC, a \qty{32}{\bit} ADI \device{LTC2508-32} \cite{datasheet_LTC2508-32} successive approximation (SAR) ADC. This ADC runs at \qty{1}{\MHz}, but does apply an internal filtering and decimation algorithm. Decimating the output is necessary, because the MCU, a \device{Teensy 3.6} with a \qty{180}{\MHz} Cortex M4 32-bit processor is not capable of transferring the \qty{32}{\bit} data value within the \qty{650}{\ns} as required by the \device{LTC2508-32} to cope with a \qty{1}{\MHz} data stream. Decimating the input allows to spread the readout over multiple acquisitions as detailed by \citeauthor{thesis_sattelmaier} \cite{thesis_sattelmaier}. This has some drawbacks as discussed later though.
+
+The other reference voltage path is going to the current sources. There, the reference voltage is again split into two paths again, one for each ADC channel, and fed into an ADI \device{AD5760} \cite{datasheet_AD5760} \qty{16}{\bit} DAC with a very low temperature coefficient of \qty{< 0.05}{\uV \per \V}. The DAC is used to adjust the output current, which is useful when using other temperature transducers than a \qty{10}{\kilo\ohm} thermistor. The design of the current source is very similar to the design discussed in section \ref{sec:results_precision_current_source} on page \pageref{sec:results_precision_current_source}. This main current source (it actually is a sink) is a buffered Howland current source as shown in figure \ref{fig:buffered_howland_current_source} on page \pageref{fig:buffered_howland_current_source} instead of the MOSFET based current source. The Howland current source is based on an ADI \device{LT1997-3} \cite{datasheet_LT1997} difference amplifier as proposed in section \ref{sec:howland_current_source}. The reference resistor is a \qty{100}{\kilo\ohm} Vishay \device{S102} \cite{datasheet_s102} non-hermetic moulded precision resistor. The current is then fed into a CR-filter (do note the inverted order, because it is a current filter). The low output impedance of the filter requires a cascode with a an InterFET \device{SMP4338} JFET to restore the output impedance. After the cascode, the current is sourced from a virtual ground as shown in figure \ref{fig:dgDrive_current_source} on page \pageref{fig:dgDrive_current_source}. The current flow is in the opposite direction as in the laser current driver discussed in section \ref{sec:results_precision_current_source} because the voltage across the thermistor must be of positive polarity to be read by the ADC.
+
+The extremely high output impedance is required because it reduces the settling time of the current source and suppresses external noise sources. The former is important when considering the autozeroing routine. The acquisition procedure will be discussed next in more detail.
+
+\subsection{Data Acquisition}
+The thermistor to measure the temperature of the laser resonator and diode mount is an Amphenol \device{RL0503-5820-97-MS} \cite{datasheet_amphenol_thermistor} large bead thermistor. The large size of the thermistor results in a lower noise as compared to smaller thermistors like the TDK \device{B57550G103+} used in earlier laser resonator designs \cite{thermistor_noise} of the APQ group. To reduce self-heating effects due to the sense current, a current of \qty{50}{\uA} was chosen as opposed to the industry standard of \qty{100}{\uA}. This will produce a voltage of \qty{500}{\mV} across the thermistor at room temperature. Using the equation derived by \citeauthor{steinhart-hart} \cite{steinhart-hart}, the temperature sensitivity of the thermistor can be estimated and is found to be \qty{1.91}{\uV \per 100 \micro\K} at \qty{23}{\celsius} and \qty{450}{\nV \per 100 \micro\K} at \qty{60}{\celsius}. To reach the design goal of \qty{100}{\micro \K} as stated in table \ref{lst:dgTemp_requirements} on page \pageref{lst:dgTemp_requirements}, small voltages need to be measured. This brings up several problems like low frequency noise from the amplifier and thermal EMF, which can introduce an offset voltage between two dissimilar metals of different temperature -- an issue that arises at every connector and solder joint between the sensor and the analog front end. Copper oxide buildup on connectors can produce Peltier voltages as high as \qty{1}{\mV \per \K} \cite{horowitz1989}, orders of magnitude larger than the desired measurement resolution. Both the low frequency flicker noise and the random walk seen from thermal EMF can be treated as the same problem. The details and their nature were discussed in section \ref{sec:allan_deviation}.
+
+To mitigate this low frequency noise autozeroing is required. As explained in section \ref{sec:autozero} autozeroing requires a second measurement of the zero value to subtract it from the measurement. This obviously slows down the measurement frequency by half. An alternative is to invert the polarity of the measurement, then average both as
+\begin{equation}
+    \frac{V_{thermistor} + V_{off} - (-V_{thermistor} + V_{off})}{2} = V_{thermistor}\,. \label{eqn:dgTemp_autozeroing}
+\end{equation}
+
+$V_{thermistor}$ is the voltage across the thermistor and $V_{off}$ the offset voltage introduced by the effects discussed above. Averaging two inverted measurements results in the desired thermistor voltage, but with the offset removed. This approach still bears the cost off bandwidth, but has no dead time. This is a considerable advantage as discussed in section \ref{sec:autozero_offset_nulling} because it allows to increase the switching frequency until one ends up in the white noise region of the noise spectral density. The limits will be discussed later and the multiplexer is shown first. The design uses a low leakage ADI \device{MAX329} \cite{datasheet_MAX329} dual four-channel multiplexer. This multiplexer is used to switch the current source between four configurations.
+\begin{figure}[ht]
     \centering
+    %\resizebox {0.8\textwidth} {!} {
+        \import{figures/}{dgTemp_multiplexer.tex}
+    %} % resizebox
+    \caption{Multiplexer of the analog front end to invert the current source and switch to a reference resistor used for calibration.}
+    \label{fig:dgTemp_multiplexer}
+\end{figure}
+
+The multiplexer shown in figure \ref{fig:dgTemp_multiplexer} allows to invert the current source, but also to switch it to an internal reference resistor, a hermetic \qty{10}{\kilo\ohm} Vishay \device{VHP101} \cite{datasheet_vhp101}. This resistor gives the analog front end a number of unique capabilities. The instrument cannot only autocalibrate its front end by checking against the known value of the reference resistor. It can also be used as a resistance bridge because both channels have access to this reference resistor. So by measuring a known resistor on channel \num{1} and an unknown resistor on channel \num{2}, its ratio can be computed by comparing both channels with the reference resistor. This feature is not yet implemented in firmware, but can prove interesting for high precision resistance measurements. The shorting switch shown above the current source at the bottom of figure \ref{fig:dgTemp_multiplexer} is engaged before opening any of the multiplexer switches to ensure the current source does not increase the voltage to the maximum compliance voltage in an attempt to keep the current flowing.
+
+Switching the polarity of the current source brings a number of challenges. First, the load is switched between a short and the \qty{10}{\kilo\ohm} within \qty{1}{\micro\second} \cite{datasheet_MAX329} as this is the switching time of the \device{MAX329}. These fast switching times are desirable because in between the transition, the ADC cannot collect data samples. The current source must therefore follow these load changes as fast as possible. This requires a very high dynamic output impedance as mentioned above. The second issue has to do with the cable. The cable has a capacitance and additionally the dielectric used as insulator displays dielectric absorption. The latter topic was already discussed in section \ref{sec:voltage_reference} on page \pageref{sec:dielectric_absorption} in the context of capacitor leakage. The cable capacitance limits the maximum output impedance as shown in figure \ref{fig:dgDrive_output_impedance_comparison} on page \pageref{fig:dgDrive_output_impedance_comparison}. The resistance involved in this situation is one order of magnitude higher than the \qty{1}{\kilo\ohm} discussed in section \ref{sec:voltage_reference}, which makes the capacitive effect even more pronounced. \citeauthor{thesis_sattelmaier} showed that using a \qty{2}{\m} twisted pair cable with a PVC insulator a decay time of \qty{0.1876 \pm 0.0794}{\second} could be observed. Given that the dielectric loss tangent of PCV is \num{2} orders of magnitude higher than that of PTFE \cite{dielectric_absorption_pvc_pe_ptfe} and the relative permittivity of PTFE $\epsilon_r$ is about \qty{60}{\percent} that of PVC. PTFE cables were chosen to minimize the dead time. The cables used are 4-wire MIL-DTL-27500 \device{M27500A 18WJ4T24} cables. These cables did not cause any degradation of the measurement as opposed to several PVC insulated cables tested.
+
+The inversion sequence of the autozeroing also affects the ADC filter. As mentioned above, the ADC has an internal filter and then decimates the result to reduce the amount of data that needs to processed by the microcontroller. The internal filter is, unfortunately, not aware of the switching and cannot apply equation \ref{eqn:dgTemp_autozeroing}. The filter therefore need be reset after each inversion. This forces the data acquisition to wait for the filter to settle again before processing new data. The internal filter needs \num{7} (decimated) samples to settle. The smallest downsampling factor, the \qty{180}{\MHz} \device{Teensy 3.6} could cope with, was \num{4096} which results in \qty{244}{samples \per \second} with a bandwidth of \qty{30}{\Hz}. The wait time of \num{7} samples introduces a dead time of \qty{29}{\ms}. Figure \ref{fig:dgTemp_244sps_shorted_input} can be used to judge the impact of the slow data processing.
+\begin{figure}[ht]
+    \centering
+    \input{images/dgTemp_244sps_shorted_input.pgf}% data/plot_fft.py
+    \caption{Noise spectrum of the analog front end using an \device{LTC2508-32} with shorted inputs. The sampling frequency is \qty{244}{\Hz}.}
+    \label{fig:dgTemp_244sps_shorted_input}
+\end{figure}
+
+The most prominent feature of figure \ref{fig:dgTemp_244sps_shorted_input} is the bandwidth of \qty{30}{\Hz}, which can be clearly identified. Although it is mostly shaped by the digital filter of the \device{LTC2508-32}, it can be seen that towards low frequencies, the noise floor takes the form of flicker noise from the ADC. The \device{LTC2057} used as a buffer has a noise floor of \qty{10}{\nV \Hz\tothe{-0.5}}. Judging from the shape of the curve in figure \ref{fig:dgTemp_244sps_shorted_input} it can be expected that towards higher frequencies, the noise should drop to that value. Unfortunately, this frequency range is out reach. To limit the impact of the digital filter on the measurement, the inversion frequency must be well within the filter bandwidth. The inversion was therefore chosen to be done every \num{512} samples, that is, with a frequency of about \qty{2}{\Hz} which is about a decade away from the filter cutoff.
+
+\subsection{Test Results: Linearity}
+Another important property of the analog front end is its linearity, not only for the application as a resistance bridge mentioned before, but also to ensure an accurate measurement of a calibrated temperature. This test was done by sweeping a Fluke \device{5440B} calibrator over the input range from \qtyrange[range-units = single, range-phrase={~to~}]{0}{4.096}{\V}. A Keysight \device{3458A} with a specified linearity of \qty{< 0.1}{\uV \per \V} was used to confirm the voltage. This lead to a parabolic calibration curve that was programmed into the microcontroller and was then corrected for in real-time. The integral non-linearity (INL) measurement is shown in figure \ref{fig:dgTemp_inl}.
+\begin{figure}[ht]
+    \centering
+    \input{images/dgTemp_inl.pgf}
+    \caption{INL of the analog front end with an \device{LTC2057} buffer. Top: uncorrected INL. Bottom: INL with the real-time correction applied.}
+    \label{fig:dgTemp_inl}
+\end{figure}
+
+Several other op-amps like the Texas Instruments \device{OPA827} and the ADI \device{ADA4625-1}, both JFET op-amps were also tested as an input buffer. While the \device{LTC2057} did not have the lowest INL of all devices tested, it had the most predictable INL. It was the only device producing a parabolic shape \cite{thesis_sattelmaier} which is easy to calibrate out. The other devices produced a non-symmetrical cubic shape likely due to the lower open-loop gain of the JFET op-amps. Another chopper op-amp, a TI \device{OPA189}, was tested, but was found not compatible with the \qty{10}{\kilo\ohm} input resistance of the thermistor. The switching current from by the autozeroing produced an offset voltage at the output of the op-amp of \qty{2}{\uV} when used with a \qty{10}{\kilo\ohm} input resistance. This offset additionally depended on the input impedance presented to the op-amp. The sinusoidal shape superimposed on the parabola is inherent to the architecture of the ADC and also shown in the datasheet \cite{datasheet_LTC2508-32}. The parabola was stable over several weeks and tested multiple times, to ensure it can be calibrated out. The same parabola was also found with other temperature controller front end boards using the same topology. To rule out a drift with temperature, the INL was also tested at both \qty{20}{\celsius} and \qty{30}{\celsius} which also showed negligible difference.
+
+\subsection{Test Results: Temperature Stability}
+\begin{figure}[htb]
+    \centering
+    \input{images/dgTemp_tempco.pgf}
+    \caption{Temperature coefficient of the temperature controller front end. Measured by stepping the ambient temperature by \qty{22}{\K} while measuring a \qty{10}{\kilo\ohm} reference resistor located outside the thermal chamber.}
+    \label{fig:dgTemp_tempco}
+\end{figure}
+
+The temperature stability of the analog front end was also investigated. To give a realistic impression, a \qty{10}{\kilo \ohm} reference resistor (ab-precision \device{RS2-10k}) was used to simulate a thermistor. The temperature controller was then placed inside a thermal chamber while measuring the resistance of the reference resistor located outside of the chamber. The temperature was stepped from \qty{23}{\celsius} to \qty{45}{\celsius} ambient temperature. The results are shown in figure \ref{fig:dgTemp_tempco}.
+
+With the autozero function enabled a result of \qty{-13.9(1)}{\milli\ohm\per\K} was measured, the equivalent of \qty{-40}{\micro\K \per \K}. Related to full scale input that is \qty{-0.17}{\ppm \per \K}, which can be attributed to the drift of the current source sense resistor. Form this result it can be inferred that the ambient temperature of the lab has little to no influence on the setpoint of the controller.
+
+\subsection{Test Results: Long-term stability}
+The final aspect tested was the long-term stability of the analog front end. For this test, the controller was left in the thermal chamber while CH1 was measuring the \qty{10}{\kilo \ohm} \device{RS2-10k} reference resistor and CH2 was connected to the internal reference resistor. The thermal chamber did not contain a dry pouch, and the ambient humidity was therefore uncontrolled. This revealed a small dependence on said ambient humidity. The magnitude of the drift is similar for both channels and indicates that either the ADC gain or the sense resistor of the current source is affected by humidity. The most likely source is the \qty{100}{\kilo\ohm} Vishay \device{S102} molded epoxy sense resistor. It is the only part that is not connected in a ratio configuration and therefore its drift is not attenuated in any way. The cause of the drift is the epoxy resin, which swells when exposed to humidity \cite{epoxy_humidity}. This puts pressure on the resistive element, which then changes its resistance.
+\begin{figure}[htb]
+    \centering
+    \input{images/dgTemp_longterm.pgf}% data/plot_generic.py
+    \caption{Long-term comparison of the internal reference resistor against an external \qty{10}{\kilo\ohm} reference.}
+    \label{fig:dgTemp_longterm}
+\end{figure}
+
+This sensitivity can either be addressed in hardware by replacing the current source sense resistor with a hermetic version, or a software solution can be applied by activating the autocalibration routine in regular intervals. The device can then recalibrate itself using the internal hermetic reference resistor.
+
+Nonetheless, the sensitivity to humidity is on the order of \qty{80}{\micro \K} between \qty{30}{\percent RH} and \qty{60}{\percent RH}, which is close to the full swing of the lab. The noise of the individual channels is \qty{1.65}{\milli\ohm_{rms}} for the external channel and \qty{0.89}{\milli\ohm_{rms}} for the internal channel, which is equivalent to \qty{4.1}{\micro \K_{rms}} and \qty{2.2}{\micro \K_{rms}} at \qty{20}{\celsius} respectively. This is all well below the requirements listed in table \ref{lst:dgTemp_requirements}.
+
+\subsection{Output Driver}
+The output driver of the temperature controller is based on an ADI \device{LT8714} bipolar DC/DC regulator that is designed for a maximum output of \qty{\pm 12}{\V} and \qty{\pm 5}{\A}. Two of these controllers were integrated on a PCB. Using a DC/DC regulator instead of an H-bridge configuration has the advantage that the higher switching frequency of \qty{300}{\kHz} can be filtered more easily than a switching frequency on the order of a few \unit{\kHz} typically found in H-Bridge designs. The DC/DC regulator can be supplied with a input voltage of up to \qty{20}{\V} which reduces the required supply current accordingly. This allows to integrate more devices into a subrack powered by the same power supply. The output driver board also houses the microcontroller which is connected to the analog board via digital isolators to reduce the noise coupled into the analog side. Both boards were tested together and a laser resonator was temperature controlled for a test. This revealed a first problem. The laser resonators used in the APQ group are housed in an aluminium case that is not airtight. This allowed air drafts to considerably affect the resonator temperature. Even walking past the laser resonator caused temperature swings of \qty{\pm 1.5}{\milli \K} or more.
+
+To address this issue, the laser was additionally shielded using a silicone sleeve that is put around the external laser resonator housing. The silicone sleeve was molded in house using a 3D printed replica of the laser resonator. The type of silicone used is an RTV2 platinum silicone with a shore hardness of \qty{32}{Shore A}. This extra protection reduced the disturbances by half and the result is shown in figure \ref{fig:dgTemp_laser_resonator}
+\begin{figure}[ht]
+    \centering
+    \input{images/dgTemp_laser_resonator.pgf}% data/plot_generic.py
+    \caption{Stability of a temperature controlled laser resonator. The disturbances are caused by air drafts that rapidly change the temperature of the outer aluminium housing.}
+    \label{fig:dgTemp_laser_resonator}
+\end{figure}
+
+The temperature controller typically keeps the resonator within \qty{\pm 150}{\micro \K} and the only problem are the disturbances causes by drafts due to people working in the vicinity. To rule out the controller as the source of the problem, an aluminium block used as a test mass was placed inside a thermal chamber and a Keysight \device{3458A} was used to read the voltage across the \qty{10}{\kilo\ohm} thermistor also monitored by the temperature controller. The thermistor attached to the test mass was a calibrated Fluke \device{5611T-P} \qty{10}{\kilo\ohm} thermistor to rule out any problems like burst noise coming from the thermistor itself. Additionally, the temperature inside the chamber was swept from \qty{20}{\celsius} to \qty{15}{\celsius} to observe the temperature suppression of the controller.
+
+The first observation made was that the disturbances observed in figure \ref{fig:dgTemp_laser_resonator} were no longer present for as long as the internal fan was turned off and there was only natural convection present. As soon as the fan was turned on, the same noise as before could be observed. This gives a strong indication, that turbulent air is a major factor for the temperature noise seen in figure \ref{fig:dgTemp_laser_resonator}. The overall noise without the fan was also discovered to be lower than in figure \ref{fig:dgTemp_laser_resonator}. Whether this is due to the Fluke \device{5611T-P} thermistor or the additional shielding of the thermal chamber was not investigated because both noise figures are well below the required \qty{1}{\milli\kelvin} target.
+
+Additionally, using the thermal chamber the gain of the controller was estimated. To do so, a \qty{5}{\K} temperature step was applied while the controller tried to keep the temperature stable. As can be seen an apparent error of about \qty{100}{\micro \K} remains. This allows to estimate the controller gain to be about \qty{50e3}{\K \per \K}. Do note, at this point there is an enormous uncertainty associated with this value because the voltage difference measured by the \device{3458A} is only \qty{2.5}{\uV}. The measurement with the \device{3458A} does not compensate for thermal EMF and \qty{500}{\nV \per \K} can easily be introduced by one or more metal-to-metal junctions between the sensor and the DMM. See \cite{horowitz1989} for a list of Peltier voltages created by different metals.
+\begin{figure}[ht]
+    \centering
+    \input{images/dgTemp_testmass.pgf}% data/plot_generic.py
+    \caption{Measurement of the gain of the PID controller. The voltage across the sense thermistor of the PID controller is measured by a Keysight \device{3458A} and the temperature is stepped \qty{5}{\K}.}
+    \label{fig:dgTemp_testmass}
+\end{figure}
+
+To further improve the stability of the laser resonators, the problem must be addressed in the future with an updated resonator design. For a high stability design it is imperative that the resonator is, at least to some degree, air tight. An experimental version of such a laser was designed for the ARTEMIS experiment \cite{two_filter_paper} and is currently part of the laser system. Using an airtight resonator also improves the noise immunity against acoustics as demonstrated by \citeauthor{ecdl_silicone_housing} \cite{ecdl_silicone_housing}.
+
+\subsection{Summary}
+A high precision temperature controller with two \qty{12}{V}, \qty{5}{\A} channels was presented. An input noise of \qty{1.65}{\milli\ohm_{rms}} at a sampling frequency of \qty[parse-numbers = false]{\frac{1}{6}}{\Hz} resulting in a temperature noise of \qty{4.1}{\micro \K_{rms}} at \qty{20}{\celsius} was demonstrated. With a non-linearity of \qty{< 1}{\uV \per V} and an internal reference resistor, calibration of the instrument is as simple as having a resistor of a known value. It was shown that the system brings the current mechanical laser resonator design to its limits because air drafts can introduce considerable noise that cannot be suppressed due to the fast transients created. The performance of the laser system is therefore defined by the mechanical stability of the resonator. To improve the situation an airtight laser resonator is recommended and the benefits of such a construction are shown.
+
+The temperature controller was also tested in a variety of environmental conditions and a suppression of ambient temperature fluctuations of \num{2e-5} was derived from those tests albeit with considerable uncertainty due to the limited test setup. With a sensitivity of \qty{4.1}{\micro \K_{rms}} and a humidity drift of \qty{2.8}{\micro \K \per \percent RH} without autocalibration, the temperature controller is at the same level of accuracy as high stability thermistors that were shown to drift about \qty{100}{\micro \K \per \year} \cite{tempcontroller_10uK}.
+\begin{center}
+    \begin{deviceProperties}[label={lst:dgtemp_summary}]{Temperature controller properties}
+    \begin{itemize}
+        \item Two channels
+        \item Supports \qty{10}{\kilo\ohm} thermistors
+        \item Digital PID controller
+        \item Autocalibration
+        \item Output with \qty{\pm 12}{\V} and \qty{\pm 5}{\A}
+        \item Controllable temperature range \qtyrange[range-units = single, range-phrase={~to~}]{0}{60}{\celsius}
+        \item Measurement noise of \qty{1.65}{\milli\ohm_{rms}}
+        \item Temperature noise of \qty{4.1}{\micro\kelvin_{rms}}/\qty{18.5}{\micro\kelvin_{rms}} at \qty{20}{\celsius}/\qty{60}{\celsius}
+        \item Linearity better than \qty{\pm 0.5}{\micro \ohm \per \ohm}
+        \item Stability over a week \qty{< 50}{\milli \ohm}
+        \item Temperature coefficient \qty{< 15}{\milli \ohm \per \ohm \per \kelvin}
+        \item Ambient temperature suppression \qty{20}{\micro\K \per \K}
+    \end{itemize}
+    \end{deviceProperties}
+\end{center}
+
 \end{figure}
 
 
