@@ -12,7 +12,7 @@
 \begin{document}
 \section{Querying the TimescaleDB via SQL}%
 \label{sec:appendix_query_kraken}
-SQL query to extract binned data from the Timescale DB of two sensors in lab 011: \textsf{011\_humidity} and \textsf{011\_temperature}. The data returned is of the form \textsf{date,humidity,temperature}. The database groups the asynchronous data into bins of \qty{6}{\hour} and averages the data inside those bins. The timeframe is from 2022-01-01 until 2023-01-01. In addition, the Tinkerforge sensors will only send a new value, if it has changed, the last observation must be carried forward. This is done using the \textit{locf()} function call in SQL query.
+This is an SQL query to extract binned data from the Timescale DB of two sensors in lab 011: \textsf{011\_humidity} and \textsf{011\_temperature}. The data returned is of the form \textsf{date,humidity,temperature}. The database groups the asynchronous data into bins of \qty{6}{\hour} and averages the data inside those bins. The time frame is from 2022-01-01 until 2023-01-01. In addition, the Tinkerforge sensors that only send a new value, if there is an update, the last observation must be carried forward. This is done using the \textit{locf()} function call in SQL query.
 
 \begin{lstlisting}[language=sql,title=SQL query]
   SELECT
@@ -48,7 +48,7 @@ SQL query to extract binned data from the Timescale DB of two sensors in lab 011
 \end{lstlisting}
 
 \clearpage
-When attempting to derive PID parameter for the lab temperature controller, controller output and the sensor output is needed. This query will compile the data in buckets of \qty{2}{\s}. Missing data from the Tinkerforge sensors, which will only update their output on a change, is interpolated by filling the gap with the previous value. The order of the array depends on the values of the sensor ids and needs to be adjusted accordingling for each query.
+When attempting to derive PID parameter for the lab temperature controller, the controller output and the sensor output is needed. This query will compile the data in buckets of \qty{2}{\s}. Missing data from the Tinkerforge sensors, which will only update their output on a change, is interpolated by filling the gap with the previous value. The order of the array depends on the values of the sensor ids and needs to be adjusted accordingly for each query.
 
 \begin{lstlisting}[language=sql,title=SQL query]
   SELECT

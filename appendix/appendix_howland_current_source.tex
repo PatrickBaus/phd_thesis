@@ -42,7 +42,7 @@ This section discusses the Howland current source and derives an equation for th
 
 First, an ideal circuit is discussed with perfectly matched resistors and an ideal op-amp, then the effects of an imperfect resistor matching and an non-ideal op-amp with finite gain are discussed, finally an equation including both effects is  given. This model can then be used to create a list of requirements for the components. Other parasitic effects like stray capacitance or the input capacitance of the op-amp is neglected. This is valid for the low frequency range of interest. The op-amp is also assumed to be ideal with regard to the input bias current and voltage offset. While the input bias current depends on the type of op-amp, it is typically less than a few \unit{\nA} or even \unit{\pA} if a JFET op-amp is used. This is far less than the currents required for the applications in this work. The same argument applies to the offset voltage. The interested reader may look up some of those details in \cite{howland_comprehensive}. A discussion of the effect of the parasitic capacitance and its compensation can be found in \cite{howland_current_source_compensation}, which demonstrates a Howland current source with a \qty{-3}{\decibel} bandwidth of \qty{450}{\kHz} with an output impedance of more than \qty{1}{\mega\ohm}.
 
-The calculations to derive the model were done using SymPy \cite{sympy}, a Python framework for symbolic calculation. The full source code can be found in \external{data/simulations/howland\_current\_source.ipynb} as part of the online suplemental material \cite{supplemental_material}.
+The calculations to derive the model were done using SymPy \cite{sympy}, a Python framework for symbolic calculation. The full source code can be found in \external{data/simulations/howland\_current\_source.ipynb} as part of the online supplemental material \cite{supplemental_material}.
 
 In order to calculate the output impedance, the voltage at the load is required, because the output impedance of the current source is
 \begin{equation}
@@ -151,7 +151,7 @@ For a typical compensated op-amp, the frequency dependent gain was already intro
 \end{equation*}
 with the open-loop gain $A_{ol}$ and corner frequency $\omega_c$ of the dominant pole at which the gain starts rolling off with an order of magnitude per order of magnitude in frequency (\qty{20}{\decibel} per decade).
 
-Comparing equations \ref{eqn:howland_output_impedance_equal_resistors} and \ref{eqn:howland_output_impedance_loop_gain} it is clear, that the sensitivity of the output impedance to the resistor tolerances and the op-amp gain are of the same magnitude since $\frac{(1-T)^2}{4 T} \approx \frac{1}{4T}$ for small $T$ and $\frac{A+2}{4} \approx \frac A 4$ for typical values of $A$. With regard to the resistor tolerances and the gain of op-amps, it is clear that at low frequencies, the contribution of precision op-amp with a gain $A \geq \num{e6}$ is insignificant, even when \qty{0.01}{\percent} resistors are used. This makes trimming or selection of components inevitable if a high output impedance is required. Only at freuqencies above \qty{1}{\kHz}, when the op-amp gain has dropped to values comparable to $\frac{1}{\epsilon}$, the op-amp needs to be considered.
+Comparing equations \ref{eqn:howland_output_impedance_equal_resistors} and \ref{eqn:howland_output_impedance_loop_gain} it is clear, that the sensitivity of the output impedance to the resistor tolerances and the op-amp gain are of the same magnitude since $\frac{(1-T)^2}{4 T} \approx \frac{1}{4T}$ for small $T$ and $\frac{A+2}{4} \approx \frac A 4$ for typical values of $A$. With regard to the resistor tolerances and the gain of op-amps, it is clear that at low frequencies, the contribution of precision op-amp with a gain $A \geq \num{e6}$ is insignificant, even when \qty{0.01}{\percent} resistors are used. This makes trimming or selection of components inevitable if a high output impedance is required. Only at frequencies above \qty{1}{\kHz}, when the op-amp gain has dropped to values comparable to $\frac{1}{\epsilon}$, the op-amp needs to be considered.
 
 Finally, the same calculations can be done including both the finite gain and the resistor matching. These calculations are omitted here for brevity, but can be found in the Jupyter notebook mentioned above. The result is
 \begin{equation}
@@ -160,7 +160,7 @@ Finally, the same calculations can be done including both the finite gain and th
 
 Another representation is also given by \citeauthor{howland_comprehensive} \cite{howland_comprehensive}. They decompose the output impedance into several components to build an equivalent circuit. This allows to treat the gain dependent part as a capacitance, hence the term output capacitance is sometimes used. The formula given here is more suited for an analytical approach or for Monte Carlo simulations though.
 
-Finally, the compliance voltage must be discussed. The output voltage of the op-amp can again be calculated using Kirchhoff's current law and the details are found in the Python notebook \external{data/simulations/howland\_current\_source.ipynb} as part of the online suplemental material \cite{supplemental_material}. The result is
+Finally, the compliance voltage must be discussed. The output voltage of the op-amp can again be calculated using Kirchhoff's current law and the details are found in the Python notebook \external{data/simulations/howland\_current\_source.ipynb} as part of the online supplemental material \cite{supplemental_material}. The result is
 \begin{equation}
     V_o = \frac{2 \left(R V_L + R_{2a} V_{in}\right)}{R + R_{2a}}
 \end{equation}
@@ -169,7 +169,7 @@ For the classic Howland current source ($R_a = 0$) one finds
 \begin{equation}
     V_{o,HCS} = 2 V_L\,,\label{eqn:howland_current_compliance_voltage}
 \end{equation}
-which is independant of the input voltage. It is largely independant of the resistors as well in case of a laser diode, because $V_L$ is fairly constant with the output current. The improved Howland current source behaves differently and the op-amp output voltage for $R \gg R_{2b}$ becomes
+which is independent of the input voltage. It is largely independent of the resistors as well in case of a laser diode, because $V_L$ is fairly constant with the output current. The improved Howland current source behaves differently and the op-amp output voltage for $R \gg R_{2b}$ becomes
 \begin{equation}
     V_{o,iHCS} = \lim_{R \to \infty} V_o = V_L + V_{in}\,.\label{eqn:improved_howland_current_compliance_voltage}
 \end{equation}

@@ -65,7 +65,7 @@ Additionally the MOSFET also suffers from shot noise due to leakage through the 
     &\approx \qty[power-half-as-sqrt, per-mode=symbol]{1.8}{\pA \Hz \tothe{-0.5}} \,.
 \end{align}
 
-Shot noise becomes interesting, when the MOSFET is used well below threshold or at higher frequencies, because, then the parasitic gate-drain capacitor $C_{GD}$ will leak from the input to the ouptut as can be seen in figure \ref{fig:mosfet_parasitic_capacitors}. Figure \ref{fig:mosfet_parasitic_capacitors} shows the different parasitic capacitances of a MOSFET.
+Shot noise becomes interesting when the MOSFET is used well below threshold or at higher frequencies because then the parasitic gate-drain capacitor $C_{GD}$ will leak from the input to the output as can be seen in figure \ref{fig:mosfet_parasitic_capacitors}. Figure \ref{fig:mosfet_parasitic_capacitors} shows the different parasitic capacitances of a MOSFET.
 \begin{figure}[hb]
     \centering
     %\resizebox {0.8\textwidth} {!} {
@@ -89,11 +89,10 @@ An an empirical model given by \cite{mosfet_noise_overview,mosfet_flicker_noise}
     i_{n,flicker} = \sqrt{\frac{K_f I_D}{C_{ox} L^2} \frac{1}{f}}\,.
 \end{equation}
 
-This model is presented here, because it is both supported and easy to implement in LTSpice. While the parameter $K_f$ is approximately \qty{2e-10}{\femto \square \coulomb \per \square \micro\meter} \cite{mosfet_noise_overview} for p-channel MOSFETs, the gate width and length $W$, $L$ are device specific und unfortunately not given by the manufacturers. The typical corner frequency for MOSFETs, though, is between a few hundred \unit{\kHz} and a few dozen \unit{\MHz} depending on the size of the transistor. Larger transistors tend to show lower noise. Hence older processes are prefered in this regard. Given that the noise is uncorrelated, the total noise of the MOSFET in saturation can be written as
+This model is presented here because it is both supported and easy to implement in LTSpice. While the parameter $K_f$ is approximately \qty{2e-10}{\femto \square \coulomb \per \square \micro\meter} \cite{mosfet_noise_overview} for p-channel MOSFETs, the gate width and length $W$, $L$ are device specific and unfortunately not given by the manufacturers. The typical corner frequency for MOSFETs, though, is between a few hundred \unit{\kHz} and a few dozen \unit{\MHz} depending on the size of the transistor. Larger transistors tend to show lower noise. Hence older processes are preferred in this regard. Given that the noise is uncorrelated, the total noise of the MOSFET in saturation can be written as
 \begin{equation}
     i_{n} = \sqrt{4 k_B T \frac{2}{3} g_m + \frac{K_f I_D}{C_{ox} L^2} \frac{1}{f}} \label{eqn:current_noise_mosfet}
 \end{equation}
-
 
 As a reminder, the MOSFET is a (transconductance) amplifier, that takes a voltage at the input and outputs a current. To make the noise figures comparable, the noise is divided by the gain $g_m$. This called the input referred noise. The input referred (voltage) noise $e_n$ is given by:
 \begin{align}
@@ -101,7 +100,7 @@ As a reminder, the MOSFET is a (transconductance) amplifier, that takes a voltag
     e_{n,flicker} \overset{\ref{eqn:mosfet_gm_approximation}}&{\approx} \sqrt{\frac{K_f}{2 \kappa C_{ox} L^2} \frac{1}{f}}
 \end{align}
 
-We can see, that flicker noise is fully determined by process parameters in this model.
+We can see,that flicker noise is fully determined by the process parameters in this model.
 
 
 \end{document}
