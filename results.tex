@@ -1840,8 +1840,23 @@ The temperature controller was also tested in a variety of environmental conditi
     \end{deviceProperties}
 \end{center}
 
+\clearpage
+\section{Laser System}%
+\label{sec:result_laser_system}
+As discussed in section \ref{sec:prep_laser_system} the weak link of the laser system is the transfer resonator. In order address this problem the laser system was reworked and additionally a third laser was prepared for the upgraded system. The new system is shown in figure \ref{fig:laser_system_new}.
+\begin{figure}[ht]
+    \centering
+    %\scalebox{1}{%
+        \import{figures/}{laser_system_new.tex}
+    %} % scalebox
+    \caption{Simplified setup of the laser system currently being set up for the ARTEMIS experiment. The wavemeter is undergoing commissioning to determine its stability. Blue arrows denote light paths. Black arrows are electronic control signals.}
+    \label{fig:laser_system_new}
 \end{figure}
 
+Having two lasers at \qty{441}{\nm} the laser-microwave double-resonance spectroscopy of highly charged \ce{Ar^{13+}} can be attempted as discussed in section \ref{sec:prep_laser_system}. One spectroscopy laser is a Toptica \device{DL 100 pro} which was also used in the old system and was already characterised by \citeauthor{thesis_alex} \cite{thesis_alex}. The new laser is a Newport \device{Vantage TLB-7100} running at \qty{441.15}{\nm}. The third laser is taken from the old system as well and was characterised by \citeauthor{thesis_baus} \cite{thesis_baus}. It is the master reference laser that is locked to the tellurium reference at \qty{453}{\nm}. This laser is used as the calibration reference for a HighFinesse \device{WS8-10} high precision wavemeter \cite{datasheet_ws8}. The wavemeter replaces the transfer resonator previously employed. This wavemeter features a 4-port optical switch to simultaneously measure the wavelength of up four lasers. Additionally, it comes with a PID controller for up to two lasers. The new locking scheme is much cleaner than the old system because the three lasers are now fiber-coupled to the transfer wavemeter. This ensure a higher reliability of the system as it is less susceptible to environmental factors like ambient temperature.
 
+The Wavemeter is specified for an accuracy of \qty{10}{\MHz} which, on paper, is less than the accuracy of the legacy transfer resonator, which was estimated to be \qty{2.2}{\MHz} \cite{thesis_alex}. Preliminary tests conducted at \qty{780}{\nm} have shown that the wavemeter is far more stable than alleged by the datasheet. Since this accuracy defines later spectroscopy results, the wavemeter is currently undergoing additional commissioning to determine the actual stability that can be expected given typical experimental parameters. The commissioning is a two step process and the wavemeter will be tested in two different wavelength regions. The aforementioned \qty{780}{\nm} and the \qty{441}{\nm} used by ARTEMIS experiment.
 
+The APQ group maintains several laser systems at \qty{780}{\nm} that are locked to the rubidium \ce{^{85}Rb} $D_2$ line. These system have been continuously monitored with the LabKraken system since 2022-06. A typical stability of the wavelength well below \qty{100}{\kHz} was observed by \citeauthor{thesis_tilman} \cite{thesis_tilman}. After recent upgrades to improve the stability of the laser power going into the spectroscopy, a stability of \qty{< 10}{\kHz_{rms}} over more than two weeks can be reported as well. These two lasers and another laser at \qty{795}{\nm} locked to the \ce{^{85}Rb} $D_1$ line will be used in the first step as these lasers have a known history and an upper bound for their stability can be easily given. The next step is a similar configuration using the ARTEMIS master laser locked to the tellurium transition at \qty{452.756}{\nm} \cite{te_reference_lines}. The two lasers running at \qty{441}{\nm} will then be locked to the tellurium transition at \qty{441.807}{\nm}, which can be found as line number \num{1855} in the tellurium atlas charted by \citeauthor{te_reference_lines} \cite{te_reference_lines}.
 
+After the commissioning the new system is expected to reach a similar accuracy as the transfer resonator albeit being far easier to handle and being more versatile because the \device{WS8-10} is also intended to be used for the proposed spectroscopy of highly charged Krypton \ce{Kr^{17+}} at \qty{636.9}{\nm} \cite{krypton17+,krypton17+_2}, once the commissioning of ARTEMIS with \ce{Ar^{13+}} is completed.
