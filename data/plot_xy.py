@@ -227,7 +227,8 @@ def plot_series(plot):
   if not data.empty:
     crop_data(data, crop_index="date", crop=plot.get('crop'))
 
-    #data=data.resample('30S',on='date').mean()
+    data=data.resample('30S',on='date').mean()
+    data.reset_index(drop=False, inplace=True)
     plot_settings = plot['primary_axis']
     process_data(data=data, columns=plot_settings['columns_to_plot'], plot_type=plot_settings.get('plot_type','absolute'))
 
@@ -598,7 +599,7 @@ if __name__ == "__main__":
             "columns": {
                 0: "date",
                 1: "value",
-                3: "temperature",
+                9: "temperature",
             },
             "scaling": {
                 "value": lambda x : (x["value"] - x["value"][x.date >= '2021-03-15 6:00:00'].min()) / 100,  # in A and relative coordinates
@@ -696,7 +697,7 @@ if __name__ == "__main__":
             "columns": {
                 0: "date",
                 1: "value",
-                6: "temperature",
+                9: "temperature",
             },
             "scaling": {
                 "date": lambda data: pd.to_datetime(data.date, utc=True, format="ISO8601"),
