@@ -1492,8 +1492,87 @@ The current driver performance was demonstrated in several of the previous secti
 %Custom made cables with PTFE insulator, silver plated AWG18 copper wires with a braided shield, M27500
 
 \clearpage
+\section{LabKraken}%
+\label{sec:res_labkraken}% TODO : Add monitoring and saftety features. Mention failure of the pump. Add Ti-sub intervals predictions.
+LabKraken allows real-time monitoring of experiments or environmental parameters. It was extensively used throughout this work to collect, for example, the measurement data produced by the Zener diode test setup described in section \ref{sec:diode_scanner_system} and to give real-time feedback on the diode voltages. Other applications, among many other, are the monitoring of the laser output power for experiments or logging the ambient temperature, humidity, and air pressure.
 
+As outlined in section \ref{sec:prep_labkraken}, LabKraken was built using Python and the asyncio framework. It is running inside Docker containers for easier deployment and portability. The full source code can be found at \cite{git_kraken}. It is programmed using a functional programming style and based on data streams to aggregate data from different sensors, which currently include
+\begin{itemize}
+    \item Tinkerforge sensors
+    \item GPIB devices via GPIB Ethernet adaptors
+    \item LabNodes (see section \ref{sec:lab_temp_control})
+    \item Ethernet capable SCPI devices
+\end{itemize}
 
+The collected data is sent to an MQ Telemetry Transport (MQTT) server, which decouples the data acquisition from the data storage back end. It also allows to aggregate the data of multiple LabKraken instances running in parallel. A simple flow diagram is shown in figure \ref{fig:kraken_flow_diagram} to give an idea about the processing of the data.
+\begin{figure}[ht]
+    \centering
+    %\scalebox{0.7}{%
+        \import{figures/}{kraken.tex}
+    %} % scalebox
+    \caption{Flow diagram showing the lab monitor system. The data is gathered by the LabKraken nodes, sent to the MQTT server, then stored in database and also used by a monitoring system.}
+    \label{fig:kraken_flow_diagram}
+\end{figure}
+
+Figure \ref{fig:kraken_flow_diagram} shows multiple LabKraken nodes connected to the MQTT server. These nodes are independent data collectors, but also serve as backup for the other nodes. Sensors can be dynamically moved between nodes, for example, to restart a server without data loss. Each LabKraken node is connected to a settings database with currently is a MongoDB cluster that synchronizes the settings for all LabKraken instances.
+
+The MQTT server adds a layer of resilience to the system as it makes sure that the data get delivered to the clients using a quality-of-service protocol. This means that messages will be buffered and retained if a client disconnects. It also makes sure no duplicates are produced during an attempt to resend a message.
+
+The data distributed by the MQTT broker can be monitored in real-time for debugging or monitoring purposes. It also stored in a TimescaleDB database which is a modified PostgreSQL database.
+
+The data stored in the database is finally visualized using a Grafana back end and can be accessed by the end-user to monitor the experiment and the lab. Additionally, warnings are generated if certain measurands are no longer within their limits.
+
+\subsection{Performance}
+To give an idea of the workload that is currently being processed a few numbers can be given. As of 2023 more than \num{250} sensors across several labs and offices are being monitored. The typical monitoring interval is currently between \qty{1}{\second} and \qty{60}{\second}. The database handles about \qty{2e6}{inserts \per \day} and the MQTT server processes around \qty{5e6}{datagrams \per \day}. Figure \ref{fig:kraken_inserts} shows the increasing data load created by adding new experiments and therefore more sensors over the recent years.
+\begin{figure}[ht]
+    \centering
+    \input{images/kraken_inserts.pgf}
+    \caption{Daily number of datasets collected by the Labkraken system over recent years.}
+    \label{fig:kraken_inserts}
+\end{figure}
+
+The growth of the data intake was, in the past years, superexponential. To illustrate this, all the data collected in the first \qty{7}{\year} up to 2021 is the same amount as is being collected each month in 2023. There are multiple reasons for this growth rate. During the first years, only a very basic web interface was available to extract the data and without any real-time plotting capabilities. This changed in 2020 with the introduction of the Grafana web interface and caused a spike of interest. Additionally new experiments are now equipped, by default, with temperature sensors and, for example, monitoring photodiodes that continuously stream data into the system. Currently the main database server is a 6\textsuperscript{th} generation HP \device{ProLiant DL360} with two \device{Xeon L5630} processors and \qty{48}{\giga\byte} of RAM. The LabKraken nodes run on different, less powerful, servers and even Raspberry Pis. The current bottleneck is the database server with its limited RAM and disk I/O performance. This system will be upgraded in the near future to meet the requirements for the coming years. It is expected that the data rate increases by another order of magnitude to around \qty{500}{datagrams \per \second} on the MQTT server and about \qty{200}{inserts \per \second} into the database.
+
+\subsection{Reliability}
+As explained in section \ref{sec:prep_labkraken}, LabKraken is designed to be resilient and fault tolerant. This includes the ability to share the data acquisition between multiple instances of LabKraken. Theses instances are hosted in Docker containers on different servers. The use of Docker containers allows to easily build and test LabKraken and in case of problems roll back to a previous stable version.
+
+Using multiple instances of LabKraken gives it the ability to move sensors from one instance to another to reboot a server for updates or other maintenance tasks. Even a full operating system migration was successfully conducted twice without service interruption. As of 2023 the uptime of the system is being monitored. To test the full data acquisition chain, from the transducer to the storage back end, a sensor that reports data at \qty{1}{\second} intervals is used. This timestamped data is binned into \qty{1}{\minute} intervals and the number of bins that contain data is counted. This number is compared to the number of minutes that have actually passed in the interval of interest. The results of this evaluation are given in table \ref{tab:kraken_availability}.
+\begin{table}[hb]
+    \centering
+    \begin{tabular}{lcc}
+        \toprule
+        & Minutes missed& Availability\\
+        \midrule
+        2023-01& 21& \qty{99.95}{\percent}\\
+        2023-02& 7& \qty{99.98}{\percent}\\
+        2023-03& 10& \qty{99.98}{\percent}\\
+        2023-04& 22& \qty{99.95}{\percent}\\
+        2023-05& 16& \qty{99.96}{\percent}\\
+        2023 & 76& \qty{99.97}{\percent}\\
+        \bottomrule
+    \end{tabular}
+    \caption{Availability of the LabKraken system ordered by month and aggregated by year.}
+    \label{tab:kraken_availability}
+\end{table}
+
+The downtime is mostly due to operator errors. Currently a proper configuration front end that could prevent misconfiguration is not implemented. The configuration is currently managed via the API of the LabKraken system and several Python scripts. Future software revisions will include a web front end for configuring LabKraken instead of directly manipulating the database. The mid-term goal for development in the coming years is a four 9s availability. This will likely require a few changes to the back end because the MQTT server is currently not redundant, a feature that is not supported by Eclipse Mosquitto broker in use.
+
+\subsection{Summary}
+A data aggregation daemon was presented that serves the need for a laboratory environment. Not only does it monitor environmental data, but also many devices found in scientific experiments are supported via the GPIB interface. Additionally the Tinkerforge ecosystem offers many solution for direct data capture through analog and digital input capture devices. The system currently manages about \qty{60}{datagrams \per \second} with little load. It is expected to scale to \qty{500}{datagrams \per \second} in the coming years without problems.
+\begin{center}
+    \begin{deviceProperties}[label={lst:labkraken_summary}]{Labkraken properties}
+    \begin{itemize}
+        \item Supports Tinkerforge sensors
+        \item Supports GPIB devices via GPIB Ethernet adaptors
+        \item Supports LabNodes (see section \ref{sec:lab_temp_control})
+        \item Supports Ethernet capable SCPI devices
+        \item Availability and uptime is \qty{99.97}{\percent}
+        \item Currently manages more than 250 senors with \qty{60}{datagrams \per \second}
+    \end{itemize}
+    \end{deviceProperties}
+\end{center}
+
+\clearpage
 
 
 
