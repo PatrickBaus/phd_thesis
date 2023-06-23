@@ -254,10 +254,6 @@ def init_argparse() -> argparse.ArgumentParser:
 
 
 if __name__ == "__main__":
-  plots = [
-
-  ]
-
   parser = init_argparse()
   args = parser.parse_args()
   plot_files = glob.glob(args.plotfile)
@@ -266,4 +262,7 @@ if __name__ == "__main__":
       spec = importlib.util.spec_from_file_location(module_name, file_path)
       module = importlib.util.module_from_spec(spec)
       spec.loader.exec_module(module)
-      plot_series(plot=module.plot, show_plot_window=not args.silent)
+      try:
+        plot_series(plot=module.plot, show_plot_window=not args.silent)
+      except FileNotFoundError as exc:
+          print(f"Plot file not found. Cannot plot graph: {exc}")
