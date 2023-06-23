@@ -1,2 +1,2 @@
-lttb=~0.3.1
-seaborn=~0.12.2
+lttb~=0.3.1
+seaborn~=0.12.2
