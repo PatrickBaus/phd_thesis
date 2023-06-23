@@ -265,4 +265,4 @@ if __name__ == "__main__":
       try:
         plot_series(plot=module.plot, show_plot_window=not args.silent)
       except FileNotFoundError as exc:
-          print(f"Plot file not found. Cannot plot graph: {exc}")
+          print(f"  Data file not found. Cannot plot graph: {exc}")
