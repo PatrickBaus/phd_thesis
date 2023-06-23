@@ -55,7 +55,7 @@ plot = {
     },
     "files": [
         {
-            "filename": "Neon Lab - 011-data-as-joinbyfield-2023-05-06 20_14_00.csv",
+            "filename": "../data/Neon Lab - 011-data-as-joinbyfield-2023-05-06 20_14_00.csv",
             "show": True,
             "parser": "ltspice_fets",
             "options": {

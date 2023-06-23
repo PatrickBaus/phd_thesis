@@ -73,7 +73,7 @@ plot = {
     },
     "files": [
         {
-            "filename": "HP3458A_GPIB_Read_2018-10-24_14:16:24+00:00.csv",
+            "filename": "../data/HP3458A_GPIB_Read_2018-10-24_14:16:24+00:00.csv",
             "show": True,
             "parser": "ltspice_fets",
             "options": {
@@ -89,7 +89,7 @@ plot = {
             },
         },
         {
-            "filename": "fluke1524_2018-10-23_16:38:38+00:00.csv",  # Fixed direction. Going up now
+            "filename": "../data/fluke1524_2018-10-23_16:38:38+00:00.csv",  # Fixed direction. Going up now
             "show": True,
             "parser": "fluke1524",
             "options": {

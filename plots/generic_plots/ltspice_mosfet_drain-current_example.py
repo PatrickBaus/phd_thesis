@@ -52,7 +52,7 @@ plot = {
     },
     "files": [
         {
-            "filename": "mosfet_id.csv",
+            "filename": "../data/mosfet_id.csv",
             "show": True,
             "parser": "ltspice_fets",
             "options": {

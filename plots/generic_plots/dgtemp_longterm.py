@@ -69,7 +69,7 @@ plot = {
     },
     "files": [
         {
-            "filename": "Rev2_INL_2019-07-02_08:08:20+00:00.csv",
+            "filename": "../data/Rev2_INL_2019-07-02_08:08:20+00:00.csv",
             "show": True,
             "parser": "ltspice_fets",
             "options": {
@@ -94,7 +94,7 @@ plot = {
             },
         },
         {
-            "filename": "fluke_1590_2023-06-05_05:22:31+00:00.csv",
+            "filename": "../data/fluke_1590_2023-06-05_05:22:31+00:00.csv",
             "show": True,
             "parser": "ltspice_fets",
             "options": {
@@ -111,7 +111,7 @@ plot = {
             },
         },
         {
-            "filename": "sensorData_2019-06-30 22_00_00_2019-07-18 06_34_00.csv",
+            "filename": "../data/sensorData_2019-06-30 22_00_00_2019-07-18 06_34_00.csv",
             "show": True,
             "parser": "smi",
             "options": {

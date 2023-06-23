@@ -62,7 +62,7 @@ plot = {
     },
     "files": [
         {
-            "filename": "SMC11_50mA+10R_60h_2.csv",
+            "filename": "../data/SMC11_50mA+10R_60h_2.csv",
             "show": True,
             "parser": "34470A",
             "options": {
@@ -77,7 +77,7 @@ plot = {
             },
         },
         {
-            "filename": "DgDrive-1-2-1_50mA_FilmCap+RefNo3_10R_34470A_60h_8.csv",
+            "filename": "../data/DgDrive-1-2-1_50mA_FilmCap+RefNo3_10R_34470A_60h_8.csv",
             "show": True,
             "parser": "34470A",
             "options": {

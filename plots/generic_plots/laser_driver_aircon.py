@@ -48,7 +48,7 @@ plot = {
     },
     "files": [
         {
-            "filename": "Durfee_pos_tantalum_36h.csv",
+            "filename": "../data/Durfee_pos_tantalum_36h.csv",
             "show": True,
             "parser": "34470A",
             "options": {
@@ -58,7 +58,7 @@ plot = {
             },
         },
         {
-            "filename": "sensorData_2017-04-04 18-13-00_2017-04-06 06-13-00.csv",
+            "filename": "../data/sensorData_2017-04-04 18-13-00_2017-04-06 06-13-00.csv",
             "show": True,
             "parser": "smi",
             "options": {

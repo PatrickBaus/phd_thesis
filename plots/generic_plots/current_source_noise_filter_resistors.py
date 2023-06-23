@@ -42,7 +42,7 @@ plot = {
     },
     "files": [
         {
-            "filename": "current_regulator_v3_AD797_noise.csv",
+            "filename": "../data/current_regulator_v3_AD797_noise.csv",
             "show": True,
             "parser": "ltspice_fets",
             "options": {

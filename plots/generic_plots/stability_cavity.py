@@ -32,7 +32,7 @@ plot = {
     },
     "files": [
         {
-            "filename": "Temperature Cavity-data-2023-05-04.csv",
+            "filename": "../data/Temperature Cavity-data-2023-05-04.csv",
             "show": True,
             "parser": "ltspice_fets",
             "options": {
