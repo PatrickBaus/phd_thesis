@@ -1,5 +1,2 @@
-# Image
-*.jpg filter=lfs diff=lfs merge=lfs -text
-
 # Data files
 data/*.csv filter=lfs diff=lfs merge=lfs -text
