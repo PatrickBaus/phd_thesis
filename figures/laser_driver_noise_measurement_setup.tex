@@ -1,0 +1,71 @@
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{calc,positioning,backgrounds,fit}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+  blocks/fill=cyan!25,
+}
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+% bare shape for the object.
+
+\begin{document}
+    \begin{circuitikz}[
+        american currents,
+        american voltages,
+        scale=0.7,
+        transform shape,
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+        >=stealth,
+        block/.style={draw, fill=white, rectangle, minimum height=20mm, minimum width=6mm, inner sep=1mm},
+    ]
+        \tikzstyle{every node}=[font=\small]
+        \tikzstyle{every node}=[font=\small]
+        \begin{pgfonlayer}{foreground}
+            \node [block, minimum height=20mm, align=center](hmp4040) {Power Supply};
+            \draw
+                ($(hmp4040.east) + (0,0.5)$) node[inputarrow, rotate=180] {} -- ++(1,0)
+                (hmp4040.east) node[inputarrow, rotate=180] {} -- ++(1,0) node[right] {\qty{230}{\V} Mains}
+                ($(hmp4040.east) + (0,-0.5)$) node[inputarrow, rotate=180] {} -- ++(1,0) coordinate(earth) -- ++(1,0) node[cground]{}
+
+                (earth) to[short, *-] ++(0,-1) to[short, -*] ++(-4,0) node[ground](gnd){}
+                (hmp4040.west) -- (hmp4040.west -| gnd) coordinate(common) --(gnd)
+                (common) to [short, *-] ++(-2,0) -- ++(0,1.5)
+                node[block, above](dgdrive){Current Driver}
+                node[draw, dashed, rectangle, fit=(dgdrive), label=above:Rack](rack){}
+                (rack.east) -- ++(1,0) node[cground]{}
+                % current driver output
+                ($(dgdrive.west) + (0,0.75)$) -- ++(-1.5,0) coordinate(out+)
+                %to[short, *-] ++(-1,0) -- ++(0,-0.5)
+                (out+) to[R, l_=\qty{10}{\ohm}, resistors/scale=0.5,  i>^=\qty{50}{\mA}, name=Rshunt] ++(0,-1.5) coordinate(out-) -- (out- -| dgdrive.west)
+                (Rshunt) ++(-2.5,0)  node[plain amp, xscale=-1](LNA){\ctikzflipx{LNA}}
+                (LNA.in up) -- (LNA.in up |- out+) to[short, -*] (out+)
+                (LNA.in down) -- (LNA.in down |- out-) to[short, -*] (out-)
+                node[draw, dashed, rectangle, fit=(LNA), label=above:Cookie tin](LNAcase){}
+                (LNAcase.south) node[cground]{}
+                (LNA.out) -- ++ (-1,0) node[plain mono amp, anchor=in, xscale=-1](SR560){\ctikzflipx{SR560}}
+                node[draw, dashed, rectangle, fit=(SR560), label=above:Case](SR560case){}
+                (SR560case.south) node[cground]{}
+                (SR560.out) -| ++(-0.5,-3.5) -- ++(1,0) node[block, minimum height=20mm, align=center, anchor=west]() {DMM\\Oscilloscope\\Spectrum analyser}
+            ;
+            \draw[red]
+                ($(hmp4040.west) + (0,-0.5)$) -| ($(dgdrive.south) +(-0.5,0)$)
+            ;
+            \draw[blue]
+                ($(hmp4040.west) + (0,0.5)$) -| ($(dgdrive.south) +(0.5,0)$)
+            ;
+            \draw[|<->|]
+                ($(out-) + (0,-0.75)$) -- node[below=1mm] {\qty{3}{\m}} ($(out- -| dgdrive.west) + (0,-0.75)$)
+            ;
+        \end{pgfonlayer}
+    \end{circuitikz}
+\end{document}

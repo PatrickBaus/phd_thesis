@@ -1,0 +1,46 @@
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{arrows,backgrounds,fit}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+  blocks/fill=orange!25,
+}
+
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+\begin{document}
+    \begin{circuitikz}[
+        american currents,
+        american voltages,
+        scale=0.7,
+        transform shape,
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+    ]
+        \tikzstyle{every node}=[font=\small]
+        % Help lines for debugging
+        %\draw[help lines] (0,-8) grid (30,0);
+        \begin{pgfonlayer}{foreground}
+            \ctikzset{bipoles/oscope/waveform=sin}
+            \draw
+                (0,0) to[isource] ++(0,5) -- ++(1.5,0) coordinate(out+) to [R, *-*, a^=$R_{out}$, i>^=$i_{mod}-i_m$, current/distance = 5mm] (out+ |- 0,0) coordinate(out-)  -- (0,0)
+            ;
+            \draw
+                (out+) -- ++(2,0) coordinate(cm+) to[C, a^=$C_m$, *-*, i>^=$i_m$, current/distance = 5mm] (cm+ |- 0,0) coordinate(cm-) -- (out-)
+                (cm+) -- ++(2,0)
+                coordinate(shunt+) to[R, *-*, a^=$R_{shunt}$, i<^=$i_{shunt}$, current/distance = 5mm] ++(0,-3) coordinate(shunt-)
+                (shunt-) to[short, i<^=$i_{mod}$] ++(0,-0.5) node[oscillator, anchor=n](sigGen){} %
+                (sigGen.s) |- (cm-)
+                (shunt+) -- ++(2,0) coordinate(cpar+) to[C, a^=$C_{in}$, i<^=$i_{in}$, current/distance = 5mm] (cpar+ |- shunt-) -- (shunt-)
+            ;
+        \end{pgfonlayer}
+    \end{circuitikz}
+\end{document}

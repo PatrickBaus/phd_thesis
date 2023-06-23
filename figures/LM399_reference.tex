@@ -1,0 +1,69 @@
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{calc,positioning,backgrounds,fit}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+  blocks/fill=orange!25,
+}
+
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+\begin{document}
+    \begin{circuitikz}[
+        american currents,
+        american voltages,
+        scale=0.7,
+        transform shape,
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+    ]
+        \tikzstyle{every node}=[font=\small]
+        \begin{pgfonlayer}{foreground}
+            \ctikzset{current/distance = .3}
+            \draw
+                (0,0) node[vcc] (Vreg) {$V_{sup}$} --++(0,-0.7) to [short, *-] ++(0.5,0) to [empty Zener diode, invert, name={LM399}, l_={LM399}, i>_=~] ++(2,0) coordinate (A);
+            \draw
+                (A) -- ++(0.5,-0.5) node [op amp, yscale=-1, label=center:{\footnotesize LT1001}, anchor=+] (opamp) {}
+                (opamp.out) -- ++(2,0) coordinate (B) to [R, -*, name=R1, resistors/scale=0.7] ++(0,-1.5) to [R, name=R2, resistors/scale=0.7] ++(0,-1.5) -| (0,0)
+                node[draw, fit={(R1) (R2)}] (C) {}
+                (C.center) -| (opamp.-)
+                (B) to [short, *-] ++(0,1.5) -- ++(-1,0) to [R, l_=$R_{bias}$, a^=\qty{7.5}{\kilo \ohm}, i<_=~, name=Rb] ++(-2,0) -- (opamp.+ |- Rb) to [short, -*] (A)
+                ($(opamp.out) + (0.5,0)$) coordinate(tmp) to [C, *-*, a_=\qty{100}{\nano \farad}, name=Cr] (tmp |- C.center)
+                (B) -- ++(1.75,0) coordinate(tmp)
+                (tmp) to [D, *-, name=Dprot] ++ (0,-2) node[ground]{}
+                (tmp) -- ++(1, 0)to[dac, name=DAC] ++(1,0)
+                (DAC.n) to[short, -o] ++(0,0.5) node[above] {MCU}
+                (DAC.s) -- ++(0,-1) -- ++(2,0)
+                to [R, -*, name=Rd1, resistors/scale=0.7] ++(0,1.5) coordinate(Vdiv) to [R, name=Rd2, resistors/scale=0.7] ++(0,1.5)
+                -- (Vdiv |- Vreg) node[vcc] {$V_{sup}$}
+                node[draw, fit={(Rd1) (Rd2)}] (Rd) {}
+                (Vdiv) -- ++(1.5,0)
+                node [op amp, yscale=-1, label=center:{\footnotesize AD8676}, anchor=+] (buffer){}
+                (buffer.-) -- ++(0,-1) coordinate(tmp) to [R, a=\qty{4.99}{\kilo\ohm}] (tmp -| buffer.out) -- (buffer.out) to [R, *-, a=\qty{510}{\ohm}, l=$R_{f}$] ++(2,0) coordinate(tmp) to [C, *-, a=\qty{150}{\uF}, l=$C_{f}$] ++(0,2) -- (tmp |- Vreg) node[vcc] {$V_{sup}$}
+                (tmp) to [short, -o] ++(1,0) node[right]{$V_{set}$}
+            ;
+            \node[left, xshift=-8pt, yshift=2pt] at (LM399.se) {\qty{1}{\mA}};
+            \node[right, xshift=5pt] at (Rb.sw) {\qty{1}{\mA}};
+            \node[right, xshift=6pt, yshift=2pt] at (R1.n) {\qty{20}{\kilo \ohm}};
+            \node[right, xshift=6pt, yshift=2pt] at (R2.n) {\qty{17}{\kilo \ohm}};
+            \node [right] at (C.east) {$R_{n}$};
+            \node[right, xshift=6pt, yshift=2pt] at (Rd1.s) {\qty{10}{\kilo \ohm}};
+            \node[right, xshift=6pt, yshift=2pt] at (Rd2.s) {\qty{10}{\kilo \ohm}};
+            \node [left] at (Rd.west) {$R_{d}$};
+            \node [above right] at (B) {$V_{sup}-\qty{15}{\V}$};
+            \node [below right] at (DAC.south) {AD5781};
+        \end{pgfonlayer}
+        \begin{pgfonlayer}{main}
+            \node[draw=red!80!black, dashed, thick, rounded corners=2pt, fit={(LM399) ($(LM399label)+(-0.45,0)$) (Rblabel) ($(R2) + (0.0,-0.7)$) (Dprot)}](referenceModule){};
+            \node[above, align=center] at (referenceModule.north) {Reference Module};
+        \end{pgfonlayer}
+    \end{circuitikz}
+\end{document}

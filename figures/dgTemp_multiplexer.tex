@@ -1,0 +1,47 @@
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{arrows,backgrounds,fit,calc,positioning}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+  blocks/fill=orange!25,
+}
+
+\begin{document}
+    \begin{circuitikz}[
+        american currents,
+        american voltages,
+        scale=0.7,
+        transform shape,
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+        big/.style={circuitikz/blocks/scale=1.5},
+    ]
+        % Help lines for debugging
+        %\draw[help lines] (0,-8) grid (30,0);
+        \draw
+            % positive side
+            (0,1.5) coordinate(sw1) to[cosw,  l=1, name=s1] ++(2,0) -| ++(1,1) -- ++(2,0) coordinate(RrefHigh) to [R, *-, a=$R_{ref}$] ++(0,-2) coordinate(RrefLow)
+            (sw1) -- ++(0,-1) coordinate(sw2) to[cosw,  l=2, *-, name=s2] ++(2,0) -|  (RrefLow)
+            (sw2) -- ++(0,-1) coordinate(sw3) to[cosw,  l=3, *-, name=s3] ++(2,0) -- ++(1,0) -- ++(2,0) coordinate(ThermistorHigh) to[sR, -*, a=$R_{th}$] ++(0,-2) coordinate(ThermistorLow)
+            (sw3) -- ++(0,-1) coordinate(sw4) to[cosw,  l=4, name=s4] ++(2,0) -- ++(1,0) |- (ThermistorLow)
+            % negative side
+            (10,1.5) coordinate(sw1b) to[cosw,  l_=1, name=s1b, mirror] ++(-2,0) -| ++(-1,1) -- (RrefHigh)
+            (sw1b) -- ++(0,-1) coordinate(sw2b) to[cosw,  l_=2, *-, name=s2b, mirror] ++(-2,0) to[short, -*] (sw2b -| RrefLow)
+            (sw2b) -- ++(0,-1) coordinate(sw3b) to[cosw,  l_=3, *-, name=s3b, mirror] ++(-2,0) to[short, -*] (sw3b -| ThermistorHigh)
+            (sw3b) -- ++(0,-1) coordinate(sw4b) to[cosw,  l_=4, name=s4b, mirror] ++(-2,0) -| ++(-1,-1) -- (ThermistorLow)
+            % current source
+            (0,0) to [short, *-] ++(-1,0) -- ++(0,-5) to[isource, name=cs] ++(12,0) |- (10,0) node[circ]{}
+            (cs) ++(-1,0) to[short, *-] ++(0,1) to[cosw, l=short, name=sShort] ++(2,0) to[short, -*] ++(0,-1)
+        ;
+        \node [rectangle, draw, dashed, fit=(s1label) (s4), inner ysep=8pt](switches){};
+        \node [rectangle, draw, dashed, fit=(s1blabel) (s4b), inner ysep=8pt](switches2){};
+        %;
+
+    \end{circuitikz}
+\end{document}

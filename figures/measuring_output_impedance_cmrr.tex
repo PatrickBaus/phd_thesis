@@ -1,0 +1,45 @@
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{arrows,backgrounds,fit}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+  blocks/fill=orange!25,
+}
+
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+\begin{document}
+    \begin{circuitikz}[
+        american currents,
+        american voltages,
+        scale=0.7,
+        transform shape,
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+    ]
+        \tikzstyle{every node}=[font=\small]
+        % Help lines for debugging
+        %\draw[help lines] (0,-8) grid (30,0);
+        \begin{pgfonlayer}{foreground}
+            \draw
+                (0,0) node[ground]{} -- ++(1,0) (1,0) to [sV, a=$V_{mod} {=} V_{cm}$, -*] ++(0,3) coordinate(vcm)
+                to [sV, -*, a=$V_{diff}$] ++(0,3) coordinate(tmp)
+                (0,0) to[isource, *-, i=$I_{out}$] (0,0 |- tmp) -- (tmp)
+                (tmp) to [C] ++(1.75,0) coordinate(tmp) to [R, *-*] ++(0,-1.5) -- ++(0.5,0) node[ground]{}
+                (tmp) -- ++(1,0) -- ++(0,-1) node[op amp, anchor=+, noinv input up](amp){A}
+                (amp.-) -- (amp.- |- vcm) coordinate(tmp2) -- (tmp|-tmp2) to [R, *-] ++(0,1.5)
+                (tmp|-tmp2) to [C] (vcm)
+                (amp.out) to[short, -o] ++(0.5,0) coordinate(tmp)
+                (tmp) to[open, v=$A \cdot V_{diff, AC}$, straight voltages] (tmp |- 0,0) node[ground] {} node[ocirc]{}
+            ;
+        \end{pgfonlayer}
+    \end{circuitikz}
+\end{document}

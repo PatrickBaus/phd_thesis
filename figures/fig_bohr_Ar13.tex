@@ -1,0 +1,11 @@
+\documentclass[]{standalone}
+
+\usepackage{bohr}
+\usepackage[version=4]{mhchem}
+\usepackage{tikz}
+
+\begin{document}
+    \setbohr{atom-style={\footnotesize\sffamily}, nucleus-radius=1.5em, distribution-method=periodic}
+
+    \bohr{5}{\ce{Ar^{13+}}}
+\end{document}

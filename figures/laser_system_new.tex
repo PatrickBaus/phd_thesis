@@ -1,0 +1,44 @@
+\documentclass[tikz,crop]{standalone}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,calc,shapes.geometric, backgrounds, positioning}
+\usepackage{siunitx}
+
+\definecolor{master453}{RGB}{0, 87, 255}
+\definecolor{slave441}{RGB}{0, 11, 255}
+
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+\tikzstyle{laser} = [rectangle, draw, thick, fill=blue!25, text width=10em, text badly centered, rounded corners, minimum height=4em]
+\tikzstyle{controller} = [rectangle, draw, thick, fill=orange!25, text width=10em, text badly centered, rounded corners, minimum height=4em]
+\tikzstyle{line} = [draw, line width=2.5, -latex]
+
+\begin{document}
+    \begin{tikzpicture}[%
+        node distance=0.5cm and 4cm,%
+        auto,%
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},%
+        show background rectangle,%
+    ]
+        \node[laser] (master) at (0,0) {Master laser\\\qty{453}{\nm}};
+        \node[laser] (slave) at (0,4) {Spectroscopy laser\\\qty{441}{\nm}};
+        \node[laser, right=of slave] (repump) {Repump laser\\\qty{441}{\nm}};
+        \node[controller, right=of master] (spectroscopy) {Tellurium spectroscopy};
+        \node[controller] at ($(slave)!0.5!(spectroscopy)$) (wavemeter) {Wavemeter WS8-10};
+        \node[controller] at (0,7 -| wavemeter) (experiment) {ARTEMIS\\ion spectroscopy};
+        %\node[block,text width=10em]  (kraken) at (0,4) {Spectroscopy laser\\\qty{441}{\nm}};
+        % Arrows
+        \path [line, master453] ($(master.east) + (0,0.25)$) -- ($(spectroscopy.west) + (0,0.25)$);
+        \path [line, master453] (master) |- ($(wavemeter.west) - (0,0.25)$);
+        \path [line, black] ($(spectroscopy.west) - (0,0.25)$) -- ($(master.east) - (0,0.25)$);
+        \path [line, black] ($(wavemeter.west) + (0,0.25)$) -| (slave);
+        \path [line, black] (wavemeter) -| (repump);
+        \path [line, slave441] (slave) |- (experiment);
+        \path [line, slave441] (slave) -| ($(wavemeter.north) - (0.5,0)$);
+        \path [line, slave441] (repump) |- (experiment);
+        \path [line, slave441] (repump) -| ($(wavemeter.north) + (0.5,0)$);
+        %\path [line,rounded corners] (calculate) |- ($(calculate.south east) + (0.5,-0.5)$) |- (signal);
+    \end{tikzpicture}
+\end{document}

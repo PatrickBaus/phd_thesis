@@ -1,0 +1,59 @@
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{calc,arrows,backgrounds}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+  blocks/fill=orange!25,
+}
+
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+\begin{document}
+    \begin{circuitikz}[
+        american currents,
+        american voltages,
+        scale=0.7,
+        transform shape,
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+    ]
+        \tikzstyle{every node}=[font=\small]
+        % Help lines for debugging
+        %\draw[help lines] (0,-8) grid (30,0);
+        % FET currenct source
+        \begin{pgfonlayer}{foreground}
+            \draw
+            (0,0) node[left](Vdiode) {$V_{sup}$} -- ++(6,0) -- ++(0,-0.5) coordinate(Rs+) to [R, a^=$R_s$, i=$I_{out}$, *-*] ++(0,-2) coordinate(Rs-) -- ++(0,-1)
+            node[pigfete, anchor=source](FET){$Q_1$}
+            (FET.G) -- ++(-1,0) node[op amp, anchor=out](opamp){$U_1$}
+            (Rs-) -- ++(-0.5, 0.25) -| (opamp.-)
+            (Rs+) -- ++(-0.5, -0.25) coordinate(tmp)
+            (opamp.+) -- ++(-1,0) coordinate(tmp2) to[open, v^<=$V_{set}$, voltage=straight, o-o] (tmp2 |- tmp) -- (tmp)
+            %(vset) to[short, *-] ++(0,-0.5) to [open, v=$V_{set}$, voltage=straight, o-] ++(0,-4) to[short, o-] ++(1,0) node[op amp, anchor=+](opamp){U1}
+            %(opamp.out) --++ (1,0) node[pigfete, anchor=gate](FET){Q1}
+            %(FET.S) --++ (0,1) coordinate (Rs) to [R, a=$R_S$, i<_=$I_{out}$, *-] ++(0,2) |- (vset)
+            %(opamp.-) -- ++(-0.5,0) |- (Rs)
+            (FET.D) to[short, i>^=$I_{out}$] ++(0,-0.5) coordinate(virtualGnd) to[short, *-] ++(0,-0.5) to [empty laser diode, a=$D$] ++(0,-1)
+            node[pigfete, anchor=source](FET2){$Q_2$}
+            (FET2.G) -- (FET2.G -| opamp.out)
+            node[op amp, anchor=out](opamp2){$U_2$}
+            (opamp2.out) -- (FET2.G)
+            (opamp2.-) --++ (-0.5,0) |- (virtualGnd)
+            (opamp2.+) to [short, -o] ++(-1,0) node[left]{$V_{offset}$}
+            (FET2.D) node[vee]{$-V_{sup}$} node[below](Vneg){}
+            ;
+            % Annotations
+            % Virtual ground label
+            \node[orange, anchor=east](vGndLabel) at ($(virtualGnd) + (-0.5,0.5)$) {virtual ground};
+            \path[orange, ->, thick, >=stealth'] (vGndLabel) edge node {} (virtualGnd);
+        \end{pgfonlayer}
+    \end{circuitikz}
+\end{document}

@@ -1,0 +1,40 @@
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{arrows,backgrounds,fit}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+  blocks/fill=orange!25,
+}
+
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+\begin{document}
+    \begin{circuitikz}[
+        american currents,
+        american voltages,
+        scale=0.7,
+        transform shape,
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+    ]
+        \tikzstyle{every node}=[font=\small]
+        % Help lines for debugging
+        %\draw[help lines] (0,-8) grid (30,0);
+        \begin{pgfonlayer}{foreground}
+            \ctikzset{bipoles/oscope/waveform=sin}
+            \draw
+                (0,0) node[ground]{} to[isource, *-, i=$I_{out}$] ++(0,6.5) -- ++(1.5,0) coordinate(out+) to [R, *-*, a^=$R_{out}$] (out+ |- 0,0) coordinate(out-)  -- (0,0)
+                (out+) -- ++(2,0) coordinate(shunt+) to[R, *-*, a^=$R_{shunt}$] ++(0,-2) coordinate(shunt-) -- ++(0,-1) to [rmeterwa, t=A, a^=DMM, fill=yellow!50] ++(0,-2) -- (shunt+ |- 0,0) -- (out-)
+                (shunt+) -- ++(1.5,0) coordinate(tmp) to [normal open switch] (tmp |- shunt-) --(shunt-)
+            ;
+        \end{pgfonlayer}
+    \end{circuitikz}
+\end{document}

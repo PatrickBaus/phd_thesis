@@ -1,0 +1,52 @@
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{arrows,backgrounds,fit}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+  blocks/fill=orange!25,
+}
+
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+\begin{document}
+    \begin{circuitikz}[
+        american currents,
+        american voltages,
+        scale=0.7,
+        transform shape,
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+    ]
+        \tikzstyle{every node}=[font=\small]
+        % Help lines for debugging
+        %\draw[help lines] (0,-8) grid (30,0);
+        \begin{pgfonlayer}{foreground}
+            \draw
+                (0,0) node[left]{$V_{in}$} to[short, o-] ++(1,0) coordinate(tmp) to[R, *-, a^=$R_{t}$, name=Rin] ++(0,-2) node[ground]{}
+                (tmp) -- ++(2,0) coordinate(tmp) to [R, *-, a^=$R_5$] ++(0,-4.5) -- ++(2,0) node[op amp, xscale=-1, anchor=out](U2){\ctikzflipx{$U_2$}}
+                (tmp) -- (tmp -| U2.out) to[R, fill=red!25, a^=$R_1$] ++ (3,0) -- ++(2,0) coordinate(tmp) to[R, *-, fill=red!25, a^=$R_2$] ++(0,-3) -- (U2.- -| tmp) coordinate(tmp2)
+                (tmp2) -- ++(1,0) node[op amp, xscale=-1, anchor=out](U1){\ctikzflipx{$U_1$}}
+                (tmp2) to[R, *-*, a^=$R_7$] ++(-2,0) coordinate(tmp2) -- (U2.-)
+                (tmp2) -- ++(0,1) coordinate(tmp2) to [R, *-*, a=$R_6$] ++(-3,0) to[short,-*] (U2.out)
+                (tmp2) -- ++(0,1.5) to[C, a=$C_1$] ++(-3,0) -- ++(0,-1.5)
+                (U2.+) -- (U2.+ -| tmp2) to [R, a^=$R_8$] ++(0,-2) node[ground]{}
+                (U1.out) to[short, *-] ++(0,1.5) to [R, -*, fill=red!25, a^=$R_4$] ++(3,0) coordinate(tmp2) |- (U1.-)
+                (tmp2) to[R, fill=red!25, a^=$R_3$] ++(3,0) node[ground]{}
+                (U1.+) -- ++(4.5,0) coordinate(tmp2) to[twoport, i>^=$I_{out}$, t=$Z_L$, v=$V_L$, *-] ++(0,-2.5) node[ground]{}
+                (tmp) -| (tmp2)
+            ;
+            \draw[draw=red!80!black, dashed, thick, rounded corners=2pt]
+                (5,0.75) coordinate(HCS) -- ++(12.5,0) node[midway, above]{Basic Howland current source} -- ++(0,-4.75) -- ++(-1,0) -- ++(0,-1.5) -- ++(-6.7,0) -- ++(0,2.5) -- ++(-1,0) -- ++(0,2.5) coordinate(tmp2) -- (tmp2 -| HCS) -- cycle
+            ;
+            \node[draw=red!80!black, dashed, thick, rounded corners=2pt, fit={(Rin) (Rinannotation)}, label=left:{optional}]{};
+        \end{pgfonlayer}
+    \end{circuitikz}
+\end{document}

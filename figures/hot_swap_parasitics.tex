@@ -1,0 +1,31 @@
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{calc,positioning,backgrounds,fit}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+  blocks/fill=orange!25,
+}
+
+\begin{document}
+    \begin{circuitikz}[
+        american currents,
+        american voltages,
+        scale=0.7,
+        transform shape,
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+    ]
+        \sisetup{per-mode = symbol}
+        \tikzstyle{every node}=[font=\small]
+        \draw
+            (0,0) to[R, a=$R_{cable}$, o-] ++(2,0) to[L, a=$L_{cable}$, l=\qty{\approx 1}{\uH \per \m}] ++(2,0) coordinate(tmp) to [C, a^=$C_{bypass}$, *-] ++(0,-2) node[ground] {}
+            (tmp) to[short, -o] ++(1,0) node[right] {$V_{device}$}
+        ;
+    \end{circuitikz}
+\end{document}

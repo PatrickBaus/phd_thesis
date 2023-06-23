@@ -1,0 +1,54 @@
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{arrows,backgrounds,fit}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+  blocks/fill=orange!25,
+}
+
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+\begin{document}
+    \begin{circuitikz}[
+        american currents,
+        american voltages,
+        scale=0.7,
+        transform shape,
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+    ]
+        \tikzstyle{every node}=[font=\small]
+        % Help lines for debugging
+        %\draw[help lines] (0,-8) grid (30,0);
+        \begin{pgfonlayer}{foreground}
+            \ctikzset{bipoles/oscope/waveform=sin}
+            \draw
+                (0,0) node[ground]{} to[isource, *-, i_<={$i=0$}] ++(0,6.5) -- ++(1.5,0) coordinate(out+) to [R, *-*, a^=$R_{out}$, i>^=$i_{mod}$] (out+ |- 0,0) coordinate(out-)  -- (0,0)
+            ;
+            \ctikzset{current/distance = .1}
+            \draw
+                (out+) -- ++(2,0) coordinate(shunt+) to[R, *-*, a^=$R_{shunt}$, i<^=$i_{mod}$, current/distance = .5] ++(0,-2) coordinate(shunt-)
+                (shunt+) -- ++(2,0) -- ++(0,-0.5) node[op amp, anchor=+, noinv input up](amp){}
+                (shunt-) -| (amp.-)
+                (amp.south) node[below]{(Differential) amplifier}
+                (shunt-) -- ++(0,-0.5) to [R, l=\qty{50}{\ohm}, i<^=$i_{mod}$, name=Ri, current/distance = .4] ++(0,-2.5) node[oscillator, anchor=n](sigGen){}%
+                (sigGen.s) |- (out-)
+                (sigGen -| amp.out) node[oscopeshape, fill=yellow!50, anchor=in 2, label=below:Oscilloscope](scope){}
+
+            ; % close draw here, because the fill of the scope happens last and we need to paint over it.
+            \draw
+                (amp.out) -- ++(1,0) |- (scope.in 2) node[circ]{}
+                (sigGen.east) -- (scope.in 1) node[circ]{}
+            ;
+            \node[draw=red!80!black, dashed, thick, rounded corners=2pt, fit={(sigGen) (Ri) (Rilabel)}, label=right:{Signal generator}]{};
+        \end{pgfonlayer}
+    \end{circuitikz}
+\end{document}

@@ -1,0 +1,32 @@
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{calc,positioning,backgrounds,fit}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+  blocks/fill=orange!25,
+}
+
+\begin{document}
+    \begin{circuitikz}[
+        american currents,
+        american voltages,
+        scale=0.7,
+        transform shape,
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+    ]
+        \tikzstyle{every node}=[font=\small]
+        \draw
+            node[left]{$V_{set}$} (0,0) to[R, o-, a=\qty{3}{\kilo\ohm}, l=$R_{f}$] ++(3,0) coordinate(tmp) -- ++(0,0.5) to [C, a=\qty{22}{\uF}, l=$C_{f}$] ++(0,2) node[vcc] {$V_{sup}$}
+            (tmp) to[R, *-, a=\qty{3}{\kilo\ohm}, l=$R_{f}$] ++(3,0) coordinate(tmp)
+            -- ++(0,0.5) to [C, a=\qty{22}{\uF}, l=$C_{f}$] ++(0,2) node[vcc] {$V_{sup}$}
+            (tmp) to [short, -o] ++(1,0) node[right]{$V_{set,filt}$}
+        ;
+    \end{circuitikz}
+\end{document}

@@ -1,0 +1,48 @@
+\documentclass[svgnames]{standalone}
+\usepackage{siunitx}
+\usepackage[siunitx,europeanresistors,nooldvoltagedirection]{circuitikz}
+\usetikzlibrary{arrows,backgrounds,fit}
+
+% Define constants here
+\ctikzset{
+  amplifiers/fill=cyan!25,
+  sources/fill=green!70!black,
+  diodes/fill=red,
+  resistors/fill=blue!25,
+  blocks/fill=orange!25,
+}
+
+\pgfdeclarelayer{background}
+\pgfdeclarelayer{foreground}
+\pgfsetlayers{background,main,foreground}
+
+\begin{document}
+    \begin{circuitikz}[
+        american currents,
+        american voltages,
+        scale=0.7,
+        transform shape,
+        show background rectangle,
+        background rectangle/.style={fill=gray!10, rounded corners, ultra thick,draw=gray},
+    ]
+        \tikzstyle{every node}=[font=\small]
+        % Help lines for debugging
+        %\draw[help lines] (0,-8) grid (30,0);
+        \begin{pgfonlayer}{foreground}
+            \draw
+                (0,0) node[ground]{} to[R, a^=$R_3$] ++(3,0) coordinate(inv) to[R, *-, a^=$R_4$] ++ (3,0) -- ++(1,0) -- ++(0,-2) coordinate(out) to[short, *-] ++(-1,0) node[op amp, anchor=out] (opamp) {U1}%
+                node[above]{$V_o$} (opamp.-) -| (inv)%
+                (opamp.-) node[above]{$V_-$}
+                (inv) -- ++(0,1.5) to [C, a^=$C_c$] ++(3,0) to[short, -*] ++(0,-1.5)%
+                (out) -- ++(0,-2) -- ++(-1,0) to [R, -*, a^=$R_2$] ++(-3,0) coordinate(non-inv) to[R, -*, a^=$R_1$] ++(-3,0) node[op amp, anchor=out](U2){U2}%
+                (U2.-) -- ++(0,1) -| (U2.out)%
+                (U2.+) -- ++(-1,0) coordinate(tmp) -- ++(0,-0.2) to[C, a=$C_f$, name=Cf] ++ (0,-2) node[ground] (gnd){}
+                (tmp) to [R, *-, a=$R_f$, l=\qty{1}{\kilo\ohm}, name=Rf] ++(-2,0) -- ++(-1.25,0) coordinate(tmp) node[circ]{} -- ++(0,-0.2) to[R, a=$R_{in}$, l=\qty{49.9}{\ohm}] ++ (0,-2) node[ground]{}
+                (tmp) to[short, -o] ++ (-1,0)node[left](Vin){$V_{in}$}%
+                (opamp.+) node[below]{$V_+$} -| (non-inv)%
+                (non-inv) to [R, l=\qty{10}{\ohm}] ++ (0,-2) to[twoport, i>^=$I_{out}$, t=$Z_L$, v=$V_L$] ++(0,-2.25) node[ground]{}
+            ;
+            \node[draw=red!80!black, dashed, thick, rounded corners=2pt, fit={(Cf) (Rf) (Rfannotation) (gnd)}, label=above:{HW Rev. $\geq$ 2.3.0}]{};
+        \end{pgfonlayer}
+    \end{circuitikz}
+\end{document}
