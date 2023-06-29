@@ -1170,21 +1170,21 @@ Using the results from the previous sections, it is possible to simulate a typic
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/example_white_time.pgf}% data/simulations/sim_allan_variance_example.py
+            \input{images/example_white_noise_amplitude.pgf}% data/simulations/sim_allan_variance_example.py
         } % scalebox
         \caption{White noise}
     \end{subfigure}
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/example_flicker_time.pgf}% data/simulations/sim_allan_variance_example.py
+            \input{images/example_flicker_noise_amplitude.pgf}% data/simulations/sim_allan_variance_example.py
         } % scalebox
         \caption{Flicker noise}
     \end{subfigure}
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/example_rw_time.pgf}% data/simulations/sim_allan_variance_example.py
+            \input{images/example_random_walk_noise_amplitude.pgf}% data/simulations/sim_allan_variance_example.py
         } % scalebox
         \caption{Random walk}
     \end{subfigure}
@@ -1195,7 +1195,7 @@ Using the results from the previous sections, it is possible to simulate a typic
 The three time series shown in figure \ref{fig:adev_example_noise_types} were sequentially generated using a fixed seed for the random number generator to ensure repeatability as long as the order of creation is kept the same. For generating the noise, the algorithm presented by \citeauthor{noise_generation} \cite{noise_generation}, implemented in the \textit{AllanTools} Python library was used. The noise strength parameters were deliberately chosen in such a way that both the white noise and the random walk part have more noise power than the flicker noise. This allows to distinguish them in the following plots at both extremes of the frequency scale and time scale. Finally, the three types of noise data were summed together to give the combined signal, which is shown in figure \ref{fig:adev_example_time}, again downsampled using LTTB. The summed series clearly shows the white noise content and it is possible to deduce either flicker or random walk noise, but it is highly obscured due to the amount of white noise. Using only the time domain plot makes it very hard to clearly distinguish the type of noise present, let alone estimate the individual noise power of the three components. Therefore, a different analysis tool is called for.
 \begin{figure}[ht]
     \centering
-    \input{images/example_time.pgf}% data/simulations/sim_allan_variance_example.py
+    \input{images/example_combined_noise_amplitude.pgf}% data/simulations/sim_allan_variance_example.py
     \caption{A simulated time series containing white noise, flicker noise and random walk behaviour.}
     \label{fig:adev_example_time}
 \end{figure}
@@ -1207,7 +1207,7 @@ A common approach to identify noise sources is the power spectrum. It is easily 
 The noise corner frequency $f_c$ can either be calculated from $h_0$ and $h_{-1}$ using equation \ref{eqn:corner_frequency} or determined graphically by constructing a tangent with a slope of $-1$ to the spectral density. From the intersection of the blue $h_0$ line and the green $h_{-1}$ line the corner frequency is found to be $f_c \approx \qty{1.8}{\kHz}$.
 \begin{figure}[hb]
     \centering
-    \input{images/example_psd.pgf}% data/simulations/sim_allan_variance_example.py
+    \input{images/example_combined_noise_psd.pgf}% data/simulations/sim_allan_variance_example.py
     \caption{A simulated power spectrum containing white noise, flicker noise and random walk behaviour.}
     \label{fig:adev_example_psd}
 \end{figure}
@@ -1215,7 +1215,7 @@ The noise corner frequency $f_c$ can either be calculated from $h_0$ and $h_{-1}
 To get an even better representation of the individual noise contributions, the Allan variance or Allan deviation can be used. The Allan deviation plot shown in figure \ref{fig:adev_example_adev} gives very clean results and all noise components can be clearly identified. The individual components were plotted using dashed lines as well.
 \begin{figure}[ht]
     \centering
-    \input{images/example_adev.pgf}% data/simulations/sim_allan_variance_example.py
+    \input{images/example_combined_noise_adev.pgf}% data/simulations/sim_allan_variance_example.py
     \caption{A simulated Allan deviation containing white noise, flicker noise and random walk behaviour.}
     \label{fig:adev_example_adev}
 \end{figure}
