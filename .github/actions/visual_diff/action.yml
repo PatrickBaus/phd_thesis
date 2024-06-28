@@ -1,0 +1,45 @@
+name: "Visually compare PDFs"
+inputs:
+  output-directory:
+    required: true
+    description: "The output directory containing the visual diffs"
+
+  directory-a:
+    required: true
+    description: "The 'a' input directory"
+
+  directory-b:
+    required: true
+    description: "The 'b' input directory"
+    default: 'build'
+
+  dpi:
+    required: false
+    description: "The dpi setting for the visual conversion"
+    default: '50'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Test for Python
+      run: |
+         python3 --version >/dev/null 2>&1 && echo "Python 3 is installed"
+      shell: bash
+
+    - name: Install Build deps
+      run: |
+        sudo apt update
+        sudo apt install -y imagemagick poppler-utils
+      shell: bash
+
+    - name: Install diff-pdf-visually
+      run: |
+        pip install -r requirements-test.txt
+      shell: bash
+      working-directory: ${{ github.action_path }}/../../../
+
+    - name: Create visual diff
+      run: |
+        mkdir -p  ${{ inputs.output-directory }}/
+        find ${{ inputs.directory-a }} -type f -name '*.pdf' -print0 | while read -d $'\0' i; do mkdir -p "${{ inputs.output-directory }}/$(basename -a "$i")" && python -m diff_pdf_visually "$i" "${{ inputs.directory-b }}/$(basename -a "$i")" --outdir "${{ inputs.output-directory }}/$(basename -a "$i")" --dpi ${{ inputs.dpi }}; done
+      shell: bash

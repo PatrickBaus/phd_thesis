@@ -1,0 +1,99 @@
+name: "Run visual diff"
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  workflow_run:
+    workflows: ["Build PDFs"]
+    types: [completed]
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+      checks: read
+    continue-on-error: true
+    steps:
+      - name: Download repository
+        uses: actions/checkout@v4
+
+      - name: Test if there is a release to test against
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view
+        shell: bash
+
+
+  visual_diff:
+    needs: tests
+    # Only run the deployment if the build workflow succeeded and it we are not publishing, because this will not create an artifact
+    if: needs.tests.outputs.status == 'success' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event != 'release'
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [ "3.12" ]
+
+    steps:
+      - name: Running in response to ${{ github.event.workflow_run.event }} event
+        env:
+          EVENT_CONTEXT: ${{ toJson(github) }}
+        run: echo "$EVENT_CONTEXT"
+
+      - name: Download repository
+        uses: actions/checkout@v4
+
+      - name: Set up python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          cache: 'pip' # caching pip dependencies
+          python-version: ${{ matrix.python-version }}
+          cache-dependency-path: requirements*.txt
+
+      - name: Download build artifact from triggered workflow
+        uses: actions/download-artifact@v4
+        with:
+          run-id: ${{ github.event.workflow_run.id }}
+          path: ./.visual_diff/source
+          pattern: PDF-*
+          merge-multiple: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release download --pattern '*.pdf' -D ./.visual_diff/release -R ${{ github.repositoryUrl }}
+        shell: bash
+
+      - name: Display structure of downloaded files
+        run: ls -R ./.visual_diff
+        shell: bash
+
+      - name: Run visual diff
+        uses: ./.github/actions/visual_diff
+        with:
+          dpi: 100
+          directory-a: ./.visual_diff/release
+          directory-b: ./.visual_diff/source
+          output-directory: ./.visual_diff/results
+
+      - name: Sanitize Python version string
+        if: failure()
+        id: platform
+        env:
+          PYTHON_VERSION: ${{ matrix.python-version }}
+        run: |
+          echo "value=${PYTHON_VERSION//./_}" >> $GITHUB_OUTPUT
+        shell: bash
+
+      - name: Store results on a failed diff
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-diff-${{ steps.platform.outputs.value }}
+          path: ".visual_diff/results/*"
+          retention-days: 7

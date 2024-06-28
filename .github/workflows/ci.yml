@@ -1,0 +1,56 @@
+name: "Build PDFs"
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  push:
+    branches:
+      - "master"
+    paths:
+      - '**.tex'
+      - '.github/workflows/ci.yml'
+      - '.github/actions/**.yml'
+      - 'requirements*.txt'
+    # Ignore the push event when creating tags
+    tags-ignore:
+      - '[0-9]+.[0-9]+.[0-9]+'
+  release:
+    types:
+      - published
+
+  pull_request:
+
+env:
+  OUTPUT_FILE: Dissertation_Baus_Patrick
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        tex_file:
+          - {name: 'main'}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build PDF
+        uses: ./.github/actions/build
+        id: pdf-filename
+        with:
+          tex-filename: ${{ matrix.tex_file.name }}
+          output-filename: ${{ env.OUTPUT_FILE }}
+
+      - name: Upload PDF as artifact if not publishing
+        if: github.event.action != 'published'
+        uses: actions/upload-artifact@v4
+        with:
+          name: PDF-thesis
+          path: ${{ env.OUTPUT_FILE }}.pdf
+          retention-days: 7
+
+      - name: Append PDF as an asset
+        if: github.event.action == 'published'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload ${{ github.ref_name }} ${{ env.OUTPUT_FILE }}.pdf --repo ${{ github.repository }}
+        shell: bash
