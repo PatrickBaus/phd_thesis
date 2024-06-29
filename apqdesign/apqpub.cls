@@ -1,14 +1,9 @@
-%% This is file `apqpub.cls' version 1.0 (2021/01/15),
-%% it is part of apqdesign, a modified version of
+%% This is file `tudapub.cls' version 3.38 (2024-05-07),
+%% it is part of
 %% TUDa-CI -- Corporate Design for TU Darmstadt
-%% version 3.07 (2020/10/21).
-%% The modifications for apqdesign were done 
-%% by Dominik Pfeiffer and Stephan Amann.
-%% Support for this modified version can not be guaranteed by the 
-%% maintainer of TUDa-CI!
 %% ----------------------------------------------------------------------------
 %%
-%%  Copyright (C) 2018--2020 by Marei Peischl <marei@peitex.de>
+%%  Copyright (C) 2018--2024 by Marei Peischl <marei@peitex.de>
 %%
 %% ============================================================================
 %% This work may be distributed and/or modified under the
@@ -23,7 +18,6 @@
 %%
 %% The Current Maintainers of this work are
 %%   Marei Peischl <tuda-ci@peitex.de>
-%%   Markus Lazanowski <latex@ce.tu-darmstadt.de>
 %%
 %% The development respository can be found at
 %% https://github.com/tudace/tuda_latex_templates
@@ -31,14 +25,12 @@
 %%
 %% ============================================================================
 %%
-\def\fileversion{3.07}
-\def\filedate{2020/10/21}
+\def\fileversion{3.38}
+\def\filedate{2024-05-07}
 \NeedsTeXFormat{LaTeX2e}
-\RequirePackage{expl3}
+
 \ProvidesExplClass{./apqdesign/apqpub}
 	{\filedate}{\fileversion}{Publications using TU Darmstadt's Corporate Design (TUDa-CI)}
-
-\RequirePackage{l3keys2e}
 \RequirePackage{URspecialopts}
 
 \Define@specialopt@Module[ptxcd/pub]
@@ -55,15 +47,16 @@
 
 \int_new:N \g_ptxcd_ruledheaders_int
 \int_new:N \g_ptxcd_paper_int
-\msg_new:nnnn {apqpub} {compatibility-only} {
+\msg_new:nnn {apqpub} {compatibility-only} {
 	You~used~the~outdated~#1~option.\\
-	This~only~exists~due~to~compatibility~reasons.
-}{
-	Please~look~at~tuda-ci~documentation~for~further~information~and~avoid~using~outdated~options.
+	This~option~has~been~removed~with~tuda-ci~version~3.08.\\
+	See~documentation~for~the~updated~implementation.
 }
 
 \bool_new:N \g_ptxcd_geometry_bool
 \bool_new:N \g_ptxcd_custommargins_bool
+\bool_new:N \g_ptxcd_colorbacktitle_bool
+\bool_new:N \g_ptxcd_colorbacksubtitle_bool
 
 \keys_define:nn {ptxcd/pub} {
 	%twoside -> geometry + class
@@ -74,7 +67,7 @@
 	class/scrartcl .code:n  = \tl_gset:Nn \g_ptxcd_pub_class_tl {scrartcl},
 	class/book .meta:n = {class=scrbook},
 	class/scrbook .code:n  = \tl_gset:Nn \g_ptxcd_pub_class_tl {scrbook},
-	class .initial:n = scrartcl,%MAYBE add custom values
+	class .initial:n = scrartcl,
 	color .meta:n = {accentcolor=#1},
 	accentcolor .code:n = {\PassOptionsToPackage{accentcolor=#1}{apqcolors}},
 	textaccentcolor .code:n = {\PassOptionsToPackage{textaccentcolor=#1}{apqcolors}},
@@ -115,10 +108,23 @@
 	headline .initial:n =false,
 	colorback .bool_gset:N = \g_ptxcd_colorback_bool,
 	colorback .initial:n = true,
-	colortitleback .code:n =  \msg_warning:nnx {apqpub} {compatibility-only} {\l_keys_key_tl}
-		\keys_set:nn {ptxcd/pub} {logo=head,colorback=false},
+	colorback / title .code:n =
+		\bool_gset_true:N \g_ptxcd_colorbacktitle_bool
+		\bool_gset_true:N \g_ptxcd_colorback_bool
+		\bool_gset_false:N \g_ptxcd_colorbacksubtitle_bool,
+	colorback / body .code:n =
+		\bool_gset_false:N \g_ptxcd_colorbacktitle_bool
+		\bool_gset_false:N \g_ptxcd_colorbacksubtitle_bool
+		\bool_gset_true:N \g_ptxcd_colorback_bool,
+	colorback / head .code:n =
+		\bool_gset_true:N \g_ptxcd_colorbacktitle_bool
+		\bool_gset_true:N \g_ptxcd_colorback_bool
+		\bool_gset_true:N \g_ptxcd_colorbacksubtitle_bool,
+	colortitleback .code:n =  \msg_error:nnx {tudapub} {compatibility-only} {\l_keys_key_tl},
 	pdfa .bool_gset:N = \g_ptxcd_pdfa_bool,
 	pdfa .initial:n = true,
+	pdfx .bool_gset:N = \g_ptxcd_pdfx_bool,
+	pdfx .initial:n = true,
 	twocolumn .bool_gset:N = \g_ptxcd_twocolumn_bool,
 	twocolumn .default:n = true,
 	twocolumn .initial:n = false,
@@ -130,10 +136,16 @@
 	abstract .code:n = \prop_gput:Nnn \g_ptxcd_unknown_clsopts_prop {abstract} {#1},
 	abstract .initial:n =true,
 	logo .choice:,
-	logo / head .code:n = {\bool_gset_true:N \g_ptxcd_logo@inhead_bool},
-	logo / body .code:n = {\bool_gset_false:N \g_ptxcd_logo@inhead_bool},
-	logo / top .code:n = {\bool_gset_true:N \g_ptxcd_logo@inhead_bool},
-	logo / bottom .code:n = {\bool_gset_false:N \g_ptxcd_logo@inhead_bool},
+	logo / head .code:n = {
+		\bool_gset_true:N \g__ptxcd_LogoInHead_bool
+		\bool_gset_true:N \g_ptxcd_colorbacktitle_bool
+	},
+	logo / body .code:n = {
+		\bool_gset_false:N \g__ptxcd_LogoInHead_bool
+		\bool_gset_false:N \g_ptxcd_colorbacktitle_bool
+	},
+	logo / top .meta:n = {logo=head},
+	logo / bottom .code:n = {\bool_gset_false:N \g__ptxcd_LogoInHead_bool},
 	logo .initial:n = {body},
 	paper .choices:nn = {a0,a1,a2,a3,a4,a5,a6}{
 		\int_gset_eq:NN \g_ptxcd_paper_int  \l_keys_choice_int
@@ -164,6 +176,8 @@
 	department / unknown .code:n = {
 		\str_gset:Nx \g_ptxcd_department_str {\l_keys_value_tl}
 	},
+	departmentconfigprefix .tl_gset:N = \g__ptxcd_config_prefix_tl,
+	departmentconfigprefix .initial:n = tuda,
 	mecheng .meta:n = {department=mecheng},
 	departmentlogofile .tl_gset:N = \g_ptxcd_departmentlogo_tl,
 	departmentlogofile .initial:n =,
@@ -180,12 +194,39 @@
 
 \Module@Process@SpecialOptions[ptxcd/pub]
 
-\ProcessKeysOptions{ptxcd/pub}
+\ProcessKeyOptions[ptxcd/pub]
 
+\bool_if:NF \g_ptxcd_pdfa_bool {\bool_gset_false:N \g_ptxcd_pdfx_bool}
 
-%Option adjustments required for valid PDF/A
-\bool_if:NT  \g_ptxcd_pdfa_bool {
-  \PassOptionsToPackage{RGB}{xcolor}
+\bool_if:NT \g_ptxcd_pdfa_bool {
+	\msg_new:nnn {tudapub} {colors-to-rgb} {
+			You~did~not~add~a~color~profile.\\
+			I~will~use~the~default~one~and~automatically~try~to~convert~internal~colors~to~RGB.\\
+			This~is~required~to~be~able~to~create~PDF/A~compliance.
+	}
+
+	\cs_if_exist:NT \pdfmeta_standard_get:nN {
+		\pdfmeta_standard_get:nN  {outputintent_A} \l_tmpa_tl
+		\quark_if_no_value:NF \l_tmpa_tl  {
+			\bool_gset_false:N \g_ptxcd_pdfx_bool
+			\msg_new:nnn{tudapub} {prefer-lualatex} {
+				I~detected~usage~of~l3pdfmeta~(\DocumentMetadata)~to~create~PDF/A.\\
+				tudapub~will~not~load~pdfx~to~avoid~conflicts.\\
+				To~disable this message use pdfx=false.
+			}
+			\msg_info:nn {tudapub} {prefer-lualatex}
+		}
+
+		\prop_if_in:NnF \g__pdfmeta_outputintents_prop {GTS_PDFA1} {
+			\PassOptionsToPackage{RGB}{xcolor}
+			\msg_info:nn {tudapub} {colors-to-rgb}
+		}
+	}
+}
+
+\bool_if:NT \g_ptxcd_pdfx_bool {
+	\PassOptionsToPackage{RGB}{xcolor}
+	\msg_info:nn {tudapub} {colors-to-rgb}
 }
 
 \exp_args:Nx \tl_if_eq:nnT {\prop_item:Nn \g_ptxcd_clsopts_prop {fontsize}} {9pt}
@@ -359,6 +400,11 @@
 %Has to be loaded here due to headwidth options
 \usepackage[draft=false]{scrlayer-scrpage}
 
+\AddToHook{begindocument}[tudapub:BCOR-titlepage]{
+	\bool_if:NT  \g_ptxcd_BCOR_titlepage_bool
+		{\xdef\coverpageleftmargin{\the\dimexpr\coverpageleftmargin+\the\ta@bcor}}
+}
+
 \bool_if:NTF  \g_ptxcd_geometry_bool {
 	\RequirePackage{geometry}
 	\geometry{
@@ -379,7 +425,14 @@
 	\savegeometry{TUDa-marginpar}
 
 	\bool_if:NTF \g_ptxcd_custommargins_bool {
-		\AtBeginDocument{\savegeometry{TUDa-default}}
+		\AddToHook{begindocument}[tudapub:custommargins]{
+			\savegeometry{TUDa-default}
+			\bool_if:NTF  \g_ptxcd_marginpar_bool {
+				\dim_gset:Nn \g_ptxcd_headwidth_dim {\textwidth+\marginparwidth+\marginparsep}
+			}{
+				\dim_gset:Nn \g_ptxcd_headwidth_dim {\textwidth}
+			}
+		}
 		\tl_const:Nn \c_ptxcd_default_geometry_tl {TUDa-default}
 	}{
 		\bool_if:NTF  \g_ptxcd_marginpar_bool {
@@ -387,16 +440,21 @@
 		}  {
 			\tl_const:Nn \c_ptxcd_default_geometry_tl {TUDa-nomarginpar}
 		}
-		\AtBeginDocument{
+		\AddToHook{begindocument}[tudapub:custommargins-geometry]{
 			\loadgeometry{\c_ptxcd_default_geometry_tl}
-			\bool_if:NT \g_ptxcd_BCOR_titlepage_bool {\xdef\coverpageleftmargin{\the\dimexpr\coverpageleftmargin+\the\ta@bcor}}
 		}
 	}
 
-	\dim_gset:Nn \g_ptxcd_headwidth_dim 			  {\paperwidth-\g_ptxcd_innerMargin_dim-\g_ptxcd_outerMargin_dim-\Gm@bindingoffset}
+	\dim_gset:Nn \g_ptxcd_headwidth_dim {\paperwidth-\g_ptxcd_innerMargin_dim-\g_ptxcd_outerMargin_dim-\Gm@bindingoffset}
 
 	\cs_set:Nn \ptxcd_disable_marginpar: {\loadgeometry{TUDa-nomarginpar}}
 	\cs_set:Nn \ptxcd_restore_typearea: {\loadgeometry{\c_ptxcd_default_geometry_tl}}
+
+	\AddToHook{cmd/Gm@changelayout/after}[tudapub-restore-headwidth]{
+		\bool_if:NTF \g_ptxcd_marginpar_bool
+			{\KOMAoptions{headwidth=textwithmarginpar,footwidth=textwithmarginpar}}
+			{\KOMAoptions{headwidth=text,footwidth=text}}
+	}
 
 }{
 	\let\ptxcd_disable_marginpar:\relax
@@ -441,7 +499,7 @@
 \bool_if:NT \g_ptxcd_headline_bool {\KOMAoptions{headsepline=.5\c_ptxcd_smallrule_dim}}
 
 %Adjust headheight
-\AtBeginDocument{
+\AddToHook{begindocument}[apqpub:adjust-headheight]{
 \bool_if:NTF \g_ptxcd_marginpar_bool
 	{
 		\KOMAoptions {
@@ -553,6 +611,31 @@
 \tl_new:N  \g_ptxcd_titleimage_code_tl
 \tl_gset_eq:NN  \g_ptxcd_titleimage_code_tl \c_empty_tl
 \newcommand{\titleimage}[1]{\tl_gset:Nn \g_ptxcd_titleimage_code_tl {#1}}
+\box_new:N \l__ptxcd_titlegraphic_box
+
+\RequirePackage{trimclip}
+
+\NewDocumentCommand{\titlegraphic}{sm}{
+	\IfBooleanTF{#1}{
+		\tl_gset:Nn  \g_ptxcd_titleimage_code_tl  {
+			\hbox_set:Nn \l__ptxcd_titlegraphic_box {\raisebox{\depth}{#2}}
+			\box_resize_to_wd:Nn \l__ptxcd_titlegraphic_box {\width}
+			\dim_compare:nTF {\box_ht:N \l__ptxcd_titlegraphic_box -\height> \c_zero_dim}
+			{
+				\dim_set:Nn \l_tmpa_dim {.5\box_ht:N \l__ptxcd_titlegraphic_box - .5\height}
+				\clipbox{0pt~\dim_eval:n{\l_tmpa_dim}~0pt~\dim_eval:n{\l_tmpa_dim}}{\box_use:N \l__ptxcd_titlegraphic_box}
+			}{
+				\box_resize_to_ht:Nn \l__ptxcd_titlegraphic_box {\height}
+				\dim_set:Nn \l_tmpa_dim {(\box_wd:N \l__ptxcd_titlegraphic_box - \width) / 2}
+				\clipbox{\dim_eval:n{\l_tmpa_dim}~0pt~\dim_eval:n{\l_tmpa_dim}~0pt}{\box_use:N \l__ptxcd_titlegraphic_box}
+			}
+		}
+	}{
+		\tl_gset:Nn  \g_ptxcd_titleimage_code_tl {#2}
+	}
+}
+
+\let\titleimage\titlegraphic%for backwards compatbility
 
 \box_new:N  \g_ptxcd_title_box
 \skip_new:N \g_ptxcd_title_fill_skip
@@ -623,14 +706,14 @@
 		+\c_ptxcd_rulesep_dim
 	]{title.TUDa.image}
 
-	\bool_if:NT \g_ptxcd_logo@inhead_bool {
+	\bool_if:NT \g_ptxcd_colorbacktitle_bool {
 		\ModifyLayer[
-		addvoffset=\dim_eval:n {\box_ht:N \ptxcd_headrule_box+\box_dp:N \ptxcd_headrule_box-\g_ptxcd_titlerule_dim},
-		height={\box_ht:N \g_ptxcd_title_box+ \g_ptxcd_title_fill_skip+.5\c_ptxcd_logoheight_dim
-	}
-		]{title.TUDa.background}
-
-		\AddLayersToPageStyle{title.TUDa}{title.TUDa.background}
+			textarea,
+			addvoffset=\dim_eval:n {\box_ht:N \ptxcd_headrule_box+\box_dp:N \ptxcd_headrule_box-\g_ptxcd_titlerule_dim},
+			height={\box_ht:N \g_ptxcd_title_box+ \g_ptxcd_title_fill_skip+.5\c_ptxcd_logoheight_dim
+			\bool_if:NT \g_ptxcd_colorbacksubtitle_bool {+\box_dp:N \g_ptxcd_title_box}
+		}
+			]{title.TUDa.background}
 	}
 	\vspace*{\dim_eval:n {
 		-\topskip
@@ -642,13 +725,12 @@
 	\nointerlineskip
 	\ptxcd_setup_title_box:
 
-	\bool_if:NT \g_ptxcd_logo@inhead_bool {
+	\bool_if:NT \g__ptxcd_LogoInHead_bool {
 		\dim_compare:nT {\box_ht:N \g_ptxcd_title_info_box+ \box_dp:N \g_ptxcd_title_info_box  > \box_ht:N \g_ptxcd_title_box}
 			{\msg_warning:nn{apqpub} {infobox-too-high}}
 		\makebox[\linewidth][r]{\smash{
 				\raisebox{-\height}{
-					\makebox[2.2\c_ptxcd_logoheight_dim][l]{
-						%				}
+					\makebox[\__ptxcd_logowidth:][l]{
 						\box_use:N \g_ptxcd_title_info_box
 				}}
 		}}
@@ -660,7 +742,7 @@
 
 
 \newkomafont{institution}{\sffamily}
-\newkomafont{titleinfo}{\sffamily}
+\newkomafont{titleinfo}{\ptxcd@sffamily@lining}
 \setkomafont{subtitle}{\bfseries}
 \setkomafont{subject}{}
 \setkomafont{publishers}{}
@@ -679,9 +761,9 @@
 \cs_new:Nn \ptxcd_make_title_info_box:n {
 	\setlength{\fboxsep}{1.5mm}%
 	\colorbox{InfoBox}{
-	\makebox[\dim_eval:n {2.2\c_ptxcd_logoheight_dim-\fboxsep}][r]{
-		\parbox{2\c_ptxcd_logoheight_dim}{
-		\expandafter\fontsize\ptxcd_titlethanks_fontsize:\selectfont\usekomafont{institution}%
+	\makebox[\dim_eval:n {\__ptxcd_logowidth:-\fboxsep}][r]{
+		\parbox{\dim_eval:n {\__ptxcd_logowidth:+\fboxsep-\__ptxcd_logosep:}}{
+		\expandafter \fontsize\ptxcd_titlethanks_fontsize:\selectfont\usekomafont{institution}%
 		\raggedright%
 	#1
 	}}}
@@ -689,12 +771,12 @@
 
 \cs_new:Nn \ptxcd_make_title_logo_box:n {
 	\setlength{\fboxsep}{\z@}%
-	\parbox{2.2\c_ptxcd_logoheight_dim}{
+	\parbox{\__ptxcd_logowidth:}{
 		\colorbox{InfoBox}{
 			\rlap{
-			\makebox[2.5\c_ptxcd_logoheight_dim][r]{
-			\colorbox{InfoBox}{#1\hspace{.3\c_ptxcd_logoheight_dim}}
-			}
+				\makebox[\dim_eval:n {\__ptxcd_logowidth: + \__ptxcd_logosep:}][r]{
+					\colorbox{InfoBox}{#1\hspace{\__ptxcd_logosep:}}
+				}
 			}
 		}
 	}
@@ -727,7 +809,12 @@
 \DeclareNewLayer[textarea,background,mode=picture,
 	contents={
 		\tl_if_empty:NTF \g_ptxcd_titleimage_code_tl
-		{\bool_if:NT \g_ptxcd_colorback_bool {\putLL{\color{identbarcolor}\rule{\layerwidth}{\layerheight}}}}
+		{
+			\bool_if:NF \g_ptxcd_colorbacktitle_bool
+			{
+				\bool_if:NT \g_ptxcd_colorback_bool {\putLL{\color{identbarcolor}\rule{\layerwidth}{\layerheight}}}
+			}
+		}
 		{\putUL{\color{identbarcolor}
 				\let\width\layerwidth
 				\let\height\layerheight
@@ -735,8 +822,8 @@
 					\leavevmode\ignorespaces
 					\g_ptxcd_titleimage_code_tl
 					}}}}
-		\bool_if:NF \g_ptxcd_logo@inhead_bool {
-			\put(\dim_to_decimal_in_unit:nn {\layerwidth-2.2\c_ptxcd_logoheight_dim
+		\bool_if:NF \g__ptxcd_LogoInHead_bool {
+			\put(\dim_to_decimal_in_unit:nn {\layerwidth-\__ptxcd_logowidth:
 			} {\unitlength},
 			\dim_to_decimal_in_unit:nn {\layerheight-\box_ht:N \g_ptxcd_title_info_box - .5\c_ptxcd_logoheight_dim} {\unitlength}){
 				\rlap{\box_use:N \g_ptxcd_title_info_box}
@@ -745,8 +832,12 @@
 	}
 ]{title.TUDa.image}
 
-\DeclareNewLayer[textarea,background,mode=picture,
-contents={\color{identbarcolor}\rule{\layerwidth}{\layerheight}}
+\DeclareNewLayer[background,mode=picture,
+	contents={
+		\bool_lazy_and:nnT {\g_ptxcd_colorback_bool} {\g_ptxcd_colorbacktitle_bool} {
+			{\color{identbarcolor}\rule{\layerwidth}{\layerheight}}
+		}
+	}
 ]{title.TUDa.background}
 
 \DeclareNewLayer[
@@ -762,7 +853,7 @@ contents={\color{identbarcolor}\rule{\layerwidth}{\layerheight}}
 \cs_new:Nn \ptxcd_setup_title_box: {
 	\hbox_gset:Nn \g_ptxcd_title_info_box
 	{
-		\parbox{\dimexpr2.5\c_ptxcd_logoheight_dim}{
+		\parbox{\dim_eval:n {\__ptxcd_logowidth:+\__ptxcd_logosep:}}{
 		\seq_use:Nn \g_ptxcd_title_info_seq  {\par\nointerlineskip\vspace{\dim_eval:n {\c_ptxcd_largerule_dim+\c_ptxcd_rulesep_dim}}}
 		}
 	}
@@ -771,7 +862,7 @@ contents={\color{identbarcolor}\rule{\layerwidth}{\layerheight}}
 \cs_new:Nn \ptxcd_setup_sponsor_box: {
 	\bool_if:nF {\seq_if_empty_p:N \g_ptxcd_sponsors_seq &&  \tl_if_empty_p:N \@sponsors} {
 		\hbox_gset:Nn \g_ptxcd_sponsor_box {
-			\def\height{\dimexpr.8\c_ptxcd_logoheight_dim\relax}
+			\edef\height{\noexpand\dimexpr\dim_eval:n {\__ptxcd_logosep: + .5\c_ptxcd_logoheight_dim}}
 			\parbox[t]{\textwidth}{
 				\rule{\linewidth}{\g_ptxcd_titlerule_dim}\par\nointerlineskip
 				\addvspace{\c_ptxcd_rulesep_dim}
@@ -789,42 +880,45 @@ contents={\color{identbarcolor}\rule{\layerwidth}{\layerheight}}
 	}
 }
 
-\DeclareNewPageStyleByLayers{title.TUDa}{title.TUDa.rule,title.TUDa.image}
+\DeclareNewPageStyleByLayers{title.TUDa}{title.TUDa.background,title.TUDa.rule,title.TUDa.image}
 
 %Logos
 \RequirePackage{graphicx}
 
-\if_bool:N \g_ptxcd_pdfa_bool
+\if_bool:N \g_ptxcd_pdfx_bool
 
 	\msg_new:nnn{apqpub} {prefer-lualatex} {
 	You~use~pdfa-mode~in~#1.\\
 	This~can~lead~to~incompatiblities~especially~with~older~compiler~versions.\\
 	You~should~prefer~using~lualatex.
 	}
-
-
+	%only apply the hack if pdfx is older than the working version
 	\PassOptionsToPackage{a-2b}{pdfx}
 	\RequirePackage{pdfx}
+
+	\msg_new:nnnn{apqpub} {outdated-package-pdfa} {
+		Your~Version~of~the~#1-package~is~too~old~to~support~all~methods~required~by~apqpubs~pdfa-mode.\\
+		Either~update~your~TeX-distribution~or~switch~to~pdfa=false.
+	}{See~DEMO-tudapub~for~further~information.}
+
 
 	\sys_if_engine_pdftex:T {
 		\msg_warning:nnn{apqpub} {prefer-lualatex} {PDFTeX}
 	}
 
-	\sys_if_engine_pdftex:T {
+	\sys_if_engine_xetex:T {
 		\msg_warning:nnn{apqpub} {prefer-lualatex} {XeTeX}
 	}
 
-
+	\@ifpackagelater{xmpincl}{2021/09/22}{
+	}{
+		\msg_error:nn{apqpub}  {outdated-package-pdfa} {xmpincl}
+	}
 
 	\@ifpackagelater{pdfx}{2018/12/01}{
 	}{
-		\msg_new:nnnn{apqpub} {outdated-pdfx} {
-			Your~Version~of~the~PDFx-package~is~too~old~to~support~all~methods~required~by~apqpubs~pdfa-mode.\\
-			Either~update~your~TeX-distribution~or~switch~to~pdfa=false.
-		}{See~DEMO-apqpub~for~further~information.}
-		\msg_error:nn{apqpub} {outdated-pdfx}
+		\msg_error:nn{apqpub}  {outdated-package-pdfa} {pdfx}
 	}
-
 
 	%%hyperref
 	\hypersetup{hidelinks, unicode}
@@ -847,35 +941,26 @@ contents={\color{identbarcolor}\rule{\layerwidth}{\layerheight}}
 		\cs_set:Npn \and {\exp_not:n {\exp_not:N \sep}}
 		\use:c {Hy@pdfstringtrue}
 		\tl_gset:Nf \g_ptxcd_xmp_title_tl {\@title}
-		\prop_gput_if_new:Nnx \g_ptxcd_MetaData_prop {title} {\tl_to_str:V \g_ptxcd_xmp_title_tl}
-		\prop_if_in:NnF \g_ptxcd_MetaData_prop {author} {
+		\prop_gput_if_new:Nnx \g_ptxcd_MetaData_prop {Title} {\tl_to_str:V \g_ptxcd_xmp_title_tl}
+		\prop_if_in:NnF \g_ptxcd_MetaData_prop {Author} {
 			\tl_gset:Nx \g_ptxcd_xmp_author_tl {\seq_use:Nn \g_ptxcd_author_seq {\exp_not:N \sep}}
 			\tl_gset:Nx \g_ptxcd_xmp_author_tl {\g_ptxcd_xmp_author_tl}
-			\prop_gput:Nnx \g_ptxcd_MetaData_prop {author} {\tl_to_str:V \g_ptxcd_xmp_author_tl}
+			\prop_gput:Nnx \g_ptxcd_MetaData_prop {Author} {\tl_to_str:V \g_ptxcd_xmp_author_tl}
 		}
-		\prop_gput_if_new:Nnn \g_ptxcd_MetaData_prop {publisher}{TU~Darmstadt}
-		\prop_gput_if_new:Nnn \g_ptxcd_MetaData_prop {creator}{LaTeX~using~TUDa-CI}
+		\prop_gput_if_new:Nnn \g_ptxcd_MetaData_prop {Publisher}{TU~Darmstadt}
+		\prop_gput_if_new:Nnn \g_ptxcd_MetaData_prop {Creator}{LaTeX~using~TUDa-CI}
 		\use:c {pdfx@localcommands}%should be held inside group
 		\prop_map_function:NN \g_ptxcd_MetaData_prop  \ptxcd_write_xmp_line:nn
 	\endgroup
 	\iow_close:N \ptxcd_xmpdata_stream
+		\let\ptxcd_pass_TitleData:\relax
 	}
 	\cs_new:Nn \ptxcd_write_xmp_line:nn {
 		\begingroup
 		\cs_set:Npn \sep {\exp_not:N \sep}
-		%Fallback test for older kernels
-		\cs_if_exist:NTF \str_uppercase:f {
-			\tl_set:Nx \l_tmpa_tl {
-				\str_uppercase:f {\tl_head:n {#1}}
-				\str_lowercase:f { \tl_tail:n {#1}}
-			}
-		} {
-			%may be removed in some time
-			\tl_set:Nx \l_tmpa_tl {\tl_mixed_case:n {#1}}
-		}
-		\cs_if_exist:cTF {\l_tmpa_tl}{
+		\cs_if_exist:cTF {#1}{
 			\iow_now:Nx \ptxcd_xmpdata_stream {
-				\c_backslash_str \l_tmpa_tl {\exp_not:n {#2}}
+				\c_backslash_str #1 {\exp_not:n {#2}}
 			}
 		}{
 			\msg_error:nnn{apqpub} {unknown-metadata} {#1}
@@ -883,7 +968,7 @@ contents={\color{identbarcolor}\rule{\layerwidth}{\layerheight}}
 		\endgroup
 	}
 
-\prop_new:N \g_ptxcd_MetaData_prop
+	\prop_new:N \g_ptxcd_MetaData_prop
 
 	\newcommand*{\Metadata}[1]{
 		\keyval_parse:NNn  \use_none:n \ptxcd_set_metadata_prop:nn
@@ -891,28 +976,97 @@ contents={\color{identbarcolor}\rule{\layerwidth}{\layerheight}}
 	}
 
 	\cs_set:Nn \ptxcd_set_metadata_prop:nn {
-	\exp_args:NNf \prop_gput:Nnn \g_ptxcd_MetaData_prop {\tl_lower_case:n{#1}}  {#2}
+		%Fallback test for older kernels doesn't support mixed case eintries
+		\cs_if_exist:NTF \text_titlecase_first:n {
+			\exp_args:NNf \prop_gput:Nnn \g_ptxcd_MetaData_prop {\text_titlecase_first:n {#1}}  {#2}
+		} {
+			\exp_args:NNx \prop_gput:Nnn \g_ptxcd_MetaData_prop {
+					\str_uppercase:f {\tl_head:n {#1}}
+					\str_lowercase:f {\tl_tail:n {#1}}
+				} {#2}
+		}
 	}
 
 	\msg_new:nnnn{apqpub} {unknown-metadata} {
-	You~ used~ the~ #1~ metadata~ entry.\\
-	I~ don't~ know~ how~ to~ handle~ that.\\
-	It~ will~ be~ ignored.
+		You~ used~ the~ #1~ metadata~ entry.\\
+		I~ don't~ know~ how~ to~ handle~ that.\\
+		It~ will~ be~ ignored.
 	} {See~ TUDa-CI~ or~ pdfx~ documentation~ for~ details.}
 \else:
-	\msg_new:nnn{apqpub} {no-pdfa}{The~ apqpub~ class~ won't~ create~ PDF/A-mode.}
-	\msg_info:nn{apqpub} {no-pdfa}
-	%%hyperref
-	\RequirePackage[hidelinks, unicode]{hyperref}
+	\PassOptionsToPackage{hidelinks, unicode}{hyperref}
+	\RequirePackage{hyperref}
+	\hypersetup{pdfcreator=LaTeX~using~TUDa-CI}
 
-	\newcommand{\Metadata}[1]{\ClassError{apqpub}{You~cannot~use~\string\Metadata\ ~with~pdfa=false.}{}}
+	\msg_new:nnnn {apqpub} {metadata-to-hypersetup} {
+		You~don't~use~pdfx.~
+		Here~the~\string\Metadata\~command~only~exists~for~compatibility~reasons.\\
+		I~will~pass~the~data~to~ḩypersetup.
+	}{
+		If~possible~please~use~hyperref's~\strung\hypersetup~command~for~the~metadata~directly.\\
+		See~hyperref~documentation~for~details~on~usage.
+	}
+
+	\newcommand*{\Metadata}[1]{
+		\tl_set:Nn \l_tmpa_tl {#1}
+		\tl_replace_all:Nnn \l_tmpa_tl {\sep} {;~}% pdfx-Syntax compatibility
+		\clist_map_inline:Nn \l_tmpa_tl {
+			\exp_args:Nx \hypersetup{pdf\tl_trim_spaces:n {##1}}
+		}
+		\msg_warning:nn {apqpub} {metadata-to-hypersetup}
+	}
+
+
+	\cs_new:Nn \ptxcd_pass_TitleData: {
+		% check if pdfmanagement is active
+		\prop_if_exist:NTF \g__pdfmanagement_documentproperties_prop {
+			\prop_set_eq:NN \l_tmpa_prop \g__pdfmanagement_documentproperties_prop
+		} {
+			\prop_set_eq:NN \l_tmpa_prop   \g__hyp_documentproperties_prop
+		}
+
+		% title
+		\prop_if_in:NnF \l_tmpa_prop {hyperref/pdftitle} {
+			\begingroup
+			\def\newline{}
+			\def\\{}
+			\let\thanks\use_none:n
+			\tl_gset:Nf \g_tmpa_tl {\@title}
+			\endgroup
+			\hypersetup{pdftitle={\tl_to_str:V \g_tmpa_tl}}
+		}
+
+		% author
+		\prop_if_in:NnF \l_tmpa_prop {hyperref/pdfauthor} {
+			\begingroup
+				\def\newline{}
+				\def\\{}
+				\let\thanks\use_none:n
+				\tl_gset:Nx \g_tmpa_tl {\seq_use:Nn \g_ptxcd_author_seq {\exp_not:N \and}}
+				\tl_gset:Nx \g_tmpa_tl  {\g_tmpa_tl }
+			\endgroup
+			\hypersetup{pdfauthor=\g_tmpa_tl}
+		}
+	}
+
+	\bool_if:NF \g_ptxcd_pdfa_bool {
+		\msg_new:nnn{tudapub} {no-pdfa}{The~ tudapub~ class~ won't~ create~ PDF/A-mode.}
+		\msg_info:nn{tudapub} {no-pdfa}
+	}
 \fi:
+
+\RequirePackage{bookmark}
 
 \box_new:N  \g_ptxcd_sponsor_box
 \seq_new:N \g_ptxcd_sponsors_seq
 \def\AddSponsor{\seq_gput_right:Nn \g_ptxcd_sponsors_seq}
 \def\sponsors#1{\def\@sponsors{#1}}
 \sponsors{}
+
+\cs_new:Npn \ptxcd_title_footnote:w [#1] #2 {
+	\textsuperscript{ \ptxcd_title_footnotestyle:n {#1}}#2
+}
+
+\cs_set_eq:NN \ptxcd_title_footnotestyle:n \@fnsymbol
 
 \str_if_eq:VnTF \g_ptxcd_pubType_tl  {thesis} {
 	\input{apqthesis.cfg}
@@ -925,9 +1079,6 @@ contents={\color{identbarcolor}\rule{\layerwidth}{\layerheight}}
 		\msg_error:nnn {apqpub} {only-thesis} {#1}
 	}
 }
-\newcommand*{\ptxcd_title@footnote}[2][1]{
-\textsuperscript{\@fnsymbol{#1}}#2
-}
 
 % The following macro is an adapted version of the corresponding KOMA-Script macro
 % Copyright (c) 1994-2019 Markus Kohm [komascript at gmx info]
@@ -935,21 +1086,21 @@ contents={\color{identbarcolor}\rule{\layerwidth}{\layerheight}}
 	\def\and{,~ }
 	\cs_if_exist_use:N \ptxcd_pass_TitleData:
 	\if@titlepage
+	\edef\titlepage@restore{%
+		\noexpand\endgroup
+		\noexpand\global\noexpand\@colht\the\@colht
+		\noexpand\global\noexpand\@colroom\the\@colroom
+		\noexpand\global\vsize\the\vsize
+		\noexpand\global\noexpand\@titlepageiscoverpagefalse
+		\noexpand\let\noexpand\titlepage@restore\noexpand\relax
+	}%
 	\ptxcd_disable_marginpar:
 	\begin{titlepage}
 		\setcounter{page}{%
 			#1%
 		}%
-		\def\thefootnote{\fnsymbol{footnote}}
+		\def\thefootnote{\ptxcd_title_footnotestyle:n {\c@footnote}}
 		\if@titlepageiscoverpage
-		\edef\titlepage@restore{%
-			\noexpand\endgroup
-			\noexpand\global\noexpand\@colht\the\@colht
-			\noexpand\global\noexpand\@colroom\the\@colroom
-			\noexpand\global\vsize\the\vsize
-			\noexpand\global\noexpand\@titlepageiscoverpagefalse
-			\noexpand\let\noexpand\titlepage@restore\noexpand\relax
-		}%
 		\begingroup
 		\topmargin=\dimexpr \coverpagetopmargin-1in\relax
 		\oddsidemargin=\dimexpr \coverpageleftmargin-1in\relax
@@ -974,8 +1125,8 @@ contents={\color{identbarcolor}\rule{\layerwidth}{\layerheight}}
 		\ptxcd_setup_sponsor_box:
 		\hbox_gset:Nn \g_ptxcd_title_box {
 			\parbox[t]{\linewidth}{
-				\begin{minipage}[b]{\bool_if:NT \g_ptxcd_logo@inhead_bool {.75}\linewidth}
-					\bool_if:NT \g_ptxcd_logo@inhead_bool {\color{textonaccentcolor}}
+				\begin{minipage}[b]{\bool_if:NT \g__ptxcd_LogoInHead_bool {.75}\linewidth}
+					\bool_lazy_and:nnT {\g_ptxcd_colorback_bool} {\g_ptxcd_colorbacktitle_bool} {\color{textonaccentcolor}}
 					\tl_if_empty:NF \@titlehead {
 						\begin{addmargin}{3mm}
 							{\usekomafont{titlehead}{\@titlehead\par}}
@@ -994,6 +1145,7 @@ contents={\color{identbarcolor}\rule{\layerwidth}{\layerheight}}
 						{\rule{0pt}{.5\c_ptxcd_logoheight_dim}}
 					\end{addmargin}
 				\end{minipage}%
+				\bool_if:NT \g_ptxcd_colorbacksubtitle_bool {\color{textonaccentcolor}}
 				\par\nointerlineskip
 				\rule{\linewidth}{\g_ptxcd_titlerule_dim}\par\vspace{\c_ptxcd_rulesep_dim}
 				\begin{addmargin}{3mm}
@@ -1015,21 +1167,22 @@ contents={\color{identbarcolor}\rule{\layerwidth}{\layerheight}}
 					\expandafter\fontsize\ptxcd_titlethanks_fontsize:\selectfont\par
 					\rule{\linewidth}{\g_ptxcd_titlerule_dim}\par
 					\begin{addmargin}{3mm}
-						\let\footnotetext\ptxcd_title@footnote
+						\let\footnotetext\ptxcd_title_footnote:w
 						\@thanks
 					\end{addmargin}
 					\par\vspace{-\dp\strutbox}
-					\let\@thanks\@empty
 				}
+				\normalcolor
 				\rule{\linewidth}{\g_ptxcd_titlerule_dim}\par}
 		}
+		\let\@thanks\@empty
 		\ptxcd_adjust_titlepage_style:
 		\thispagestyle{title.TUDa}
 		\nointerlineskip\box_use:N \g_ptxcd_title_box
 		\par
 		\vfill
 		\box_if_empty:NTF \g_ptxcd_sponsor_box {
-				\raisebox{-\c_ptxcd_rulesep_dim}[0pt][0pt]{\rule{\linewidth}{\g_ptxcd_titlerule_dim}}
+			\raisebox{-\c_ptxcd_rulesep_dim}[0pt][0pt]{\rule{\linewidth}{\g_ptxcd_titlerule_dim}}
 		}{
 			\box_use:N \g_ptxcd_sponsor_box
 		}
@@ -1114,7 +1267,7 @@ contents={\color{identbarcolor}\rule{\layerwidth}{\layerheight}}
 	\@maketitle
 	\fi
 	\ifx\titlepagestyle\@empty\else\thispagestyle{\titlepagestyle}\fi
-	\@thanks\global\let\@thanks\@empty
+	\global\let\@thanks\@empty
 	\endgroup
 	\fi
 }
@@ -1125,7 +1278,12 @@ contents={\color{identbarcolor}\rule{\layerwidth}{\layerheight}}
 \newcommand*{\SetPaperID}[2]{
 	\hbox_gset:Nn \g_ptxcd_PaperID_box {
 		\usekomafont{paperid}
+		\if@titlepage
 		\dim_set:Nn \l_tmpa_dim {\exp_last_unbraced:No \use_i:nn \ptxcd_title_fontsize: + \exp_last_unbraced:No \use_ii:nn \ptxcd_title_fontsize:}
+		\else
+		\Huge
+		\dim_set:Nn \l_tmpa_dim {1.8\baselineskip}
+		\fi
 		\fontsize{1.1\l_tmpa_dim}{1.1\l_tmpa_dim}
 		\selectfont
 		#1{\Huge #2}
@@ -1148,35 +1306,44 @@ contents={\color{identbarcolor}\rule{\layerwidth}{\layerheight}}
 	\usekomafont{disposition}
 	\hsize=\g_ptxcd_headwidth_dim
 	\setlength{\fboxsep}{\z@}
-	\bool_if:NT \g_ptxcd_colorback_bool {\colorbox{accentcolor}}{\parbox[t]{\g_ptxcd_headwidth_dim}{
+	\def\thefootnote{\ptxcd_title_footnotestyle:n {\c@footnote}}
+	\bool_if:NT \g_ptxcd_colorback_bool {\bool_set_true:N \g_ptxcd_colorbacktitle_bool}
+	\bool_if:NT \g_ptxcd_colorbacktitle_bool {\colorbox{identbarcolor}}
+	{\parbox[t]{\g_ptxcd_headwidth_dim}{
 			\rule{\z@}{.5\c_ptxcd_logoheight_dim}\par\nointerlineskip
 			\raisebox{-\height}{%
-				\begin{minipage}[t]{\dimexpr\linewidth-2.2\c_ptxcd_logoheight_dim-1ex}
-					\bool_if:NT \g_ptxcd_colorback_bool  {\begin{addmargin}{.5\c_ptxcd_largerule_dim}}
+				\begin{minipage}[t]{\dim_eval:n {\linewidth-\__ptxcd_logowidth:-1ex}}
+					\bool_if:NT \g_ptxcd_colorbacktitle_bool  {\begin{addmargin}{.5\c_ptxcd_largerule_dim}}
 						\raggedright
 						\bool_if:NT \g_ptxcd_colorback_bool {\color{textonaccentcolor}}
 						\tl_if_empty:NF \@titlehead {\usekomafont{titlehead}{\@titlehead\par}}
-						\leavevmode
-						{\Huge\usekomafont{title}{
-						\Huge
-						\@title \par
-						}}%
-						\vskip 1em
-						\bool_if:NTF \g_ptxcd_colorback_bool {\end{addmargin}} {\par}
+						\box_if_empty:NF \g_ptxcd_PaperID_box  {\begin{addmargin}[\dim_eval:n {\box_wd:N\g_ptxcd_PaperID_box+.5\c_ptxcd_logoheight_dim}]{0pt}}
+							\raggedright
+							\bool_if:NT \g_ptxcd_colorback_bool {\color{textonaccentcolor}}
+							\tl_if_empty:NF \@titlehead {\usekomafont{titlehead}{\@titlehead\par}}
+							\leavevmode\usekomafont{title}%
+							\Huge
+							\llap{\raisebox{\dimexpr-\height+.5\baselineskip}[0pt][0pt]{\box_use:N \g_ptxcd_PaperID_box}\hspace{.5\c_ptxcd_logoheight_dim}}
+							\@title\strut
+							\par
+							\box_if_empty:NTF \g_ptxcd_PaperID_box
+							{\vskip1em}
+							{\rule{0pt}{.5\c_ptxcd_logoheight_dim}}
+						\box_if_empty:NF \g_ptxcd_PaperID_box {\end{addmargin}}
+					\bool_if:NTF \g_ptxcd_colorbacktitle_bool {\end{addmargin}} {\par}
 			\vspace{\dim_eval:n {\c_ptxcd_largerule_dim+\c_ptxcd_rulesep_dim}}
 			\end{minipage}
 		}
 		\hfill
 		\raisebox{-\height}{
 		\ptxcd_setup_title_box:
-		\makebox[2.2\c_ptxcd_logoheight_dim][l]{
+		\makebox[\__ptxcd_logowidth:][l]{
 		\box_use:N \g_ptxcd_title_info_box
 		}
 		}
-		\dim_compare:nNnTF {\box_ht:N \g_ptxcd_title_info_box + \box_ht:N \g_ptxcd_title_info_box} > {1.1\c_ptxcd_logoheight_dim}
+		\dim_compare:nNnTF {\box_ht:N \g_ptxcd_title_info_box + \box_ht:N \g_ptxcd_title_info_box} > {(\__ptxcd_logowidth:)/2}
 				{\vspace{\c_ptxcd_largerule_dim}}
 				{\vspace{.5\c_ptxcd_logoheight_dim}}
-
 		\par
 	}}
 	\par
@@ -1193,7 +1360,7 @@ contents={\color{identbarcolor}\rule{\layerwidth}{\layerheight}}
 	\rule{\g_ptxcd_headwidth_dim}{\g_ptxcd_titlerule_dim}
 	\expandafter\fontsize\ptxcd_titlethanks_fontsize:\selectfont
 	\begin{addmargin}{.5\c_ptxcd_largerule_dim}
-		\let\footnotetext\ptxcd_title@footnote
+		\let\footnotetext\ptxcd_title_footnote:w
 		\@thanks
 		\vspace{\c_ptxcd_rulesep_dim}
 	\end{addmargin}
@@ -1236,13 +1403,13 @@ contents={\color{identbarcolor}\rule{\layerwidth}{\layerheight}}
 
 
 %Anpassungen marginpar
-\cs_set_eq:NN\ptxcd_orig@marginpar:\marginpar
+\cs_set_eq:NN\ptxcd_orig@marginpar:w \marginpar
 \newkomafont{marginpar}{\accentfont\color{textaccentcolor}}
 \RenewDocumentCommand{\marginpar}{om}{
 	\IfNoValueTF{#1}{
-		\ptxcd_orig@marginpar:{\leavevmode\usekomafont{marginpar}#2}
+		\ptxcd_orig@marginpar:w {\leavevmode\usekomafont{marginpar}#2}
 	}{
-		\ptxcd_orig@marginpar:[\leavevmode\usekomafont{marginpar}#1]{\leavevmode\usekomafont{marginpar}#2}
+		\ptxcd_orig@marginpar:w [{\leavevmode\usekomafont{marginpar}#1}]{\leavevmode\usekomafont{marginpar}#2}
 	}
 }
 
@@ -1309,6 +1476,6 @@ contents={\color{identbarcolor}\rule{\layerwidth}{\layerheight}}
 	\let\Iftocfeature\iftocfeature
 }
 
-\file_if_exist_input:n {tuda\g_ptxcd_department_str.cfg}
+\file_if_exist_input:n {\g__ptxcd_config_prefix_tl\g_ptxcd_department_str.cfg}
 \endinput
 %End of class apqpub.cls
