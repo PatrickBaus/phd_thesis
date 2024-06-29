@@ -1,14 +1,14 @@
 %% This is file `apqcolors.def' version 1.0 (2021/01/15),
 %% it is part of apqdesign, a modified version of
 %% TUDa-CI -- Corporate Design for TU Darmstadt
-%% version 3.07 (2020/10/21).
+%% version 3.38 (2024-05-07).
 %% The modifications for apqdesign were done 
 %% by Dominik Pfeiffer and Stephan Amann.
 %% Support for this modified version can not be guaranteed by the 
 %% maintainer of TUDa-CI!
 %% ----------------------------------------------------------------------------
 %%
-%%  Copyright (C) 2018--2020 by Marei Peischl <marei@peitex.de>
+%%  Copyright (C) 2018--2024 by Marei Peischl <marei@peitex.de>
 %%
 %% ============================================================================
 %% This work may be distributed and/or modified under the
@@ -23,7 +23,6 @@
 %%
 %% The Current Maintainers of this work are
 %%   Marei Peischl <tuda-ci@peitex.de>
-%%   Markus Lazanowski <latex@ce.tu-darmstadt.de>
 %%
 %% The development respository can be found at
 %% https://github.com/tudace/tuda_latex_templates
@@ -31,9 +30,9 @@
 %%
 %% ============================================================================
 %%
-\def\fileversion{3.07}
-\def\filedate{2020/10/21}
-\ProvidesFile{apqcolors.def}
+\def\fileversion{3.38}
+\def\filedate{2024-05-07}
+\ProvidesFile{tudacolors.def}
 [\filedate\space\fileversion\space Color definitions for tuda-ci]
 
 \definecolor{TUDa-0d}{cmyk/RGB/HTML}{0,0,0,.8/83,83,83/535353}
