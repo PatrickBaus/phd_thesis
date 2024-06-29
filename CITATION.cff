@@ -3,8 +3,8 @@ title: >-
   Current Drivers and Control Electronics for the Laser
   Spectroscopy of Highly Charged Ions
 message: >-
-  If you use this thesis, please cite it using the
-  metadata from this file.
+  If you use this thesis, please cite it using the metadata
+  from this file.
 type: software
 authors:
   - given-names: Patrick
@@ -92,9 +92,17 @@ abstract: >-
   for their progress.
 license: CC-BY-SA-4.0
 preferred-citation:
-  title: Current Drivers and Control Electronics for the Laser Spectroscopy of Highly Charged Ions
-  thesis-type: "PhD thesis"
+  title: >-
+    Current Drivers and Control Electronics for the Laser Spectroscopy of Highly
+    Charged Ions
+  thesis-type: PhD thesis
+  authors:
+    - given-names: Patrick
+      family-names: Baus
+      email: patrick.baus@physik.tu-darmstadt.de
+      affiliation: 'TU Darmstadt, Institut für Angewandte Physik'
+      orcid: 'https://orcid.org/0000-0002-0318-5245'
   type: thesis
-  url: "https://github.com/PatrickBaus/phd_thesis"
+  url: 'https://github.com/PatrickBaus/phd_thesis'
   year: 2024
-  month: 07
+  month: 7
