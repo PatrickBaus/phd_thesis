@@ -34,7 +34,7 @@ jobs:
   visual_diff:
     needs: tests
     # Only run the deployment if the build workflow succeeded and it we are not publishing, because this will not create an artifact
-    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event != 'release'
+    if: ${{ github.event.workflow_run.conclusion == 'success' }} && ${{ github.event.workflow_run.event != 'release' }}
     runs-on: ubuntu-latest
 
     strategy:
