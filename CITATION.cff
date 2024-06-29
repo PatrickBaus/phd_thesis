@@ -3,7 +3,7 @@ title: >-
   Current Drivers and Control Electronics for the Laser
   Spectroscopy of Highly Charged Ions
 message: >-
-  If you use this work, please cite it using the
+  If you use this thesis, please cite it using the
   metadata from this file.
 type: software
 authors:
@@ -97,3 +97,4 @@ preferred-citation:
   type: thesis
   url: "https://github.com/PatrickBaus/phd_thesis"
   year: 2024
+  month: 07
