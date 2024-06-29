@@ -4,18 +4,22 @@ name: "Run visual diff"
 # events but only for the master branch
 on:
   workflow_run:
-    workflows: ["Build PDFs"]
-    types: [completed]
+    workflows: [ "Build PDFs" ]
+    types: [ completed ]
 
 jobs:
   tests:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      actions: write
       checks: read
     continue-on-error: true
     steps:
+      - name: Running in response to ${{ github.event.workflow_run.event }} event
+        env:
+          EVENT_CONTEXT: ${{ toJson(github) }}
+        run: echo "$EVENT_CONTEXT"
+
       - name: Download repository
         uses: actions/checkout@v4
 
@@ -38,11 +42,6 @@ jobs:
         python-version: [ "3.12" ]
 
     steps:
-      - name: Running in response to ${{ github.event.workflow_run.event }} event
-        env:
-          EVENT_CONTEXT: ${{ toJson(github) }}
-        run: echo "$EVENT_CONTEXT"
-
       - name: Download repository
         uses: actions/checkout@v4
 
