@@ -50,21 +50,21 @@
     \begin{scope}
         \draw (HI) to [cute open switch, mirror, invert, *-] ++(-2,0)
             to [R, l_=$R_{on}$, *-o] ++ (-2,0) node[left] {CH1 HI}
-            (HI) -- ++(0,1) to [C, capacitors/scale=0.7, l_=$C_S$, *-*] ++(-2,0) -- ++(0,-1)
-            (HI) ++(0,1) -- ++(0,1) to [R, resistors/scale=0.7, l_=$R_S$, *-] ++(-2,0) -- ++(0,-1)
+            (HI) -- ++(0,1) to [C, capacitors/scale=0.7, l_=$C_s$, *-*] ++(-2,0) -- ++(0,-1)
+            (HI) ++(0,1) -- ++(0,1) to [R, resistors/scale=0.7, l_=$R_s$, *-] ++(-2,0) -- ++(0,-1)
             (HI) ++(0,2) -- ++(0,1) to [cute open switch, mirror, invert, *-] ++(-2,0) coordinate(tmp)
             (tmp) to [R, l_=$R_{on}$, *-o] ++ (-2,0) node[left] (CH2 HI) {CH2 HI}
             (tmp) -- ++(0,1)  coordinate(tmp) to [C, capacitors/scale=0.7, l=$C_S$, *-*, name=CH2hiC] ++(2,0) -- ++(0,-1)
-            (tmp) -- ++(0,1) to [R, resistors/scale=0.7, l=$R_S$, name=CH2hi] ++(2,0) -- ++(0,-1)
+            (tmp) -- ++(0,1) to [R, resistors/scale=0.7, l=$R_s$, name=CH2hi] ++(2,0) -- ++(0,-1)
         ;
         \draw (LO) to [cute open switch, mirror, invert, *-] ++(-2,0)
             to [R, l_=$R_{on}$, *-o] ++ (-2,0) node[left] {CH1 LO}
-            (LO) -- ++(0,-1) to [C, capacitors/scale=0.7, l_=$C_S$, *-*] ++(-2,0) -- ++(0,1)
-            (LO) ++(0,-1) -- ++(0,-1) to [R, resistors/scale=0.7, l_=$R_S$, *-] ++(-2,0) -- ++(0,1)
+            (LO) -- ++(0,-1) to [C, capacitors/scale=0.7, l_=$C_s$, *-*] ++(-2,0) -- ++(0,1)
+            (LO) ++(0,-1) -- ++(0,-1) to [R, resistors/scale=0.7, l_=$R_s$, *-] ++(-2,0) -- ++(0,1)
             (LO) ++(0,-2) -- ++(0,-1) to [cute open switch, mirror, invert, *-] ++(-2,0) coordinate(tmp)
             (tmp) to [R, l_=$R_{on}$, *-o] ++ (-2,0) node[left] {CH2 LO}
-            (tmp) -- ++(0,-1) coordinate(tmp) to [C, capacitors/scale=0.7, l_=$C_S$, *-*] ++(2,0) -- ++(0,1)
-            (tmp) -- ++(0,-1) to [R, resistors/scale=0.7, l_=$R_S$, name=CH2lo] ++(2,0) -- ++(0,1)
+            (tmp) -- ++(0,-1) coordinate(tmp) to [C, capacitors/scale=0.7, l_=$C_s$, *-*] ++(2,0) -- ++(0,1)
+            (tmp) -- ++(0,-1) to [R, resistors/scale=0.7, l_=$R_s$, name=CH2lo] ++(2,0) -- ++(0,1)
         ;
         \draw[densely dashed] ([yshift=0.7cm]CH2hi.center) -- ++(0,1) node[above] (CH3-CH10) {CH3 - CH9};
         \draw[densely dashed] ([yshift=-0.7cm]CH2lo.center) -- ++(0,-1) node[below] (CH3 LO-CH10 LO) {CH3 - CH9};
