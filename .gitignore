@@ -32,6 +32,7 @@
 *-blx.bib
 *.run.xml
 *.bib~
+*.bbl-SAVE-ERROR
 
 ## Build tool auxiliary files:
 *.fdb_latexmk
@@ -40,6 +41,8 @@
 *.synctex.gz
 *.synctex.gz(busy)
 *.pdfsync
+*.rubbercache
+rubber.cache
 
 ## Build tool directories for auxiliary files
 # latexrun
@@ -138,6 +141,9 @@ acs-*.bib
 *.lg
 *.trc
 *.xref
+
+# hypdoc
+*.hd
 
 # hyperref
 *.brf
@@ -306,3 +312,6 @@ figures/*
 !figures/*.tex
 source/spice/*.raw
 appendix/*.pdf
+
+# Ignore artifacts built by act
+artifacts/*
