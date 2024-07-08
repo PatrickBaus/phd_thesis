@@ -21,6 +21,7 @@
 %% Matplotlib used the following preamble
 %%   \usepackage{siunitx}
 %%   \usepackage{fontspec}
+%%   \makeatletter\@ifpackageloaded{underscore}{}{\usepackage[strings]{underscore}}\makeatother
 %%
 \begingroup%
 \makeatletter%
