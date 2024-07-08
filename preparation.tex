@@ -858,7 +858,7 @@ In order to demonstrate the effect of white noise in Allan deviation plots, it w
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/white_noise_time.pgf}% data/simulations/sim_allan_variance.py
+            \input{images/white_noise_amplitude.pgf}% data/simulations/sim_allan_variance.py
         } % scalebox
         \caption{Time domain}
         \label{fig:white_noise_time}
@@ -949,7 +949,7 @@ The small deviation from the analytical solution in figure \ref{fig:burst_noise_
     \begin{subfigure}{0.8\linewidth}
         \centering
         \scalebox{1}{%
-            \input{images/burst_noise_time.pgf}% data/simulations/sim_burst_noise.py
+            \input{images/burst_noise_amplitude.pgf}% data/simulations/sim_burst_noise.py
         } % scalebox
         \caption{Time domain}
         \label{fig:burst_noise_time}
@@ -1024,7 +1024,7 @@ Again, using the \textit{AllanTools} library \cite{allantools}, flicker noise wa
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/flicker_noise_time.pgf}% data/simulations/sim_allan_variance.py
+            \input{images/flicker_noise_amplitude.pgf}% data/simulations/sim_allan_variance.py
         } % scalebox
         \caption{Time domain}
         \label{fig:flicker_noise_time}
@@ -1126,7 +1126,7 @@ with slope of the drift $D$.
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/drift_time.pgf}% data/simulations/sim_allan_variance.py
+            \input{images/drift_amplitude.pgf}% data/simulations/sim_allan_variance.py
         } % scalebox
         \caption{Time domain}
         \label{fig:drift_time}
@@ -1170,14 +1170,14 @@ Using the results from the previous sections, it is possible to simulate a typic
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/example_white_time.pgf}% data/simulations/sim_allan_variance_example.py
+            \input{images/example_white_noise_amplitude.pgf}% data/simulations/sim_allan_variance_example.py
         } % scalebox
         \caption{White noise}
     \end{subfigure}
     \begin{subfigure}{0.32\linewidth}
         \centering
         \scalebox{0.75}{%
-            \input{images/example_flicker_time.pgf}% data/simulations/sim_allan_variance_example.py
+            \input{images/flicker_noise_amplitude.pgf}% data/simulations/sim_allan_variance_example.py
         } % scalebox
         \caption{Flicker noise}
     \end{subfigure}
@@ -1207,7 +1207,7 @@ A common approach to identify noise sources is the power spectrum. It is easily 
 The noise corner frequency $f_c$ can either be calculated from $h_0$ and $h_{-1}$ using equation \ref{eqn:corner_frequency} or determined graphically by constructing a tangent with a slope of $-1$ to the spectral density. From the intersection of the blue $h_0$ line and the green $h_{-1}$ line the corner frequency is found to be $f_c \approx \qty{1.8}{\kHz}$.
 \begin{figure}[hb]
     \centering
-    \input{images/example_psd.pgf}% data/simulations/sim_allan_variance_example.py
+    \input{images/example_combined_noise_psd.pgf}% data/simulations/sim_allan_variance_example.py
     \caption{A simulated power spectrum containing white noise, flicker noise and random walk behaviour.}
     \label{fig:adev_example_psd}
 \end{figure}
@@ -1215,7 +1215,7 @@ The noise corner frequency $f_c$ can either be calculated from $h_0$ and $h_{-1}
 To get an even better representation of the individual noise contributions, the Allan variance or Allan deviation can be used. The Allan deviation plot shown in figure \ref{fig:adev_example_adev} gives very clean results and all noise components can be clearly identified. The individual components were plotted using dashed lines as well.
 \begin{figure}[ht]
     \centering
-    \input{images/example_adev.pgf}% data/simulations/sim_allan_variance_example.py
+    \input{images/example_combined_noise_adev.pgf}% data/simulations/sim_allan_variance_example.py
     \caption{A simulated Allan deviation containing white noise, flicker noise and random walk behaviour.}
     \label{fig:adev_example_adev}
 \end{figure}
@@ -1269,7 +1269,7 @@ Figure \ref{fig:dmm_autozer_offset_nulling} shows the individual sequences of th
 The data is simulated in the following way: First, two sets of noise data are generated, a white noise spectrum with a noise spectral density of \qty[power-half-as-sqrt, per-mode=symbol]{165}{\nV \Hz\tothe{-0.5}} and a flicker noise spectrum with an intensity scaled to result in a final spectrum with a corner frequency of \qty{1.5}{\Hz}. The required flicker noise intensity is calculated using equation \ref{eqn:corner_frequency}. To get a good low frequency estimate, $2^{20} \approx 10^{6}$ values were generated. Finally, the two noise data sets are summed with the noise-free input source to give the final result. Other effects, such as power-line hum are neglected in this simple simulation because it would needlessly overcomplicate the example and limit the educational value. The same goes for higher order random-walk $f^{-2}$ noise components, which can be introduced by temperature fluctuations and other environmental effects and would be present in a real measurement.
 \begin{figure}[ht]
     \centering
-    \input{images/autozero_raw_time.pgf}% data/simulations/sim_autozero.py
+    \input{images/autozero_raw_amplitude.pgf}% data/simulations/sim_autozero.py
     \caption{Time series data with white noise and flicker noise.}
     \label{fig:autozero_raw_time}
 \end{figure}
