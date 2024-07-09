@@ -37,7 +37,7 @@ The optical transitions of highly charged \ce{Ar^{13+}} around \qty{441}{\nm} sh
 \end{equation}
 seen in the trap which is kept at a temperature of \qty{4}{\K}.
 
-The laser simplified setup shown in figure \ref{fig:laser_system_old} as a schematic was characterised by \citeauthor{thesis_alex} \cite{thesis_alex} and its transfer accuracy of the the wavelength was calculated to be \qty{1.2}{\MHz}. Considering the additional long-term drift of the system led to an upper limit of the absolute wavelength uncertainty of \qty{2.2}{\MHz}. This can be considered more than adequate given the Doppler broadening of \qty{150}{\MHz} calculated in equation \ref{eqn:doppler_broadening}. While being sufficiently accurate, the system has the significant drawback of being fairly complicated to manage if not maintained on a daily basis. Its performance and uncertainty relies on the exact knowledge of the tellurium spectrum surrounding both wavelengths of the lasers.
+The simplified laser setup shown in figure \ref{fig:laser_system_old} as a schematic was characterised by \citeauthor{thesis_alex} \cite{thesis_alex} and its transfer accuracy of the the wavelength was calculated to be \qty{1.2}{\MHz}. Considering the additional long-term drift of the system led to an upper limit of the absolute wavelength uncertainty of \qty{2.2}{\MHz}. This can be considered more than adequate given the Doppler broadening of \qty{150}{\MHz} calculated in equation \ref{eqn:doppler_broadening}. While being sufficiently accurate, the system has the significant drawback of being fairly complicated to manage if not maintained on a daily basis. Its performance and uncertainty relies on the exact knowledge of the tellurium spectrum surrounding both wavelengths of the lasers.
 \begin{figure}[ht]
     \centering
     %\scalebox{1}{%
@@ -934,7 +934,7 @@ $R_{xx}(0)$ can be identified as the mean squared value of $y$:
     y_{rms} = \sqrt{R_{xx}(0)} \,.
 \end{equation}
 
-Equation \ref{eqn:burst_noise_lorentzian} is a Lorentzian function and from this, it can be easily seen that a single trap site has a power spectral density, which is proportional to $\frac{1}{f^2}$ at high frequencies and is flat at low frequencies.
+Equation \ref{eqn:burst_noise_lorentzian} is a Lorentzian function and from this, it can be easily seen that a single trap site has a power spectral density that is proportional to $\frac{1}{f^2}$ at high frequencies and is flat at low frequencies.
 
 With the spectral density in hand, it is now possible to calculate the Allan variance as it was done by \citeauthor{allen_dev_flicker} in \cite{allen_dev_flicker} for the classic example of random telegraph noise where $\bar \tau_1 = \bar \tau_0$. Do note that table I given by \citeauthor{allen_dev_flicker} shows the total number of events instead of the instantaneous number of events typically given. Hence their notation must be multiplied by $\frac{1}{\tau^2}$ (or $\frac{1}{T^2}$ in their notation). For the generic case with $\bar \tau_1$, $\bar \tau_0$ and the definition of $\bar \tau$ given in equation \ref{eqn:definition_bar_tau} one finds for the Allan variance of burst noise:
 \begin{equation}
@@ -1070,9 +1070,9 @@ but its variance
 \begin{equation}
     \sigma_y^2 = \langle y_n^2 \rangle - \underbrace{\langle y_n \rangle}_{=\,0} = \sigma_{e_1}^2 + \sigma_{e_2}^2 + \dots \sigma_{e_n}^2 = n \sigma_e^2
 \end{equation}
-goes with $n$ (or $t$). It therefore not a stationary process as can also be seen in figure \ref{fig:random_walk_adev}.
+goes with $n$ (or $t$). It therefore is not a stationary process as can also be seen in figure \ref{fig:random_walk_adev}.
 
-The power spectral density can be calculated \cite{psd_to_adev,noise_generation} to
+The power spectral density can be calculated \cite{psd_to_adev,noise_generation} to be
 \begin{equation}
     S(f) = h_{-2} \frac{1}{f^2}
 \end{equation}
@@ -1807,28 +1807,28 @@ The MOSFET as a noise source is considered in appendix \ref{sec:mosfet_noise} an
 
 To calculate the input referred noise in order to show that the MOSFET noise will be suppressed by the op-amp, the current noise needs to be divided by the open-loop gain derived as equation \ref{eqn:transconductance_amplifier_open_loop_gain} on page \pageref{eqn:transconductance_amplifier_open_loop_gain}
 \begin{equation}
-    e_{n,FET} = \frac{i_n}{A_f} = \frac{\sqrt{4 k_B T \frac{2}{3} g_m + \frac{K_f I_D}{C_{ox} L^2} \frac{1}{f}}}{\frac{A_{op}}{R_S} \frac{g_m \left(R_o || R_S || R_{id}\right)}{g_m \left(R_o || R_S || R_{id}\right) + 1}} \,.
+    e_{n,FET} = \frac{i_n}{A_f} = \frac{\sqrt{4 k_B T \frac{2}{3} g_m + \frac{K_f I_D}{C_{ox} L^2} \frac{1}{f}}}{\frac{A_{op}}{R_s} \frac{g_m \left(R_o || R_s || R_{id}\right)}{g_m \left(R_o || R_s || R_{id}\right) + 1}} \,.
 \end{equation}
 
-Looking at the parameters from table \ref{tab:current_source_parameters}, it is found that $\left(R_o || R_S || R_{id}\right) \approx R_S$ and $e_n$ can be simplified to
+Looking at the parameters from table \ref{tab:current_source_parameters}, it is found that $\left(R_o || R_s || R_{id}\right) \approx R_s$ and $e_n$ can be simplified to
 \begin{align*}
-    e_{n,FET} &\approx \frac{\sqrt{4 k_B T \frac{2}{3} g_m + \frac{K_f I_D}{C_{ox} L^2} \frac{1}{f}}}{A_1 \frac{1}{R_S + \frac{1}{g_m}}}\\
-    &\approx \frac{R_S + \frac{1}{g_m}}{A_1} \sqrt{4 k_B T \frac{2}{3} g_m + \frac{K_f I_D}{C_{ox} L^2} \frac{1}{f}}\\
+    e_{n,FET} &\approx \frac{\sqrt{4 k_B T \frac{2}{3} g_m + \frac{K_f I_D}{C_{ox} L^2} \frac{1}{f}}}{A_1 \frac{1}{R_s + \frac{1}{g_m}}}\\
+    &\approx \frac{R_s + \frac{1}{g_m}}{A_1} \sqrt{4 k_B T \frac{2}{3} g_m + \frac{K_f I_D}{C_{ox} L^2} \frac{1}{f}}\\
     \overset{A_1 \to \infty}&{=} 0
 \end{align*}
 
 Unless the MOSFET transconductance $g_m$ or the gain of the op-amp $A_1$ become very small, the noise of the MOSFET is very well suppressed. If the wideband thermal noise contribution is small (which it is, see \ref{sec:mosfet_noise}) and the flicker noise corner frequency is within the bandwidth of the op-amp, the noise contribution from the MOSFET can be neglected.
 
-The noise contribution from the sense resistor $R_S$ is the Johnson–Nyquist noise, see section \ref{sec:white_noise}, which when transformed to its Norton representation can be written as a current noise
+The noise contribution from the sense resistor $R_s$ is the Johnson–Nyquist noise, see section \ref{sec:white_noise}, which when transformed to its Norton representation can be written as a current noise
 \begin{equation}
-    i_{n,R} = \sqrt{\frac{4 k_B T}{R_S}} \label{eqn:current_noise_resistor}\,.
+    i_{n,R} = \sqrt{\frac{4 k_B T}{R_s}} \label{eqn:current_noise_resistor}\,.
 \end{equation}
 
 Additionally, it was shown that depending on the material of the resistive element, a flicker noise component can also be present. This is especially prevalent in carbon and thick-film resistors \cite{flicker_noise_carbon_film,1_f_noise_thick_film}. While thin-film resistors are less noisy, their performance varies greatly between different models \cite{resistor_current_noise_ligo}, so their make and model must be carefully selected for the application. Metal foil and wirewound resistors were shown to perform best and have almost no flicker noise \cite{resistor_current_noise_ligo,flicker_noise_foil_resistor_beev}. Using a high quality resistor, the flicker noise can be neglected and only the thermal noise must be taken into account.
 
-The sense resistor is part of the feedback network and therefore it contributes fully to the noise of the transimpedance amplifier. Input referred, the current noise must be divided by the closed-loop gain $A_f$ given by \ref{eqn:transfer_function_closed_loop} on page \pageref{eqn:transfer_function_closed_loop}.
+The sense resistor is part of the feedback network and therefore it contributes fully to the noise of the transconductance amplifier. Input referred, the current noise must be divided by the closed-loop gain $A_f$ given by \ref{eqn:transfer_function_closed_loop} on page \pageref{eqn:transfer_function_closed_loop}.
 \begin{equation}
-    e_{n,R} = i_{n,R} \cdot \beta \approx i_n \cdot R_S = \sqrt{4 k_B T R_S} \label{eqn:noise_sense_resistor}
+    e_{n,R} = i_{n,R} \cdot \beta \approx i_n \cdot R_s = \sqrt{4 k_B T R_s} \label{eqn:noise_sense_resistor}
 \end{equation}
 
 The final component to be discussed is the operational amplifier. Although the op-amp is a rather complex device, its noise can be modeled with sufficient accuracy by a small number of noise sources. The typical noise model of an op-amp is shown in figure \ref{fig:op-amp_noise_model}.
@@ -1859,22 +1859,22 @@ Both the voltage noise $e_n$ and the current noise $i_n$ can be found in the dat
 \end{equation}
 assuming the noise sources are uncorrelated. The input referred voltage noise $e_{n,-}$ of the inverting input resulting from the current noise can be calculated in a similar fashion as $e_{n_R}$ in equation \ref{eqn:noise_sense_resistor}. It is likewise part of the feedback network and must therefore be divided by the closed-loop gain $A_f$ as before.
 \begin{equation}
-    e_{n,-} \approx i_n \cdot R_S
+    e_{n,-} \approx i_n \cdot R_s
 \end{equation}
 
 The current noise of the non-inverting input can be translated by considering its input impedance. This is determined by the filter circuit of the reference voltage which is required to remove the high frequency noise as discussed above. Assuming an RC-filter of first order,
 the output impedance can be calculated from the transfer function of the low-pass filter, derived in equation \ref{eqn:first-order_model}
 \begin{align}
-    R_{out,filt} &= R_{filt} \cdot A = \frac{R_{filt}}{1+sR_{filt}C}  \label{eqn:output_impedance_rc_filter}\\
-    \lim_{s \to 0} R_{out,filt} &= R_{filt} \nonumber\\
-    \lim_{s \to \infty} R_{out,filt} &= 0 \,.\nonumber\\
-     e_{n,+} &\approx \frac{i_n R_{filt}}{1+sR_{filt}C}
+    R_{out,f} &= R_{f} \cdot A = \frac{R_{f}}{1+sR_{f}C}  \label{eqn:output_impedance_rc_filter}\\
+    \lim_{s \to 0} R_{out,f} &= R_{f} \nonumber\\
+    \lim_{s \to \infty} R_{out,f} &= 0 \,.\nonumber\\
+     e_{n,+} &\approx \frac{i_n R_{f}}{1+sR_{f}C}
 \end{align}
 
-Looking at the output impedance of the filter, it can be seen that for high frequencies, the output impedance approaches \num{0}, while for low frequencies it is $R_{filt}$. This has the effect that if the filter corner frequency $\omega_0 = \frac{1}{RC}$ is close to the flicker noise corner frequency of the reference voltage there is is almost no wideband current noise contribution from $e_{n,+}$ as well. Only the $\frac{1}{f}$ component of the op-amp current noise multiplied with $R_{filt}$ is left. Ideally, this is lower than the reference noise to have negligible impact and must be kept in mind when selecting an op-amp.
+Looking at the output impedance of the filter, it can be seen that for high frequencies, the output impedance approaches \num{0}, while for low frequencies it is $R_{f}$. This has the effect that if the filter corner frequency $\omega_0 = \frac{1}{RC}$ is close to the flicker noise corner frequency of the reference voltage there is is almost no wideband current noise contribution from $e_{n,+}$ as well. Only the $\frac{1}{f}$ component of the op-amp current noise multiplied with $R_{f}$ is left. Ideally, this is lower than the reference noise to have negligible impact and must be kept in mind when selecting an op-amp.
 This leads to the total noise of the op amp
 \begin{equation}
-    e_{n,op} = \sqrt{e_n^2 + (i_n R_S)^2 + \left|\frac{i_n R_{filt}}{1+sRC}\right|^2} \,.
+    e_{n,op} = \sqrt{e_n^2 + (i_n R_s)^2 + \left|\frac{i_n R_{f}}{1+sRC}\right|^2} \,.
 \end{equation}
 
 To conclude, table \ref{tab:current_source_noise_contributers} is given as a reference for the noise contributions in the low-frequency and also the wideband domain. From this table, it can be seen that the only wideband-noise contributors are the reference resistor and the op-amp. The low-frequency contributors are the voltage reference and the op-amp, since they have a strong flicker noise component. A low-noise, precision op-amp typically has far less low frequency noise than a voltage reference and the dominant low frequency contributor remains the voltage reference.
@@ -1886,16 +1886,16 @@ To conclude, table \ref{tab:current_source_noise_contributers} is given as a ref
         \midrule
         $V_{sup}$ & $\approx 0$ & $\approx 0$\\
         MOSFET & $\approx 0$ & $\approx 0$\\
-        $V_{ref}$ & $\sqrt{e_{n,ref}^2 + 4 k_B T R_{filt}} $ & $\approx 0$\\
-        $R_S$ & $\sqrt{4 k_B T R_S}$ & $\sqrt{4 k_B T R_S}$\\
-        Op-amp & $\sqrt{e_n^2 + i_n^2 (R_S^2 + R_{filt}^2)}$ & $\sqrt{e_n^2 + i_n^2 R_S^2}$\\
+        $V_{ref}$ & $\sqrt{e_{n,ref}^2 + 4 k_B T R_{f}} $ & $\approx 0$\\
+        $R_s$ & $\sqrt{4 k_B T R_s}$ & $\sqrt{4 k_B T R_s}$\\
+        Op-amp & $\sqrt{e_n^2 + i_n^2 (R_s^2 + R_{f}^2)}$ & $\sqrt{e_n^2 + i_n^2 R_s^2}$\\
         \bottomrule
     \end{tabular}
-    \caption{Input referred noise components of the transimpedance amplifier. Multiply by $\frac{1}{R_S}$ to get the output referred current noise.}
+    \caption{Input referred noise components of the transconductance amplifier. Multiply by $\frac{1}{R_s}$ to get the output referred current noise.}
     \label{tab:current_source_noise_contributers}
 \end{table}
 
-From those findings it is clear that the most important choices regarding the noise contributions are a good quality metal-foil or wirewound sense resistor $R_s$, a low noise voltage reference and a low noise op-amp. Regarding the low-noise op-amp it is critical to decide between low voltage noise or low current noise. This choice depends on the value of $R_s$. For typical values of $R_S$ below \qty{1}{\kilo\ohm}, voltage noise is the dominating effect. The reference should be chosen for low flicker noise.
+From those findings it is clear that the most important choices regarding the noise contributions are a good quality metal-foil or wirewound sense resistor $R_s$, a low noise voltage reference and a low noise op-amp. Regarding the low-noise op-amp it is critical to decide between low voltage noise or low current noise. This choice depends on the value of $R_s$. For typical values of $R_s$ below \qty{1}{\kilo\ohm}, voltage noise is the dominating effect. The reference should be chosen for low flicker noise.
 
 \subsection{Component Selection}%
 \label{sec:component_selection}
@@ -1953,7 +1953,7 @@ To find a reference point for the choice of op-amp, the thermal noise of the sen
     e_n\left(R = \qty{28}{\ohm} T = \qty{23}{\celsius}\right) = \qty[power-half-as-sqrt]{0.67}{\nV \per \Hz\tothe{0.5}} \,.
 \end{equation*}
 
-This means that even the lowest noise op-amp from table \ref{tab:overview_bipolar_op-amps} dominates the wideband-noise. With this said, the component choices made in literate can be discussed. The \device{AD8671} chosen by \citeauthor{laser_driver_digital} \cite{laser_driver_digital} only makes sense, because they have chosen a very large filter resistor $R_{filt}$ of $2 \times \qty{3}{\kilo\ohm}$. The \device{ADA4004} was used by Moglabs in the \device{DLC-102}, again likely due to the high values of $R_{filt}$ used. The \device{ADA4898} might seem like a good choice at first sight but the very limited (in terms of precision op-amps) open-loop gain of \qty{0.14}{\V \per \uV} makes this op-amp an inexpensive, but poor choice. The final choice is between the \device{AD797} and the \device{LT1028}, both op-amps have very similar specifications, but there is a peculiarity in the datasheet of the \device{LT1028} \cite{datasheet_LT1028}. The \textit{High Frequency Voltage Noise
+This means that even the lowest noise op-amp from table \ref{tab:overview_bipolar_op-amps} dominates the wideband-noise. With this said, the component choices made in literate can be discussed. The \device{AD8671} chosen by \citeauthor{laser_driver_digital} \cite{laser_driver_digital} only makes sense, because they have chosen a very large filter resistor $R_{f}$ of $2 \times \qty{3}{\kilo\ohm}$. The \device{ADA4004} was used by Moglabs in the \device{DLC-102}, again likely due to the high values of $R_{f}$ used. The \device{ADA4898} might seem like a good choice at first sight but the very limited (in terms of precision op-amps) open-loop gain of \qty{0.14}{\V \per \uV} makes this op-amp an inexpensive, but poor choice. The final choice is between the \device{AD797} and the \device{LT1028}, both op-amps have very similar specifications, but there is a peculiarity in the datasheet of the \device{LT1028} \cite{datasheet_LT1028}. The \textit{High Frequency Voltage Noise
 vs Frequency} plot shows a noise bump at around \qty{400}{\kHz}. The original application of the \device{LT1x28} is for audio frequencies, which is well below that bump, but in this case poses a problem. The publication by \citeauthor{libbrecht_hall} \cite{libbrecht_hall} also blames the \device{LT1028} for the noise peak around \qty{400}{\kHz}. Moreover, this peak is the reason why \citeauthor{laser_driver_mosfet_noise} \cite{laser_driver_mosfet_noise} found the \device{LT1028} to have a higher integrated noise than the \device{AD797}. Additionally to the superior noise performance, the \device{AD797} (B-grade) has excellent specifications overall. The open-loop gain is between \qtyrange[range-units = single]{2}{20}{\V \per \uV}, the supply rejection is greater than \qty{1}{\uV \per \V}, the bias current is almost constant between \qtyrange[range-units = single]{20}{100}{\celsius} and the unity gain bandwidth is around \qty{10}{\MHz}. Finally it does have a high output drive capability of \qty{50}{\mA}, which allows to drive large MOSFETs. These features make the \device{AD797} the ideal op-amp for low-value sense resistors, although it puts limits on the maximum filter resistor to limit the low frequency current noise contribution.
 
 Finally, the choice of MOSFETs can be discussed. As it was shown in section \ref{sec:mosfet_current_source} in equation \ref{eqn:mosfet_saturation}, the channel length modulation plays an important role in increasing the channel conductance $g_{DS}$ and limiting the output impedance. To reduce the channel length modulation a longer channel is preferred. Manufacturers do not give these numbers, nor information on the manufacturing process. Older technologies like the planar (lateral) FET are better suited for operating in the saturation region than the modern trench (vertical) FET. Trench MOSFETs are geared towards a low on-state resistance $R_{DS,on}$, which is important for switching applications, but their lower resistance comes from a shorter channel. One of the few planar MOSFETs still available on the market is the HEXFET, which was designed for switching applications, but proves useful nonetheless. High voltage MOSFETs also have longer channels than low voltage MOSFETs, so searching for MOSFETs that are rated for \qtyrange[range-units = single]{60}{100}{\V} or more can narrow down the candidates. While the output impedance is a factor worth keeping in mind, the most important aspect is whether the MOSFET can drive the load regarding the compliance voltage. To outline the problem, one can refer again to the example parameters from table \ref{tab:current_source_parameters}.

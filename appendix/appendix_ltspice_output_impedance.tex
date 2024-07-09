@@ -31,11 +31,10 @@
 \begin{document}
 \section{Simulating Current Source Properties in LTSpice}
 \label{sec:ltspice_current_source}
-This section explains some more advanced concepts of LTSpice \cite{ltspice} to simulate device properties and circuit properties used when working with the current source presented in section \ref{sec:precision_current_source}. This section does not aim at explaining the basic functions of LTSpice, but rather some special functions. It is left to the interested reader to acquire those basic skills. The example presented here, allows to generate the MOSFET \textit{Typical Output Characteristics} plot found in datasheets, the transconductance of a MOSFET and the (dynamic) output impedance of a current source. The typical output characteristics can be used to compare the model with the datasheet or with measurements taken. Comparing these model parameters with the datasheet can establish confidence, that the simulation results can be transferred to a real circuit.
+This section explains some more advanced concepts of LTSpice \cite{ltspice} to simulate device properties and circuit properties used when working with the current source presented in section \ref{sec:precision_current_source}. This section does not aim at explaining the basic functions of LTSpice, but rather some special functions. It is left to the interested reader to acquire those basic skills. The example presented here allows to generate the MOSFET \textit{Typical Output Characteristics} plot found in datasheets, the transconductance of a MOSFET, and the (dynamic) output impedance of a current source. The typical output characteristics can be used to compare the model with the datasheet or with measurements taken. Comparing these model parameters with the datasheet can establish confidence that the simulation results can be transferred to a real circuit.
 
 \subsection{MOSFET Typical Output Characteristics}
 The output characteristic is a graph found in all MOSFET datasheets and is shown below in figure \ref{fig:ltspice_mosfet_drain_current_example}.
-
 \begin{figure}[hb]
     \centering
     \input{../images/ltspice_mosfet_drain-current_example.pgf}
@@ -44,7 +43,6 @@ The output characteristic is a graph found in all MOSFET datasheets and is shown
 \end{figure}
 
 Plotting this graph allows to compare the model to the datasheet or the measured values in order to tweak the model. To create this graph, the simulation file found in the folder \external{source/spice/mosfet\_gm-id.asc} as part of this document can be used. The SPICE simulation for the output characteristics of the MOSFET simulates the following circuit shown in figure \ref{fig:circuit_mosfet_output_characteristic}.
-
 \begin{figure}[ht]
     \centering
     \begin{subfigure}{0.45\linewidth}
@@ -62,11 +60,11 @@ Plotting this graph allows to compare the model to the datasheet or the measured
     \caption{P-channel MOSFET circuit and its LTSpice model.}
 \end{figure}
 
-Do note, that $V_{DS}$ and $V_{GS}$ are inverted and given as $V_{SD}$ and $V_{SG}$. The reason is, that the plotter in LTSpice works better with positive numbers to guess the correct scaling of the axis. Figure \ref{fig:ltspice_mosfet_output_characteristic} shows the same circuit drawn in LTSpice. The MOSFET parameters are entered using the \textbf{.model} syntax
+Do note that $V_{DS}$ and $V_{GS}$ are inverted and given as $V_{SD}$ and $V_{SG}$. The reason is that the plotter in LTSpice works better with positive numbers to guess the correct scaling of the axis. Figure \ref{fig:ltspice_mosfet_output_characteristic} shows the same circuit drawn in LTSpice. The MOSFET parameters are entered using the \textbf{.model} syntax
 \begin{lstlisting}[frame=single, xleftmargin=5mm, xrightmargin=5mm, columns=fullflexible, morekeywords={model, dc}, keywordstyle=\bfseries, basicstyle=\rmfamily]]
 .model test_mos pmos (kp=0.813, lambda=4m, Vto=-3.667)
 \end{lstlisting}
-with the parameters $\kappa = \qty[per-mode=power]{0.813}{\ampere \per \square\volt}$, $\lambda = \qty[per-mode=power]{4}{\per \milli \volt}$ and $V_{th} = \qty{-3.667}{\V}$. The options \textbf{plotwinsize} and \textbf{numdgt}, shown in figure \ref{fig:ltspice_mosfet_output_characteristic}, make sure, that LTSpice does not compress the output data and increases the floating point precision. This is important, because $I_D$ spans a large range of values. Setting \textbf{gmin} to \num{0} prevents LTSpice from adding a small transconductance to every pn-junction, thus changing the MOSFET model. Finally, the most important command is the \textbf{.dc} command, which instructs LTSpice to step the voltage sources $V_{SD}$ and $V_{SG}$ to evaluate $I_D$ over $V_{SD}$. The command
+with the parameters $\kappa = \qty[per-mode=power]{0.813}{\ampere \per \square\volt}$, $\lambda = \qty[per-mode=power]{4}{\per \milli \volt}$ and $V_{th} = \qty{-3.667}{\V}$. The options \textbf{plotwinsize} and \textbf{numdgt}, shown in figure \ref{fig:ltspice_mosfet_output_characteristic}, make sure that LTSpice does not compress the output data and increases the floating point precision. This is important because $I_D$ spans a large range of values. Setting \textbf{gmin} to \num{0} prevents LTSpice from adding a small transconductance to every pn-junction, thus changing the MOSFET model. Finally, the most important command is the \textbf{.dc} command, which instructs LTSpice to step the voltage sources $V_{SD}$ and $V_{SG}$ to evaluate $I_D$ over $V_{SD}$. The command
 \begin{lstlisting}[frame=single, xleftmargin=5mm, xrightmargin=5mm, columns=fullflexible, morekeywords={model, dc}, keywordstyle=\bfseries, basicstyle=\rmfamily]]
 .dc Vsd 0 2 1m Vsg 3.867 4.467 0.2
 \end{lstlisting}
@@ -75,11 +73,11 @@ steps the voltage source $V_{SD}$ from \qtyrange[range-units = single]{0}{2}{\V}
 Id(M1)
 \end{lstlisting}
 results in the plot shown in figure \ref{fig:ltspice_mosfet_drain_current_example}, which can be found in datasheets as the \textit{Typical Output Characteristics} plot.
-To draw a line in the graph showing the point where the MOSFET enters the saturation region, denoted $I_{sat}$ in figure \ref{fig:ltspice_mosfet_drain_current_example}, as given by equation \ref{eqn:mosfet_id_large_signal}, add the following plot command to the graphing window and resecale the axis.
+To draw a line in the graph showing the point where the MOSFET enters the saturation region, denoted $I_{sat}$ in figure \ref{fig:ltspice_mosfet_drain_current_example}, as given by equation \ref{eqn:mosfet_id_large_signal}, add the following plot command to the graphing window and rescale the axis.
 \begin{lstlisting}[frame=single, xleftmargin=5mm, xrightmargin=5mm, columns=fullflexible, morekeywords={model, dc}, keywordstyle=\bfseries, basicstyle=\rmfamily]]
 0.5*0.813*1A/1V**2*V(vsd)**2
 \end{lstlisting}
-This command must be adjusted for the value of $\kappa$ and do note, that $\kappa$ is entered with units of \unit{\A \per \square\volt} to correctly display the output in \unit{\A}.
+This command must be adjusted for the value of $\kappa$ and do note that $\kappa$ is entered with units of \unit{\A \per \square\volt} to correctly display the output in \unit{\A}.
 
 \subsection{MOSFET Transconductance}
 Another interesting property to plot is the transconductance $g_m$ of the MOSFET. Again, using the same model used previously in figure \ref{fig:ltspice_mosfet_output_characteristic} and from equation \ref{eqn:mosfet_gm} we known that $g_m$ is defined as
@@ -90,7 +88,7 @@ To derive $g_m$, we need to generate values of $I_D(V_{GS})$. This can again be 
 \begin{lstlisting}[frame=single, xleftmargin=5mm, xrightmargin=5mm, columns=fullflexible, morekeywords={model, dc}, keywordstyle=\bfseries, basicstyle=\rmfamily]]
 .dc Vsg 3.667 4.667 1m
 \end{lstlisting}
-To produce a smooth plot, the the steps size of $V_{SG}$ was decreased to \qty{1}{\mV}. $V_{DS}$ is constant in this plot and can be set using the voltage source $V_{SD}$. The MOSFET is intentionally biased into the saturation region at $V_{DS} = \qty{-1}{\V}$ as can be seen in figure \ref{fig:ltspice_mosfet_drain_current_example}.
+To produce a smooth plot, the steps size of $V_{SG}$ was decreased to \qty{1}{\mV}. $V_{DS}$ is constant in this plot and can be set using the voltage source $V_{SD}$. The MOSFET is intentionally biased into the saturation region at $V_{DS} = \qty{-1}{\V}$ as can be seen in figure \ref{fig:ltspice_mosfet_drain_current_example}.
 
 LTSpice is now able to numerically differentiate the data, which can be invoked by by plotting
 \begin{lstlisting}[frame=single, xleftmargin=5mm, xrightmargin=5mm, columns=fullflexible, morekeywords={model, dc}, keywordstyle=\bfseries, basicstyle=\rmfamily]]
@@ -98,7 +96,6 @@ LTSpice is now able to numerically differentiate the data, which can be invoked 
 \end{lstlisting}
 
 The minus sign comes from the inverted $V_{SG} = -V_{GS}$. To plot $g_m$ over $I_D$, the formula for $g_m$ given above needs to entered manually into the \textit{Expression Editor} by right clicking the expression label on top of the graph. Finally, the x-axis must be changed to $Id(M1)$, leading to the plot in figure \ref{fig:ltspice_mosfet_gm_example}.
-
 \begin{figure}[hb]
     \centering
     \input{../images/ltspice_mosfet_transconductance_example.pgf}
@@ -114,7 +111,7 @@ As a sidenote, if the MOSFET model includes gate leakage, this leakage current m
 \end{lstlisting}
 
 \subsection{Output Impedance}
-This sections will explain how to calculate the dyncamic output impedance using LTSpice. The example circuit used, is the precision current source from section \ref{sec:precision_current_source}. The dynamic output impedance was defined in equation \ref{eqn:mosfet_gds} as the inverse of the conductance leading to
+This sections will explain how to calculate the dynamic output impedance using LTSpice. The example circuit used is the precision current source from section \ref{sec:precision_current_source}. The dynamic output impedance was defined in equation \ref{eqn:mosfet_gds} as the inverse of the conductance leading to
 \begin{equation*}
     R_{out} = \frac{1}{\frac{\partial I_D}{\partial V_{DS}}} \,.
 \end{equation*}
@@ -123,16 +120,15 @@ Using the technique presented in the previous section, the obvious solution woul
 \begin{lstlisting}[frame=single, xleftmargin=5mm, xrightmargin=5mm, columns=fullflexible, morekeywords={model, dc, options}, keywordstyle=\bfseries, basicstyle=\rmfamily]]
  .options numdgt=15
 \end{lstlisting}
-Unfortunately, this only forces LTSpice to interally use the double floating point number format, which does have a precision of \qty{53}{\bit} which means $\log_{10}\left(2^{53}\right) = 15.95$ decimals. So instead of using the large-signal model of the MOSFET, it becomes more convenient to evaluate the small-signal model
+Unfortunately, this only forces LTSpice to internally use the double floating point number format, which does have a precision of \qty{53}{\bit} which means $\log_{10}\left(2^{53}\right) = 15.95$ decimals. So instead of using the large-signal model of the MOSFET, it becomes more convenient to evaluate the small-signal model
 \begin{equation*}
     R_{out} = \frac{v_{load}}{i_D} = \frac{v_{DS}}{i_D}
 \end{equation*}
-at several different points of $V_{DS}$, thereby reconstructing the large-signal model from rasterized versions of the small-signal model. For the small-signal model, $v_{DS} = v_{load}$, because the supply voltage and the voltage across the sense resistor can be considered constant, so any change in the voltage across the load must cause the opposite change in the source-drain voltage $v_{SD} = - v_{DS}$.
+at several different points of $V_{DS}$, thereby reconstructing the large-signal model from rasterized versions of the small-signal model. For the small-signal model, $v_{DS} = v_{load}$ because the supply voltage and the voltage across the sense resistor can be considered constant. Any change in the voltage across the load must therefore cause the opposite change in the source-drain voltage $v_{SD} = - v_{DS}$.
 
 To run this simulation the small-signal simulation must be used and additionally some commands not available through the graphical user interface need to be entered by hand.
 
 The LTSpice simulation is shown in figure \ref{fig:ltspice_output_impedance_example} and will now be explored.
-
 \begin{figure}[hb]
     \centering
     \includegraphics[width=0.8\linewidth]{../images/ltspice_output_impedance.png}
@@ -142,12 +138,12 @@ The LTSpice simulation is shown in figure \ref{fig:ltspice_output_impedance_exam
 
 The simulation uses the same MOSFET model as above and adds an ideal op-amp to control the loop. The op-amp model has a open-loop gain of \num{2e6} and a gain-bandwidth product of \qty{10}{\MHz} as can be approximated from the the datasheet of the \device{AD797} \cite{datasheet_AD797} and is also given in table \ref{tab:current_source_parameters}. This leads to a \qty{3}{\dB} corner frequency of \qty{5}{\Hz}, which will be interesting later.
 
-To access the small-signal model the \textbf{.ac} command is used, because LTSpice uses the small-signal model to calculate the ac response of a circuit at a given working point. The command
+To access the small-signal model the \textbf{.ac} command is used because LTSpice uses the small-signal model to calculate the ac response of a circuit at a given working point. The command
 \begin{lstlisting}[frame=single, xleftmargin=5mm, xrightmargin=5mm, columns=fullflexible, morekeywords={model, ac, dc, options}, keywordstyle=\bfseries, basicstyle=\rmfamily]]
  .ac dec 100 1u 1Meg
 \end{lstlisting}
 calculates the ac response from \qty{1}{\micro\hertz} to \qty{1}{\MHz} with \qty{100}{points \per decade}.
-Additionally, as discussed, the load will be stepped, by stepping voltage source in the source leg of the MOSFET. We use a voltage source in this case instead of a resistor, because the AC impedance of a laser diode is typically very small. For the working point, it does not matter whether $V_{load}$ is resistive or not. To step the voltage source, the command
+Additionally, as discussed, the load will be stepped by stepping the voltage source in the source leg of the MOSFET. We use a voltage source in this case instead of a resistor, because the AC impedance of a laser diode is typically very small. For the working point, it does not matter whether $V_{load}$ is resistive or not. To step the voltage source, the command
 \begin{lstlisting}[frame=single, xleftmargin=5mm, xrightmargin=5mm, columns=fullflexible, morekeywords={model, ac, dc, options, step}, keywordstyle=\bfseries, basicstyle=\rmfamily]]
 .step param Vload 2.5 3.5 1m
 \end{lstlisting}
@@ -155,9 +151,9 @@ is used to change $V_{load}$ from \qtyrange[range-units = single]{2.5}{3.5}{\V} 
 \begin{lstlisting}[frame=single, xleftmargin=5mm, xrightmargin=5mm, columns=fullflexible, morekeywords={model, ac, dc, options, step, meas}, keywordstyle=\bfseries, basicstyle=\rmfamily]]
 .meas AC Ro FIND 1/I(R1) AT 1uHz
 \end{lstlisting}
-The \textbf{.meas} command shown will save the value of $\frac{1}{i_{D}} = \frac{1}{I(R1)}$ at \qty{1}{\micro\hertz} to the (error) log file whenever the \textbf{.ac} command is run. The value of $v_{DS}$ was already set to \qty{1}{\V_{rms}} in the LTSpice simulation as shown in figure \ref{fig:ltspice_output_impedance_example}, thus $\frac{\qty{1}{\V}}{I(R1)} = R_{out}$. The current through sense resistor instead of $i_D$ was chosen because it is numerically more stable and since there is no gate current it is the same as $i_D$. The frequency were the $R_{out}$ is measured was chosen to be well below the corner frequency of the op-gain, which was calculated above to be \qty{5}{\Hz}. This gives the near DC output impedance of the current source.
+The \textbf{.meas} command shown will save the value of $\frac{1}{i_{D}} = \frac{1}{I(R1)}$ at \qty{1}{\micro\hertz} to the (error) log file whenever the \textbf{.ac} command is run. The value of $v_{DS}$ was already set to \qty{1}{\V_{rms}} in the LTSpice simulation as shown in figure \ref{fig:ltspice_output_impedance_example}, thus $\frac{\qty{1}{\V}}{I(R1)} = R_{out}$. The current through the sense resistor instead of $i_D$ was chosen because it is numerically more stable and since there is no gate current it is the same as $i_D$. The frequency were $R_{out}$ is measured was chosen to be well below the corner frequency of the op-gain, which was calculated above to be \qty{5}{\Hz}. This gives the near DC output impedance of the current source.
 
-To plot the values are stored in the log file, click on \textit{View} in the top menu, then \textit{SPICE Error Log}. Now right-click on the error log and select \textit{Plot stepp'ed .meas data}. This will open a new plot window showing the output impedance curve.
+To plot the values that are stored in the log file, click on \textit{View} in the top menu, then \textit{SPICE Error Log}. Now right-click on the error log and select \textit{Plot stepp'ed .meas data}. This will open a new plot window showing the output impedance curve.
 
 Those results are discussed in more detail in section \ref{sec:compliance_voltage}.
 \end{document}
