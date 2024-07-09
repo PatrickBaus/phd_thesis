@@ -9,7 +9,7 @@ DOCKER_COMMAND=run --rm -w /tex/ --env LATEXMK_OPTIONS_EXTRA=$(LATEXMK_OPTIONS_E
 DOCKER_MOUNT=-v`pwd`:/tex
 export DOCKER_CONTAINER=texlive/texlive:TL2022-historic
 
-all: tex figures
+all: figures tex
 
 pdf: $(PDF_OBJECTS)
 
@@ -19,7 +19,7 @@ pdf: $(PDF_OBJECTS)
 
 clean:
 	-$(LATEXMK) -C main
-	-make -C figures clean
+	@cd data && $(MAKE) clean
 
 dist-clean: clean
 	-rm $(FILENAME).tar.gz
@@ -31,7 +31,7 @@ tex:
 
 .PHONY: figures
 figures:
-	make -C data
+	cd data && $(MAKE)
 
 debug:
 	$(DOCKER) $(DOCKER_COMMAND) -it $(DOCKER_MOUNT) texlive/texlive:TL2022-historic \
