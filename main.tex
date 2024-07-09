@@ -6,7 +6,7 @@
 \documentclass[
 	ruledheaders=all,% Ebene bis zu der die Überschriften mit Linien abgetrennt werden, vgl. DEMO-TUDaPub
 	class=book,% Basisdokumentenklasse. Wählt die Korrespondierende KOMA-Script Klasse
-	thesis={type=dr, dr=rernat},
+	thesis={type=dr, dr=rernat, reviewer-on-uppertitleback=true},
 	accentcolor=1b,  % APQ blue is not available :(
 	custommargins=geometry,  % required for APQ design
 	marginpar=false,% Kopfzeile und Fußzeile erstrecken sich nicht über die Randnotizspalte
@@ -181,7 +181,7 @@
     title=Device Properties~\thetcbcounter: {#2},#1%
 }
 
-\newcommand{\versionNumber}{v.0.12.0}
+\newcommand{\versionNumber}{v.0.13.0}
 
 \addTitleBoxLogo*{\makebox[\linewidth][l]{\includegraphics[width=55mm]{images/titel_apq-logo.pdf}}}
 \titleimage{\includegraphics[width=\textwidth, height=1.1651\textwidth]{images/BM1A7279_front.jpg}}
