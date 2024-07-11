@@ -14274,11 +14274,11 @@
 \pgfsetmiterjoin%
 \definecolor{currentfill}{rgb}{1.000000,1.000000,1.000000}%
 \pgfsetfillcolor{currentfill}%
-\pgfsetfillopacity{0.500000}%
+\pgfsetfillopacity{0.800000}%
 \pgfsetlinewidth{1.003750pt}%
 \definecolor{currentstroke}{rgb}{0.800000,0.800000,0.800000}%
 \pgfsetstrokecolor{currentstroke}%
-\pgfsetstrokeopacity{0.500000}%
+\pgfsetstrokeopacity{0.800000}%
 \pgfsetdash{}{0pt}%
 \pgfpathmoveto{\pgfqpoint{3.669175in}{1.752902in}}%
 \pgfpathlineto{\pgfqpoint{5.264348in}{1.752902in}}%
