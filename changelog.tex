@@ -25,6 +25,8 @@ This work is only a momentary snapshot in time and subject to change. Future rev
         0.11.0 &2024-07-09 & Changed downsampling algorithm from decimation to LTTB. Affected files: dgDrive\_supply\_filter\_bode.pgf, dgTemp\_longterm.pgf, dgTemp\_testmass.pgf, output\_impedance\_libbrecht\_hall.pgf. Increased number of points in the leakage plots. Use $3-\sigma$ for the uncertainty of the temperature coefficient.\\
         0.12.0 &2024-07-09 & Regenerated all plots to unify their dimensions.\\
         0.13.0 &2024-07.09 & Fixed typos and other errors found so far.\\
-        0.14.0 &2024-07-09 & Updated APQ-Latex design template to a version based on tuda-ci 3.38.
+        0.14.0 &2024-07-09 & Updated APQ-Latex design template to a version based on tuda-ci 3.38.\\
+        0.15.0 &2024-07-11 & Changed the y-axis of the flicker noise amplitude plot to make it looker bigger. Decimate the noise psd plots to improve the uncertainty towards higher frequencies. Fixed LNA background noise data. There was an incorrect gain setting applied. Fixed dgDrive\_output\_impedance\_comparison plot, because the sense resistor was not subtracted from the plotted results. This affected all devices but the DgDrive.
+
     \end{tabularx}
 \end{table}
