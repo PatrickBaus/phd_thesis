@@ -20,6 +20,7 @@
 %%
 %% Matplotlib used the following preamble
 %%   \usepackage{siunitx}
+%%   \sisetup{per-mode = symbol}%
 %%   \usepackage{fontspec}
 %%   \makeatletter\@ifpackageloaded{underscore}{}{\usepackage[strings]{underscore}}\makeatother
 %%
@@ -17826,16 +17827,16 @@
 \pgfsetstrokecolor{currentstroke}%
 \pgfsetstrokeopacity{0.800000}%
 \pgfsetdash{}{0pt}%
-\pgfpathmoveto{\pgfqpoint{1.100048in}{0.554926in}}%
-\pgfpathlineto{\pgfqpoint{2.898281in}{0.554926in}}%
-\pgfpathquadraticcurveto{\pgfqpoint{2.939948in}{0.554926in}}{\pgfqpoint{2.939948in}{0.596592in}}%
-\pgfpathlineto{\pgfqpoint{2.939948in}{0.756021in}}%
-\pgfpathquadraticcurveto{\pgfqpoint{2.939948in}{0.797688in}}{\pgfqpoint{2.898281in}{0.797688in}}%
-\pgfpathlineto{\pgfqpoint{1.100048in}{0.797688in}}%
-\pgfpathquadraticcurveto{\pgfqpoint{1.058381in}{0.797688in}}{\pgfqpoint{1.058381in}{0.756021in}}%
-\pgfpathlineto{\pgfqpoint{1.058381in}{0.596592in}}%
-\pgfpathquadraticcurveto{\pgfqpoint{1.058381in}{0.554926in}}{\pgfqpoint{1.100048in}{0.554926in}}%
-\pgfpathlineto{\pgfqpoint{1.100048in}{0.554926in}}%
+\pgfpathmoveto{\pgfqpoint{1.202864in}{0.554925in}}%
+\pgfpathlineto{\pgfqpoint{2.898281in}{0.554925in}}%
+\pgfpathquadraticcurveto{\pgfqpoint{2.939948in}{0.554925in}}{\pgfqpoint{2.939948in}{0.596592in}}%
+\pgfpathlineto{\pgfqpoint{2.939948in}{0.735481in}}%
+\pgfpathquadraticcurveto{\pgfqpoint{2.939948in}{0.777148in}}{\pgfqpoint{2.898281in}{0.777148in}}%
+\pgfpathlineto{\pgfqpoint{1.202864in}{0.777148in}}%
+\pgfpathquadraticcurveto{\pgfqpoint{1.161198in}{0.777148in}}{\pgfqpoint{1.161198in}{0.735481in}}%
+\pgfpathlineto{\pgfqpoint{1.161198in}{0.596592in}}%
+\pgfpathquadraticcurveto{\pgfqpoint{1.161198in}{0.554925in}}{\pgfqpoint{1.202864in}{0.554925in}}%
+\pgfpathlineto{\pgfqpoint{1.202864in}{0.554925in}}%
 \pgfpathclose%
 \pgfusepath{stroke,fill}%
 \end{pgfscope}%
