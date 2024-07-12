@@ -20,6 +20,7 @@
 %%
 %% Matplotlib used the following preamble
 %%   \usepackage{siunitx}
+%%   \sisetup{per-mode = symbol}%
 %%   \usepackage{fontspec}
 %%   \makeatletter\@ifpackageloaded{underscore}{}{\usepackage[strings]{underscore}}\makeatother
 %%

@@ -20,6 +20,7 @@
 %%
 %% Matplotlib used the following preamble
 %%   \usepackage{siunitx}
+%%   \sisetup{per-mode = symbol}%
 %%   \usepackage{fontspec}
 %%   \makeatletter\@ifpackageloaded{underscore}{}{\usepackage[strings]{underscore}}\makeatother
 %%
@@ -20866,7 +20867,7 @@
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=3.148165in,y=0.981385in,right,base]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont (-1.388e-02 ± 1.1e-04) \unit[per-mode=symbol]{\ohm \per \kelvin}}%
+\pgftext[x=3.148165in,y=0.981385in,right,base]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont (-1.388e-02 ± 1.1e-04) \unit{\ohm \per \kelvin}}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfsetbuttcap%
