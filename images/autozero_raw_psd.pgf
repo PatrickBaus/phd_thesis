@@ -2067,7 +2067,7 @@
 \definecolor{textcolor}{rgb}{0.000000,0.000000,0.000000}%
 \pgfsetstrokecolor{textcolor}%
 \pgfsetfillcolor{textcolor}%
-\pgftext[x=0.201408in,y=1.445142in,,bottom,rotate=90.000000]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont  \(\displaystyle S_y(f)\) in \(\displaystyle \unit{\V^2 \per \Hz}\)}%
+\pgftext[x=0.201408in,y=1.445142in,,bottom,rotate=90.000000]{\color{textcolor}\rmfamily\fontsize{10.000000}{12.000000}\selectfont \(\displaystyle S_y(f)\) in \(\displaystyle \displaystyle \unit{\V^2 \per \Hz}\)}%
 \end{pgfscope}%
 \begin{pgfscope}%
 \pgfpathrectangle{\pgfqpoint{0.661284in}{0.417642in}}{\pgfqpoint{3.365288in}{2.055000in}}%
