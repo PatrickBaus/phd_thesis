@@ -116,6 +116,9 @@
 
 \pgfplotsset{compat=1.18}
 
+% Required for matplotlib 3.8: https://github.com/matplotlib/matplotlib/issues/27907
+\def\mathdefault#1{\displaystyle{#1}}
+
 % https://tex.stackexchange.com/questions/65471/set-label-name-on-two-lines-in-circuitikz
 \makeatletter
 \ctikzset{lx/.code args={#1 and #2}{ 
