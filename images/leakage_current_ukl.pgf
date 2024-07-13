@@ -51696,7 +51696,7 @@
 \pgfsetdash{}{0pt}%
 \pgfpathmoveto{\pgfqpoint{0.842561in}{0.994880in}}%
 \pgfpathlineto{\pgfqpoint{0.743633in}{0.949458in}}%
-\pgfpathlineto{\pgfqpoint{4.746607in}{2.787411in}}%
+\pgfpathlineto{\pgfqpoint{4.743956in}{2.786193in}}%
 \pgfpathlineto{\pgfqpoint{0.829096in}{0.988698in}}%
 \pgfusepath{stroke}%
 \end{pgfscope}%
