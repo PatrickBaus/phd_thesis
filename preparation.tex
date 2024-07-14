@@ -87,7 +87,7 @@ The design requirements are split into three parts which need to be discussed: T
 \label{sec:design_goal_environment}
 The lasers and its accompanying driver is to be mostly used in a clean laboratory environment. In this particular use case the air is filtered using H14 HEPA filters, but less rigorously controlled environments must be considered as well, because not all fields of application are in optical labs. A mostly dust free industrial environment is considered acceptable as well. Typical lab temperatures are in the range of \qtyrange[range-phrase=\textup{~to~}]{20}{30}{\celsius}. This temperature range was also encountered in the labs discussed in this work before improvements were implemented as part of this work. The upper end of the range must be considered when operating the devices inside a rack where the temperatures are even higher and the device should therefore be tested for its upper limit. A temperature of \qty{35}{\celsius} is a typical value measured inside the racks used in the lab. Humidity is only controlled with dehumidifiers, limiting only the upper bound, resulting in a range of \qtyrange[range-phrase=\textup{~to~}]{15}{60}{\percent rH}.
 
-Figure \ref{fig:lab_temperature_start_of_project} shows a typical one day span of the lab temperature as it was found at the start of this project.
+Figure \ref{fig:lab_temperature_start_of_project} shows a typical one day span of the lab temperature as it was found at the start of this project, plotted using Matplotlib \cite{matplotlib}.
 \begin{figure}[ht]
     \centering
     \input{images/temperature_011_2016.pgf}% data/plot_generic.py
