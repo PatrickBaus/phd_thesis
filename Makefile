@@ -7,7 +7,7 @@ LATEXMK_OPTIONS=-lualatex
 DOCKER=docker
 DOCKER_COMMAND=run --rm -w /tex/ --env LATEXMK_OPTIONS_EXTRA=$(LATEXMK_OPTIONS_EXTRA)
 DOCKER_MOUNT=-v`pwd`:/tex
-export DOCKER_CONTAINER=texlive/texlive:TL2022-historic
+DOCKER_CONTAINER=texlive/texlive:TL2023-historic
 
 all: figures tex
 
@@ -19,14 +19,14 @@ pdf: $(PDF_OBJECTS)
 
 clean:
 	-$(LATEXMK) -C main
-	@cd data && $(MAKE) clean
 
 dist-clean: clean
 	-rm $(FILENAME).tar.gz
+	@cd data && $(MAKE) clean
 
 .PHONY: tex
 tex:
-	$(DOCKER) $(DOCKER_COMMAND) $(DOCKER_MOUNT) texlive/texlive:TL2022-historic \
+	$(DOCKER) $(DOCKER_COMMAND) $(DOCKER_MOUNT) $(DOCKER_CONTAINER) \
 		make pdf
 
 .PHONY: figures
@@ -34,5 +34,5 @@ figures:
 	cd data && $(MAKE)
 
 debug:
-	$(DOCKER) $(DOCKER_COMMAND) -it $(DOCKER_MOUNT) texlive/texlive:TL2022-historic \
+	$(DOCKER) $(DOCKER_COMMAND) -it $(DOCKER_MOUNT) $(DOCKER_CONTAINER) \
 		bash
