@@ -6,7 +6,11 @@
 \documentclass[
 	ruledheaders=all,% Ebene bis zu der die Überschriften mit Linien abgetrennt werden, vgl. DEMO-TUDaPub
 	class=book,% Basisdokumentenklasse. Wählt die Korrespondierende KOMA-Script Klasse
-	thesis={type=dr, dr=rernat, reviewer-on-uppertitleback=true},
+	thesis={
+        type=drfinal,
+        dr=rernat,
+        reviewer-on-uppertitleback=true
+    },
 	accentcolor=1b,  % APQ blue is not available :(
 	custommargins=geometry,  % required for APQ design
 	marginpar=false,% Kopfzeile und Fußzeile erstrecken sich nicht über die Randnotizspalte
@@ -90,6 +94,12 @@
 	footskip=10mm,
 	nomarginpar
 }
+
+\usepackage[
+    type={CC},
+    modifier={by-sa},
+    version={4.0},
+]{doclicense}
 
 \captionsetup[subfigure]{width=0.9\textwidth}
 \renewcommand\thesubfigure{\,(\alph{subfigure})}
@@ -184,12 +194,18 @@
     title=Device Properties~\thetcbcounter: {#2},#1%
 }
 
-\newcommand{\versionNumber}{v.0.20.0}
+\newcommand{\versionNumber}{v.1.0.0}
 
 \addTitleBoxLogo*{\makebox[\linewidth][l]{\includegraphics[width=55mm]{images/titel_apq-logo.pdf}}}
 \titleimage{\includegraphics[width=\textwidth, height=1.1651\textwidth]{images/BM1A7279_front.jpg}}
 
-\lowertitleback{Front cover: Digital laser current driver DgDrive in the foreground with a blue \qty{488}{\nm} laser in the background. Canon EOS R6, RF24-105mm F4 L IS USM, aperture F4, exposure time \qty[parse-numbers = false]{\frac{1}{25}}{\second}.}
+\lowertitleback{\textbf{Front cover:} Digital laser current driver DgDrive in the foreground with a blue \qty{488}{\nm} laser in the background. Canon EOS R6, RF24-105mm F4 L IS USM, aperture F4, exposure time \qty[parse-numbers = false]{\frac{1}{25}}{\second}.}
+
+\Metadata{
+    copyright=This work is licensed under a Creative Commons ‘Attribution-ShareAlike 4.0 International’ license,
+    copyrightURL=https://creativecommons.org/licenses/by-sa/4.0,
+    uRLlink=https://github.com/PatrickBaus/phd_thesis
+}
 
 
 \begin{document}
@@ -198,13 +214,15 @@
 	\author{Patrick Baus}
 	\birthplace{Mannheim}
 	\reviewer{Prof. Dr. Gerhard Birkl \and Prof. Dr. Thomas Walther}
-	%\publishers{Foobar}
-	%\department{phys}
-	%\institute{Institut für Angewandte Physik}
-	%\group{APQ}
 
     \submissiondate{20.06.2023}
     \examdate{17.07.2023}
+    \tuprints{
+        urn=276077,
+        year=2024,
+        license=cc-by-sa-4.0,
+        front-cover-descriptor={Digital laser current driver DgDrive in the foreground with a blue \qty{488}{\nm} laser in the background. Canon EOS R6, RF24-105mm F4 L IS USM, aperture F4, exposure time \qty[parse-numbers = false]{\frac{1}{25}}{\second}.}
+    }% License information for TUprints
 
     \maketitle
 
@@ -221,6 +239,6 @@
     \printbibliography[heading=bibintoc, title={References}]
     \subimport{appendix/}{appendix.tex}
 
-    \affidavit
-    \addtocounter{page}{-1}  % Do not count the affidavit
+    %\affidavit
+    %\addtocounter{page}{-1}  % Do not count the affidavit
 \end{document}
