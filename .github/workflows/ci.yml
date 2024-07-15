@@ -32,7 +32,7 @@ jobs:
       - name: Build PDF
         run: |
             make tex
-            mv main.tex ${{ env.OUTPUT_FILE }}.pdf
+            mv main.pdf ${{ env.OUTPUT_FILE }}.pdf
 
       - name: Upload PDF as artifact if not publishing
         if: github.event.action != 'published'
