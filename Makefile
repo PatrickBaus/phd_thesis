@@ -21,7 +21,6 @@ clean:
 	-$(LATEXMK) -C main
 
 dist-clean: clean
-	-rm $(FILENAME).tar.gz
 	@cd data && $(MAKE) clean
 
 .PHONY: tex
