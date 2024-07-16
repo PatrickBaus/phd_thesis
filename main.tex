@@ -3,6 +3,12 @@
 \def\input@path{{./apqdesign}}
 \makeatother
 
+\DocumentMetadata{
+	pdfstandard=a-2b,
+	lang=en,
+	pdfversion=1.7,% 2.0 is possible as well, but some validators don't support that yet
+}
+
 \documentclass[
 	ruledheaders=all,% Ebene bis zu der die Überschriften mit Linien abgetrennt werden, vgl. DEMO-TUDaPub
 	class=book,% Basisdokumentenklasse. Wählt die Korrespondierende KOMA-Script Klasse
@@ -20,7 +26,6 @@
 	fontsize=11pt,%Basisschriftgröße laut Corporate Design ist mit 9pt häufig zu klein
 	IMRAD=false,
 	twoside,
-	pdfa=true,
 %	draft  % Use draft to find overfull boxes, this seems to break the hyperref package
 ]{apqpub}
 
@@ -197,16 +202,32 @@
 \newcommand{\versionNumber}{v.1.0.0}
 
 \addTitleBoxLogo*{\makebox[\linewidth][l]{\includegraphics[width=55mm]{images/titel_apq-logo.pdf}}}
+% The actual width and height of the image can be found in the .log file.
+% Search for'Requested size:'. Make sure the image has the same aspect ratio
 \titleimage{\includegraphics[width=\textwidth, height=1.1651\textwidth]{images/BM1A7279_front.jpg}}
 
 \lowertitleback{\textbf{Front cover:} Digital laser current driver DgDrive in the foreground with a blue \qty{488}{\nm} laser in the background. Canon EOS R6, RF24-105mm F4 L IS USM, aperture F4, exposure time \qty[parse-numbers = false]{\frac{1}{25}}{\second}.}
 
-\Metadata{
-    copyright=This work is licensed under a Creative Commons ‘Attribution-ShareAlike 4.0 International’ license,
-    copyrightURL=https://creativecommons.org/licenses/by-sa/4.0,
-    uRLlink=https://github.com/PatrickBaus/phd_thesis
+\hypersetup{
+    pdfauthor={Patrick Baus},
+    pdftitle={%
+        [en]{Current Drivers and Control Electronics for the Laser Spectroscopy of Highly Charged Ions},%
+        [de]{Stromtreiber und Steuerelektronik für die Laserspektroskopie von hochgeladenen Ionen}
+    },
+    pdfkeywords={
+        Laser,%
+        Diode laser,%
+        Electronics,%
+        Laser Electronics,%
+        Highly charged ions,%
+        HCI,%
+        Quantum Information Processing,%
+        PID, Temperature control,%
+        Currrent driver,%
+        Laser driver,%
+        Current source
+    },
 }
-
 
 \begin{document}
 	\title{Current Drivers and Control Electronics for the Laser Spectroscopy of Highly Charged Ions}
