@@ -204,7 +204,9 @@
 \addTitleBoxLogo*{\makebox[\linewidth][l]{\includegraphics[width=55mm]{images/titel_apq-logo.pdf}}}
 % The actual width and height of the image can be found in the .log file.
 % Search for'Requested size:'. Make sure the image has the same aspect ratio
-\titleimage{\includegraphics[width=\textwidth, height=1.1651\textwidth]{images/BM1A7279_front.jpg}}
+\titlegraphic{%
+    \includegraphics[width=\width]{images/BM1A7279_front.jpg}%
+}
 
 \lowertitleback{\textbf{Front cover:} Digital laser current driver DgDrive in the foreground with a blue \qty{488}{\nm} laser in the background. Canon EOS R6, RF24-105mm F4 L IS USM, aperture F4, exposure time \qty[parse-numbers = false]{\frac{1}{25}}{\second}.}
 
