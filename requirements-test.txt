@@ -1,1 +1,1 @@
-diff-pdf-visually~=1.8.0
+diff-pdf-visually~=1.8.1
