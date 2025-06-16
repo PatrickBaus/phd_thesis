@@ -71,9 +71,9 @@ Calculating the transconductance amplifier gain $A$ requires a little more work 
 
 From the model in figure \ref{fig:transconductance_amplifier_small_signal}, the following equations can be extracted in a similar fashion as it was done for the common-gate amplifier and equation \ref{eqn:mosfet_cg_vout} on page \pageref{eqn:mosfet_cg_vout}.
 \begin{align}
-    v_{GS} &= A_{ol} v_{id} - V_{R_s}\\
-    V_{R_s} &= i_D \left(R_o || R_s || R_{id}\right) = g_m v_{GS} \left(R_o || R_s || R_{id}\right)\\
-    A\beta &= \frac{V_{R_s}}{V_{id}} = \frac{g_m v_{GS} \left(R_o || R_s || R_{id}\right)}{\frac{1}{A_{ol}} \left(1 + g_m \left(R_o || R_s || R_{id}\right)\right) v_{GS}} \nonumber\\
+    v_{GS} &= A_{ol} v_{id} - v_{R_s}\\
+    v_{R_s} &= i_D \left(R_o || R_s || R_{id}\right) = g_m v_{GS} \left(R_o || R_s || R_{id}\right)\\
+    A\beta &= \frac{v_{R_s}}{V_{id}} = \frac{g_m v_{GS} \left(R_o || R_s || R_{id}\right)}{\frac{1}{A_{ol}} \left(1 + g_m \left(R_o || R_s || R_{id}\right)\right) v_{GS}} \nonumber\\
     &= A_{ol} \frac{g_m \left(R_o || R_s || R_{id}\right)}{1 + g_m \left(R_o || R_s || R_{id}\right)}
 \end{align}
 
@@ -106,7 +106,7 @@ one finds
     \frac{g_m \left(R_o || R_s || R_{id}\right)}{1 + g_m \left(R_o || R_s || R_{id}\right)} &\approx \num{0.95}
 \end{align*}
 
-Using typical parameters, it can be seen that dropping the $\frac{g_m \left(R_o || R_s || R_{id}\right)}{1 + g_m \left(R_o || R_s || R_{id}\right)}$ term will only lead to error of about \qty{5}{\percent}. Given the datasheet uncertainties for the MOSFET related parameters on the order of \qtyrange{50}{100}{\percent}, it can be safely neglected, leading to the following approximations
+Using typical parameters, it can be seen that dropping the $\frac{g_m \left(R_o || R_s || R_{id}\right)}{1 + g_m \left(R_o || R_s || R_{id}\right)}$ term will only lead to an error of about \qty{5}{\percent}. Given the datasheet uncertainties for the MOSFET related parameters on the order of \qtyrange{50}{100}{\percent}, it can be safely neglected, leading to the following approximations
 \begin{align}
     R_{out} &\approx A_{ol} \left(g_m R_o R_s + R_o + R_s \right)\\
     A_f &\approx \frac{1}{R_s} \,. \nonumber
