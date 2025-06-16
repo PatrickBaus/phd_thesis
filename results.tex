@@ -1182,13 +1182,13 @@ The performance of the \device{DgDrive-500-LN} is again shown in figure \ref{fig
 
 The 2-$\sigma$ uncertainty of the \device{34470A} DMM \cite{datasheet_keysight34470A} with these measurement settings is $\qty{10}{\uA \per \A} + \qty{0.4}{\uA} = \qty{0.9}{\uA}$, not including the shunt resistor, which renders a discussion about the apparent drift of \qty{30}{\nA} seen in figure \ref{fig:stability_dgDrive} questionable.
 
-To get a more definitive answer on the actual drift, the measurement should be repeated with a lower noise and more stable multimeter like the \device{3458A} or, alternatively, a differential measurement between the shunt voltage and the Fluke \device{5440B} calibrator can be carried out. Nonetheless, an upper bound of less than \qty{50}{\nA \per \day} can be given. Regarding the long-term drift, the annual calibration of the laser drivers currently in use can be evaluated. The first batch of laser drivers, which has been in use for more than one year was measured against a freshly calibrated \device{3458A} and a drift of \qty{< 1 \pm 2}{\uA \per \A \per a} was found. This surpasses the requirements put up by the specification of \qty{240}{\uA \per \A \per 30 \day} given in table \ref{lst:dgDrive_specs_environment} on page \pageref{lst:dgDrive_specs_environment} by a far margin.
+To get a more definitive answer on the actual drift, the measurement should be repeated with a lower noise and more stable multimeter like the \device{3458A} or, alternatively, a differential measurement between the shunt voltage and the Fluke \device{5440B} calibrator can be carried out. Nonetheless, an upper bound of less than \qty{50}{\nA \per \day} can be given. Regarding the long-term drift, the annual calibration of the laser drivers currently in use can be evaluated. The first batch of laser drivers, which has been in use for more than one year was measured against a freshly calibrated \device{3458A} and a drift of \qty{< 1 \pm 2}{\uA \per \A \per \year} was found. This surpasses the requirements put up by the specification of \qty{240}{\uA \per \A \per 30 \day} given in table \ref{lst:dgDrive_specs_environment} on page \pageref{lst:dgDrive_specs_environment} by a far margin.
 %To get an even better understanding of the long-term drift of the \device{DgDrive} more data needs to be collected on the drivers currently in use, but requires more calibration cycles and therefore time.
 \begin{center}
     \begin{deviceProperties}[label={lst:dgDrive_temporal_stability}]{DgDrive stability over time}
     \begin{itemize}
         \item Short-term drift: \qty[per-mode = symbol]{<0.1 \pm 2}{\uA \per \A \per \day}
-        \item Long-term drift: \qty[per-mode = symbol]{< 1 \pm 2}{\uA \per \A \per a}
+        \item Long-term drift: \qty[per-mode = symbol]{< 1 \pm 2}{\uA \per \A \per \year}
     \end{itemize}
     \end{deviceProperties}
 \end{center}
@@ -1474,8 +1474,8 @@ The current driver performance was demonstrated in several of the previous secti
     \begin{itemize}
         \item Maximum output current: \qty{500}{\mA} (p. \pageref{tab:dgDrive_configurations})
         \item Temperature coefficient: $\qty{0.1}{\uA \per \K} + \qty{0.5}{\uA \per \A \per \K} \cdot I_{out}$ (p. \pageref{fig:dgDrive_tempco_50mA})
-        \item Stability: \qty{< 1 \pm 2}{\uA \per \A \per a} (p. \pageref{fig:stability_dgDrive})
-        \item Noise: \qty{< 70}{\pA \per \Hz\tothe{0.5}} above \qty{100}{\Hz} (\pageref{fig:laser_driver_noise_measurement})
+        \item Stability: \qty{< 1 \pm 2}{\uA \per \A \per \year} (p. \pageref{fig:stability_dgDrive})
+        \item Noise: \qty{< 70}{\pA \per \Hz\tothe{0.5}} above \qty{100}{\Hz} (p. \pageref{fig:laser_driver_noise_measurement})
         \item Below shot noise above \qty{20}{\mA} for the \qty{500}{\mA} version. (p. \pageref{fig:laser_driver_noise_hmp4040})
         \item Modulation bandwidth: \qty{1}{\MHz} (p. \pageref{fig:dgDrive_modulation_amplitude})
         \item Output impedance: \qty{>1}{\giga\ohm} resulting in excellent noise immunity (p. \pageref{fig:dgDrive_output_impedance_comparison})
