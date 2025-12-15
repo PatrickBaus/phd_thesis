@@ -91,7 +91,7 @@ jobs:
 
       - name: Store results on a failed diff
         if: failure()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: visual-diff-${{ steps.platform.outputs.value }}
           path: ".visual_diff/results/*"
