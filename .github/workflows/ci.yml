@@ -10,14 +10,19 @@ on:
       - '.github/workflows/ci.yml'
       - '.github/actions/**.yml'
       - 'requirements*.txt'
-    # Ignore the push event when creating tags
-    tags-ignore:
-      - '[0-9]+.[0-9]+.[0-9]+'
   release:
     types:
       - published
 
   pull_request:
+
+# Deny everything by default; each job opts in to what it needs.
+permissions: {}
+
+# Cancel superseded runs on branches and PRs, but never a release run.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name != 'release' }}
 
 env:
   OUTPUT_FILE: Dissertation_Baus_Patrick
@@ -25,26 +30,88 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # `make tex` runs the TeX sources, which in a pull request are untrusted
+    # code (LuaLaTeX can run Lua). Read-only token, bounded runtime.
+    timeout-minutes: 30
+    permissions:
+      contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check \versionNumber matches release tag
+        if: github.event_name == 'release'
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Read the value from: \newcommand{\versionNumber}{1.1.2}
+          # (\renewcommand is accepted too; commented-out lines are ignored).
+          mapfile -t versions < <(
+            sed -nE 's/^[[:space:]]*\\(re)?newcommand\{\\versionNumber\}\{([^}]*)\}.*/\2/p' main.tex
+          )
+
+          if (( ${#versions[@]} != 1 )); then
+            echo "::error file=main.tex::Expected exactly one \\versionNumber definition, found ${#versions[@]}."
+            exit 1
+          fi
+
+          tex_version="${versions[0]}"
+          tag_version="${RELEASE_TAG#v}"   # tolerate a leading "v" on the tag
+
+          if [[ "$tex_version" != "$tag_version" ]]; then
+            echo "::error file=main.tex::\\versionNumber ($tex_version) does not match release tag ($RELEASE_TAG)."
+            exit 1
+          fi
+
+          echo "Version $tex_version matches release tag $RELEASE_TAG."
 
       - name: Build PDF
+        shell: bash
         run: |
-            make tex
-            mv main.pdf ${{ env.OUTPUT_FILE }}.pdf
+          set -euo pipefail
+          make tex
+          mv -- main.pdf "$OUTPUT_FILE.pdf"
 
-      - name: Upload PDF as artifact if not publishing
-        if: github.event.action != 'published'
+      # Always stored: the release job below picks it up from here, so the job
+      # that runs the untrusted build never needs a write token.
+      - name: Upload PDF as artifact
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: PDF-thesis
           path: ${{ env.OUTPUT_FILE }}.pdf
+          if-no-files-found: error
           retention-days: 7
 
+  release:
+    name: Upload PDF to release
+    needs: build
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write # only job with write access
+    steps:
+      - name: Download PDF
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: PDF-thesis
+          path: dist
+
       - name: Append PDF as an asset
-        if: github.event.action == 'published'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: gh release upload ${{ github.ref_name }} ${{ env.OUTPUT_FILE }}.pdf --repo ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         shell: bash
+        run: |
+          set -euo pipefail
+          [[ -f "dist/$OUTPUT_FILE.pdf" ]] || {
+            echo "Expected PDF not found: dist/$OUTPUT_FILE.pdf" >&2
+            exit 1
+          }
+          gh release upload "$RELEASE_TAG" "dist/$OUTPUT_FILE.pdf" --clobber
