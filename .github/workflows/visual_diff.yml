@@ -60,7 +60,7 @@ jobs:
         shell: bash
 
       - name: Run visual diff
-        uses: Quantum-Electronic-Devices/pdf-visual-diff@4e1611f183a669639772d52b45130386dbf2096d # v1.1.0
+        uses: Quantum-Electronic-Devices/pdf-visual-diff@fde4b2edd2e338621c2931364c7dc5f8e99f2c42 # v1.2.0
         with:
           dpi: 100
           directory-a: ./visual_diff/release
